@@ -1,6 +1,7 @@
 <?php
 namespace OpenProvider\WhmcsHelpers;
 use	Carbon\Carbon;
+use WHMCS\Database\Capsule;
 
 /**
  * General helpers for WHMCS.
@@ -10,6 +11,8 @@ use	Carbon\Carbon;
  **/
 class General
 {
+    private static $admin_user;
+
 	/**
 	 * Compare the two dates
 	 *
@@ -31,17 +34,48 @@ class General
 		$second_date = Carbon::createFromFormat($second_date_format, $second_date, $second_date_timezone);
 		
 		// Set the offset for the registrar expiry date.
-		if($offset_in_days != '0')
-			$second_date->subDays($offset_in_days);
+		if($offset_in_days != '0') {
+            preg_match_all('!\d+!', $offset_in_days, $offset_in_days);
+            $offset_in_days = $offset_in_days[0][0];
+            $second_date->subDays($offset_in_days);
+        }
 
 		// Convert the registrar timezone to whmcs
 		if(!$first_date->isSameDay($second_date))
 		{
-			$second_date->setTimezone($system_timezone);
-			return $second_date->toDateString();
+            $difference_in_days = $first_date->diffInDays($second_date, false);
+            if($difference_in_days <0)
+                $difference_in_days--;
+
+			$return = [
+			    'date'                 => $second_date->setTimezone($system_timezone)->format('Y-m-d'),
+                'difference_in_days'   => $difference_in_days
+            ];
+			return $return;
 		}
 
 		return 'correct';
 	}
 
+    /**
+     * Get the admin user
+     *
+     * @return string The $admin
+     **/
+    public static function get_admin_user()
+    {
+        if(self::$admin_user != '')
+            return self::$admin_user;
+
+        try {
+            $admin_results = Capsule::table('tbladmins')
+                ->limit(1)
+                ->get();
+        } catch (\Exception $e) {
+            return null;
+        }
+
+        self::$admin_user = $admin_results[0]->username;
+        return self::$admin_user;
+    }
 } // END class General

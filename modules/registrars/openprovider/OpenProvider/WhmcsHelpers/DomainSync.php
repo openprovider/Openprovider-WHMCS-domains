@@ -12,12 +12,6 @@ use WHMCS\Database\Capsule,
  **/
 class DomainSync
 {
-	/**
-	 * The self::$interval_hours for when a domain should be updated
-	 *
-	 * @var string
-	 **/
-	private static $interval_hours = 6;
 
 	/**
 	 * Synchronize the DomoainSync table.
@@ -62,7 +56,7 @@ class DomainSync
 			$domains = Capsule::table('tbldomains')
 					->leftJoin($table_name, 'tbldomains.id', '=', $table_name . '.id')
 	                ->where('tbldomains.registrar', $registrar)
-	                ->where($table_name.'.last_sync', '<', Carbon::now()->subHour(self::$interval_hours))
+	                ->where($table_name.'.last_sync', '<', Carbon::now()->subHour(Registrar::get('updateInterval')))
 	                ->select('tbldomains.*');
 
 	        if($limit != 0)

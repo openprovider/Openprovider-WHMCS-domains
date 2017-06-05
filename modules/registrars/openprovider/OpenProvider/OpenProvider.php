@@ -59,9 +59,9 @@ class OpenProvider
 	}
 
 	/**
-	 * undocumented function
+	 * Toggle autorenew at OpenProvider
 	 *
-	 * @return void
+	 * @return array|string
 	 **/
 	public function toggle_autorenew($domain, $opInfo)
 	{
@@ -75,7 +75,45 @@ class OpenProvider
 	    if($opInfo['autorenew'] != $auto_renew)
 	    {
 	    	$this->api->setAutoRenew($this->domain, $auto_renew);
+
+	    	return [ 'status'       => 'changed',
+                    'old_setting'   => $opInfo['autorenew'],
+                    'new_setting'   => $auto_renew];
 	    }
+
+	    return 'correct';
+	}
+
+	/**
+	 * Toggle Who is protection at OpenProvider
+	 *
+	 * @return array|string
+	 **/
+	public function toggle_whois_protection($domain, $opInfo)
+	{
+		// Check if we should auto renew or use the default settings
+	    if($domain->idprotection == 0)
+            $idprotection = null; // OP sends the null value when no protection is set.
+	    else
+            $idprotection = '1';
+
+	    // Check if openprovider has the same data
+	    if($opInfo['isPrivateWhoisEnabled'] != $idprotection)
+	    {
+	        if($idprotection == null)
+	        {
+                $opInfo['isPrivateWhoisEnabled'] = 1;
+                $idprotection = '0';
+            }
+
+	    	$this->api->setPrivateWhoisEnabled($this->domain, $idprotection);
+
+	    	return [ 'status'       => 'changed',
+                    'old_setting'   => $opInfo['isPrivateWhoisEnabled'],
+                    'new_setting'   => $idprotection];
+	    }
+
+	    return 'correct';
 	}
 
 } // END class OpenProvider

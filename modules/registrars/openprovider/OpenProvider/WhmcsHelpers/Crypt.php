@@ -9,7 +9,6 @@ use WHMCS\Database\Capsule;
  **/
 class Crypt
 {
-	private static $admin_user;
 
 	/**
 	 * Decrypt $encrypted_string
@@ -24,7 +23,7 @@ class Crypt
 	        'password2' => $encrypted_string,
 	    );
 
-	    $admin_user = self::get_admin_user();
+	    $admin_user = General::get_admin_user();
 
 	    $results = localAPI($command, $postData, $admin_user);
 
@@ -44,30 +43,11 @@ class Crypt
 	        'password2' => $decrypted_string,
 	    );
 
-	    $results = localAPI($command, $postData, null);
+        $admin_user = General::get_admin_user();
+
+	    $results = localAPI($command, $postData, $admin_user);
 	    
 	    return $results['password'];
 	}
 
-	/**
-	 * Get the admin user
-	 *
-	 * @return string The $admin
-	 **/
-	private static function get_admin_user()
-	{			
-		if(self::$admin_user != '')
-			return self::$admin_user;
-
-		try {
-			$admin_results = Capsule::table('tbladmins')
-					->limit(1)
-					->get();
-		} catch (\Exception $e) {
-			return null;
-		}
-
-		self::$admin_user = $admin_results[0]->username;
-		return self::$admin_user;
-	}
 } // END class Crypt

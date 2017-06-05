@@ -222,12 +222,12 @@ add_hook("ShoppingCartValidateCheckout", 1, "OpenProviderValidateCart");
  */
 function OpenProviderSaveCart($params)
 {
-    if (!isset($_SESSION['cartcopy']))
+    if (!isset($_SESSION['cartcopy']) || !isset($_SESSION['cartcopy']['domains']) || empty($_SESSION['cartcopy']['domains']))
     {
         return;
     }
 
-    $path = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'additionaldomainfields.php';
+    $path = __DIR__ . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR . 'additionaldomainfields.php';
     $opCacheTable = 'OpenproviderCache';
     
     // compare modification time

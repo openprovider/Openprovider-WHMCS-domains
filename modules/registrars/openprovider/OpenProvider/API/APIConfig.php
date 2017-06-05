@@ -4,7 +4,7 @@ namespace OpenProvider\API;
 
 class APIConfig
 {
-    static public $moduleVersion        =   'whmcs­mg­2.0.1';
+    static public $moduleVersion        =   'whmcs-mg-2.2.0';
     static public $supportedDnsTypes    =   array('A', 'AAAA', 'CNAME', 'MX', 'SPF', 'TXT');
     static public $dnsRecordTtl         =   86400; 
     static public $dnsRecordPriority    =   10; 

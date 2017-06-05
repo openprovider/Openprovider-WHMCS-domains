@@ -1,4 +1,4 @@
 # op-whmcs
-Openprovider domain registration plugin for WHMCS version 7
+Openprovider domain registration plugin for WHMCS
 
-Installation guidelines available in the repo (Openprovider for WHMCS v7.pdf)
+Installation guidelines available in the repo (Openprovider for WHMCS.pdf)

@@ -53,10 +53,10 @@ class API
     public function createCustomerInOPdatabase(\OpenProvider\API\Customer $customer)
     {
         $args = $customer;
-        $resutl = $this->sendRequest('createCustomerRequest', $args);
-        $customer->handle = $resutl['handle'];
+        $result = $this->sendRequest('createCustomerRequest', $args);
+        $customer->handle = $result['handle'];
         
-        return $resutl;
+        return $result;
     }
 
     public function sendRequest($requestCommand, $args = null)
@@ -229,19 +229,20 @@ class API
     
     public function registerDomain(\OpenProvider\API\DomainRegistration $domainRegistration)
     {
-        // check if zone exists
-        $zoneResult = $this->searchZoneDnsRequest($domainRegistration->domain);
-        
-        if (0 == $zoneResult['total'])
-        {
-            // create a new DNS zone object
-            $zoneArgs = array
-            (
-                'domain'    =>  $domainRegistration->domain, 
-                'type'      =>  'master', 
-                'templateName' => $domainRegistration->nsTemplateName
-            );
-            $this->sendRequest('createZoneDnsRequest', $zoneArgs);
+        if($domainRegistration->dnsmanagement ==  1) {
+            // check if zone exists
+            $zoneResult = $this->searchZoneDnsRequest($domainRegistration->domain);
+
+            if (0 == $zoneResult['total']) {
+                // create a new DNS zone object
+                $zoneArgs = array
+                (
+                    'domain' => $domainRegistration->domain,
+                    'type' => 'master',
+                    'templateName' => $domainRegistration->nsTemplateName
+                );
+                $this->sendRequest('createZoneDnsRequest', $zoneArgs);
+            }
         }
         
         // register
@@ -277,6 +278,21 @@ class API
         $lockedStatus   =   $result['isLocked'] ? true : false;
 
         return $lockedStatus;
+    }
+
+    /**
+     * Get the soft renewal date
+     * @param \OpenProvider\API\Domain $domain
+     * @return bool|string False if not date is provided.
+     */
+    public function getSoftRenewalExpiryDate(\OpenProvider\API\Domain $domain)
+    {
+        $result         =   $this->retrieveDomainRequest($domain);
+
+        if(!isset($result['softQuarantineExpiryDate']))
+            return false;
+
+        return $result['softQuarantineExpiryDate'];
     }
 
     /**
@@ -427,14 +443,18 @@ class API
      * Return array with contact information for given handle
      * 
      * @param string $handle Customer handle
+     * @param boolean $raw *optional* false If set to true, returns the raw output.
      * @return array
      */
-    protected function retrieveCustomerRequest($handle)
+    protected function retrieveCustomerRequest($handle, $raw = false)
     {
         $args = array(
             'handle' => $handle,
         );
         $contact = $this->sendRequest('retrieveCustomerRequest', $args);
+
+        if($raw == true)
+            return $contact;
 
         $customerInfo = array();
 
@@ -485,12 +505,29 @@ class API
 
     protected function modifyCustomerContactDetails(\OpenProvider\API\Domain $domain, $domainInfo, \OpenProvider\API\Customer $customer, $type = '')
     {
+        $opCustomer = $this->retrieveCustomerRequest($customer->handle, true);
 
-        $opCustomer = $this->retrieveCustomerRequest($customer->handle);        
-
-        
+        // Check if something has changed.
+        if(
+            $customer->companyName == $opCustomer['companyName']  &&
+            $customer->name->initials == $opCustomer['name']['initials'] &&
+            $customer->name->firstName == $opCustomer['name']['firstName'] &&
+            $customer->name->lastName == $opCustomer['name']['lastName'] &&
+            $customer->gender == $opCustomer['gender'] &&
+            $customer->address->street == $opCustomer['address']['street'] &&
+            $customer->address->number == $opCustomer['address']['number'] &&
+            $customer->address->city == $opCustomer['address']['city'] &&
+            $customer->phone->countryCode == $opCustomer['phone']['countryCode'] &&
+            $customer->phone->areaCode == $opCustomer['phone']['areaCode'] &&
+            $customer->phone->subscriberNumber == $opCustomer['phone']['subscriberNumber'] &&
+            $customer->email == $opCustomer['email']
+        )
+        {
+            // It has not, stop here.
+            return;
+        }
         // if name & company name are the same, then call modifyCustomerRequest only
-        if ($opCustomer['First Name'] == $customer->name->firstName &&
+        elseif ($opCustomer['First Name'] == $customer->name->firstName &&
             $opCustomer['Last Name'] == $customer->name->lastName &&
             $opCustomer['Company Name'] == $customer->companyName)
         {
@@ -505,6 +542,7 @@ class API
  
             // create customer
             $createResult = $this->createCustomerInOPdatabase($customer);
+
             $handle = $createResult['handle'];
 
             $args = array
@@ -525,19 +563,21 @@ class API
      */
     public function transferDomain(\OpenProvider\API\DomainTransfer $domainTransfer)
     {
-        // check if zone exists
-        $zoneResult = $this->searchZoneDnsRequest($domainTransfer->domain);
-        
-        if (0 == $zoneResult['total'])
-        {
-            // create a new DNS zone object
-            $zoneArgs = array
-            (
-                'domain'    =>  $domainTransfer->domain, 
-                'type'      =>  'master',
-                'templateName' => $domainRegistration->nsTemplateName
-            );
-            $this->sendRequest('createZoneDnsRequest', $zoneArgs);
+        if($domainRegistration->dnsmanagement ==  1) {
+            // check if zone exists
+
+            $zoneResult = $this->searchZoneDnsRequest($domainTransfer->domain);
+
+            if (0 == $zoneResult['total']) {
+                // create a new DNS zone object
+                $zoneArgs = array
+                (
+                    'domain' => $domainTransfer->domain,
+                    'type' => 'master',
+                    'templateName' => $domainRegistration->nsTemplateName
+                );
+                $this->sendRequest('createZoneDnsRequest', $zoneArgs);
+            }
         }
         
         $this->sendRequest('transferDomainRequest', $domainTransfer);
@@ -558,6 +598,22 @@ class API
         );
 
         $this->sendRequest('renewDomainRequest', $args);
+    }
+
+    /**
+     * Restore domain
+     * @param \OpenProvider\API\Domain $domain
+     * @param type $period
+     */
+    public function restoreDomain(\OpenProvider\API\Domain $domain)
+    {
+        $args = array
+        (
+            'domain' => $domain,
+            'period' => $period,
+        );
+
+        $this->sendRequest('restoreDomainRequest', $args);
     }
 
     /**
@@ -639,6 +695,23 @@ class API
         (
             'domain'     =>  $domain,
             'autorenew' =>  $autoRenew
+        );
+
+        return $this->sendRequest('modifyDomainRequest', $args);
+    }
+
+    /**
+     * Enable/Disable domain identity protection
+     * @param \OpenProvider\API\Domain $domain
+     * @param type $identityProtection
+     * @return type
+     */
+    public function setPrivateWhoisEnabled (\OpenProvider\API\Domain $domain, $identityProtection)
+    {
+        $args = array
+        (
+            'domain'                =>  $domain,
+            'isPrivateWhoisEnabled' =>  $identityProtection
         );
 
         return $this->sendRequest('modifyDomainRequest', $args);

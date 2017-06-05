@@ -1,4 +1,6 @@
 <?php
+use OpenProvider\OpenProvider as OP;
+use WHMCS\Database\Capsule;
 use WHMCS\Domains\DomainLookup\ResultsList;
 use WHMCS\Domains\DomainLookup\SearchResult;
 
@@ -33,28 +35,63 @@ function openprovider_getConfigArray($params = array())
     (
         "OpenproviderAPI"   => array
         (
+            "FriendlyName"  => "OpenProvider URL",
             "Type"          => "text", 
             "Size"          => "60", 
-            "Description"   => "Openprovider API URL",
+            "Description"   => "Include https://",
         ),
         "Username"          => array
         (
+            "FriendlyName"  => "Username",
             "Type"          => "text", 
             "Size"          => "20", 
             "Description"   => "Openprovider login",
         ),
         "Password"          => array
         (
+            "FriendlyName"  => "Password",
             "Type"          => "password", 
             "Size"          => "20", 
             "Description"   => "Openprovider password",
         ),
         "useLocalHanlde"    => array 
         (
-            "FriendlyName"  => "Ascribe already used contacts to a new domain",
+            "FriendlyName"  => "Reuse client handles when creating new domain",
             "Type"          => "yesno",
             "Description"   => "&zwnj;",
-        )
+        ),
+        "nextDueDateOffset" => array
+        (
+            "FriendlyName"  => "Next Due date offset",
+            "Type"          => "text",
+            "Size"          => "2",
+            "Description"   => "Number of days to set WHMCS due date in advance of Openprovider expiration date",
+            "Default"       => "3"
+        ),
+        "updateInterval"     => array
+        (
+            "FriendlyName"  => "Update interval",
+            "Type"          => "text",
+            "Size"          => "2",
+            "Description"   => "The minimum number of days between each domain syncronization.",
+            "Default"       => "2"
+        ),
+        "domainProcessingLimit"     => array
+        (
+            "FriendlyName"  => "Max domains per sync",
+            "Type"          => "text",
+            "Size"          => "4",
+            "Description"   => "Maximum number of domains processed each time domain sync runs.",
+            "Default"       => "200"
+        ),
+        "sendEmptyActivityEmail" => array
+        (
+            "FriendlyName"  => "Send empty activity reports?",
+            "Type"          => "yesno",
+            "Size"          => "20",
+            "Description"   => "Receive emails from domain sync even if no domains were updated",
+            "Default"       => "no"
+        ),
     );
     
     $x = explode(DIRECTORY_SEPARATOR, $_SERVER['SCRIPT_FILENAME']);
@@ -66,12 +103,12 @@ function openprovider_getConfigArray($params = array())
             if(isset($configarray[$key]))
             {
                 // Prevent that we will overwrite the actual password with the stars.
-                if($val != '******************')
+                if(substr($val, 0, 3) != '***')
                     $params[$key]   =   $val;
             }
         }
     }
-    
+
     if(isset($params['Password']) && isset($params['Username']) && isset($params['OpenproviderAPI']))
     {
         try
@@ -118,11 +155,9 @@ function openprovider_RegisterDomain($params)
     
     try
     {
-        $encodedDomainName = OpenProvider\API\APITools::getEncodedDomainName($params['domainname']);
-        
         $domain             =   new \OpenProvider\API\Domain();
         $domain->extension  =   $params['tld'];
-        $domain->name       =   $encodedDomainName;//$params['sld'];
+        $domain->name       =   $params['sld'];
         $nameServers        =   \OpenProvider\API\APITools::createNameserversArray($params);
         $createNewHandles   =   false;
         $useLocalHandle     =   isset($params['useLocalHanlde']) && $params['useLocalHanlde'];
@@ -212,15 +247,15 @@ function openprovider_RegisterDomain($params)
         $domainRegistration->billingHandle  =   $handles['billingHandle'];
         $domainRegistration->nameServers    =   $nameServers;
         $domainRegistration->autorenew      =   'default';
+        $domainRegistration->dnsmanagement  =   $params['dnsmanagement'];
+
+        if($params['idprotection'] == 1)
+            $domainRegistration->isPrivateWhoisEnabled = 1;
 
         //use dns templates
         if($params['dnsTemplate'] && $params['dnsTemplate'] != 'None')
         {
             $domainRegistration->nsTemplateName =   $params['dnsTemplate'];
-        }
-
-        if (!OpenProvider\API\APITools::checkIfNsIsDefault($nameServers)) {
-            $domainRegistration->nsTemplateName = 'Default';
         }
         
         if($params['tld'] == 'de') 
@@ -521,6 +556,37 @@ function openprovider_SaveDNS($params)
     return $values;
 }
 
+/**
+ * Process the toggle
+ *
+ * @param type $params
+ * @return array
+ */
+function openprovider_IDProtectToggle($params)
+{
+    // Get the domain details
+    $domain = Capsule::table('tbldomains')
+        ->where('id', $params['domainid'])
+        ->get()[0];
+
+    try {
+        $OpenProvider       = new OP();
+        $op_domain_obj      = $OpenProvider->domain($params['domainname']);
+        $op_domain          = $OpenProvider->api->retrieveDomainRequest($op_domain_obj);
+        $OpenProvider->toggle_whois_protection($domain, $op_domain);
+
+        return array(
+            'success' => 'success',
+        );
+    } catch (Exception $e) {
+        \logModuleCall('OpenProvider', 'Save identity toggle', $params['domainname'], [$OpenProvider->domain, @$op_domain, $OpenProvider], $e->getMessage(), [$params['Password']]);
+
+        return array(
+            'error' => $e->getMessage(),
+        );
+    }
+}
+
 //
 function openprovider_RequestDelete($params)
 {
@@ -609,14 +675,14 @@ function openprovider_TransferDomain($params)
         $domainTransfer->techHandle     =   $techHandle;
         $domainTransfer->billingHandle  =   $billingHandle;
         $domainTransfer->authCode       =   $params['transfersecret'];
+        $domainTransfer->dnsmanagement  =   $params['dnsmanagement'];
+
+        if($params['idprotection'] == 1)
+            $domainRegistration->isPrivateWhoisEnabled = 1;
 
         if($params['dnsTemplate'] && $params['dnsTemplate'] != 'None')
         {
             $domainRegistration->nsTemplateName =   $params['dnsTemplate'];
-        }
-
-        if (!OpenProvider\API\APITools::checkIfNsIsDefault($nameServers)) {
-            $domainRegistration->nsTemplateName = 'Default';
         }
         
         if($params['tld'] == 'de') 
@@ -653,7 +719,20 @@ function openprovider_RenewDomain($params)
         $period = $params['regperiod'];
 
         $api = new \OpenProvider\API\API($params);
-        $api->renewDomain($domain, $period);
+
+        if($api->getSoftRenewalExpiryDate($domain) == false)
+
+        {
+            exit('DOING NORMAL RENEWAL');
+            $api->renewDomain($domain, $period);
+        }
+
+        else
+        {
+            exit('RESTORING DOMAIN');
+            $api->restoreDomain($domain, $period);
+        }
+
     }
     catch (\Exception $e)
     {
@@ -759,7 +838,7 @@ function openprovider_GetEPPCode($params)
 /**
  * Add name server in domain
  * @param type $params
- * @return string
+ * @return array|string
  */
 function openprovider_RegisterNameserver($params)
 {
@@ -799,8 +878,8 @@ function openprovider_RegisterNameserver($params)
 
 /**
  * Modify existing name servers
- * @param type $params
- * @return string
+ * @param array $params
+ * @return array|string
  */
 function openprovider_ModifyNameserver($params)
 {
@@ -847,7 +926,7 @@ function openprovider_ModifyNameserver($params)
 /**
  * Delete name server from domain
  * @param type $params
- * @return string
+ * @return array|string
  */
 function openprovider_DeleteNameserver($params)
 {
@@ -883,7 +962,7 @@ function openprovider_DeleteNameserver($params)
 /**
  * Synchronize domain status and expiry date
  * @param type $params
- * @return type
+ * @return array
  */
 function openprovider_TransferSync($params)
 {
@@ -917,7 +996,7 @@ function openprovider_TransferSync($params)
         );
     }
 
-    return $values;
+    return [];
 }
 
 /**
@@ -955,9 +1034,7 @@ function openprovider_CheckAvailability($params)
         $status =  $api->checkDomainArray($domains);
     } catch (Exception $e) {
         \logModuleCall('openprovider', 'whois', $domains, $e->getMessage(), null, [$params['Password']]);
-        return array(
-            'error' => 'Technical error. Please try again later.',
-        );
+        return $results;
     }
 
     foreach($status as $domain_status)
@@ -977,5 +1054,17 @@ function openprovider_CheckAvailability($params)
 
     }
         
+    return $results;
+}
+
+/**
+ * get Domain suggestions
+ *
+ * This is not available in OpenProvider yet.
+ */
+function openprovider_GetDomainSuggestions($params)
+{
+    $results = new ResultsList();
+
     return $results;
 }

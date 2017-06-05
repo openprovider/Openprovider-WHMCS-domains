@@ -65,5 +65,11 @@ class DomainRegistration extends \OpenProvider\API\AutoloadConstructor
      * @var int (0|1) default 0
      */
     public $useDomicile = 0;
-    
+
+    /**
+     *
+     * @var int (0|1) default 0
+     */
+    public $isPrivateWhoisEnabled = 0;
+
 }

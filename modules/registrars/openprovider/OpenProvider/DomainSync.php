@@ -1,5 +1,7 @@
 <?php
 namespace OpenProvider;
+use OpenProvider\WhmcsHelpers\Activity;
+use OpenProvider\WhmcsHelpers\Registrar;
 use WHMCS\Database\Capsule;
 use \OpenProvider\WhmcsHelpers\DomainSync as helper_DomainSync;
 use \OpenProvider\WhmcsHelpers\Domain;
@@ -54,18 +56,30 @@ class DomainSync
 	 * @var array
 	 **/
 	private $update_domain_data;
+
+    /**
+     * An list with logs to be updated once the update has completed.
+     *
+     * @var array
+     **/
+    private $update_executed_logs;
 	
 	/**
 	 * Init the class
 	 *
 	 * @return void
 	 **/
-	public function __construct($limit = 200)
+	public function __construct($limit = false)
 	{
 		// Check if there are domains missing from the DomainSync table
 		helper_DomainSync::sync_DomainSync_table('openprovider');
 
 		// Get all unprocessed domains
+        if($limit === false)
+        {
+            $limit = Registrar::get('domainProcessingLimit');
+        }
+
 		$this->get_unprocessed_domains($limit);
 	}
 
@@ -87,7 +101,7 @@ class DomainSync
 	 *
 	 * @return boolean true when there are domains to process
 	 **/
-	public function has_domains_to_proccess()
+	public function has_domains_to_process()
 	{
 		if(empty($this->domains))
 			return false;
@@ -105,6 +119,9 @@ class DomainSync
 		$this->OpenProvider = new OpenProvider;
 
 		foreach($this->domains as $domain)
+			$this->domain = null;
+			$this->op_domain = null;
+			$this->op_domain_obj = null;
 		{
 			try
 			{
@@ -120,6 +137,9 @@ class DomainSync
 
 				// auto renew on or not? -> WHMCS is leading.
 				$this->process_auto_renew();
+
+                // Identity protectionon or not? -> WHMCS is leading.
+                $this->process_idenity_protection();
 			}
 		    catch (\Exception $ex)
 		    {
@@ -127,11 +147,37 @@ class DomainSync
                     // Set the status to expired.
                     $this->process_domain_status('Expired');
                 }
+                else if($ex->getMessage() == 'The domain is not in your account; please transfer it to your account first.') {
+                    // Set the status to expired.
+                    $this->process_domain_status('Expired');
+                }
+                else
+                {
+                    $data ['requestString']     = print_r($this->domain, 1);
+                    $data ['responseData']      = $ex->getMessage();
+                    $data ['processedData']     = null;
+                    $data ['replaceVars']       = [];
+                    Activity::log('Fetching domain status', $data, true);
+                }
 		    }
 
 		    // Save
 		    Domain::save($this->domain->id, $this->update_domain_data, 'openprovider');
 		    $this->update_domain_data = null;
+
+		    // Check if we have to log anything.
+		    if(isset($this->update_executed_logs))
+            {
+                foreach($this->update_executed_logs as $activity)
+                {
+                    $activity['data']['id']     = $this->domain->id;
+                    $activity['data']['domain'] = $this->domain->domain;
+                    Activity::log($activity['activity'], $activity['data']);
+                }
+
+                // Do some cleanup
+                unset($this->update_executed_logs);
+            }
 		}
 	}
 
@@ -143,20 +189,76 @@ class DomainSync
 	private function process_expiry_and_due_date()
 	{
 		// Sync the expiry date
-		$expiry_date_result = General::compare_dates($this->domain->expirydate, $this->op_domain['expirationDate'], '0', 'Y-m-d H:i:s');
+		$expiry_date_result = General::compare_dates($this->domain->expirydate, $this->op_domain['renewalDate'], '0', 'Y-m-d H:i:s');
 
 		if($expiry_date_result != 'correct')
 		{
-			$this->update_domain_data['expirydate'] = $expiry_date_result;
+			$this->update_domain_data['expirydate'] = $expiry_date_result['date'];
+
+            $activity_data = [
+                'old_date'      => $this->domain->expirydate,
+                'new_date'      => $expiry_date_result['date']
+            ];
+
+            $this->update_executed_logs[] = ['activity' => 'update_domain_expiry_date', 'data' => $activity_data];
 		}
 
 		// Sync the next due date
-		$next_due_date_result = General::compare_dates($this->domain->nextduedate, $this->op_domain['renewalDate'], '0', 'Y-m-d H:i:s');
+        // Get the number only. Negatives are switched to positives as we do not want make the due date later.
+		$next_due_date_result = General::compare_dates($this->domain->nextduedate, $this->op_domain['renewalDate'], Registrar::get('nextDueDateOffset'), 'Y-m-d H:i:s');
 
 		if($next_due_date_result != 'correct')
 		{
-			$this->update_domain_data['nextduedate'] 		= $next_due_date_result;
-			$this->update_domain_data['nextinvoicedate'] 	= $next_due_date_result;
+		    // Updating the next due dates is tricky since we need to update the next due dates from the invoices as well.
+            // First, we need to calculate the difference in time.
+            $invoice_item = Capsule::table('tblinvoiceitems')
+                ->where('type', 'domain')
+                ->where('relid', $this->domain->id)
+                ->where('duedate', $this->domain->nextduedate)
+                ->orderBy('id', 'desc')
+                ->first();
+
+            if(!empty($invoice_item))
+            {
+                try {
+                    $capsule = Capsule::table('tblinvoiceitems')
+                        ->where('id', $invoice_item->id)
+                        ->update(['duedate' => $next_due_date_result['date']]);
+
+                    /**
+                     * Log the activity data
+                     */
+                    $activity_data = [
+                        'id'            => $this->domain->id,
+                        'domain'        => $this->domain->domain,
+                        'invoiceid'     => $invoice_item->invoiceid,
+                        'old_date'      => $this->domain->nextduedate,
+                        'new_date'      => $next_due_date_result['date']
+                    ];
+
+                    Activity::log('update_invoice_next_due_date', $activity_data);
+                } catch (\Exception $e) {
+                    logModuleCall('openprovider', 'Update nextduedate for invoiceitem', $invoice_item->id, null, $e->getMessage(), null);
+
+                    // We should not update the next due date as this will result in extra generated invoices by WHMCS.
+                    return false;
+                }
+            }
+
+			$this->update_domain_data['nextduedate'] 		= $next_due_date_result ['date'];
+			$this->update_domain_data['nextinvoicedate'] 	= $next_due_date_result ['date'];
+
+            $activity_data = [
+                'old_date'      => $this->domain->nextduedate,
+                'new_date'      => $next_due_date_result['date']
+            ];
+
+            $diff_in_days = $next_due_date_result['difference_in_days'] + Registrar::get('nextDueDateOffset');
+
+            if($diff_in_days < 0)
+                $activity_data ['old_due_date_in_future'] = $diff_in_days;
+
+			$this->update_executed_logs[] = ['activity' => 'update_domain_next_due_date', 'data' => $activity_data];
 		}
 	}
 
@@ -171,6 +273,17 @@ class DomainSync
 		if($status == 'Expired' && $this->domain->status != $status)
 		{
 			$this->update_domain_data['status'] = $status;
+
+            /**
+             * Setup an hook to log the domain status
+             */
+			$activity_data = [
+                'old_status'      => $this->domain->status,
+                'new_status'      => $status
+            ];
+
+            $this->update_executed_logs[] = ['activity' => 'update_domain_status', 'data' => $activity_data];
+
 			return;
 		}
 
@@ -193,6 +306,17 @@ class DomainSync
 			{
 				// It does not, let's update the data.
 				$this->update_domain_data['status'] = $op_domain_status;
+
+                /**
+                 * Setup an hook to log the domain status
+                 */
+                $activity_data = [
+                    'old_status'      => $this->domain->status,
+                    'new_status'      => $op_domain_status
+                ];
+
+                $this->update_executed_logs[] = ['activity' => 'update_domain_status', 'data' => $activity_data];
+
 			}
 		}
 		else
@@ -208,7 +332,47 @@ class DomainSync
 	 **/
 	private function process_auto_renew()
 	{
-		$this->OpenProvider->toggle_autorenew($this->domain, $this->op_domain);
+		$result = $this->OpenProvider->toggle_autorenew($this->domain, $this->op_domain);
+
+		if($result != 'correct')
+        {
+            /**
+             * Log the activity data
+             */
+            $activity_data = [
+                'id'            => $this->domain->id,
+                'domain'        => $this->domain->domain,
+                'old_setting'   => $result['old_setting'],
+                'new_setting'   => $result['new_setting'],
+            ];
+
+            Activity::log('update_autorenew_setting', $activity_data);
+        }
+	}
+
+	/**
+	 * Process the Domain identity protection setting
+	 *
+	 * @return void
+	 **/
+	private function process_idenity_protection()
+	{
+		$result = $this->OpenProvider->toggle_whois_protection($this->domain, $this->op_domain);
+
+		if($result != 'correct')
+        {
+            /**
+             * Log the activity data
+             */
+            $activity_data = [
+                'id'            => $this->domain->id,
+                'domain'        => $this->domain->domain,
+                'old_setting'   => $result['old_setting'],
+                'new_setting'   => $result['new_setting'],
+            ];
+
+            Activity::log('update_identity_protection_setting', $activity_data);
+        }
 	}
 	
 
