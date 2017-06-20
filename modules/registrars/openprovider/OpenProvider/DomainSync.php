@@ -119,10 +119,10 @@ class DomainSync
 		$this->OpenProvider = new OpenProvider;
 
 		foreach($this->domains as $domain)
+		{
 			$this->domain = null;
 			$this->op_domain = null;
 			$this->op_domain_obj = null;
-		{
 			try
 			{
 				$this->domain 			= $domain;
