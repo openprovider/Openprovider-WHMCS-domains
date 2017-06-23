@@ -723,13 +723,11 @@ function openprovider_RenewDomain($params)
         if($api->getSoftRenewalExpiryDate($domain) == false)
 
         {
-            exit('DOING NORMAL RENEWAL');
             $api->renewDomain($domain, $period);
         }
 
         else
         {
-            exit('RESTORING DOMAIN');
             $api->restoreDomain($domain, $period);
         }
 
