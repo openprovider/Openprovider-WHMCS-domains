@@ -120,9 +120,6 @@ class DomainSync
 
 		foreach($this->domains as $domain)
 		{
-			$this->domain = null;
-			$this->op_domain = null;
-			$this->op_domain_obj = null;
 			try
 			{
 				$this->domain 			= $domain;
@@ -149,7 +146,7 @@ class DomainSync
                 }
                 else if($ex->getMessage() == 'The domain is not in your account; please transfer it to your account first.') {
                     // Set the status to expired.
-                    $this->process_domain_status('Expired');
+                    $this->process_domain_status('Cancelled');
                 }
                 else
                 {
@@ -159,6 +156,8 @@ class DomainSync
                     $data ['replaceVars']       = [];
                     Activity::log('Fetching domain status', $data, true);
                 }
+
+                continue;
 		    }
 
 		    // Save
@@ -270,7 +269,7 @@ class DomainSync
 	 **/
 	private function process_domain_status($status = null)
 	{
-		if($status == 'Expired' && $this->domain->status != $status)
+		if(($status == 'Cancelled' || $status == 'Expired') && $this->domain->status != $status)
 		{
 			$this->update_domain_data['status'] = $status;
 
