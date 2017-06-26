@@ -3,6 +3,7 @@ use OpenProvider\OpenProvider as OP;
 use WHMCS\Database\Capsule;
 use WHMCS\Domains\DomainLookup\ResultsList;
 use WHMCS\Domains\DomainLookup\SearchResult;
+use OpenProvider\WhmcsHelpers\Registrar;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
 
@@ -30,7 +31,7 @@ function openprovider_getConfigArray($params = array())
     // creating the necessary tables
     \OpenProvider\API\APITools::createOpenprovidersTable();
     \OpenProvider\API\APITools::createCustomFields();
-    
+
     $configarray = array
     (
         "OpenproviderAPI"   => array
@@ -65,23 +66,28 @@ function openprovider_getConfigArray($params = array())
             "FriendlyName"  => "Next Due date offset",
             "Type"          => "text",
             "Size"          => "2",
-            "Description"   => "Number of days to set WHMCS due date in advance of Openprovider expiration date",
+            "Description"   => "Next due date offset (expiry date - this offset)",
             "Default"       => "3"
+        ),
+        "updateNextDueDate" => array
+        (
+            "FriendlyName"  => "Update Next Update",
+            "Type"          => "yesno"
         ),
         "updateInterval"     => array
         (
             "FriendlyName"  => "Update interval",
             "Type"          => "text",
             "Size"          => "2",
-            "Description"   => "The minimum number of days between each domain syncronization.",
+            "Description"   => "The minimum interval between each domain check.",
             "Default"       => "2"
         ),
         "domainProcessingLimit"     => array
         (
-            "FriendlyName"  => "Max domains per sync",
+            "FriendlyName"  => "Domain process limit",
             "Type"          => "text",
             "Size"          => "4",
-            "Description"   => "Maximum number of domains processed each time domain sync runs.",
+            "Description"   => "Every cron run this maximum of domains is processed.",
             "Default"       => "200"
         ),
         "sendEmptyActivityEmail" => array
@@ -89,7 +95,7 @@ function openprovider_getConfigArray($params = array())
             "FriendlyName"  => "Send empty activity reports?",
             "Type"          => "yesno",
             "Size"          => "20",
-            "Description"   => "Receive emails from domain sync even if no domains were updated",
+            "Description"   => "Also send empty activity reports?",
             "Default"       => "no"
         ),
     );

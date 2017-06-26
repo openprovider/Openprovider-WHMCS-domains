@@ -21,9 +21,10 @@ class General
 	 * @param  string $offset_in_days The registrar offset in days. Will be deducted from the actual registrar expiry date.
 	 * @param  string $second_date_format *optional*. The date format. Defaults to 'Y-m-d'.
 	 * @param  string $second_date_timezone *optional* The timezone of de registrar. Defaults to CEST.
+     * @param  integer $allowed_difference_in_days *optional*  If set, this margin will be used.
 	 * @return string When the dates matches, 'correct' is returned. If not, the date is returned.
 	 **/
-	public static function compare_dates($first_date, $second_date, $offset_in_days = '0', $second_date_format = 'Y-m-d', $second_date_timezone = 'CEST')
+	public static function compare_dates($first_date, $second_date, $offset_in_days = '0', $second_date_format = 'Y-m-d', $second_date_timezone = 'CEST', $allowed_difference_in_days = 0)
 	{
 		$system_timezone = date_default_timezone_get();
 
@@ -41,11 +42,16 @@ class General
         }
 
 		// Convert the registrar timezone to whmcs
-		if(!$first_date->isSameDay($second_date))
+		if($first_date->format('Y-m-d') != $second_date->setTimezone($system_timezone)->format('Y-m-d'))
 		{
             $difference_in_days = $first_date->diffInDays($second_date, false);
+
             if($difference_in_days <0)
                 $difference_in_days--;
+
+            // Is this withing the margin?
+            if($difference_in_days != 0 && $difference_in_days > $allowed_difference_in_days)
+                return 'correct';
 
 			$return = [
 			    'date'                 => $second_date->setTimezone($system_timezone)->format('Y-m-d'),
