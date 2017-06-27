@@ -4,6 +4,7 @@ use WHMCS\Database\Capsule;
 use WHMCS\Domains\DomainLookup\ResultsList;
 use WHMCS\Domains\DomainLookup\SearchResult;
 use OpenProvider\WhmcsHelpers\Registrar;
+use Carbon\carbon;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
 
@@ -734,10 +735,11 @@ function openprovider_RenewDomain($params)
             $api->renewDomain($domain, $period);
         }
 
-        else
+        elseif((new Carbon($api->getSoftRenewalExpiryDate($domain)))->gt(Carbon::now()))
         {
             $api->restoreDomain($domain, $period);
         }
+        throw new Exception("Domain not in soft quarantine period. Needs to be manually restored", 1);
 
     }
     catch (\Exception $e)
