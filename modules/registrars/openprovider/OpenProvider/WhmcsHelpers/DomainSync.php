@@ -57,7 +57,8 @@ class DomainSync
 					->leftJoin($table_name, 'tbldomains.id', '=', $table_name . '.id')
 	                ->where('tbldomains.registrar', $registrar)
 	                ->where($table_name.'.last_sync', '<', Carbon::now()->subHour(Registrar::get('updateInterval')))
-	                ->select('tbldomains.*');
+	                ->select('tbldomains.*')
+                    ->orderBy($table_name.'.last_sync', 'ASC');
 
 	        if($limit != 0)
 	        	$domains->take($limit);
