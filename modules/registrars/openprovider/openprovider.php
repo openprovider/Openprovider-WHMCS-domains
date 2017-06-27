@@ -40,6 +40,7 @@ function openprovider_getConfigArray($params = array())
             "Type"          => "text", 
             "Size"          => "60", 
             "Description"   => "Include https://",
+            "Default"       => "https://"
         ),
         "Username"          => array
         (
@@ -57,29 +58,30 @@ function openprovider_getConfigArray($params = array())
         ),
         "useLocalHanlde"    => array 
         (
-            "FriendlyName"  => "Reuse client handles when creating new domain",
+            "FriendlyName"  => "Reuse client handles",
             "Type"          => "yesno",
-            "Description"   => "&zwnj;",
-        ),
-        "nextDueDateOffset" => array
-        (
-            "FriendlyName"  => "Next Due date offset",
-            "Type"          => "text",
-            "Size"          => "2",
-            "Description"   => "Next due date offset (expiry date - this offset)",
-            "Default"       => "3"
+            "Description"   => "When creating a new domain, module will attempt to reuse existing handles",
         ),
         "updateNextDueDate" => array
         (
-            "FriendlyName"  => "Update Next Update",
-            "Type"          => "yesno"
+            "FriendlyName"  => "Synchronize due-date with offset?",
+            "Type"          => "yesno",
+            "Description"   => "WHMCS due dates will be synchronized using the due-date offset ",
+        ),
+        "nextDueDateOffset" => array
+        (
+            "FriendlyName"  => "Due-date offset",
+            "Type"          => "text",
+            "Size"          => "2",
+            "Description"   => "Number of days to set the WHMCS due date before the Openprovider expiration date",
+            "Default"       => "3"
         ),
         "updateInterval"     => array
         (
             "FriendlyName"  => "Update interval",
             "Type"          => "text",
             "Size"          => "2",
-            "Description"   => "The minimum interval between each domain check.",
+            "Description"   => "The minimum number of days between each domain synchronization",
             "Default"       => "2"
         ),
         "domainProcessingLimit"     => array
@@ -87,7 +89,7 @@ function openprovider_getConfigArray($params = array())
             "FriendlyName"  => "Domain process limit",
             "Type"          => "text",
             "Size"          => "4",
-            "Description"   => "Every cron run this maximum of domains is processed.",
+            "Description"   => "Maximum number of domains processed each time domain sync runs",
             "Default"       => "200"
         ),
         "sendEmptyActivityEmail" => array
@@ -95,7 +97,7 @@ function openprovider_getConfigArray($params = array())
             "FriendlyName"  => "Send empty activity reports?",
             "Type"          => "yesno",
             "Size"          => "20",
-            "Description"   => "Also send empty activity reports?",
+            "Description"   => "Receive emails from domain sync even if no domains were updated",
             "Default"       => "no"
         ),
     );
@@ -135,7 +137,7 @@ function openprovider_getConfigArray($params = array())
                 (
                     "FriendlyName"  =>  "DNS Template",
                     "Type"          =>  "dropdown",
-                    "Description"   =>  "",
+                    "Description"   =>  "DNS template will be used when a domain is created or transferred to your account",
                     "Options"       =>  $tpls
                 );
             }
