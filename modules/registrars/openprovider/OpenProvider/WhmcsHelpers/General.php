@@ -50,7 +50,7 @@ class General
                 $difference_in_days--;
 
             // Is this withing the margin?
-            if($difference_in_days != 0 && $difference_in_days > $allowed_difference_in_days)
+            if($allowed_difference_in_days != 0 && $difference_in_days > $allowed_difference_in_days)
                 return 'correct';
 
 			$return = [

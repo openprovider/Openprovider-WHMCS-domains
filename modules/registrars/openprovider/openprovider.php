@@ -82,7 +82,7 @@ function openprovider_getConfigArray($params = array())
             "FriendlyName"  => "Update interval",
             "Type"          => "text",
             "Size"          => "2",
-            "Description"   => "The minimum number of days between each domain synchronization",
+            "Description"   => "The minimum number of hours between each domain synchronization",
             "Default"       => "2"
         ),
         "domainProcessingLimit"     => array
@@ -735,7 +735,7 @@ function openprovider_RenewDomain($params)
             $api->renewDomain($domain, $period);
         }
 
-        elseif((new Carbon($api->getSoftRenewalExpiryDate($domain)))->gt(Carbon::now()))
+        elseif((new Carbon($api->getSoftRenewalExpiryDate($domain), 'CEST'))->gt(Carbon::now()))
         {
             $api->restoreDomain($domain, $period);
         }
