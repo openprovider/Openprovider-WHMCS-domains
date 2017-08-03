@@ -1034,7 +1034,7 @@ function openprovider_CheckAvailability($params)
     {
         $domain             = new \OpenProvider\API\Domain();
         $domain->extension  = substr($tld, 1);
-        $domain->name       = $params['searchTerm'];
+        $domain->name       = $params['isIdnDomain'] ? $params['punyCodeSearchTerm'] : $params['searchTerm'];
         $domains[]          = $domain;
     }
 
