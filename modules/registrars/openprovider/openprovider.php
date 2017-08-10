@@ -733,11 +733,13 @@ function openprovider_RenewDomain($params)
 
         {
             $api->renewDomain($domain, $period);
+            return;
         }
 
         elseif((new Carbon($api->getSoftRenewalExpiryDate($domain), 'CEST'))->gt(Carbon::now()))
         {
             $api->restoreDomain($domain, $period);
+            return;
         }
         throw new Exception("Domain not in soft quarantine period. Needs to be manually restored", 1);
 
