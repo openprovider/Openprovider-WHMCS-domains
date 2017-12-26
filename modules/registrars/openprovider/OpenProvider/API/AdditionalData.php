@@ -32,8 +32,7 @@ class AdditionalData
             'intendedUse'                   =>  'intendedUse',
             'passportNumber'                =>  'passportNumber',
             'socialSecurityNumber'          =>  'socialSecurityNumber',
-            'companyRegistrationNumber'     =>  'companyRegistrationNumber',
-            'vat'                           =>  'vat'
+            'companyRegistrationNumber'     =>  'companyRegistrationNumber'
         );
         
 

@@ -1,10 +1,11 @@
 <?php
-use OpenProvider\OpenProvider as OP;
+use Carbon\carbon;
 use WHMCS\Database\Capsule;
+use OpenProvider\Notification;
+use OpenProvider\OpenProvider as OP;
+use OpenProvider\WhmcsHelpers\Registrar;
 use WHMCS\Domains\DomainLookup\ResultsList;
 use WHMCS\Domains\DomainLookup\SearchResult;
-use OpenProvider\WhmcsHelpers\Registrar;
-use Carbon\carbon;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
 
@@ -160,6 +161,7 @@ function openprovider_getConfigArray($params = array())
  */
 function openprovider_RegisterDomain($params)
 {
+
     $values = array();
     
     try
@@ -217,8 +219,9 @@ function openprovider_RegisterDomain($params)
             if (!$useLocalHandle || $createNewHandles) {
                 $ownerCustomer      =   new \OpenProvider\API\Customer($params['original']);
                 $ownerCustomer      ->  additionalData = $additionalData;
+                
                 $ownerHandle        =   \OpenProvider\API\APITools::createCustomerHandle($params, $ownerCustomer);
-
+                
                 $adminCustomer      =   new \OpenProvider\API\Customer($params['original']);
                 $adminCustomer      ->  additionalData = $additionalData;
                 $adminHandle        =   \OpenProvider\API\APITools::createCustomerHandle($params, $adminCustomer);
@@ -258,6 +261,10 @@ function openprovider_RegisterDomain($params)
         $domainRegistration->autorenew      =   'default';
         $domainRegistration->dnsmanagement  =   $params['dnsmanagement'];
 
+        // Check if premium is enabled. If so, set the received premium cost.
+        if($params['premiumEnabled'] == true && $params['premiumCost'] != '')
+            $domainRegistration->acceptPremiumFee        =   $params['premiumCost'];
+
         if($params['idprotection'] == 1)
             $domainRegistration->isPrivateWhoisEnabled = 1;
 
@@ -266,11 +273,7 @@ function openprovider_RegisterDomain($params)
         {
             $domainRegistration->nsTemplateName =   $params['dnsTemplate'];
         }
-        
-        if($params['tld'] == 'de') 
-        {
-            $domainRegistration->useDomicile = 1;
-        }
+
         // New feature.
 //        if($params['tld'] == 'nu'){
 //            $domainRegistration->additionalData->companyRegistrationNumber = $fields['socialSecurityNumber']; 
@@ -589,6 +592,14 @@ function openprovider_IDProtectToggle($params)
         );
     } catch (Exception $e) {
         \logModuleCall('OpenProvider', 'Save identity toggle', $params['domainname'], [$OpenProvider->domain, @$op_domain, $OpenProvider], $e->getMessage(), [$params['Password']]);
+        
+        if($e->getMessage() == 'Wpp contract is not signed')
+        {
+            $notification = new Notification();
+            $notification->WPP_contract_unsigned_one_domain($domain->domain)
+                ->send_to_admins();
+
+        }
 
         return array(
             'error' => $e->getMessage(),
@@ -686,17 +697,16 @@ function openprovider_TransferDomain($params)
         $domainTransfer->authCode       =   $params['transfersecret'];
         $domainTransfer->dnsmanagement  =   $params['dnsmanagement'];
 
+        // Check if premium is enabled. If so, set the received premium cost.
+        if($params['premiumEnabled'] == true && $params['premiumCost'] != '')
+            $domainTransfer->acceptPremiumFee        =   $params['premiumCost'];
+
         if($params['idprotection'] == 1)
             $domainRegistration->isPrivateWhoisEnabled = 1;
 
         if($params['dnsTemplate'] && $params['dnsTemplate'] != 'None')
         {
             $domainRegistration->nsTemplateName =   $params['dnsTemplate'];
-        }
-        
-        if($params['tld'] == 'de') 
-        {
-            $domainTransfer->useDomicile = 1;
         }
         
         $idn = new \idna_convert();
@@ -733,13 +743,11 @@ function openprovider_RenewDomain($params)
 
         {
             $api->renewDomain($domain, $period);
-            return;
         }
 
         elseif((new Carbon($api->getSoftRenewalExpiryDate($domain), 'CEST'))->gt(Carbon::now()))
         {
             $api->restoreDomain($domain, $period);
-            return;
         }
         throw new Exception("Domain not in soft quarantine period. Needs to be manually restored", 1);
 
@@ -788,7 +796,7 @@ function openprovider_SaveContactDetails($params)
             'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
-        
+
         $params['getFromContactDetails'] = true;
         $customers  =   array();
                 
@@ -1027,6 +1035,8 @@ function openprovider_TransferSync($params)
  */
 function openprovider_CheckAvailability($params)
 {
+    $premiumEnabled = (bool) $params['premiumEnabled'];
+
     $results = new ResultsList();
     if(empty($params['tldsToInclude']))
         return $results;
@@ -1053,8 +1063,37 @@ function openprovider_CheckAvailability($params)
         $domain_tld = substr(str_replace($domain_sld, '', $domain_status['domain']), 1);
 
         $searchResult = new SearchResult($domain_sld, $domain_tld);
-        
-        if($domain_status['status'] == 'free')
+
+        if(isset($domain_status['premium']) && $domain_status['status'] == 'free')
+        {
+            if($premiumEnabled == false)
+                $status = SearchResult::STATUS_RESERVED;
+            else
+            {
+                $status = SearchResult::STATUS_NOT_REGISTERED;
+                $searchResult->setPremiumDomain(true);
+
+                $args['domain']['name']         = $domain_sld;
+                $args['domain']['extension']    = $domain_tld;
+                $args['operation']    = 'create';
+                $create_pricing = $api->sendRequest('retrievePriceDomainRequest', $args);
+
+
+                $args['operation']    = 'transfer';
+                $transfer_pricing = $api->sendRequest('retrievePriceDomainRequest', $args);
+
+                // Retrieve the pricing
+                $searchResult->setPremiumCostPricing(
+                    array(
+                        'register'  => $create_pricing['price']['reseller']['price'],
+                        'renew'     =>  $transfer_pricing['price']['reseller']['price'],
+                        'CurrencyCode' => $create_pricing['price']['reseller']['currency'],
+                    )
+                );
+
+            }
+        }
+        elseif($domain_status['status'] == 'free')
             $status = SearchResult::STATUS_NOT_REGISTERED;
         else
             $status = SearchResult::STATUS_REGISTERED;

@@ -41,8 +41,7 @@ class CustomerAdditionalData extends \OpenProvider\API\AutoloadConstructor
             'intendedUse'                   =>  'Intended use',
             'passportNumber'                =>  'passportNumber',
             'socialSecurityNumber'          =>  'socialSecurityNumber',
-            'companyRegistrationNumber'     =>  'companyRegistrationNumber',
-            'vat'                           =>  'vat'
+            'companyRegistrationNumber'     =>  'companyRegistrationNumber'
         );
         
 

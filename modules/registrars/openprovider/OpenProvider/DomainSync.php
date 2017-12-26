@@ -1,11 +1,12 @@
 <?php
 namespace OpenProvider;
-use OpenProvider\WhmcsHelpers\Activity;
-use OpenProvider\WhmcsHelpers\Registrar;
 use WHMCS\Database\Capsule;
-use \OpenProvider\WhmcsHelpers\DomainSync as helper_DomainSync;
+use OpenProvider\Notification;
 use \OpenProvider\WhmcsHelpers\Domain;
+use OpenProvider\WhmcsHelpers\Activity;
 use \OpenProvider\WhmcsHelpers\General;
+use OpenProvider\WhmcsHelpers\Registrar;
+use \OpenProvider\WhmcsHelpers\DomainSync as helper_DomainSync;
 
 /**
  * Helper to synchronize the domain info.
@@ -63,6 +64,13 @@ class DomainSync
      * @var array
      **/
     private $update_executed_logs;
+
+    /**
+     * All domains who need a signed whois identity protection contract
+     *
+     * @var array
+     */
+    private $unsigned_wpp_contract_domains;
 
     /**
      * Init the class
@@ -142,6 +150,11 @@ class DomainSync
             }
             catch (\Exception $ex)
             {
+                // Do not process for pending or transfer pending domains.
+                if($domain->status == 'Pending'
+                    || $domain->status == 'Pending Transfer')
+                    continue;
+
                 if($ex->getMessage() == 'This action is prohibitted for current domain status.') {
                     // Set the status to expired.
                     $this->process_domain_status('Expired');
@@ -176,6 +189,14 @@ class DomainSync
                 // Do some cleanup
                 unset($this->update_executed_logs);
             }
+        }
+
+        // Send global notification when the wpp contract us unsigned.
+        if(!empty($this->unsigned_wpp_contract_domains))
+        {
+            $notification = new Notification();
+            $notification->WPP_contract_unsigned_multiple_domains($this->unsigned_wpp_contract_domains)
+                ->send_to_admins();
         }
     }
 
@@ -243,21 +264,26 @@ class DomainSync
                 }
             }
 
-            $this->update_domain_data['nextduedate'] 		= $next_due_date_result ['date'];
-            $this->update_domain_data['nextinvoicedate'] 	= $next_due_date_result ['date'];
-
-            $activity_data = [
-                'old_date'      => $this->domain->nextduedate,
-                'new_date'      => $next_due_date_result['date']
-            ];
-
-            $diff_in_days = $next_due_date_result['difference_in_days'] + Registrar::get('nextDueDateOffset');
-
-            if($diff_in_days < 0)
-                $activity_data ['old_due_date_in_future'] = $diff_in_days;
-
-            $this->update_executed_logs[] = ['activity' => 'update_domain_next_due_date', 'data' => $activity_data];
+            $this->update_due_date_for_domain($next_due_date_result);
         }
+    }
+
+    protected function update_due_date_for_domain($next_due_date_result)
+    {
+        $this->update_domain_data['nextduedate'] 		= $next_due_date_result ['date'];
+        $this->update_domain_data['nextinvoicedate'] 	= $next_due_date_result ['date'];
+
+        $activity_data = [
+            'old_date'      => $this->domain->nextduedate,
+            'new_date'      => $next_due_date_result['date']
+        ];
+
+        $diff_in_days = $next_due_date_result['difference_in_days'] + Registrar::get('nextDueDateOffset');
+
+        if($diff_in_days < 0)
+            $activity_data ['old_due_date_in_future'] = $diff_in_days;
+
+        $this->update_executed_logs[] = ['activity' => 'update_domain_next_due_date', 'data' => $activity_data];
     }
 
     /**
@@ -306,6 +332,13 @@ class DomainSync
             // Check if the status matches
             if($this->domain->status != $op_domain_status)
             {
+                // Update the due date
+                if($this->domain->status == 'Pending' || $this->domain->status == 'Pending Transfer')
+                {
+                    $next_due_date_result = General::compare_dates($this->domain->nextduedate, $this->op_domain['renewalDate'], Registrar::get('nextDueDateOffset'), 'Y-m-d H:i:s', 'CEST');
+                    $this->update_due_date_for_domain($next_due_date_result);
+                }
+
                 // It does not, let's update the data.
                 $this->update_domain_data['status'] = $op_domain_status;
 
@@ -359,7 +392,14 @@ class DomainSync
      **/
     private function process_idenity_protection()
     {
-        $result = $this->OpenProvider->toggle_whois_protection($this->domain, $this->op_domain);
+        try {
+            $result = $this->OpenProvider->toggle_whois_protection($this->domain, $this->op_domain);
+    
+        } catch (\Exception $e) {
+            \logModuleCall('OpenProvider', 'Save identity toggle', $params['domainname'], [$OpenProvider->domain, @$op_domain, $OpenProvider], $e->getMessage(), [$params['Password']]);
+            
+            $this->unsigned_wpp_contract_domains[] = $this->domain->domain;
+        }
 
         if($result != 'correct')
         {

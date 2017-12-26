@@ -466,7 +466,7 @@ class API
                 $contact['address']['number'] . ' ' .
                 $contact['address']['suffix'];
         $customerInfo['City'] = $contact['address']['city'];
-        $customerInfo['State/Region'] = $contact['address']['state'];
+        $customerInfo['State'] = $contact['address']['state'];
         $customerInfo['Zip Code'] = $contact['address']['zipcode'];
         $customerInfo['Country'] = $contact['address']['country'];
         $customerInfo['Phone Number'] = $contact['phone']['countryCode'] . '.' .
@@ -487,6 +487,7 @@ class API
         }
         
         $handles    =   array_filter($handle->getById($domainId));
+        
         if(empty($handles))
         {
             throw new \Exception('Cannot read contact handlers');
@@ -517,6 +518,7 @@ class API
             $customer->address->street == $opCustomer['address']['street'] &&
             $customer->address->number == $opCustomer['address']['number'] &&
             $customer->address->city == $opCustomer['address']['city'] &&
+            $customer->address->state == $opCustomer['address']['state'] &&
             $customer->phone->countryCode == $opCustomer['phone']['countryCode'] &&
             $customer->phone->areaCode == $opCustomer['phone']['areaCode'] &&
             $customer->phone->subscriberNumber == $opCustomer['phone']['subscriberNumber'] &&
@@ -526,7 +528,7 @@ class API
             // It has not, stop here.
             return;
         }
-        // if name & company name are the same, then call modifyCustomerRequest only
+        //if name & company name are the same, then call modifyCustomerRequest only
         elseif ($opCustomer['First Name'] == $customer->name->firstName &&
             $opCustomer['Last Name'] == $customer->name->lastName &&
             $opCustomer['Company Name'] == $customer->companyName)

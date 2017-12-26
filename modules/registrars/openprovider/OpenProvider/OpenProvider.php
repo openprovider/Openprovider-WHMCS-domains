@@ -104,9 +104,7 @@ class OpenProvider
 	        {
                 $opInfo['isPrivateWhoisEnabled'] = 1;
                 $idprotection = '0';
-            }
-
-	    	$this->api->setPrivateWhoisEnabled($this->domain, $idprotection);
+			}
 
 	    	return [ 'status'       => 'changed',
                     'old_setting'   => $opInfo['isPrivateWhoisEnabled'],

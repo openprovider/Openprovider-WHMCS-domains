@@ -72,4 +72,10 @@ class DomainRegistration extends \OpenProvider\API\AutoloadConstructor
      */
     public $isPrivateWhoisEnabled = 0;
 
+    /**
+     * The cost for a premium domain.
+     * @var float default 0
+     */
+    public $acceptPremiumFee = 0;
+
 }

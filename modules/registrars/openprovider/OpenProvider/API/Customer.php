@@ -1,5 +1,6 @@
 <?php
 namespace OpenProvider\API;
+use OpenProvider\WhmcsHelpers\CustomField;
 
 /**
  * Customer
@@ -8,60 +9,60 @@ class Customer
 {
     /**
      *
-     * @var string 
+     * @var string
      */
     public $companyName     =   null;
-    
+
     /**
      *
-     * @var string 
+     * @var string
      */
     public $vat             =   null;
-    
+
     /**
      *
-     * @var \OpenProvider\API\CustomerName 
+     * @var \OpenProvider\API\CustomerName
      */
     public $name            =   null;
-    
+
     /**
      *
-     * @var type 
+     * @var type
      */
     public $gender          =   null;
-    
+
     /**
      *
      * @var \OpenProvider\API\CustomerAddress
      */
     public $address         =   null;
-    
+
     /**
      *
-     * @var \OpenProvider\API\CustomerPhone 
+     * @var \OpenProvider\API\CustomerPhone
      */
     public $phone           =   null;
-    
+
     /**
      *
-     * @var string 
+     * @var string
      */
     public $email           =   null;
-    
+
     /**
      *
-     * @var string 
+     * @var string
      */
     public $handle          =   null;
-    
+
     /**
      *
-     * @var \OpenProvider\API\CustomerAdditionalData 
+     * @var \OpenProvider\API\CustomerAdditionalData
      */
     public $additionalData  =   null;
-    
+
     /**
-     * 
+     *
      * @param type $params
      * @param string $prefix
      */
@@ -72,7 +73,7 @@ class Customer
         {
             $getFromContactDetails = true;
         }
-        
+
         if ($getFromContactDetails)
         {
             $indexes = array(
@@ -84,13 +85,17 @@ class Customer
                 'city' => 'city',
                 'state' => 'fullstate',
                 'country' => 'country',
-                'fullphonenumber' => 'phone number',
+                'phone number' => 'phone number',
+                'phone country code' => 'phone country code',
                 'email' => 'email address',
                 'companyname' => 'company name',
             );
-            
+
+            if(!isset($params["contactdetails"][$prefix]['fullstate']))
+                $indexes['state'] = 'state';
+
             $params = array_change_key_case($params["contactdetails"][$prefix]);
-            
+
         }
         else
         {
@@ -105,6 +110,7 @@ class Customer
                 'state' => 'fullstate',
                 'country' => 'country',
                 'fullphonenumber' => 'fullphonenumber',
+                'phone country code' => 'Phone Country Code',
                 'email' => 'email',
                 'companyname' => 'companyname',
             );
@@ -116,13 +122,13 @@ class Customer
         }
 
         // Customer Name
-        $initials       =   substr($params[$indexes['firstname']], 0, 1) . '.' . substr($params[$indexes['lastname']], 0, 1);
+        $initials       =   mb_substr($params[$indexes['firstname']], 0, 1) . '.' . mb_substr($params[$indexes['lastname']], 0, 1);
         $name           =   new \OpenProvider\API\CustomerName(array(
             'initials'  =>  $initials,
             'firstName' =>  $params[$indexes['firstname']],
             'lastName'  =>  $params[$indexes['lastname']],
         ));
-        
+
         //Customer Address
         $address            =   new \OpenProvider\API\CustomerAddress(array(
             'fulladdress'   =>  $getFromContactDetails ? $params[$indexes['address']] : $params[$indexes['address1']] . ' ' . $params[$indexes['address2']],
@@ -133,10 +139,26 @@ class Customer
         ));
 
         //Phone number
-        $phone              =   new \OpenProvider\API\CustomerPhone(array(
-            'fullphonenumber'   =>  $params[$indexes['fullphonenumber']]
-        ));
-        
+        if(!isset($params[$indexes['fullphonenumber']]))
+        {
+            $phoneParams = array(
+                'phone number'   =>  $params[$indexes['phone number']],
+                'country'        =>  $params[$indexes['country']],
+            );
+
+            // Check if there is a country code included.
+            if(isset($params[$indexes['phone country code']]))
+                $phoneParams['phone country code'] = $params[$indexes['phone country code']];
+
+            $phone              =   new \OpenProvider\API\CustomerPhone($phoneParams);
+        }
+        else
+        {
+            $phone              =   new \OpenProvider\API\CustomerPhone(array(
+                'fullphonenumber'   =>  $params[$indexes['fullphonenumber']]
+            ));
+        }
+
         // set values
         $this->name         =   $name;
         $this->gender       =   isset($params[$indexes['gender']]) ? $params[$indexes['gender']] : \OpenProvider\API\APIConfig::$defaultGender;
@@ -144,6 +166,7 @@ class Customer
         $this->phone        =   $phone;
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
+        $this->vat          =   CustomField::getValueFromCustomFields('VATNumber', $params['customfields']);;
 
     }
 }

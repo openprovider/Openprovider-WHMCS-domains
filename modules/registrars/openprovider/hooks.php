@@ -14,19 +14,19 @@ if (!defined("WHMCS"))
  * @param type $class_name
  */
 
-spl_autoload_register(function ($className) 
+spl_autoload_register(function ($className)
 {
     $className  =   implode(DIRECTORY_SEPARATOR, explode('\\', $className));
-    
+
     if(file_exists((__DIR__).DIRECTORY_SEPARATOR.$className.'.php'))
     {
         require_once (__DIR__).DIRECTORY_SEPARATOR.$className.'.php';
     }
-}); 
+});
 
 /**
  * Validate require fields in additional domain fields (for transfer domains)
- * 
+ *
  * @return array The array of error messages
  */
 function OpenProviderAdditionalFieldsValidate()
@@ -71,21 +71,21 @@ add_hook("ShoppingCartValidateDomainsConfig", 1, "OpenProviderValidatDomainConfi
  */
 function OpenProviderDomainAdditionalFields($vars)
 {
-    // for 'cart.php' only    
+    // for 'cart.php' only
     if ('cart' != $vars['filename'] || @$_REQUEST['a'] != 'confdomains')
     {
         return;
     }
-    
+
     $path = __DIR__ .DIRECTORY_SEPARATOR.'additionaldomainfields.php';
     $opCacheTable = 'OpenproviderCache';
     $opCacheFiels = 'additionalDomainFields';
-    
+
     // compare modification time
     $fileModificationTime = date('Y-m-d H:i:s', filemtime($path));
     $cacheModificationResult = hook_domains_transfer_additional_fields_get_cache($opCacheTable, $opCacheFiels);
     $cacheModificationTime = $cacheModificationResult['timestamp'];
-    
+
     if ($fileModificationTime > $cacheModificationTime)
     {
         // read file & update cache
@@ -114,8 +114,8 @@ function OpenProviderDomainAdditionalFields($vars)
 
     $fields = array();
     $post = $_SESSION['postValues'];
-    
-    
+
+
     foreach ($transferDomains as $key => $domainArray)
     {
         $domainParts = explode(".", $domainArray['domain'], 2);
@@ -204,12 +204,12 @@ function OpenProviderDomainAdditionalFields($vars)
 
 /**
  * Save additional domain fields in database (for transfer domains only) and run final validate
- * Step 1 
+ * Step 1
  */
 function OpenProviderValidateCart($vars)
 {
     //Let's sing... Everybody love WHMCS...
-    $_SESSION['cartcopy'] = $_SESSION['cart']; 
+    $_SESSION['cartcopy'] = $_SESSION['cart'];
     $errors = OpenProviderAdditionalFieldsValidate();
     return $errors;
 }
@@ -218,7 +218,7 @@ add_hook("ShoppingCartValidateCheckout", 1, "OpenProviderValidateCart");
 
 /**
  * Save additional domain fields in database (for transfer domains only)
- * Step 2 
+ * Step 2
  */
 function OpenProviderSaveCart($params)
 {
@@ -229,12 +229,12 @@ function OpenProviderSaveCart($params)
 
     $path = __DIR__ . DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR . 'additionaldomainfields.php';
     $opCacheTable = 'OpenproviderCache';
-    
+
     // compare modification time
     $fileModificationTime = date('Y-m-d H:i:s', filemtime($path));
     $cacheModificationResult = hook_domains_transfer_additional_fields_get_cache($opCacheTable, 'additionalDomainFields');
     $cacheModificationTime = $cacheModificationResult['timestamp'];
-    
+
     if ($fileModificationTime > $cacheModificationTime)
     {
         // read file & update cache
@@ -294,10 +294,10 @@ add_hook("AfterShoppingCartCheckout", 1, "OpenProviderSaveCart");
 function hook_openproviderRemoveRecordTypes($vars)
 {
     $supportedDnsTypes = \OpenProvider\API\APIConfig::$supportedDnsTypes;
-    
+
     $finalSupportedDnsTypes = "'" . implode("','", $supportedDnsTypes) . "'";
-    
-    $script = 
+
+    $script =
         "$(document).ready(function () {
 
             // get all dns types
@@ -316,7 +316,7 @@ function hook_openproviderRemoveRecordTypes($vars)
                 }
             });
         });";
-    
+
     return "<script type=\"text/javascript\">$script</script>";
 }
 add_hook("ClientAreaHeaderOutput", 1, "hook_openproviderRemoveRecordTypes");
@@ -330,27 +330,27 @@ function hook_domains_transfer_additional_fields_get_cache($tblName, $fieldName)
     if (!\OpenProvider\API\APITools::tableExists($tblName))
     {
         \OpenProvider\API\APITools::createOpenprovidersTable($tblName);
-    
+
         // insert empty row
         insert_query($tblName, array(
             'name' => $fieldName,
             'timestamp' => '',
             'value' => '',
         ));
-        
+
         return null;
     }
-    
+
     // get cache value
     $cacheResult = select_query($tblName, '', array(
         'name' => $fieldName,
     ));
-    
+
     if (0 == mysql_num_rows($cacheResult))
     {
         return null;
     }
-    
+
     return mysql_fetch_assoc($cacheResult);
 }
 
@@ -371,7 +371,7 @@ add_hook('DomainEdit', 1, 'OpenProviderSaveDomainEdit');
 
 /**
  * Save the domain edits
- * 
+ *
  * @param array $vars ['userid', 'domainid']
  */
 function OpenProviderSaveDomainEdit($vars)
