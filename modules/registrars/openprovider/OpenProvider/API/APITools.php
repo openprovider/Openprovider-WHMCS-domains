@@ -137,14 +137,15 @@ class APITools
     {
         $nameServers = array();
 
-        if($params['dnsmanagement'] == true)
-        {
-            $params['ns1'] = 'ns1.openprovider.nl';
-            $params['ns2'] = 'ns2.openprovider.be';
-            $params['ns3'] = 'ns3.openprovider.eu';
-            $params['ns4'] = null;
-            $params['ns5'] = null;
-        }
+        //can be used to hard-code a nameserver overwrite when using the DNS management addon 
+        // if($params['dnsmanagement'] == true)
+        // {
+        //     $params['ns1'] = 'ns1.openprovider.nl';
+        //     $params['ns2'] = 'ns2.openprovider.be';
+        //     $params['ns3'] = 'ns3.openprovider.eu';
+        //     $params['ns4'] = null;
+        //     $params['ns5'] = null;
+        // }
 
         for ($i = 1; $i <=5; $i++)
         {
