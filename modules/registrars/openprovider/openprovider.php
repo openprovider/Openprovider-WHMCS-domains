@@ -730,33 +730,27 @@ function openprovider_RenewDomain($params)
 {
     try
     {
-        $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
-            'extension'     =>  $params['tld']
+        $domain = new \OpenProvider\API\Domain(array(
+            'name' => $params['sld'],
+            'extension' => $params['tld']
         ));
 
         $period = $params['regperiod'];
 
         $api = new \OpenProvider\API\API($params);
 
-        if($api->getSoftRenewalExpiryDate($domain) == false)
-
-        {
+        if(!$api->getSoftRenewalExpiryDate($domain)) {
             $api->renewDomain($domain, $period);
-        }
-
-        elseif((new Carbon($api->getSoftRenewalExpiryDate($domain), 'CEST'))->gt(Carbon::now()))
-        {
+        } elseif ((new Carbon($api->getSoftRenewalExpiryDate($domain), 'CEST'))->gt(Carbon::now())) {
             $api->restoreDomain($domain, $period);
+        } else {
+            throw new Exception("Domain has expired and additional costs may be applied. Please check the domain in your reseller control panel", 1);
         }
-        throw new Exception("Domain not in soft quarantine period. Needs to be manually restored", 1);
+    } catch (\Exception $e) {
+        return ['error' => $e->getMessage()];
+    }
 
-    }
-    catch (\Exception $e)
-    {
-        $values["error"] = $e->getMessage();
-    }
-    return $values;
+    return [];
 }
 
 
