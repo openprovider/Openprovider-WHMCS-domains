@@ -164,6 +164,11 @@ function openprovider_RegisterDomain($params)
 
     $values = array();
     
+    if (array_key_exists('original',$params))
+    {
+        $params['sld'] = $params['original']['sld'];
+    }
+
     try
     {
         $domain             =   new \OpenProvider\API\Domain();
