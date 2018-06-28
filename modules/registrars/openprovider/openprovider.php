@@ -335,7 +335,7 @@ function openprovider_GetNameservers($params)
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
+            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension'     =>  $params['tld']
         ));
         $nameservers        =   $api->getNameservers($domain);
@@ -370,7 +370,7 @@ function openprovider_SaveNameservers($params)
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
+            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension'     =>  $params['tld']
         ));
         $nameServers        =   \OpenProvider\API\APITools::createNameserversArray($params);
@@ -398,7 +398,7 @@ function openprovider_GetRegistrarLock($params)
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
+            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension'     =>  $params['tld']
         ));
 
@@ -426,7 +426,7 @@ function openprovider_SaveRegistrarLock($params)
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
+            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension'     =>  $params['tld']
         ));
         $lockStatus         =   $params["lockenabled"] == "locked" ? 1 : 0;
@@ -452,7 +452,7 @@ function openprovider_GetDNS($params)
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
+            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension'     =>  $params['tld']
         ));
         $dnsInfo            =   $api->getDNS($domain);
@@ -548,7 +548,7 @@ function openprovider_SaveDNS($params)
     }
 
     $domain = new \OpenProvider\API\Domain();
-    $domain->name = $params['sld'];
+    $domain->name = array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'];
     $domain->extension = $params['tld'];
 
     try
@@ -621,7 +621,7 @@ function openprovider_RequestDelete($params)
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
+            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension'     =>  $params['tld']
         ));
         
@@ -647,7 +647,7 @@ function openprovider_TransferDomain($params)
     try
     {
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
+            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension'     =>  $params['tld']
         ));
 
@@ -736,7 +736,7 @@ function openprovider_RenewDomain($params)
     try
     {
         $domain = new \OpenProvider\API\Domain(array(
-            'name' => $params['sld'],
+            'name' => array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension' => $params['tld']
         ));
 
@@ -769,7 +769,7 @@ function openprovider_GetContactDetails($params)
     try
     {
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
+            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension'     =>  $params['tld']
         ));
 
@@ -792,7 +792,7 @@ function openprovider_SaveContactDetails($params)
         $api                =   new \OpenProvider\API\API($params);
         $handles            =   array_flip(\OpenProvider\API\APIConfig::$handlesNames);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
+            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension'     =>  $params['tld']
         ));
 
@@ -830,7 +830,7 @@ function openprovider_GetEPPCode($params)
     try
     {
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
+            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension'     =>  $params['tld']
         ));
 
@@ -862,7 +862,7 @@ function openprovider_RegisterNameserver($params)
             // get data from op
     $api                = new \OpenProvider\API\API($params);
     $domain             =   new \OpenProvider\API\Domain(array(
-        'name'          =>  $params['sld'],
+        'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
         'extension'     =>  $params['tld']
     ));
            
@@ -902,7 +902,7 @@ function openprovider_ModifyNameserver($params)
 {
     $newIp      =   $params['newipaddress'];
     $currentIp  =   $params['currentipaddress'];
-    
+    $params['sld'] = array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'];
     // check if not empty
     if (($params['nameserver'] == '.' . $params['sld'] . '.' . $params['tld']) || !$newIp || !$currentIp)
     {
@@ -952,7 +952,7 @@ function openprovider_DeleteNameserver($params)
         $nameServer             =   new \OpenProvider\API\DomainNameServer();
         $nameServer->name       =   $params['nameserver'];
         $nameServer->ip         =   $params['ipaddress'];
-        
+        $params['sld'] = array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'];
         // check if not empty
         if ($nameServer->name == '.' . $params['sld'] . '.' . $params['tld'])
         {
@@ -988,7 +988,7 @@ function openprovider_TransferSync($params)
         // get data from op
         $api                = new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $params['sld'],
+            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
             'extension'     =>  $params['tld']
         ));
         
