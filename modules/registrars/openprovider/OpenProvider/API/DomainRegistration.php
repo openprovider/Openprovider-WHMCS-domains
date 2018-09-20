@@ -1,6 +1,13 @@
 <?php
 namespace OpenProvider\API;
 
+/**
+ * Class DomainRegistration
+ * OpenProvider Registrar module
+ *
+ * @copyright Copyright (c) Openprovider 2018
+ */
+
 class DomainRegistration extends \OpenProvider\API\AutoloadConstructor
 {
     /**
@@ -77,5 +84,12 @@ class DomainRegistration extends \OpenProvider\API\AutoloadConstructor
      * @var float default 0
      */
     public $acceptPremiumFee = 0;
+
+    /**
+     * Enable or disable DNSsec
+     *
+     * @var boolean
+     */
+    public $isDnssecEnabled;
 
 }

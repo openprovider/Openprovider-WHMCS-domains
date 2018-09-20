@@ -6,10 +6,10 @@ use WHMCS\Database\Capsule,
 
 /**
  * Helper for domain data.
+ * WhmcsHelper
  *
- * @package default
- * @license  Licensed to OpenProvider by Yourwebhoster.eu
- **/
+ * @copyright Copyright (c) WeDevelop.coffee 2018
+ */
 class Domain
 {
 	/**

@@ -4,6 +4,12 @@ namespace OpenProvider\API;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
 
+/**
+ * API
+ * OpenProvider Registrar module
+ *
+ * @copyright Copyright (c) Openprovider 2018
+ */
 class API
 {
 
@@ -32,19 +38,8 @@ class API
         
         $this->debug        =   $debug;
     }
-
-    public function searchCustomerInOPdatabase(\OpenProvider\API\Customer $customer)
-    {
-        $searchCustomerArray = array
-        (
-            'lastNamePattern'       =>  $customer->name['lastName'],
-            'companyNamePattern'    =>  $customer->companyName,
-            'emailPattern'          =>  $customer->email,
-        );
-        return $this->sendRequest('searchCustomerRequest', $searchCustomerArray);
-    }
     
-    protected function modifyCustomerInOPdatabase(\OpenProvider\API\Customer $customer)
+    public function modifyCustomer(\OpenProvider\API\Customer $customer)
     {
         $args = $customer;
         $this->sendRequest('modifyCustomerRequest', $args);
@@ -54,7 +49,6 @@ class API
     {
         $args = $customer;
         $result = $this->sendRequest('createCustomerRequest', $args);
-        $customer->handle = $result['handle'];
         
         return $result;
     }
@@ -106,6 +100,7 @@ class API
                 
                 $args['name'] = $idn->encode($args['name']);
             }
+
             
             $this->request->setArgs($args);
         }
@@ -446,7 +441,7 @@ class API
      * @param boolean $raw *optional* false If set to true, returns the raw output.
      * @return array
      */
-    protected function retrieveCustomerRequest($handle, $raw = false)
+    public function retrieveCustomerRequest($handle, $raw = false)
     {
         $args = array(
             'handle' => $handle,
@@ -476,87 +471,19 @@ class API
         return $customerInfo;
     }
 
-    public function SaveContactDetails(\OpenProvider\API\Domain $domain, Array $contacts, $domainId)
+    /**
+     * Update the handle with the domain.
+     *
+     * @param \OpenProvider\API\Domain $domain
+     * @param array $handles
+     * @return void
+     */
+    public function modifyDomainCustomers(\OpenProvider\API\Domain $domain, $handles)
     {
-        $handle     =   new \OpenProvider\API\Handles($domainId);
-        $handles    =   array_filter($handle->getById($domainId));
-        
-        if(empty($handles))
-        {
-            $handle->importToWHMCS($this, $domain, $domainId, false);
-        }
-        
-        $handles    =   array_filter($handle->getById($domainId));
-        
-        if(empty($handles))
-        {
-            throw new \Exception('Cannot read contact handlers');
-        }
-        
-        $domainInfo = $this->retrieveDomainRequest($domain);
-        
-        foreach($contacts as $contactType => $contactValues)
-        {
-            $contactValues->handle  =   $handles[$contactType];
-            
-            
-            $this->modifyCustomerContactDetails($domain, $domainInfo, $contactValues, $contactType);
-        }
-    }
+        $args = $handles;
+        $args['domain'] = $domain;
 
-    protected function modifyCustomerContactDetails(\OpenProvider\API\Domain $domain, $domainInfo, \OpenProvider\API\Customer $customer, $type = '')
-    {
-        $opCustomer = $this->retrieveCustomerRequest($customer->handle, true);
-
-        // Check if something has changed.
-        if(
-            $customer->companyName == $opCustomer['companyName']  &&
-            $customer->name->initials == $opCustomer['name']['initials'] &&
-            $customer->name->firstName == $opCustomer['name']['firstName'] &&
-            $customer->name->lastName == $opCustomer['name']['lastName'] &&
-            $customer->gender == $opCustomer['gender'] &&
-            $customer->address->street == $opCustomer['address']['street'] &&
-            $customer->address->number == $opCustomer['address']['number'] &&
-            $customer->address->city == $opCustomer['address']['city'] &&
-            $customer->address->state == $opCustomer['address']['state'] &&
-            $customer->phone->countryCode == $opCustomer['phone']['countryCode'] &&
-            $customer->phone->areaCode == $opCustomer['phone']['areaCode'] &&
-            $customer->phone->subscriberNumber == $opCustomer['phone']['subscriberNumber'] &&
-            $customer->email == $opCustomer['email']
-        )
-        {
-            // It has not, stop here.
-            return;
-        }
-        //if name & company name are the same, then call modifyCustomerRequest only
-        elseif ($opCustomer['First Name'] == $customer->name->firstName &&
-            $opCustomer['Last Name'] == $customer->name->lastName &&
-            $opCustomer['Company Name'] == $customer->companyName)
-        {
-            $this->modifyCustomerInOPdatabase($customer);
-        }
-        else
-        {
-            if(!$type)
-            {
-                throw new Exception('Contact type is not set');
-            }
- 
-            // create customer
-            $createResult = $this->createCustomerInOPdatabase($customer);
-
-            $handle = $createResult['handle'];
-
-            $args = array
-            (
-                'domain'    =>  $domain,
-                $type       =>  $handle  
-            );
-            
-            sleep(3);
-            
-            $this->sendRequest('modifyDomainRequest', $args);
-        }
+        $this->sendRequest('modifyDomainRequest', $args);
     }
 
     /**
@@ -565,7 +492,7 @@ class API
      */
     public function transferDomain(\OpenProvider\API\DomainTransfer $domainTransfer)
     {
-        if($domainRegistration->dnsmanagement ==  1) {
+        if($domainTransfer->dnsmanagement ==  1) {
             // check if zone exists
 
             $zoneResult = $this->searchZoneDnsRequest($domainTransfer->domain);
@@ -576,7 +503,7 @@ class API
                 (
                     'domain' => $domainTransfer->domain,
                     'type' => 'master',
-                    'templateName' => $domainRegistration->nsTemplateName
+                    'templateName' => $domainTransfer->nsTemplateName
                 );
                 $this->sendRequest('createZoneDnsRequest', $zoneArgs);
             }
@@ -611,8 +538,7 @@ class API
     {
         $args = array
         (
-            'domain' => $domain,
-            'period' => $period,
+            'domain' => $domain
         );
 
         $this->sendRequest('restoreDomainRequest', $args);
@@ -715,6 +641,7 @@ class API
             'domain'                =>  $domain,
             'isPrivateWhoisEnabled' =>  $identityProtection
         );
+
 
         return $this->sendRequest('modifyDomainRequest', $args);
     }

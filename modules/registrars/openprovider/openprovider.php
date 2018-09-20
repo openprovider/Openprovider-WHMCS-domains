@@ -1,11 +1,28 @@
 <?php
+/**
+ * OpenProvider Registrar module
+ * 
+ * @copyright Copyright (c) Openprovider 2018
+ */
+
+if (!defined("WHMCS"))
+{
+    die("This file cannot be accessed directly");
+}
+
+require_once( __DIR__ . '/init.php');
+
+use WeDevelopCoffee\wPower\Models\Domain;
 use Carbon\carbon;
 use WHMCS\Database\Capsule;
-use OpenProvider\Notification;
-use OpenProvider\OpenProvider as OP;
+use OpenProvider\WhmcsRegistrar\Library\Notification;
+use OpenProvider\WhmcsRegistrar\Library\Handle;
+use OpenProvider\WhmcsRegistrar\Library\OpenProvider as OP;
 use OpenProvider\WhmcsHelpers\Registrar;
+use WeDevelopCoffee\wPower\Core\Activate;
 use WHMCS\Domains\DomainLookup\ResultsList;
 use WHMCS\Domains\DomainLookup\SearchResult;
+use OpenProvider\WhmcsRegistrar\Controllers\Registrar\DomainController;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
 
@@ -30,10 +47,6 @@ OpenProvider\WhmcsHelpers\Schemes\DomainSyncScheme::up('openprovider');
 
 function openprovider_getConfigArray($params = array())
 {
-    // creating the necessary tables
-    \OpenProvider\API\APITools::createOpenprovidersTable();
-    \OpenProvider\API\APITools::createCustomFields();
-
     $configarray = array
     (
         "OpenproviderAPI"   => array
@@ -43,6 +56,12 @@ function openprovider_getConfigArray($params = array())
             "Size"          => "60", 
             "Description"   => "Include https://",
             "Default"       => "https://"
+        ),
+        "OpenproviderPremium"   => array
+        (
+            "FriendlyName"  => "Support premium domains",
+            "Description"   => "Yes <i>NOTE: Premium pricing must also be activated in WHMCS via Setup -> Products / Services -> Domain pricing</i>. <br><br><strong>WARNING</strong>: to prevent billing problems with premium domains, your WHMCS currency must be the same as the currency you use in Openprovider. Otherwise, you will be billed the premium fee but your client will be billed the non-premium fee due to a <a href=\"https://requests.whmcs.com/topic/major-bug-premium-domains-billed-incorrectly\" target=\"_blank\">bug in WHMCS.</a>",
+            "Type"          => "yesno"
         ),
         "Username"          => array
         (
@@ -57,12 +76,6 @@ function openprovider_getConfigArray($params = array())
             "Type"          => "password", 
             "Size"          => "20", 
             "Description"   => "Openprovider password",
-        ),
-        "useLocalHanlde"    => array 
-        (
-            "FriendlyName"  => "Reuse client handles",
-            "Type"          => "yesno",
-            "Description"   => "When creating a new domain, module will attempt to reuse existing handles",
         ),
         "updateNextDueDate" => array
         (
@@ -108,6 +121,11 @@ function openprovider_getConfigArray($params = array())
     $filename = end($x);
     if(isset($_REQUEST) && $_REQUEST['action'] == 'save' && $filename == 'configregistrars.php')
     {
+        $activate = wLaunch(Activate::class);
+        $activate->enableFeature('handles');
+        $activate->addMigrationPath(__DIR__.'/migrations');
+        $activate->migrate();
+
         foreach($_REQUEST as $key => $val)
         {
             if(isset($configarray[$key]))
@@ -161,168 +179,9 @@ function openprovider_getConfigArray($params = array())
  */
 function openprovider_RegisterDomain($params)
 {
-
-    $values = array();
-    
-    if (array_key_exists('original',$params))
-    {
-        $params['sld'] = $params['original']['sld'];
-    }
-
-    try
-    {
-        $domain             =   new \OpenProvider\API\Domain();
-        $domain->extension  =   $params['tld'];
-        $domain->name       =   $params['sld'];
-        $nameServers        =   \OpenProvider\API\APITools::createNameserversArray($params);
-        $createNewHandles   =   false;
-        $useLocalHandle     =   isset($params['useLocalHanlde']) && $params['useLocalHanlde'];
-        
-        if ($useLocalHandle)
-        {
-            // read user's handles
-            $handles        =   \OpenProvider\API\APITools::readCustomerHandles($params['userid']);
-            
-            if ($handles->ownerHandle && $handles->adminHandle && $handles->techHandle && $handles->billingHandle)
-            {
-                $ownerHandle    =   $handles->ownerHandle;
-                $adminHandle    =   $handles->adminHandle;
-                $techHandle     =   $handles->techHandle;
-                $billingHandle  =   $handles->billingHandle;
-            }
-            else
-            {
-                $createNewHandles = true;
-            }
-        }
-        
-//        if($params['tld'] == 'es' || $params['tld'] == 'cat')
-//        {
-            
-            $fields         = \OpenProvider\API\APITools::getClientCustomFields($params['customfields']);
-            if(!is_object($additionalData))
-                $additionalData =   new \OpenProvider\API\CustomerAdditionalData();
-            
-            
-            if($fields['ownerType'] == 'Individual')
-            {
-                $additionalData->set('socialSecurityNumber', $fields['socialSecurityNumber']);
-                $additionalData->set('passportNumber', $fields['passportNumber']);
-            } elseif($fields['ownerType'] == 'Company')
-            {
-                $additionalData->set('companyRegistrationNumber', $fields['companyRegistrationNumber']);
-                $additionalData->set('VATNumber', $fields['VATNumber']);
-            }
-            
-//        }
-        
-        if ($params['tld'] == 'ca') {
-            $handles = \OpenProvider\API\APITools::getHandlesForDomainId($params['domainid']);
-        }
-        
-        if (empty($handles) || $params['tld'] != 'ca') {
-            if (!$useLocalHandle || $createNewHandles) {
-                $ownerCustomer      =   new \OpenProvider\API\Customer($params['original']);
-                $ownerCustomer      ->  additionalData = $additionalData;
-                
-                $ownerHandle        =   \OpenProvider\API\APITools::createCustomerHandle($params, $ownerCustomer);
-                
-                $adminCustomer      =   new \OpenProvider\API\Customer($params['original']);
-                $adminCustomer      ->  additionalData = $additionalData;
-                $adminHandle        =   \OpenProvider\API\APITools::createCustomerHandle($params, $adminCustomer);
-
-                $techCustomer       =   new \OpenProvider\API\Customer($params['original']);
-                $techCustomer       ->  additionalData = $additionalData;
-                $techHandle         =   \OpenProvider\API\APITools::createCustomerHandle($params, $techCustomer);
-
-                $billingCustomer    =   new \OpenProvider\API\Customer($params['original']);
-                $billingCustomer    ->  additionalData = $additionalData;
-                $billingHandle      =   \OpenProvider\API\APITools::createCustomerHandle($params, $billingCustomer);
-
-                $handles = array();
-                $handles['domainid'] = $params['domainid'];
-                $handles['ownerHandle'] = $ownerHandle;
-                $handles['adminHandle'] = $adminHandle;
-                $handles['techHandle'] = $techHandle;
-                $handles['billingHandle'] = $billingHandle;
-                $handles['resellerHandle'] = '';
-                
-                if ($params['tld'] == 'ca') {
-                    \OpenProvider\API\APITools::saveNewHandles($handles);
-                }
-                
-            }
-        }
-        
-        // domain registration
-        $domainRegistration                 =   new \OpenProvider\API\DomainRegistration();
-        $domainRegistration->domain         =   $domain;
-        $domainRegistration->period         =   $params['regperiod'];
-        $domainRegistration->ownerHandle    =   $handles['ownerHandle'];
-        $domainRegistration->adminHandle    =   $handles['adminHandle'];
-        $domainRegistration->techHandle     =   $handles['techHandle'];
-        $domainRegistration->billingHandle  =   $handles['billingHandle'];
-        $domainRegistration->nameServers    =   $nameServers;
-        $domainRegistration->autorenew      =   'default';
-        $domainRegistration->dnsmanagement  =   $params['dnsmanagement'];
-
-        // Check if premium is enabled. If so, set the received premium cost.
-        if($params['premiumEnabled'] == true && $params['premiumCost'] != '')
-            $domainRegistration->acceptPremiumFee        =   $params['premiumCost'];
-
-        if($params['idprotection'] == 1)
-            $domainRegistration->isPrivateWhoisEnabled = 1;
-
-        //use dns templates
-        if($params['dnsTemplate'] && $params['dnsTemplate'] != 'None')
-        {
-            $domainRegistration->nsTemplateName =   $params['dnsTemplate'];
-        }
-
-        // New feature.
-//        if($params['tld'] == 'nu'){
-//            $domainRegistration->additionalData->companyRegistrationNumber = $fields['socialSecurityNumber']; 
-//            $domainRegistration->additionalData->passportNumber = $fields['companyRegistrationNumber']; 
-//        }
-        
-        //Additional domain fileds
-        if(!empty($params['additionalfields']))
-        {
-            $additionalData                 =   new \OpenProvider\API\AdditionalData();
-            
-            foreach($params['additionalfields'] as $name => $value)
-            {
-                $additionalData->set($name, $value);
-            }
-            
-            $domainRegistration->additionalData =   $additionalData;
-        }
-        
-        $idn = new \idna_convert();
-        if(
-                $params['sld'].'.'.$params['tld'] == $idn->encode($params['sld'].'.'.$params['tld']) 
-                && strpos($params['sld'].'.'.$params['tld'], 'xn--') === false
-            )
-        {
-            unset($domainRegistration->additionalData->idnScript);
-        }
-        
-        sleep(5);
-        $api = new \OpenProvider\API\API($params);
-        $api->registerDomain($domainRegistration);
-        
-        // store handles in database
-        $storeHandle = new \OpenProvider\API\Handles();
-        $storeHandle->importToWHMCS($api, $domain, $params['domainid'], $useLocalHandle);
-        
-    }
-    catch (\Exception $e)
-    {
-        $values["error"] = $e->getMessage();
-    }
-    return $values;
+    $domainController = wLaunch(DomainController::class);
+    return $domainController->register($params);
 }
-
 
 /**
  * Get domain name servers
@@ -331,11 +190,14 @@ function openprovider_RegisterDomain($params)
  */
 function openprovider_GetNameservers($params) 
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
     try
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
+            'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
         $nameservers        =   $api->getNameservers($domain);
@@ -366,11 +228,14 @@ function openprovider_GetNameservers($params)
  */
 function openprovider_SaveNameservers($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
     try
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
+            'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
         $nameServers        =   \OpenProvider\API\APITools::createNameserversArray($params);
@@ -394,11 +259,14 @@ function openprovider_SaveNameservers($params)
  */
 function openprovider_GetRegistrarLock($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
     try
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
+            'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
 
@@ -420,13 +288,16 @@ function openprovider_GetRegistrarLock($params)
  */
 function openprovider_SaveRegistrarLock($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
     $values = array();
 
     try
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
+            'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
         $lockStatus         =   $params["lockenabled"] == "locked" ? 1 : 0;
@@ -447,12 +318,15 @@ function openprovider_SaveRegistrarLock($params)
  */
 function openprovider_GetDNS($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
     $dnsRecordsArr = array();
     try
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
+            'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
         $dnsInfo            =   $api->getDNS($domain);
@@ -507,6 +381,9 @@ function openprovider_GetDNS($params)
  */
 function openprovider_SaveDNS($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
     $dnsRecordsArr = array();
     $values = array();
     foreach ($params['dnsrecords'] as $tmpDnsRecord)
@@ -548,7 +425,7 @@ function openprovider_SaveDNS($params)
     }
 
     $domain = new \OpenProvider\API\Domain();
-    $domain->name = array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'];
+    $domain->name = $params['sld'];
     $domain->extension = $params['tld'];
 
     try
@@ -581,6 +458,10 @@ function openprovider_SaveDNS($params)
  */
 function openprovider_IDProtectToggle($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+    $params['domainname'] = $params['sld'] . '.' . $params['tld'];
+
     // Get the domain details
     $domain = Capsule::table('tbldomains')
         ->where('id', $params['domainid'])
@@ -588,20 +469,24 @@ function openprovider_IDProtectToggle($params)
 
     try {
         $OpenProvider       = new OP();
-        $op_domain_obj      = $OpenProvider->domain($params['domainname']);
+        $op_domain_obj      = new \OpenProvider\API\Domain(array(
+            'name'          =>  $params['sld'],
+            'extension'     =>  $params['tld']
+        ));
+
         $op_domain          = $OpenProvider->api->retrieveDomainRequest($op_domain_obj);
-        $OpenProvider->toggle_whois_protection($domain, $op_domain);
+        $OpenProvider->toggle_whois_protection($domain, $op_domain_obj, $op_domain);
 
         return array(
             'success' => 'success',
         );
     } catch (Exception $e) {
-        \logModuleCall('OpenProvider', 'Save identity toggle', $params['domainname'], [$OpenProvider->domain, @$op_domain, $OpenProvider], $e->getMessage(), [$params['Password']]);
+        \logModuleCall('OpenProvider', 'Save identity toggle',$params['domainname'], [$OpenProvider->domain, @$op_domain, $OpenProvider], $e->getMessage(), [$params['Password']]);
         
         if($e->getMessage() == 'Wpp contract is not signed')
         {
             $notification = new Notification();
-            $notification->WPP_contract_unsigned_one_domain($domain->domain)
+            $notification->WPP_contract_unsigned_one_domain($params['domainname'])
                 ->send_to_admins();
 
         }
@@ -615,13 +500,15 @@ function openprovider_IDProtectToggle($params)
 //
 function openprovider_RequestDelete($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
     $values = array();
 
     try
     {
         $api                =   new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
+            'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
         
@@ -642,115 +529,64 @@ function openprovider_RequestDelete($params)
  */
 function openprovider_TransferDomain($params)
 {
-    $values = array();
-
-    try
-    {
-        $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
-            'extension'     =>  $params['tld']
-        ));
-
-        $nameServers = \OpenProvider\API\APITools::createNameserversArray($params);
-        
-        $createNewHandles = false;
-        $useLocalHandle = isset($params['useLocalHanlde']) ? (bool)$params['useLocalHanlde'] : false;
-        
-        if ($useLocalHandle)
-        {
-            // read user's handles
-            $userId = $params['userid'];
-            
-            $handles = \OpenProvider\API\APITools::readCustomerHandles($userId);
-            
-            if ($handles->ownerHandle && $handles->adminHandle && $handles->techHandle && $handles->billingHandle)
-            {
-                $ownerHandle    =   $handles->ownerHandle;
-                $adminHandle    =   $handles->adminHandle;
-                $techHandle     =   $handles->techHandle;
-                $billingHandle  =   $handles->billingHandle;
-            }
-            else
-            {
-                $createNewHandles = true;
-            }
-        }
-        
-        if (!$useLocalHandle || $createNewHandles)
-        {
-            $ownerCustomer = new \OpenProvider\API\Customer($params);
-            $ownerHandle = \OpenProvider\API\APITools::createCustomerHandle($params, $ownerCustomer);
-            
-            $adminCustomer = new \OpenProvider\API\Customer($params);
-            $adminHandle = \OpenProvider\API\APITools::createCustomerHandle($params, $adminCustomer);
-            
-            $techCustomer = new \OpenProvider\API\Customer($params);
-            $techHandle = \OpenProvider\API\APITools::createCustomerHandle($params, $techCustomer);
-            
-            $billingCustomer = new \OpenProvider\API\Customer($params);
-            $billingHandle = \OpenProvider\API\APITools::createCustomerHandle($params, $billingCustomer);
-        }
-
-        $domainTransfer                 =   new \OpenProvider\API\DomainTransfer();
-        $domainTransfer->domain         =   $domain;
-        $domainTransfer->period         =   $params['regperiod'];
-        $domainTransfer->nameServers    =   $nameServers;
-        $domainTransfer->ownerHandle    =   $ownerHandle;
-        $domainTransfer->adminHandle    =   $adminHandle;
-        $domainTransfer->techHandle     =   $techHandle;
-        $domainTransfer->billingHandle  =   $billingHandle;
-        $domainTransfer->authCode       =   $params['transfersecret'];
-        $domainTransfer->dnsmanagement  =   $params['dnsmanagement'];
-
-        // Check if premium is enabled. If so, set the received premium cost.
-        if($params['premiumEnabled'] == true && $params['premiumCost'] != '')
-            $domainTransfer->acceptPremiumFee        =   $params['premiumCost'];
-
-        if($params['idprotection'] == 1)
-            $domainRegistration->isPrivateWhoisEnabled = 1;
-
-        if($params['dnsTemplate'] && $params['dnsTemplate'] != 'None')
-        {
-            $domainRegistration->nsTemplateName =   $params['dnsTemplate'];
-        }
-        
-        $idn = new \idna_convert();
-        if($params['sld'].'.'.$params['tld'] == $idn->encode($params['sld'].'.'.$params['tld']))
-        {
-            unset($domainTransfer->additionalData->idnScript);
-        }
-        
-        $api = new \OpenProvider\API\API($params);
-        $api->transferDomain($domainTransfer);
-    }
-    catch (\Exception $e)
-    {
-        $values["error"] = $e->getMessage();
-    }
-    return $values;
+    $domainController = wLaunch(DomainController::class);
+    return $domainController->transfer($params);
 }
 
 //
 function openprovider_RenewDomain($params)
 {
+    // Prepare the renewal
+    $domain = new \OpenProvider\API\Domain(array(
+        'name' => $params['original']['domainObj']->getSecondLevel(),
+        'extension' => $params['original']['domainObj']->getTopLevel()
+    ));
+
+
+    $period = $params['regperiod'];
+
+    $api = new \OpenProvider\API\API($params);
+
+    // If isInGracePeriod is true, renew the domain.
+    if(isset($params['isInGracePeriod']) && $params['isInGracePeriod'] == true)
+    {
+        try
+        {
+            $api->restoreDomain($domain, $period);
+        } catch (\Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
+
+        return [];
+    }
+
+    // If isInRedemptionGracePeriod is true, restore the domain.
+    if(isset($params['isInRedemptionGracePeriod']) && $params['isInRedemptionGracePeriod'] == true)
+    {
+        try
+        {
+            $api->restoreDomain($domain, $period);
+        } catch (\Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
+
+        return [];
+    }
+
+    // We did not have a true isInRedemptionGracePeriod or isInGracePeriod. Fall back on the legacy code
+    // for older WHMCS versions.
+
     try
     {
-        $domain = new \OpenProvider\API\Domain(array(
-            'name' => array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
-            'extension' => $params['tld']
-        ));
-
-        $period = $params['regperiod'];
-
-        $api = new \OpenProvider\API\API($params);
-
         if(!$api->getSoftRenewalExpiryDate($domain)) {
             $api->renewDomain($domain, $period);
         } elseif ((new Carbon($api->getSoftRenewalExpiryDate($domain), 'CEST'))->gt(Carbon::now())) {
             $api->restoreDomain($domain, $period);
         } else {
+            // This only happens when the isInRedemptionGracePeriod was not true.
             throw new Exception("Domain has expired and additional costs may be applied. Please check the domain in your reseller control panel", 1);
         }
+
     } catch (\Exception $e) {
         return ['error' => $e->getMessage()];
     }
@@ -766,10 +602,13 @@ function openprovider_RenewDomain($params)
  */
 function openprovider_GetContactDetails($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
     try
     {
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
+            'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
 
@@ -787,29 +626,40 @@ function openprovider_GetContactDetails($params)
 //
 function openprovider_SaveContactDetails($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
     try
     {
         $api                =   new \OpenProvider\API\API($params);
         $handles            =   array_flip(\OpenProvider\API\APIConfig::$handlesNames);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
+            'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
-
-        $params['getFromContactDetails'] = true;
-        $customers  =   array();
-                
-        foreach($params['contactdetails'] as $contactName => $contactValues)
-        {
-            $customers[$handles[$contactName]]    =   new \OpenProvider\API\Customer($params, $contactName);
-        }
-
-        $api->SaveContactDetails($domain, $customers, $params['domainid']);
         
-        // store handles in database
-        $storeHandle = new \OpenProvider\API\Handles();
-        $useLocalHandle = isset($params['useLocalHanlde']) ? (bool)$params['useLocalHanlde'] : false;
-        $storeHandle->updateInWHMCS($api, $domain, $params['domainid'], $useLocalHandle);
+        $handle = wLaunch(Handle::class);
+        $handle->setApi($api);
+        
+        $customers['ownerHandle']   = $handle->updateOrCreate($params, 'registrant');
+        $customers['adminHandle']   = $handle->updateOrCreate($params, 'admin');
+        $customers['techHandle']    = $handle->updateOrCreate($params, 'tech');
+        
+        if(isset($params['contactdetails']['Billing']))
+            $customers['billingHandle'] = $handle->updateOrCreate($params, 'billing');
+
+        $finalCustomers = [];
+
+        // clean out the empty results
+        array_walk($customers, function($handle, $key) use (&$customers, &$finalCustomers){
+            if($handle != '')
+                $finalCustomers[$key] = $handle;
+        });
+        
+        if(!empty($finalCustomers))
+            $api->modifyDomainCustomers($domain, $finalCustomers);
+
+        return ['success' => true];
     }
     catch (\Exception $e)
     {
@@ -825,12 +675,15 @@ function openprovider_SaveContactDetails($params)
  */
 function openprovider_GetEPPCode($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
     $values = array();
 
     try
     {
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
+            'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
 
@@ -859,10 +712,13 @@ function openprovider_GetEPPCode($params)
  */
 function openprovider_RegisterNameserver($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+    
             // get data from op
     $api                = new \OpenProvider\API\API($params);
     $domain             =   new \OpenProvider\API\Domain(array(
-        'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
+        'name'          =>  $params['sld'],
         'extension'     =>  $params['tld']
     ));
            
@@ -900,9 +756,12 @@ function openprovider_RegisterNameserver($params)
  */
 function openprovider_ModifyNameserver($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
     $newIp      =   $params['newipaddress'];
     $currentIp  =   $params['currentipaddress'];
-    $params['sld'] = array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'];
+    
     // check if not empty
     if (($params['nameserver'] == '.' . $params['sld'] . '.' . $params['tld']) || !$newIp || !$currentIp)
     {
@@ -947,12 +806,15 @@ function openprovider_ModifyNameserver($params)
  */
 function openprovider_DeleteNameserver($params)
 {
+    $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+    $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
     try
     {
         $nameServer             =   new \OpenProvider\API\DomainNameServer();
         $nameServer->name       =   $params['nameserver'];
         $nameServer->ip         =   $params['ipaddress'];
-        $params['sld'] = array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'];
+        
         // check if not empty
         if ($nameServer->name == '.' . $params['sld'] . '.' . $params['tld'])
         {
@@ -983,12 +845,18 @@ function openprovider_DeleteNameserver($params)
  */
 function openprovider_TransferSync($params)
 {
+    if(isset($param['domainObj']))
+    {
+        $params['sld'] = $params['domainObj']->getSecondLevel();
+        $params['tld'] = $params['domainObj']->getTopLevel();
+    }
+
     try
     {
         // get data from op
         $api                = new \OpenProvider\API\API($params);
         $domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  array_key_exists('original',$params) ? $params['original']['sld'] : $params['sld'],
+            'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
         
@@ -1017,6 +885,27 @@ function openprovider_TransferSync($params)
 }
 
 /**
+ * Sync Domain Status & Expiration Date.
+ *
+ * Domain syncing is intended to ensure domain status and expiry date
+ * changes made directly at the domain registrar are synced to WHMCS.
+ * It is called periodically for a domain.
+ *
+ * @param array $params common module parameters
+ *
+ * @see https://developers.whmcs.com/domain-registrars/module-parameters/
+ *
+ * @return array
+ */
+function openprovider_Sync($params)
+{
+    // This function is here to prevent any errors from WHMCS. 
+    // Synchronisation is done in a separate cron job (see manual).
+    return[];
+}
+
+
+/**
  * Check Domain Availability.
  *
  * Determine if a domain or group of domains are available for
@@ -1034,7 +923,13 @@ function openprovider_TransferSync($params)
  */
 function openprovider_CheckAvailability($params)
 {
-    $premiumEnabled = (bool) $params['premiumEnabled'];
+    // Safety feature: Make premium opt-in with warning only. See https://requests.whmcs.com/topic/major-bug-premium-domains-billed-incorrectly.
+    if(isset($params['OpenproviderPremium']) && $params['OpenproviderPremium'] == 'on')
+    {
+        $premiumEnabled = (bool) $params['premiumEnabled'];
+    }
+    else
+        $premiumEnabled = false;
 
     $results = new ResultsList();
     if(empty($params['tldsToInclude']))
@@ -1052,8 +947,27 @@ function openprovider_CheckAvailability($params)
     try {
         $status =  $api->checkDomainArray($domains);
     } catch (Exception $e) {
-        \logModuleCall('openprovider', 'whois', $domains, $e->getMessage(), null, [$params['Password']]);
-        return $results;
+        if($e->getcode() == 307)
+        {
+            // OP response: "Your domain request contains an invalid extension!""
+            // Meaning: the id is not supported.
+
+            foreach($params['tldsToInclude'] as $tld)
+            {
+                $domain_tld  = substr($tld, 1);
+                $domain_sld  = $params['isIdnDomain'] ? $params['punyCodeSearchTerm'] : $params['searchTerm'];
+                $searchResult = new SearchResult($domain_sld, $domain_tld);
+                $searchResult->setStatus(SearchResult::STATUS_TLD_NOT_SUPPORTED);
+                $results->append($searchResult);
+            }
+
+            return $results;
+        }
+        else
+        {
+            \logModuleCall('openprovider', 'whois', $domains, $e->getMessage(), null, [$params['Password']]);
+            return $results;
+        }
     }
 
     foreach($status as $domain_status)

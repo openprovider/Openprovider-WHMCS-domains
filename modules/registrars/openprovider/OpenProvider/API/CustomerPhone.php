@@ -4,6 +4,9 @@ namespace OpenProvider\API;
 
 /**
  * Customer Phone Number
+ * OpenProvider Registrar module
+ *
+ * @copyright Copyright (c) Openprovider 2018
  */
 class CustomerPhone extends \OpenProvider\API\AutoloadConstructor
 {
@@ -29,7 +32,10 @@ class CustomerPhone extends \OpenProvider\API\AutoloadConstructor
     public function __construct($fields = array())
     {
         parent::__construct($fields);
-        
+
+        if(strpos($fields['phone number'], '.'))
+            $fields['phone number'] = explode('.', $fields['phone number'])[1];
+
         if(isset($fields['phone country code']))
             $fields['fullphonenumber'] = '+' . $fields['phone country code'] . '.' . str_replace(' ', '', $fields['phone number']);
 
@@ -53,7 +59,7 @@ class CustomerPhone extends \OpenProvider\API\AutoloadConstructor
         $pos                    =   strpos($fullPhoneNumber, '.');
         $countryCode            =   substr($fullPhoneNumber, 0, $pos);
         $areaCodeLength         =   3;
-        $areaCode               =   substr($fullPhoneNumber, $pos + 1, $areaCodeLength);
+        $areaCode               =   substr($fullPhoneNumber, $pos + 1, $areaCodeLength );
         $phoneNumber            =   substr($fullPhoneNumber, $pos + 1 + $areaCodeLength);
         
         $this->countryCode      =   $countryCode;

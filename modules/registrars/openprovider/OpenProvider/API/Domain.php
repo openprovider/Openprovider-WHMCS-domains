@@ -2,6 +2,13 @@
 
 namespace OpenProvider\API;
 
+/**
+ * Class Domain
+ * OpenProvider Registrar module
+ *
+ * @copyright Copyright (c) Openprovider 2018
+ */
+
 class Domain extends \OpenProvider\API\AutoloadConstructor
 {
     /**

@@ -5,10 +5,10 @@ use WHMCS\Database\Capsule;
 
 /**
  * General helpers for WHMCS.
+ * WhmcsHelper
  *
- * @package default
- * @license  Licensed to OpenProvider by Yourwebhoster.eu
- **/
+ * @copyright Copyright (c) WeDevelop.coffee 2018
+ */
 class General
 {
     private static $admin_user;

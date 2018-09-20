@@ -2,6 +2,12 @@
 
 namespace OpenProvider\API;
 
+/**
+ * Class CustomerAddress
+ * OpenProvider Registrar module
+ *
+ * @copyright Copyright (c) Openprovider 2018
+ */
 class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
 {
     public $street  =   null;
@@ -67,6 +73,15 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
                 $suffix .= $tmp[$cnt] . ' ';
                 $cnt++;
             }
+        }
+
+        /**
+         * Example: 12 Some Street Name
+         */
+        if($street == '' && $suffix != '')
+        {
+            $street = $suffix;
+            $suffix = '';
         }
         
         $this->street   =   $street;

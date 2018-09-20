@@ -1,138 +1,15 @@
 <?php
 namespace OpenProvider\API;
 
+/**
+ * Class APITools
+ * OpenProvider Registrar module
+ *
+ * @copyright Copyright (c) Openprovider 2018
+ */
+
 class APITools
-{
-
-    public static function tableExists($tblName)
-    {
-        $tableInfoQuery =   "SELECT 
-                                count((1)) as `ct` 
-                            FROM 
-                                INFORMATION_SCHEMA.TABLES 
-                            WHERE 
-                                table_schema ='whmcs' 
-                                AND 
-                                table_name='$tblName'";
-        
-        $tableInfoResult = full_query($tableInfoQuery);
-        $tableInfoData = mysql_fetch_assoc($tableInfoResult);
-        
-        return (bool)$tableInfoData['ct'];
-    }
-
-    public static function createOpenprovidersTable()
-    {
-        mysql_query("CREATE TABLE IF NOT EXISTS `OpenProviderHandles` 
-                (
-                    `domainId`     int(11)     DEFAULT NULL,
-                    `ownerHandle`  varchar(45) DEFAULT NULL,
-                    `adminHandle`  varchar(45) DEFAULT NULL,
-                    `techHandle`  varchar(45) DEFAULT NULL,
-                    `billingHandle`  varchar(45) DEFAULT NULL,
-                    `resellerHandle`  varchar(45) DEFAULT NULL,
-                    UNIQUE KEY (`domainId`)
-                ) 
-                ENGINE=InnoDB DEFAULT CHARSET=utf8");
-        
-        mysql_query("CREATE TABLE IF NOT EXISTS `OpenproviderCache` 
-                (
-                    `id`            int(11)      NOT NULL AUTO_INCREMENT,
-                    `name`          varchar(100) NOT NULL,
-                    `timestamp`     varchar(19)  NOT NULL,
-                    `value`         text         NOT NULL,
-
-                    PRIMARY KEY (`id`)
-                )
-                ENGINE=InnoDB DEFAULT CHARSET=utf8");
-    }
-    
-    public static function createCustomFields()
-    {
-        //ownerType
-        if(mysql_num_rows(mysql_query("SELECT id FROM tblcustomfields WHERE `fieldname` LIKE 'ownerType|%'")) == 0)
-        {
-            mysql_query("
-            INSERT INTO tblcustomfields 
-                (`type`,`relid`,`fieldname`,`fieldtype`,`adminonly`,`required`, `fieldoptions`) 
-            VALUES 
-                ('client', 0, 'ownerType|Owner Type','dropdown', 'on', 'on', 'Company,Individual')");
-        }
-
-        
-        //VAT Number
-        if(mysql_num_rows(mysql_query("SELECT id FROM tblcustomfields WHERE `fieldname` LIKE 'VATNumber|%'")) == 0)
-        {
-            mysql_query("
-            INSERT INTO tblcustomfields 
-                (`type`,`relid`,`fieldname`,`fieldtype`,`adminonly`,`required`) 
-            VALUES 
-                ('client', 0, 'VATNumber|VAT Number','text', 'on', 'on')");
-
-        } 
-        
-        //Business registration number
-        if(mysql_num_rows(mysql_query("SELECT id FROM tblcustomfields WHERE `fieldname` LIKE 'companyRegistrationNumber|%'")) == 0)
-        {
-            mysql_query("
-            INSERT INTO tblcustomfields 
-                (`type`,`relid`,`fieldname`,`fieldtype`,`adminonly`,`required`) 
-            VALUES 
-                ('client', 0, 'companyRegistrationNumber|Business registration number','text', 'on', 'on')");
-        } 
-        
-        //Personal ID number
-        if(mysql_num_rows(mysql_query("SELECT id FROM tblcustomfields WHERE `fieldname` LIKE 'socialSecurityNumber|%'")) == 0)
-        {
-            mysql_query("
-            INSERT INTO tblcustomfields 
-                (`type`,`relid`,`fieldname`,`fieldtype`,`adminonly`,`required`) 
-            VALUES 
-                ('client', 0, 'socialSecurityNumber|Personal ID number','text', 'on', 'on')");
-        } 
-        
-        //Passport number
-        if(mysql_num_rows(mysql_query("SELECT id FROM tblcustomfields WHERE `fieldname` LIKE 'passportNumber|%'")) == 0)
-        {
-            mysql_query("
-            INSERT INTO tblcustomfields 
-                (`type`,`relid`,`fieldname`,`fieldtype`,`adminonly`,`required`) 
-            VALUES 
-                ('client', 0, 'passportNumber|Passport number','text', 'on', '')");
-        } 
-    }
-
-    
-    public static function getClientCustomFields($customfields)
-    {
-        $fields = array();
-        $q      =  mysql_query("SELECT `id`,`fieldname`,`fieldtype`,`fieldoptions` FROM tblcustomfields WHERE `type`='client' AND `relid`=0");
-   
-        while($r = mysql_fetch_assoc($q))
-        {
-            foreach($customfields as $customfield)
-            {
-                if($customfield['id'] == $r['id'])
-                {
-                    if(strpos($r['fieldname'], '|') > -1 )
-                    {
-                        $name = explode('|', $r['fieldname']);
-                        $name = $name[0];
-                    } else
-                    {
-                        $name = $r['fieldname'];
-                    }
-                    
-                    $fields[$name] = $customfield['value'];
-                }
-            }
-        }
-        
-        return $fields;
-    }
-    
-    
-    
+{   
     public static function createNameserversArray($params)
     {
         $nameServers = array();
@@ -146,6 +23,7 @@ class APITools
         //     $params['ns4'] = null;
         //     $params['ns5'] = null;
         // }
+
 
         for ($i = 1; $i <=5; $i++)
         {
@@ -185,48 +63,6 @@ class APITools
 
         return $nameServers;
     }
-
-    public static function createCustomerHandle($params, \OpenProvider\API\Customer $customer, $search = false)
-    {
-        if($search)
-        {
-            $api    =   new \OpenProvider\API\API($params);
-            // checking if the customer exits
-            $result =   $api->searchCustomerInOPdatabase($customer);
-
-            if ($result['total'] > 0)
-            {
-                return $result['results'][0]['handle'];
-            }
-        }
-        
-        // there is no such customer, creates an entry for a new one
-        $api    =    new \OpenProvider\API\API($params);                            // IMPORTANT: have to create API object once again
-        $result =   $api->createCustomerInOPdatabase($customer);
-        return $result['handle'];
-    }
-    
-    public static function readCustomerHandles($userId)
-    {
-        $searchResult = select_query('tbldomains', 'id', array(
-            'registrar' => 'openprovider',
-            'userid'    => $userId,
-        ));
-        
-        $searchData = mysql_fetch_assoc($searchResult);
-        
-        if (isset($searchData['id']))
-        {
-            $egDomainId = $searchData['id'];
-
-            return new \OpenProvider\API\Handles($egDomainId);
-        }
-        else
-        {
-            return null;
-        }
-    }
-    
     
     /*
      * converts php-structure to DOM-object.
@@ -357,25 +193,6 @@ class APITools
         $return = $idnConvert->encode($name);
 
         return $return;                
-    }
-    
-    public static function getHandlesForDomainId($domainId) 
-    {
-        $q = mysql_query("SELECT * FROM OpenProviderHandles WHERE `domainId` = $domainId");
-        $result = mysql_fetch_assoc($q);
-        
-        return $result;
-    }
-    
-    public static function saveNewHandles($newHandles)
-    {
-        $query = "INSERT INTO `OpenProviderHandles` "
-                . "(`domainId`, `ownerHandle`, `adminHandle`, `techHandle`, `billingHandle`, `resellerHandle`) "
-                . "VALUES ('".$newHandles['domainid']."', '".$newHandles['ownerHandle']."', '".$newHandles['adminHandle']."', '".$newHandles['techHandle']."', '".$newHandles['billingHandle']."', '".$newHandles['resellerHandle']."');";
-        
-        $res = mysql_query($query);
-        
-        return $res;
     }
 
 }

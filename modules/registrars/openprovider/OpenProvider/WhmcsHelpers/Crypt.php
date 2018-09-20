@@ -3,10 +3,10 @@ namespace OpenProvider\WhmcsHelpers;
 use WHMCS\Database\Capsule;
 /**
  * Helps to encrypt and decrypt WHMCS strings
+ * WhmcsHelper
  *
- * @package default
- * @license  Licensed to OpenProvider by Yourwebhoster.eu
- **/
+ * @copyright Copyright (c) WeDevelop.coffee 2018
+ */
 class Crypt
 {
 

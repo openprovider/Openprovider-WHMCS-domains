@@ -1,0 +1,12 @@
+{
+    "autoload": {
+        "psr-4": {
+            "OpenProvider\\WhmcsRegistrar\\": "./",
+            "OpenProvider\\": "./OpenProvider"
+        },
+        "files": ["helpers.php"]
+    },
+    "require": {
+        "wedevelopcoffee/wpower": "1.0.*"
+    }
+}

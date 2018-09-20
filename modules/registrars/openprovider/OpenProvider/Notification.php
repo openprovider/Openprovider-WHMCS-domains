@@ -6,10 +6,10 @@ use	Carbon\Carbon;
 
 /**
  * Notification
+ * OpenProvider Registrar module
  *
- * @package default
- * @license  Licensed to OpenProvider by Yourwebhoster.eu
- **/
+ * @copyright Copyright (c) Openprovider 2018
+ */
 class Notification
 {
 

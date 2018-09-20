@@ -10,10 +10,10 @@ use \OpenProvider\WhmcsHelpers\DomainSync as helper_DomainSync;
 
 /**
  * Helper to synchronize the domain info.
+ * OpenProvider Registrar module
  *
- * @package default
- * @license  Licensed to OpenProvider by Yourwebhoster.eu
- **/
+ * @copyright Copyright (c) Openprovider 2018
+ */
 class DomainSync
 {
     /**

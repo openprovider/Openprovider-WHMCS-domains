@@ -6,10 +6,10 @@ use WHMCS\Database\Capsule,
 
 /**
  * Helper to synchronize the domain info.
+ * WhmcsHelper
  *
- * @package default
- * @license  Licensed to OpenProvider by Yourwebhoster.eu
- **/
+ * @copyright Copyright (c) WeDevelop.coffee 2018
+ */
 class DomainSync
 {
 

@@ -1,13 +1,14 @@
 <?php
 namespace OpenProvider\WhmcsHelpers;
 use WHMCS\Database\Capsule;
+use WeDevelopCoffee\wPower\Core\Crypt;
 
 /**
  * Manage the Registrar data
+ * WhmcsHelper
  *
- * @package default
- * @license  Licensed to OpenProvider by Yourwebhoster.eu
- **/
+ * @copyright Copyright (c) WeDevelop.coffee 2018
+ */
 class Registrar
 {
     /**
@@ -22,7 +23,7 @@ class Registrar
 	 *
 	 * @return array ['registrar_parameters']
 	 **/
-	public static function get_login_data($registrar = 'openprovider')
+	public static function getLoginData($registrar = 'openprovider')
 	{
 		$registrar_raw_data = Capsule::table('tblregistrars')
                 ->where('registrar', $registrar)
@@ -52,7 +53,7 @@ class Registrar
     public static function get($key)
     {
         if(empty(self::$data))
-            self::get_login_data();
+            self::getLoginData();
 
         return self::$data[$key];
 	}

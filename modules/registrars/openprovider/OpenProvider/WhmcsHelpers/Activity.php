@@ -4,10 +4,11 @@ use	Carbon\Carbon;
 
 /**
  * Activity log
+ * WhmcsHelper
  *
- * @package default
- * @license  Licensed to OpenProvider by Yourwebhoster.eu
- **/
+ * @copyright Copyright (c) WeDevelop.coffee 2018
+ */
+
 class Activity
 {
     /**
@@ -99,6 +100,10 @@ class Activity
             case 'activity_email_not_sent':
                 $log_entry = 'Domain sync activity NOT e-mailed to admins. Subject: "' . $data['subject'] .'"';
                 break;
+            
+            case 'unexpected_error':
+                $log_entry = 'Error while syncing status for '.$data['domain'].'. OpenProvider API response: ' . $data['message'] .'"';
+                break;
 
             default:
                 $log_entry = $activity;
@@ -113,6 +118,7 @@ class Activity
      */
     public static function send_email_report()
     {
+        // dd([self::$activity_log, Registrar::get('sendEmptyActivityEmail')]);
         if(empty(self::$activity_log) && Registrar::get('sendEmptyActivityEmail') != 'on')
             return;
 
@@ -143,6 +149,25 @@ class Activity
         $email = "<p>Dear Administrator,<br>
         <br>\n
         Please find the domain synchronisation update below for your Openprovider domains.<br>\n<br>\n";
+
+         // Did we find unexpected settings?
+         if(isset(self::$activity_log['unexpected_error']))
+         {
+             $email .= "
+             <font color=\"red\">ERRORS: Please check manually the following domains:</font>
+             <table>
+             <tr>
+                 <td>Domain</td>
+                 <td>Message</td>
+             </tr>";
+             foreach (self::$activity_log['unexpected_error'] as $activity) {
+                 $email .= "<tr>
+                     <td>" . $activity['data'] ['domain'] . "</td>
+                     <td>" . $activity['data'] ['message'] . "</td>
+                 </tr>\n";
+             }
+             $email .= "</table>\n";
+         }
 
         // Expiry
         $email .= "

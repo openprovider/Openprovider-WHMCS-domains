@@ -2,6 +2,12 @@
 
 namespace OpenProvider\API;
 
+/**
+ * Class AutoloadConstructor
+ * OpenProvider Registrar module
+ *
+ * @copyright Copyright (c) Openprovider 2018
+ */
 class AutoloadConstructor
 {
     public function __construct($fields = array())

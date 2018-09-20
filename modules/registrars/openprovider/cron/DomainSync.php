@@ -1,6 +1,12 @@
 <?php
-use OpenProvider\DomainSync;
+use OpenProvider\WhmcsRegistrar\Library\DomainSync;
 use OpenProvider\WhmcsHelpers\Activity;
+
+/**
+ * OpenProvider Registrar module
+ *
+ * @copyright Copyright (c) Openprovider 2018
+ */
 
 // Init WHMCS
 require __DIR__ . '/../../../../init.php';

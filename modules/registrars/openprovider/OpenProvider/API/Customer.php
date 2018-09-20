@@ -4,7 +4,11 @@ use OpenProvider\WhmcsHelpers\CustomField;
 
 /**
  * Customer
+ * OpenProvider Registrar module
+ *
+ * @copyright Copyright (c) Openprovider 2018
  */
+
 class Customer
 {
     /**
@@ -63,18 +67,30 @@ class Customer
 
     /**
      *
+     * @var \OpenProvider\API\CustomerExtensionAdditionalData
+     */
+    public $extensionAdditionalData  =   null;
+
+    /**
+     *
      * @param type $params
      * @param string $prefix
      */
     public function __construct($params, $prefix = '')
     {
+        if($prefix == 'all')
+            $prefix = '';
+            
+        if($prefix == 'registrant')
+            $prefix = 'owner';
+        
         $getFromContactDetails = false;
-        if (isset($params['getFromContactDetails']) && $params['getFromContactDetails'])
+        if (isset($params['contactdetails']))
         {
             $getFromContactDetails = true;
         }
 
-        if ($getFromContactDetails)
+        if ($getFromContactDetails == true)
         {
             $indexes = array(
                 'firstname' => 'first name',
@@ -94,8 +110,7 @@ class Customer
             if(!isset($params["contactdetails"][$prefix]['fullstate']))
                 $indexes['state'] = 'state';
 
-            $params = array_change_key_case($params["contactdetails"][$prefix]);
-
+            $params = array_change_key_case($params["contactdetails"][ucfirst($prefix)]);
         }
         else
         {
@@ -147,7 +162,7 @@ class Customer
             );
 
             // Check if there is a country code included.
-            if(isset($params[$indexes['phone country code']]))
+            if(isset($params[$indexes['phone country code']]) && $params[$indexes['phone country code']] != '')
                 $phoneParams['phone country code'] = $params[$indexes['phone country code']];
 
             $phone              =   new \OpenProvider\API\CustomerPhone($phoneParams);

@@ -4,10 +4,10 @@ use OpenProvider\WhmcsHelpers\Registrar;
 
 /**
  * Helper to communicate with OpenProvider.
+ * OpenProvider Registrar module
  *
- * @package default
- * @license  Licensed to OpenProvider by Yourwebhoster.eu
- **/
+ * @copyright Copyright (c) Openprovider 2018
+ */
 class OpenProvider
 {
 	/**
