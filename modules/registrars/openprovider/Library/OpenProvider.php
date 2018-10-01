@@ -93,11 +93,11 @@ class OpenProvider
 	public function toggle_whois_protection($w_domain, \OpenProvider\API\Domain $domain, $opInfo)
 	{
 		// Check if we should auto renew or use the default settings
-        // Note: the settings are in reverse since WHMCS updates the table after this hoo.
-	    if($w_domain->idprotection == 0)
+        // Note: the settings are in reverse since WHMCS updates the table after this operation.
+	    if($w_domain->idprotection == 1)
             $idprotection = 1; // OP sends the null value when no protection is set.
 	    else
-            $idprotection = '0';
+            $idprotection = NULL;
 
 	    // Check if openprovider has the same data
 	    if($opInfo['isPrivateWhoisEnabled'] != $idprotection)

@@ -55,15 +55,21 @@ function openprovider_activate()
 {
 
     try {
-        Capsule::schema()->table(
-            'tbldomains',
-            function ($table) {
-                $table->float('op_correctioninvoices', 10,4);
-            }
-        );
-        Capsule::schema()->table('tblinvoiceitems', function (Blueprint $table) {
-            $table->integer('op_correctioninvoices');
-        });
+        if(!Capsule::schema()->hasTable('op_correctioninvoices'))
+        {
+            Capsule::schema()->table(
+                'tbldomains',
+                function ($table) {
+                    $table->float('op_correctioninvoices', 10,4);
+                }
+            );
+        }
+        if(!Capsule::schema()->hasTable('tblinvoiceitems'))
+        {
+            Capsule::schema()->table('tblinvoiceitems', function (Blueprint $table) {
+                $table->integer('op_correctioninvoices');
+            });
+        }
     } catch (\Exception $e) {
         return ['status' => 'error', 'description' => $e->getMessage()];
     }
