@@ -467,6 +467,9 @@ function openprovider_IDProtectToggle($params)
         ->where('id', $params['domainid'])
         ->get()[0];
 
+    if(isset($params['protectenable']))
+        $domain->idprotection = $params['protectenable'];
+
     try {
         $OpenProvider       = new OP();
         $op_domain_obj      = new \OpenProvider\API\Domain(array(
