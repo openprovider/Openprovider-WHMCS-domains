@@ -12,6 +12,7 @@ if (!defined("WHMCS")) {
 require_once('init.php');
 
 // Include required classes.
+use Illuminate\Database\Schema\Blueprint;
 use WeDevelopCoffee\wPower\Controllers\AdminDispatcher;
 
 // Standard classes
@@ -24,6 +25,8 @@ use WHMCS\Database\Capsule;
  */
 function openprovider_config()
 {
+    openprovider_addon_migrate();
+
     return array(
         'name' => 'OpenProvider', // Display name for your module
         'description' => 'OpenProvider domain addon.', // Description displayed within the admin interface
@@ -31,6 +34,27 @@ function openprovider_config()
         'language' => 'english', // Default language
         'version' => '1.0', // Version number
     );
+}
+
+function openprovider_addon_migrate()
+{
+    try {
+        if (!Capsule::schema()->hasColumn('tbldomains', 'op_correctioninvoices')) {
+            Capsule::schema()->table(
+                'tbldomains',
+                function ($table) {
+                    $table->float('op_correctioninvoices', 10, 4);
+                }
+            );
+        }
+        if (!Capsule::schema()->hasColumn('tblinvoiceitems', 'tblinvoiceitems')) {
+            Capsule::schema()->table('tblinvoiceitems', function (Blueprint $table) {
+                $table->integer('op_correctioninvoices');
+            });
+        }
+    } catch (\Exception $e) {
+        return ['error' => $e->getMessage()];
+    }
 }
 
 /**
@@ -53,26 +77,10 @@ function openprovider_output($vars)
 // Activation
 function openprovider_activate()
 {
+    $result = openprovider_addon_migrate();
 
-    try {
-        if(!Capsule::schema()->hasTable('op_correctioninvoices'))
-        {
-            Capsule::schema()->table(
-                'tbldomains',
-                function ($table) {
-                    $table->float('op_correctioninvoices', 10,4);
-                }
-            );
-        }
-        if(!Capsule::schema()->hasTable('tblinvoiceitems'))
-        {
-            Capsule::schema()->table('tblinvoiceitems', function (Blueprint $table) {
-                $table->integer('op_correctioninvoices');
-            });
-        }
-    } catch (\Exception $e) {
+    if(isset($result['error']))
         return ['status' => 'error', 'description' => $e->getMessage()];
-    }
     
     return array(
         'status' => 'success', // Supported values here include: success, error or inf
