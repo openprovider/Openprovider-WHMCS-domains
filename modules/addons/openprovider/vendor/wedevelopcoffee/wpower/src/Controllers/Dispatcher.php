@@ -85,10 +85,11 @@ class Dispatcher
         $controllerNameAndFunction = $this->getControllerNameAndFunction();
 
         $controller = $this->getController($controllerNameAndFunction['controller']);
-        
+
         $launch_controller = new $controller();
 
-        return $launch_controller->$controllerNameAndFunction['function']();
+        $functionName = (string) $controllerNameAndFunction['function'];
+        return $launch_controller->$functionName();
     }
 
     /**

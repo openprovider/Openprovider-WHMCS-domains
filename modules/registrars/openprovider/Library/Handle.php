@@ -61,7 +61,22 @@ class Handle
     {
         $this->prepareHandle($params, $type);
 
-        if($foundHandle = $this->model->findExisting())
+        $foundHandle = $this->model->findExisting();
+
+        if(!$this->checkIfHandleStillExists($foundHandle))
+        {
+            // Detach all domains.
+            $foundHandle->domains()->detach();
+
+            // Delete handle.
+            $foundHandle->delete();
+
+            // Unset found handle.
+            unset($foundHandle);
+        }
+
+        // Check if we have found a valid handle.
+        if(isset($foundHandle))
         {
             $this->model = $foundHandle;
             $this->model->type = $type;
@@ -71,6 +86,7 @@ class Handle
         {
             $this->create($params, $type);
         }
+
         return $this->model->handle;
     }
 
@@ -150,7 +166,7 @@ class Handle
     }
 
     /**
-    * Prepare the handle
+    * Prepare the handle.
     * 
     * @return void
     */
@@ -164,6 +180,25 @@ class Handle
         $this->model->data          = $this->customer;
 
         return $this;
+    }
+
+    /**
+     * Check if the model still exists with OpenProvider.
+     *
+     * @param ModelHandle $model
+     * @return bool
+     */
+    public function checkIfHandleStillExists(\WeDevelopCoffee\wPower\Models\Handle $model)
+    {
+        try
+        {
+            $opCustomer = $this->api->retrieveCustomerRequest($model->handle, true);
+            return true;
+        } catch ( \Exception $e)
+        {
+            // If the handle does not exist, create a new one.
+            return false;
+        }
     }
 
     /**

@@ -4,6 +4,7 @@
  *
  * @copyright Copyright (c) Openprovider 2018
  */
+use WHMCS\Database\Capsule;
 
 require_once '..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'init.php';
 require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'openprovider.php';
@@ -16,11 +17,18 @@ if(!isset($_REQUEST['domain']))
     exit;
 }
 
-$q  = mysql_query("SELECT * FROM tblregistrars WHERE registrar='openprovider'");
 $params =   array();
-while($row = mysql_fetch_assoc($q))
-{
-    $params[$row['setting']]   =   decrypt($row['value']);
+
+try {
+    $settings = Capsule::table('tblregistrars')
+        ->where('registrar', 'openprovider')->get();
+
+    foreach($settings as $setting)
+    {
+        $params[$setting->setting]   =   decrypt($setting->value);
+    }
+} catch (\Exception $e) {
+    logActivity('Could not fetch the registrar settings: '.$e->getMessage());
 }
 
 try

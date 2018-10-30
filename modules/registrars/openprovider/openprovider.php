@@ -43,6 +43,10 @@ spl_autoload_register(function ($className)
 
 // Init the schemes
 OpenProvider\WhmcsHelpers\Schemes\DomainSyncScheme::up('openprovider');
+$activate = wLaunch(Activate::class);
+$activate->enableFeature('handles');
+$activate->addMigrationPath(__DIR__.'/migrations');
+$activate->migrate();
 
 
 function openprovider_getConfigArray($params = array())
@@ -121,11 +125,6 @@ function openprovider_getConfigArray($params = array())
     $filename = end($x);
     if(isset($_REQUEST) && $_REQUEST['action'] == 'save' && $filename == 'configregistrars.php')
     {
-        $activate = wLaunch(Activate::class);
-        $activate->enableFeature('handles');
-        $activate->addMigrationPath(__DIR__.'/migrations');
-        $activate->migrate();
-
         foreach($_REQUEST as $key => $val)
         {
             if(isset($configarray[$key]))
