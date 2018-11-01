@@ -3,7 +3,7 @@
 Changelog:
 - ⚠ Enable Premium domain support explicitly (see Enable premium domains) ⚠
 - Started refactoring code (supports PHP 7.X)
-- Includes addon to find miss-invoiced domains
+- Includes optional addon to find miss-invoiced domains
  
 Features
 - Supports registering and transferring domains
@@ -37,8 +37,7 @@ Features
 */
 $additionaldomainfields = openprovider_additional_fields();
 ```
-10. Navigate to Setup -> Addon Modules and activate OpenProvider.
-11. Click on Configure and grant access to the specified roles.
+10. Click on Configure and grant access to the specified roles.
 
 Option details:
 
@@ -160,6 +159,8 @@ WHMCS suggests that you have auto renew to "off" in the Openprovider system. Thi
 
 # Addon
 The (#addon) module calculates if there are domains that have a different invoice count than expected. It does this by taking the registration date and the expiry date. Based on this the invoice count per year is calculated and 0.1 is deducted to overcome small differences. The result are domains that may have not been invoiced correctly due to limitations from within WHMCS. The addon also works with other providers but does require the OpenProvider registrar module to be uploaded and activated. You are not required to use the addon and OpenProvider does not take any responsibility in the correctness of the addon.
+
+To activate it navigate to Setup -> Addon Modules and activate OpenProvider.
 
 ## How to take action
 1. Click on Actions -> Invoices. This will show all technical invoices. Use the search bar on the invoice index page for manually created invoices.
