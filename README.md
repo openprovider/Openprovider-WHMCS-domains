@@ -17,15 +17,18 @@ Features
 
 # Installation
 1. Download the module.
-2. Upload modules/registrars/openprovider to /modules/registrars in WHMCS.
-3. Upload modules/addons/openprovider to /modules/addons in WHMCS.
-4. Navigate to Setup -> Products/Services -> Domain Registrars and activate OpenProvider. Use `https://api.openprovider.eu` as the API url. DNS templates are loaded once valid login details are saved. Use the table below as a reference.
-5. Click on Save.
-6. Select the DNS template (if needed).
-7. Click on Save.
-8. Navigate to Setup -> Products/Services -> Domain Pricing and select OpenProvider as registrar for every TLD.
-9. install the Cron job: See below
-10. Add to `resources/domains/additionalfields.php` the following:
+2. Upload modules/registrars/openprovider to /modules/registrars in WHMCS.  
+    2.1 [optional](#addon) Upload modules/addons/openprovider to /modules/addons in WHMCS.
+3. Navigate to Setup -> Products/Services -> Domain Registrars and activate OpenProvider. Use `https://api.openprovider.eu` as the API url. DNS templates are loaded once valid login details are saved. Use the table below as a reference.
+4. Click on Save.
+5. Select the DNS template (if needed):
+
+![alt text](http://pic001.filehostserver.eu/116673.png "OpenProvider registrar configuration screen")
+
+6. Click on Save.
+7. Navigate to Setup -> Products/Services -> Domain Pricing and select OpenProvider as registrar for every TLD.
+8. install the Cron job: See below
+9. Add to `resources/domains/additionalfields.php` the following:
 ```
 <?php
 /**
@@ -34,10 +37,9 @@ Features
 */
 $additionaldomainfields = openprovider_additional_fields();
 ```
-11. Navigate to Setup -> Addon Modules and activate OpenProvider.
-12. Click on Configure and grant access to the specified roles.
+10. Navigate to Setup -> Addon Modules and activate OpenProvider.
+11. Click on Configure and grant access to the specified roles.
 
-![alt text](http://pic001.filehostserver.eu/116673.png "OpenProvider registrar configuration screen")
 
 Option details:
 
@@ -157,8 +159,8 @@ Once you've created a custom DNS template in the Openprovider control panel (DNS
 # Auto Renew Configurations
 WHMCS suggests that you have auto renew to "off" in the Openprovider system. This greatly reduces the chance that a domain will be "double renewed" in your account, which is possible if a domain has a once from auto renew, and again when the customer pays. Please thoroughly read the WHMCS documentation before deciding on the business logic you will use concerning auto-renew settings.
 
-# Addon
-The addon calculates if there are domains that have a different invoice count than expected. It does this by taking the registration date and the expiry date. Based on this the invoice count per year is calculated and 0.1 is deducted to overcome small differences. The result are domains that may have not been invoiced correctly due to limitations from within WHMCS. The addon also works with other providers but does require the OpenProvider registrar module to be uploaded and activated. You are not required to use the addon and OpenProvider does not take any responsibility in the correctness of the addon.
+# Addon 
+The (#addon) calculates if there are domains that have a different invoice count than expected. It does this by taking the registration date and the expiry date. Based on this the invoice count per year is calculated and 0.1 is deducted to overcome small differences. The result are domains that may have not been invoiced correctly due to limitations from within WHMCS. The addon also works with other providers but does require the OpenProvider registrar module to be uploaded and activated. You are not required to use the addon and OpenProvider does not take any responsibility in the correctness of the addon.
 
 ## How to take action
 1. Click on Actions -> Invoices. This will show all technical invoices. Use the search bar on the invoice index page for manually created invoices.
