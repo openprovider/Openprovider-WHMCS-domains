@@ -63,7 +63,7 @@ class Handle
 
         $foundHandle = $this->model->findExisting();
 
-        if(!$this->checkIfHandleStillExists($foundHandle))
+        if($foundHandle != false && !$this->checkIfHandleStillExists($foundHandle))
         {
             // Detach all domains.
             $foundHandle->domains()->detach();

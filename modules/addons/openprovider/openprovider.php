@@ -47,7 +47,7 @@ function openprovider_addon_migrate()
                 }
             );
         }
-        if (!Capsule::schema()->hasColumn('tblinvoiceitems', 'tblinvoiceitems')) {
+        if (!Capsule::schema()->hasColumn('tblinvoiceitems', 'op_correctioninvoices')) {
             Capsule::schema()->table('tblinvoiceitems', function (Blueprint $table) {
                 $table->integer('op_correctioninvoices');
             });
@@ -80,7 +80,7 @@ function openprovider_activate()
     $result = openprovider_addon_migrate();
 
     if(isset($result['error']))
-        return ['status' => 'error', 'description' => $e->getMessage()];
+        return ['status' => 'error', 'description' => $result['error']];
     
     return array(
         'status' => 'success', // Supported values here include: success, error or inf

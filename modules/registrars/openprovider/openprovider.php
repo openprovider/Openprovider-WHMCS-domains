@@ -163,7 +163,12 @@ function openprovider_getConfigArray($params = array())
         } 
         catch (Exception $ex) 
         {
-            //do nothing
+            //warn user that login failed
+            $configarray['loginFailed'] = ['FriendlyName'=>'<b><strong style="color:Tomato;">Login Unsuccessful:</strong></b>','Description'=>'<b><strong style="color:Tomato;">please ensure credentials and URL are correct</strong></b>'];
+
+            $configarray['Username']['FriendlyName'] = '<b><strong style="color:Tomato;">*Username</strong></b>';
+            $configarray['Password']['FriendlyName'] = '<b><strong style="color:Tomato;">*Password</strong></b>';
+            $configarray['OpenproviderAPI']['FriendlyName'] = '<b><strong style="color:Tomato;">*OpenProvider URL</strong></b>';
         }
     }
     
