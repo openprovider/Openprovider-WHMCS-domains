@@ -17,55 +17,55 @@ class Domain extends \WHMCS\Domain\Domain {
     public function possiblyUninvoicedDomains($paginate = false, $perPage = 25)
     {
         $query = self::prep_findPossiblyUninvoicedDomainsQuery();
-        
+
         $paginator = new Paginator();
         $paginator->setPerPage($perPage)
             ->setQueryAndModel($query, $this);
 
         $result = $paginator->getResult();
-        
+
         return $result;
     }
 
     /**
-    * getExpectedInvoices
-    * 
-    * @return integer
-    */
+     * getExpectedInvoices
+     *
+     * @return integer
+     */
     public function getExpectedInvoices ()
     {
         $result = self::prep_findPossiblyUninvoicedDomainsQuery(false)
-                ->where($this->table . '.id', $this->id)
-                ->get()[0];
-    
+            ->where($this->table . '.id', $this->id)
+            ->get()[0];
+
         return round($result->expectedInvoices, 4);
     }
 
     /**
-    * getFoundInvoices
-    * 
-    * @return integer
-    */
+     * getFoundInvoices
+     *
+     * @return integer
+     */
     public function getFoundInvoices ()
     {
         $result = self::prep_findPossiblyUninvoicedDomainsQuery(false)
-                ->where( $this->table . '.id', $this->id)
-                ->get()[0];
-    
+            ->where( $this->table . '.id', $this->id)
+            ->get()[0];
+
         return round($result->actualInvoices, 4);
     }
 
     /**
-    * getInvoiceDifference
-    * 
-    * @return integer
-    */
+     * getInvoiceDifference
+     *
+     * @return integer
+     */
     public function getInvoiceDifference ()
     {
         $result = self::prep_findPossiblyUninvoicedDomainsQuery(false)
-                ->where( $this->table . '.id', $this->id)
-                ->get()[0];
-    
+            ->where( $this->table . '.id', $this->id)
+            ->get()[0];
+
         return round($result->invoiceDifference, 4);
     }
 
@@ -98,19 +98,19 @@ class Domain extends \WHMCS\Domain\Domain {
 
         $rawInvoiceItemsQuery = '(SELECT (COUNT(tblinvoiceitems.`id`) + SUM(tblinvoiceitems.`op_correctioninvoices`)) as actualInvoices, relid FROM tblinvoiceitems';
         // When an invoice is being deleted, the invoice item does not get deleted. The following join makes sure that we count the invoiceitems with actual invoices attached.
-        $rawInvoiceItemsQuery .= ' inner join tblinvoices ON (tblinvoices.id = tblinvoiceitems.invoiceid) WHERE `type` LIKE \'Domain%\' AND `amount` != \'0.00\' GROUP BY relid) tblinvoiceitems';
-        
+        $rawInvoiceItemsQuery .= ' inner join tblinvoices ON (tblinvoices.id = tblinvoiceitems.invoiceid) WHERE `type` LIKE \'Domain%\' GROUP BY relid) tblinvoiceitems';
+
         $query = self::select($columnSelect)
             ->leftJoin(
-                // Count the related invoices for the tbldomains.id
-                DB::raw($rawInvoiceItemsQuery), 
+            // Count the related invoices for the tbldomains.id
+                DB::raw($rawInvoiceItemsQuery),
                 function($join)
                 {
                     $join->on('tblinvoiceitems.relid', '=', 'tbldomains.id');
                 }
             )
             ->join(
-                // Use a 0.10 correction to reduce false-positives.
+            // Use a 0.10 correction to reduce false-positives.
                 DB::raw('(SELECT (TIMESTAMPDIFF(DAY, `tbldomains`.`registrationdate`, `tbldomains`.`expirydate`) / 365 - 0.10) as expectedInvoices,
                             CEIL(TIMESTAMPDIFF(DAY, `tbldomains`.`registrationdate`, `tbldomains`.`expirydate`) / 365 - 0.10) as ceilExpectedInvoices, id
                 FROM tbldomains) tdomains'),
@@ -119,12 +119,12 @@ class Domain extends \WHMCS\Domain\Domain {
                     $join->on('tdomains.id', '=', 'tbldomains.id');
                 }
             );
-        
+
         if($dontFilterInvoices != false)
             $query = $query->havingRaw('expectedInvoices > actualInvoices');
-        
+
         return $query;
     }
 
-    
+
 }

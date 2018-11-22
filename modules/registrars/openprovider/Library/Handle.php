@@ -22,7 +22,7 @@ class Handle
     protected $model;
 
     /**
-     * Customer object 
+     * Customer object
      *
      * @var object \OpenProvider\API\Customer
      */
@@ -43,20 +43,20 @@ class Handle
     protected $extensionAdditionalData;
 
     /**
-    * Constructor
-    * 
-    * @return void
-    */
+     * Constructor
+     *
+     * @return void
+     */
     public function  __construct (ModelHandle $handle)
     {
         $this->model = $handle;
     }
 
     /**
-    * Find of create the handle.
-    * 
-    * @return string $handle
-    */
+     * Find of create the handle.
+     *
+     * @return string $handle
+     */
     public function findOrCreate ($params, $type = 'all')
     {
         $this->prepareHandle($params, $type);
@@ -72,11 +72,11 @@ class Handle
             $foundHandle->delete();
 
             // Unset found handle.
-            unset($foundHandle);
+            $foundHandle = false;
         }
 
         // Check if we have found a valid handle.
-        if(isset($foundHandle))
+        if($foundHandle != false)
         {
             $this->model = $foundHandle;
             $this->model->type = $type;
@@ -125,15 +125,15 @@ class Handle
                     // Check if the handle is used for different purposes for the same domain.
 
                     $domains = $this->model->domains()
-                    ->wherePivot('type', '!=', $type)->firstOrFail();
+                        ->wherePivot('type', '!=', $type)->firstOrFail();
 
                     // It is, let's create a new handle.
                     $action = 'create';
                 } catch (\Exception $e)
                 {
                     // It is not, let's update!
-                    $action = 'update'; 
-                }  
+                    $action = 'update';
+                }
             }
 
         } catch ( \Exception $e )
@@ -145,10 +145,10 @@ class Handle
             $this->findOrCreate($params, $type);
         else
             $this->update();
-        
+
         return $this->model->handle;
     }
-    
+
     /**
      * Set the additional fields for the handle.
      *
@@ -166,10 +166,10 @@ class Handle
     }
 
     /**
-    * Prepare the handle.
-    * 
-    * @return void
-    */
+     * Prepare the handle.
+     *
+     * @return void
+     */
     protected function prepareHandle ($params, $type)
     {
         $this->customer             = new Customer($params, $type);
@@ -202,10 +202,10 @@ class Handle
     }
 
     /**
-    * Find the changes between the current and updated data.
-    * 
-    * @return void
-    */
+     * Find the changes between the current and updated data.
+     *
+     * @return void
+     */
     protected function findChanges ($params)
     {
         try
@@ -247,10 +247,10 @@ class Handle
     }
 
     /**
-    * Create handle
-    * 
-    * @return object $handle
-    */
+     * Create handle
+     *
+     * @return object $handle
+     */
     protected function create ($params, $type)
     {
         $result                 = $this->api->createCustomerInOPdatabase($this->customer);
@@ -258,32 +258,32 @@ class Handle
         $this->model->exists    = false;
         $this->model->handle    = $result['handle'];
         $this->model->saveWithDomain($params['domainid'], $type);
-        
+
         return $this;
     }
 
     /**
-    * Update handle
-    * 
-    * @return object $handle
-    */
+     * Update handle
+     *
+     * @return object $handle
+     */
     protected function update ($params)
     {
         $this->customer->handle = $this->model->handle;
         $result                 = $this->api->modifyCustomer($this->customer);
         $this->model->data      = $this->customer;
         $this->model->save(['overrideUniqueCheck' => true]);
-        
+
         return $this;
     }
-    
+
     /**
-    * Set the api object.
-    *
-    * @param object $api \OpenProvider\API\API
-    * 
-    * @return $this
-    */
+     * Set the api object.
+     *
+     * @param object $api \OpenProvider\API\API
+     *
+     * @return $this
+     */
     public function setApi ($api)
     {
         $this->api = $api;
