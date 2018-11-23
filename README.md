@@ -37,6 +37,8 @@ Features
 */
 $additionaldomainfields = openprovider_additional_fields();
 ```
+_**NB!** The default field definitions can be found in_ `/resources/domains/dist.additionalfields.php`. _This file should **not** be edited. To customise the fields, create a new file named_ `additionalfields.php` _within the_ `/resources/domains/` _directory._
+
 10. Click on Configure and grant access to the specified roles.
 
 Option details:
@@ -175,6 +177,3 @@ The addon assumes that every domain registration is only for one year and renewe
 If there are any issues with connection with Openprovider, or for some reason API commands are not working, the first troubleshooting step should be to look at the API logs. Navigate to Utilities>Logs>Module Logs ​or <your WHMCS domain>/admin/systemmodulelog.php​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved.
 
 ![alt text](http://pic001.filehostserver.eu/116668.png "Troubleshooting")
-
-Please contact our support staff with any questions
-Support@Openprovider.nl
