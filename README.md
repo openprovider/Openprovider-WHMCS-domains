@@ -18,7 +18,6 @@ Features
 # Installation
 1. Download the module.
 2. Upload modules/registrars/openprovider to /modules/registrars in WHMCS.  
-    2.1 [(optional)](#addon) Upload modules/addons/openprovider to /modules/addons in WHMCS.
 3. Navigate to Setup -> Products/Services -> Domain Registrars and activate OpenProvider. Use `https://api.openprovider.eu` as the API url. DNS templates are loaded once valid login details are saved. Use the table below as a reference.
 4. Click on Save.
 5. Select the DNS template (if needed).
@@ -158,20 +157,6 @@ Once you've created a custom DNS template in the Openprovider control panel (DNS
 
 # Auto Renew Configurations
 WHMCS suggests that you have auto renew to "off" in the Openprovider system. This greatly reduces the chance that a domain will be "double renewed" in your account, which is possible if a domain has a once from auto renew, and again when the customer pays. Please thoroughly read the WHMCS documentation before deciding on the business logic you will use concerning auto-renew settings.
-
-# Addon
-The (#addon) module calculates if there are domains that have a different invoice count than expected. It does this by taking the registration date and the expiry date. Based on this the invoice count per year is calculated and 0.1 is deducted to overcome small differences. The result are domains that may have not been invoiced correctly due to limitations from within WHMCS. The addon also works with other providers but does require the OpenProvider registrar module to be uploaded and activated. You are not required to use the addon and OpenProvider does not take any responsibility in the correctness of the addon.
-
-To activate it navigate to Setup -> Addon Modules and activate OpenProvider.
-
-## How to take action
-1. Click on Actions -> Invoices. This will show all technical invoices. Use the search bar on the invoice index page for manually created invoices.
-2. Create invoice: this page has an estimated amount that is not billed via WHMCS.
-3. Create ticket: contact the client about this.
-4. Sync Invoice count: if everything is allright, this will synchronise the actual invoice count. Should there be a difference after a few years, the domain will show up again.
-
-## Limitations
-The addon assumes that every domain registration is only for one year and renewed for one year.
 
 # Troubleshooting
 If there are any issues with connection with Openprovider, or for some reason API commands are not working, the first troubleshooting step should be to look at the API logs. Navigate to Utilities>Logs>Module Logs ​or <your WHMCS domain>/admin/systemmodulelog.php​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved.
