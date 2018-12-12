@@ -153,6 +153,35 @@ $additionaldomainfields[".aero"][] = array(
     "op_name" => "ensKey"
 );
 
+// .pt
+$additionaldomainfields[".pt"][] = array(
+    "Name" => "Company Registration Number",
+    "LangVar" => "ptCompanyRegistrationNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "op_location" => "customerExtensionAdditionalData",
+    "op_name"  => "companyRegistrationNumber"
+);
+
+$additionaldomainfields[".pt"][] = array(
+    "Name" => "Social Security Number",
+    "LangVar" => "ptSocialSecurityNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "op_location" => "customerExtensionAdditionalData",
+    "op_name"   => "socialSecurityNumber"
+);
+
+$additionaldomainfields[".pt"][] = array(
+    "Name" => "Passport Number",
+    "LangVar" => "ptPassportNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "op_location" => "customerExtensionAdditionalData",
+    "op_name" => "passportNumber"
+);
+
+
 // .ru & .рф (xn--p1ai)
 // $additionaldomainfields[".ru"][] = array(
 //     "Name" => "Company Name Cyrillic",
