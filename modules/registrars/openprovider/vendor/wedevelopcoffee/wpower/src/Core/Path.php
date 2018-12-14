@@ -46,7 +46,7 @@ class Path
             return $currentDirExploded[0];
         }
 
-        return $_SERVER['DOCUMENT_ROOT'];
+        return getcwd();
     }
 
     /**

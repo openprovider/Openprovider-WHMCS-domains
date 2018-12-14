@@ -367,16 +367,16 @@
         },
         {
             "name": "wedevelopcoffee/wpower",
-            "version": "v1.0.3",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wedevelopcoffee/wPower.git",
-                "reference": "99ce2737607fc4f705931e52fdbd5f7ff6365aff"
+                "reference": "2d11cb70df64b74123af79dc45394501e0e48ef9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/99ce2737607fc4f705931e52fdbd5f7ff6365aff",
-                "reference": "99ce2737607fc4f705931e52fdbd5f7ff6365aff",
+                "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/2d11cb70df64b74123af79dc45394501e0e48ef9",
+                "reference": "2d11cb70df64b74123af79dc45394501e0e48ef9",
                 "shasum": ""
             },
             "require": {
@@ -410,7 +410,7 @@
                 }
             ],
             "description": "Add extra power to your WHMCS addon, registrar, gateway or server module.",
-            "time": "2018-04-25T14:38:53+00:00"
+            "time": "2018-12-13T11:40:02+00:00"
         }
     ],
     "packages-dev": [],
