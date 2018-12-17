@@ -36,17 +36,23 @@ class Path
     */
     public function getDocRoot ()
     {
+        global $customadminpath;
+
         if($this->core->isCli())
         {
             // DOC_ROOT does not work with cli
             // WARNING: This part of the code is not tested!
             $currentDir = __DIR__;
             $currentDirExploded = explode('modules', $currentDir);
-        
+
             return $currentDirExploded[0];
         }
 
-        return getcwd();
+        $parts = explode(DIRECTORY_SEPARATOR, getcwd());
+        if ($parts[sizeof($parts) - 1] == $customadminpath) {
+            unset($parts[sizeof($parts) - 1]);
+        }
+        return implode(DIRECTORY_SEPARATOR, $parts);
     }
 
     /**
