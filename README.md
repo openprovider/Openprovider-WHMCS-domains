@@ -1,10 +1,11 @@
 # Domain Module for WHMCS
 
-Changelog:
-- ⚠ Enable Premium domain support explicitly (see Enable premium domains) ⚠
-- Started refactoring code (supports PHP 7.X)
-- Includes optional addon to find miss-invoiced domains
- 
+The Openprovider WHMCS module integrates conveniently with your [Openprovider account](https://rcp.openprovider.eu/registration.php#/registration), allowing you to automate many domain provisioning and management tasks, such as registration, renewal, deletion, and updates to contact details.
+
+The module keeps domain expiration dates and auto renew settings synchronized between your WHMCS installation and Openprovider account, making sure the correct domains get renewed each day.
+
+Additionally, the module allows you to use the Openprovider API to check for domain availability, increasing performance over the WHOIS domain check which WHMCS uses out-of-the-box. 
+
 Features
 - Supports registering and transferring domains
 - Updates (contact changes, nameserver changes, toggle lock)
