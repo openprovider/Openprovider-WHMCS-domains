@@ -58,7 +58,7 @@ Option details:
 
 # Openprovider Domain Sync
 ## Setting up cron task
-In order for the Openprovider plugin for WHMCS to function properly, a cron job needs to be scheduled for the script `<your WHMCS root Directory>/modules/registrars/openprovider/cron/DomainSync.php`.
+In order for the Openprovider plugin for WHMCS to function properly, a cron job needs to be scheduled for the script `<WHMCS directory>/modules/registrars/openprovider/cron/DomainSync.php`.
 
 This task keeps domain statuses, expiration dates, WPP, and auto renew settings synchronized between Openprovider and WHMCS. Domain statuses and expiration dates are led by domain settings on Openprovider, and auto renew settings are led by WHMCS settings. This script updates by default 200 domains per execution (the value can be changed in the module configuration), and should be run so that all domains are synchronized within 6 hours. For example, if you have 7000 domains in WHMCS with Openprovider, the cron job needs to be run 7000 / 200 = 35 times every six hours, i.e. at least once every 10 minutes. (360 minutes / 35 syncs = at most 10.2 minutes/sync)
 
@@ -160,6 +160,9 @@ Once you've created a custom DNS template in the Openprovider control panel (DNS
 WHMCS suggests that you have auto renew to "off" in the Openprovider system. This greatly reduces the chance that a domain will be "double renewed" in your account, which is possible if a domain has a once from auto renew, and again when the customer pays. Please thoroughly read the WHMCS documentation before deciding on the business logic you will use concerning auto-renew settings.
 
 # Troubleshooting
-If there are any issues with connection with Openprovider, or for some reason API commands are not working, the first troubleshooting step should be to look at the API logs. Navigate to Utilities>Logs>Module Logs ​or <your WHMCS domain>/admin/systemmodulelog.php​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved.
+If there are any issues with connection with Openprovider, or for some reason API commands are not working, the first troubleshooting step should be to look at the API logs. Navigate to Utilities>Logs>Module Logs ​or `<WHMCS directory>/admin/systemmodulelog.php`​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved.
 
 ![alt text](http://pic001.filehostserver.eu/116668.png "Troubleshooting")
+
+# FAQ
+Common issues and solutions for them can be found [here](https://support.openprovider.eu/hc/en-us/articles/360009201193).
