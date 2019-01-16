@@ -73,35 +73,34 @@ class API
                 {
                     $args['domain']['name'] = utf8_encode($args['domain']['name']);
                 }
-                
+
                 $args['domain']['name'] = $idn->encode($args['domain']['name']);
             }
             elseif (isset ($args['namePattern']))
             {
                 $namePatternArr = explode('.', $args['namePattern'], 2);
                 $tmpDomainName = $namePatternArr[0];
-                
+
                 // UTF-8 encoding
                 if (!preg_match('//u', $tmpDomainName))
                 {
                     $tmpDomainName = utf8_encode($tmpDomainName);
                 }
-                
+
                 $tmpDomainName = $idn->encode($tmpDomainName);
                 $args['namePattern'] = $tmpDomainName . '.' . $namePatternArr[1];
             }
-            elseif (isset ($args['name']) && !is_array($args['name'])) 
+            elseif (isset ($args['name']) && !is_array($args['name']))
             {
                 // UTF-8 encoding
                 if (!preg_match('//u', $args['name']))
                 {
                     $args['name'] = utf8_encode($args['name']);
                 }
-                
+
                 $args['name'] = $idn->encode($args['name']);
             }
 
-            
             $this->request->setArgs($args);
         }
 
