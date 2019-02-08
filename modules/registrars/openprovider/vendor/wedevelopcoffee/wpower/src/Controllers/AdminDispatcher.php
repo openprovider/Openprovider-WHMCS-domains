@@ -13,4 +13,16 @@ class AdminDispatcher extends Dispatcher {
      */
     protected $level = 'admin';
 
+    /**
+     * Dispatch request.
+     *
+     * @param string $action
+     * @param array $parameters
+     *
+     * @return string
+     */
+    public function dispatch($action, $parameters)
+    {
+        parent::dispatch($action, $parameters);
+    }
 }

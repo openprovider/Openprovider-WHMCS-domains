@@ -13,6 +13,6 @@ class API
      */
     public function exec($command, $values = [], $adminuser = null)
     {
-        return \localAPI($command, $values, $adminuser);
+        return localAPI($command, $values, $adminuser);
     }
 }

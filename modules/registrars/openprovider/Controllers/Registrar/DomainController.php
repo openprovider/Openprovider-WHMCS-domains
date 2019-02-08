@@ -62,7 +62,6 @@ class DomainController
             $handle->setApi($api);
             
             // Prepare the additional data
-
             $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
             if(isset($additionalFields['extensionCustomerAdditionalData']))
                 $handle->setExtensionAdditionalData($additionalFields['extensionCustomerAdditionalData']);

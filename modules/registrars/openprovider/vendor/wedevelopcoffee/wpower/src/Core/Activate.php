@@ -76,8 +76,6 @@ class Activate
                 $this->migrator->run($path);
             }
         }
-
-        return true;
     }
 
     /**
@@ -86,7 +84,7 @@ class Activate
     */
     protected function addFeatureMigrationPath ($feature)
     {
-        $path = realpath(dirname(__FILE__) . '/../' . $feature . '/migrations/');
+        $path = dirname(__FILE__) . '/../' . $feature . '/migrations/';
         $this->addMigrationPath($path);
     }
 }
