@@ -15,4 +15,5 @@ require_once( __DIR__ . '/init.php');
 
 use WeDevelopCoffee\wPower\Controllers\HooksDispatcher;
 $dispatcher = wLaunch(HooksDispatcher::class);
-$dispatcher->dispatch();
+$dispatcher->launch();
+

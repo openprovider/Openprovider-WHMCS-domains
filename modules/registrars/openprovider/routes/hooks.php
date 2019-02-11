@@ -25,6 +25,6 @@ return [
         'hookPoint' => 'DomainEdit',
         'priority' =>  1,
         'controller' => 'DomainController@saveDomainEdit'
-    ],
-
+    ]
 ];
+

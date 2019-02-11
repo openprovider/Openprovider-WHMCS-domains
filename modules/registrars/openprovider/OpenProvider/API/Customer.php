@@ -181,7 +181,7 @@ class Customer
         $this->phone        =   $phone;
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
-        $this->vat          =   CustomField::getValueFromCustomFields('VATNumber', $params['customfields']);;
+//        $this->vat          =   CustomField::getValueFromCustomFields('VATNumber', $params['customfields']);;
 
     }
 }

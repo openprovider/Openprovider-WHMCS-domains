@@ -73,7 +73,7 @@ class AdditionalFields
         include($this->path->getModulePath().'/configuration/additionalfields.php');
 
         // Set the additional fields of OpenProvider
-        $this->WAdditionalFields->setAdditionalFields($additionaldomainfields);
+        $this->WAdditionalFields->setRegistrarAdditionalFields($additionaldomainfields);
 
         // Return the data.
         return $this->WAdditionalFields->getFilteredAdditionalFields();

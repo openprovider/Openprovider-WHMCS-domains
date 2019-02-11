@@ -415,6 +415,15 @@ $additionaldomainfields[".es"][] = array(
     "op_name" => "passportNumber"
 );
 
+$additionaldomainfields[".es"][] = array(
+    "Name" => "VAT",
+    "LangVar" => "esVat",
+    "Type" => "text",
+    "op_location" => "customerExtensionAdditionalData",
+    "op_name" => "vat"
+);
+
+
 // .SG
 
 $additionaldomainfields[".sg"][] = array(

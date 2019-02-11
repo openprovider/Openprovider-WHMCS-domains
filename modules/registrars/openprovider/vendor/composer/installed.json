@@ -374,17 +374,17 @@
     },
     {
         "name": "wedevelopcoffee/wpower",
-        "version": "v1.0.6",
-        "version_normalized": "1.0.6.0",
+        "version": "v1.0.7",
+        "version_normalized": "1.0.7.0",
         "source": {
             "type": "git",
             "url": "https://github.com/wedevelopcoffee/wPower.git",
-            "reference": "36a92c641ac7bd8446f0db72de3024678f2553f8"
+            "reference": "e97b9a99f954cc101f949d05b8a2c4a786c41141"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/36a92c641ac7bd8446f0db72de3024678f2553f8",
-            "reference": "36a92c641ac7bd8446f0db72de3024678f2553f8",
+            "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/e97b9a99f954cc101f949d05b8a2c4a786c41141",
+            "reference": "e97b9a99f954cc101f949d05b8a2c4a786c41141",
             "shasum": ""
         },
         "require": {
@@ -398,7 +398,7 @@
             "phpunit/phpunit": "^6",
             "smarty/smarty": "3.1.29"
         },
-        "time": "2018-12-17T10:11:25+00:00",
+        "time": "2018-12-17T13:39:00+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
