@@ -860,6 +860,14 @@ $additionaldomainfields[".law"][] = array(
     "op_name" => "jurisdictionSP"
 );
 
+$additionaldomainfields[".law"][] = array(
+    "Name" => "Accept Law Registry Policy",
+    "LangVar" => "lawAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "lawAcceptance"
+);
 // .FI
 
 $additionaldomainfields[".fi"][] = array(
