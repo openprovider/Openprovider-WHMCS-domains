@@ -4,31 +4,31 @@ The Openprovider WHMCS module integrates conveniently with your [Openprovider ac
 
 The module keeps domain expiration dates and auto renew settings synchronized between your WHMCS installation and Openprovider account, making sure the correct domains get renewed each day.
 
-Additionally, the module allows you to use the Openprovider API to check for domain availability, increasing performance over the WHOIS domain check which WHMCS uses out-of-the-box. 
+Additionally, the module allows you to use the Openprovider API to check for domain availability, increasing performance over the default domain availability check. 
 
 Features
 - Supports registering and transferring domains
 - Updates (contact changes, nameserver changes, toggle lock)
 - Whois Privacy Protection
-- DNS management via OpenProvider module
 - Whois lookup service: more reliable than the default whois servers in WHMCS
 - Domain status extended Synchronisation (more reliable than WHMCS's synchronisation)
 - Domain status synchronisation reports
 
 
 # Installation
-1. Download the module.
-2. Upload modules/registrars/openprovider to /modules/registrars in WHMCS.  
-3. Navigate to Setup -> Products/Services -> Domain Registrars and activate OpenProvider. Use `https://api.openprovider.eu` as the API url. DNS templates are loaded once valid login details are saved. Use the table below as a reference.
-4. Click on Save.
-5. Select the DNS template (if needed).
+1. Download the module
+2. Upload `modules/registrars/openprovider` to `<WHMCS directory>/modules/registrars`
+3. [Optional] Upload `modules/addons/openprovider` to `<WHMCS directory>/modules/addons`
+4. Navigate to Setup -> Products/Services -> Domain Registrars and activate OpenProvider. Use `https://api.openprovider.eu` as the API url. DNS templates are loaded once valid login details are saved. Use the table below as a reference
+5. Click on Save
+6. Select the DNS template (if needed)
 
 ![alt text](http://pic001.filehostserver.eu/116673.png "OpenProvider registrar configuration screen")
 
-6. Click on Save.
-7. Navigate to Setup -> Products/Services -> Domain Pricing and select OpenProvider as registrar for every TLD.
-8. install the Cron job: See below
-9. Add to `resources/domains/additionalfields.php` the following:
+7. Click on Save
+8. Navigate to Setup -> Products/Services -> Domain Pricing and select OpenProvider as registrar for every TLD
+9. Install the Cron job: See below
+10. Add to `resources/domains/additionalfields.php` the following:
 ```
 <?php
 /**
@@ -39,7 +39,7 @@ $additionaldomainfields = openprovider_additional_fields();
 ```
 _**NB!** The default field definitions can be found in_ `/resources/domains/dist.additionalfields.php`. _This file should **not** be edited. To customise the fields, create a new file named_ `additionalfields.php` _within the_ `/resources/domains/` _directory._
 
-10. Click on Configure and grant access to the specified roles.
+11. Click on Configure and grant access to the specified roles
 
 Option details:
 
@@ -62,24 +62,24 @@ In order for the Openprovider plugin for WHMCS to function properly, a cron job 
 
 This task keeps domain statuses, expiration dates, WPP, and auto renew settings synchronized between Openprovider and WHMCS. Domain statuses and expiration dates are led by domain settings on Openprovider, and auto renew settings are led by WHMCS settings. This script updates by default 200 domains per execution (the value can be changed in the module configuration), and should be run so that all domains are synchronized within 6 hours. For example, if you have 7000 domains in WHMCS with Openprovider, the cron job needs to be run 7000 / 200 = 35 times every six hours, i.e. at least once every 10 minutes. (360 minutes / 35 syncs = at most 10.2 minutes/sync)
 
-Note that WHMCS has a different script, cron.php, which it uses to perform many of its functions, including generating invoices, and syncing domain statuses with other registries. The DomainSync script from Openprovider is in addition to the WHMCs cron job, and needs to be scheduled separately. As the impementation of WHMCS to synchronize the domain status is limited, a separate cron is required.
+Note that WHMCS has a different script, cron.php, which it uses to perform many of its functions, including generating invoices, and syncing domain statuses with other registries. The DomainSync script from Openprovider is in addition to the WHMCS cron job, and needs to be scheduled separately. As the impementation of WHMCS to synchronize the domain status is limited, a separate cron is required.
 
 ## Domain Sync Email Update
 The DomainSync task from the Openprovider domain module sends an email report every time a domain object in WHMCS or Openprovider is modified. If "Send empty activity reports is selected" in the module configuration window, then the update will be sent every time the task runs, even if no domains have been modified.
 
-To configure, in the WHMCS admin area, navigate to Setup > Staff Management > Administrator Roles, and select the group of administrators which you want to receive the emails. Ensure that "system emails" is selected in this group:
+To configure, in the WHMCS admin area, navigate to Setup -> Staff Management -> Administrator Roles, and select the group of administrators which you want to receive the emails. Ensure that "system emails" is selected in this group:
 
 ![alt text](http://pic001.filehostserver.eu/116672.png "Domain Sync Email update")
 
 ## Updated settings
-The domain sync summarizes the following changes to the WHMCS domain objects:
+Domain Sync summarizes the following changes to the WHMCS domain objects:
 
 ### Openprovider is leading, WHMCS settings are updated:
 ###### 1. Expiration date
 1. This sets the WHMCS expiration date equal to the Openprovider expiration date. Note that for certain TLDs there is an offset between the Openprovider expiration date and the Registry expiration date, but the Openprovider expiration date is the date for which payment is due for renewals.
 
 ###### 2. Due date
-1. This is the date for which WHMCS invoices are due, and is equal to the WHMCS expiration date offset by the value selected in "Next due date offset" in the Openprovider domain module settings window (if “synchronize due date with offset?” is checked). For example, if the expiration date is "20 May", and the offset is set as "10" then the next due date will be set as "10 May"
+1. This is the date for which WHMCS invoices are due, and it's equal to WHMCS expiration date offset by the value selected in "Next due date offset" in Openprovider domain module settings window (if “Synchronize due date with offset?” is checked). For example, if the expiration date is "20 May", and the offset is set as "10" then the next due date will be set as "10 May"
 2. If “synchronize due date with offset?” is not checked, then due date will be set equal to expiration date.
 
 ###### 3. Domain status
@@ -96,7 +96,7 @@ The domain sync summarizes the following changes to the WHMCS domain objects:
 Domain Auto-renew and ID protection settings are sent to Openprovider immediately if any changes are made from WHMCS. If something is changed in Openprovider, then the DomainSync task will ensure that auto-renew and ID settings stay synchronized.
 
 ###### 1. Domain Auto renew
-1. If a domain is set to auto renew "on" in WHMCs, then the corresponding domain object in Openprovider is set to "global default." If the WHMCS domain object is set to auto-renew "off" then the corresponding domain object in Openprovider is also set to off.
+1. If a domain is set to auto renew "on" in WHMCS, then the corresponding domain object in Openprovider is set to "Global Default." If WHMCS domain object is set to auto-renew "Off" then the corresponding domain object in Openprovider is also set to "Off".
 
 ###### 2. Domain Whois Privacy Protection (ID protection)
 1. ID protection settings on a domain are mapped to Openprovider whois privacy protection settings.
@@ -111,10 +111,10 @@ Navigate to the "config domains" page, located at `<your WHMCS domain>/admin/con
 
 ## Select a TLD and Auto Registration
 1. Insert the desired TLD (2) and from the Auto Registration dropdown (3) select Openprovider
-2. Click Save, and an option "open pricing" will appear
+2. Click Save, and an option "Open Pricing" will appear
 ![alt text](http://pic001.filehostserver.eu/116663.png "Select a TLD and Auto Registration")
-3. Click "open pricing" and define prices for register, transfer, and renewal in the popup box which appears
-4. That's it! your WHMCS installation is ready to offer domains for registration for your clients
+3. Click "Open Pricing" and define prices for register, transfer, and renewal operations in the pop-up box
+4. That's it! Your WHMCS installation is ready to offer domains for registration to your clients
 
 ## Select a TLD and Auto Registration
 ![alt text](http://pic001.filehostserver.eu/116664.png "Select a TLD and Auto Registration")
@@ -131,7 +131,7 @@ By selecting ID protection for a given TLD, when clients purchase it on a domain
 
 
 # Choose Lookup Provider
-1. Under lookup provider (1) choose "change" and from the popup menu select "Openprovider"
+1. Under lookup provider (1) choose "Change" and from the popup menu select "Openprovider"
 2. The lookup provider should be displayed as such:
 ![alt text](http://pic001.filehostserver.eu/116665.png "Choose Lookup Provider")
 3. All domain availability checks by your customers will now be performed using the Openprovider API.
@@ -149,18 +149,18 @@ Once a domain has been registered and activated, the domain can be managed from 
 ![alt text](http://pic001.filehostserver.eu/116667.png "Managing Domains")
 
 # Renewing Domains
-If "automatic renew on payment" is selected (which can be found in WHMCS admin area, setup > general settings > domains) ​and Openprovider is set as the auto registration provider, then the module will automatically register or renew the domain in Openprovider via API as soon as a client pays for domain renewal or registration.
+If "automatic renew on payment" is selected (which can be found in WHMCS admin area, Setup > General settings > Domains) ​and Openprovider is set as the auto registration provider, then the module will automatically register or renew the domain in Openprovider via API as soon as a client pays for domain renewal or registration.
 
-When a domain expires in Openprovider, depending on the TLD, it can be put into 'soft quarantine.' When a domain is in soft quarantine, the domain can be restored for the normal renewal fee, but restoration needs to be requested with the "restore domain request" API command. The Openprovider domain module automatically detects when the domain is in soft quarantine, and make the appropriate API to request a restore. The module will not request renewal if the domain has already passed into "hard quarantine" and can only be restored for an additional fee.
+When a domain expires in Openprovider, depending on the TLD, it can be put into 'Soft Suarantine.' When a domain is in soft quarantine it can be restored for the normal renewal fee, but restoration needs to be requested with the "restore domain request" API command. Openprovider domain module automatically detects when the domain is in soft quarantine, and makes an appropriate API request. The module will not request renewal if the domain has already passed into "Hard Quarantine" and can only be restored for an additional fee.
 
 # Using Custom DNS Templates
-Once you've created a custom DNS template in the Openprovider control panel (DNS management > Manage DNS templates), and selected it in the module configuration window, any domain created with the Openprovider name servers will have a DNS zone automatically created on the Openprovider name servers.
+Once you've created a custom DNS template in the Openprovider control panel (DNS management -> Manage DNS templates), and selected it in the module configuration window, any domain created with the Openprovider name servers will have a DNS zone automatically created on the Openprovider name servers.
 
 # Auto Renew Configurations
 WHMCS suggests that you have auto renew to "off" in the Openprovider system. This greatly reduces the chance that a domain will be "double renewed" in your account, which is possible if a domain has a once from auto renew, and again when the customer pays. Please thoroughly read the WHMCS documentation before deciding on the business logic you will use concerning auto-renew settings.
 
 # Troubleshooting
-If there are any issues with connection with Openprovider, or for some reason API commands are not working, the first troubleshooting step should be to look at the API logs. Navigate to Utilities>Logs>Module Logs ​or `<WHMCS directory>/admin/systemmodulelog.php`​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved.
+If there are any connectivity issues with Openprovider, or API commands are not working for some reason, the first troubleshooting step should be to look at the API logs. Navigate to Utilities -> Logs -> Module Logs ​or `<WHMCS directory>/admin/systemmodulelog.php`​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved.
 
 ![alt text](http://pic001.filehostserver.eu/116668.png "Troubleshooting")
 

@@ -12,10 +12,10 @@
 return [
 
     //
-    'index' => 'Supportcontroller@index',
+    'index' => 'SupportController@index',
 
     // Support
-    'supportDownload' => 'Supportcontroller@download',
-    'supportIndex' => 'Supportcontroller@index',
+    'supportDownload' => 'SupportController@download',
+    'supportIndex' => 'SupportController@index',
 
 ];

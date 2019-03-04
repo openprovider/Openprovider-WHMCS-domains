@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'WeDevelopCoffee\\wPower\\' => array($vendorDir . '/wedevelopcoffee/wpower/src'),
+    'VIISON\\AddressSplitter\\' => array($vendorDir . '/viison/address-splitter/src'),
     'Symfony\\Component\\Finder\\' => array($vendorDir . '/symfony/finder'),
     'OpenProvider\\WhmcsRegistrar\\' => array($baseDir . '/'),
     'OpenProvider\\' => array($baseDir . '/OpenProvider'),

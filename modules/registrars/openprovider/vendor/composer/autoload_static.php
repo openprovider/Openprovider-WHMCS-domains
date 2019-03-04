@@ -18,6 +18,10 @@ class ComposerStaticInit375b9933452e9e0b85682a562d94475d
         array (
             'WeDevelopCoffee\\wPower\\' => 23,
         ),
+        'V' => 
+        array (
+            'VIISON\\AddressSplitter\\' => 23,
+        ),
         'S' => 
         array (
             'Symfony\\Component\\Finder\\' => 25,
@@ -40,6 +44,10 @@ class ComposerStaticInit375b9933452e9e0b85682a562d94475d
         'WeDevelopCoffee\\wPower\\' => 
         array (
             0 => __DIR__ . '/..' . '/wedevelopcoffee/wpower/src',
+        ),
+        'VIISON\\AddressSplitter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/viison/address-splitter/src',
         ),
         'Symfony\\Component\\Finder\\' => 
         array (

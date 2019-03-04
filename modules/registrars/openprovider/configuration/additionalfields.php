@@ -419,7 +419,7 @@ $additionaldomainfields[".es"][] = array(
     "Name" => "VAT",
     "LangVar" => "esVat",
     "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
+    "op_location" => "customer",
     "op_name" => "vat"
 );
 

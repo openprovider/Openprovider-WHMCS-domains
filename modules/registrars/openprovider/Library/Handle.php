@@ -43,6 +43,13 @@ class Handle
     protected $extensionAdditionalData;
 
     /**
+     * Additional data for customer.
+     *
+     * @var array
+     */
+    protected $customerData;
+
+    /**
      * Constructor
      *
      * @return void
@@ -166,6 +173,22 @@ class Handle
     }
 
     /**
+     * Set the additional customer data.
+     *
+     * @param array $fields
+     * @return object $this
+     */
+    public function setCustomerAdditionalData ($fields)
+    {
+        if(!empty($fields))
+        {
+            $this->customerData = $fields;
+        }
+
+        return $this;
+    }
+
+    /**
      * Prepare the handle.
      *
      * @return void
@@ -174,6 +197,15 @@ class Handle
     {
         $this->customer             = new Customer($params, $type);
         $this->customer->extensionAdditionalData = $this->extensionAdditionalData;
+
+        if(is_array($this->customerData) && !empty($this->customerData))
+        {
+            foreach($this->customerData as $customerDataKey => $customerDataValue)
+            {
+                $this->customer->$customerDataKey = $customerDataValue;
+            }
+        }
+
         $this->model->registrar     = 'openprovider';
         $this->model->user_id       = $params['userid'];
         $this->model->type          = $type;

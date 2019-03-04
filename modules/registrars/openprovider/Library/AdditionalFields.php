@@ -39,6 +39,13 @@ class AdditionalFields
     protected $domainAdditionalData;
 
     /**
+     * Customer data.
+     *
+     * @var array [ $key => $value ]
+     */
+    protected $customerData;
+
+    /**
      * The additional fields object
      *
      * @var object OpenProvider\API\CustomerExtensionAdditionalData
@@ -140,12 +147,21 @@ class AdditionalFields
                 {
                     $name = $field['op_name'];
                     $this->domainAdditionalData->$name = $value;
+                } elseif($field['op_location'] == 'customer' && isset($params['additionalfields'][$field['Name']]))
+                {
+                    $name = $field['op_name'];
+                    $this->customerData[$name] = $value;
+                    $customerData = true;
                 }
             }
         }
 
         if(isset($customerAdditionalData))
             $foundAdditionalFields['extensionCustomerAdditionalData']   = [$this->ceAdditionalData];
+
+        if(isset($customerData))
+            $foundAdditionalFields['customer']   = $this->customerData;
+
         $foundAdditionalFields['domainAdditionalData']              = $this->domainAdditionalData;
         
         return $foundAdditionalFields;
