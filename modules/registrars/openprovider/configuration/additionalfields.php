@@ -389,39 +389,39 @@ $additionaldomainfields[".no"] = $additionaldomainfields[".ro"];
 
 // .ES
 $additionaldomainfields[".es"][] = array(
-    "Name" => "Company Registration Number",
+    "Name" => "CIF/NIF (Company Registration Number)",
     "LangVar" => "esCompanyRegistrationNumber",
     "Type" => "text",
     "Size" => "30",
-    "op_location" => "customerExtensionAdditionalData",
+    "op_location" => "customerAdditionalData",
     "op_name"  => "companyRegistrationNumber"
 );
 
 $additionaldomainfields[".es"][] = array(
-    "Name" => "Social Security Number",
+    "Name" => "Número Seguridad Social (Social Security Number)",
     "LangVar" => "esSocialSecurityNumber",
     "Type" => "text",
     "Size" => "30",
-    "op_location" => "customerExtensionAdditionalData",
+    "op_location" => "customerAdditionalData",
     "op_name"   => "socialSecurityNumber"
 );
 
 $additionaldomainfields[".es"][] = array(
-    "Name" => "Passport Number",
+    "Name" => "Pasaporte/DNI (Passport Number)",
     "LangVar" => "esPassportNumber",
     "Type" => "text",
     "Size" => "30",
-    "op_location" => "customerExtensionAdditionalData",
+    "op_location" => "customerAdditionalData",
     "op_name" => "passportNumber"
 );
 
-$additionaldomainfields[".es"][] = array(
-    "Name" => "VAT",
-    "LangVar" => "esVat",
-    "Type" => "text",
-    "op_location" => "customer",
-    "op_name" => "vat"
-);
+//$additionaldomainfields[".es"][] = array(
+//    "Name" => "VAT",
+//    "LangVar" => "esVat",
+//    "Type" => "text",
+//    "op_location" => "customerAdditionalData",
+//    "op_name" => "vat"
+//);
 
 
 // .SG

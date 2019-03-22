@@ -67,8 +67,11 @@ class DomainController
             if(isset($additionalFields['extensionCustomerAdditionalData']))
                 $handle->setExtensionAdditionalData($additionalFields['extensionCustomerAdditionalData']);
 
+            if(isset($additionalFields['customerAdditionalData']))
+                $handle->setCustomerAdditionalData($additionalFields['customerAdditionalData']);
+
             if(isset($additionalFields['customer']))
-                $handle->setCustomerAdditionalData($additionalFields['customer']);
+                $handle->setCustomerData($additionalFields['customer']);
 
             $ownerHandle    = $handle->findOrCreate($params);
             $adminHandle    = $handle->findOrCreate($params, 'admin');

@@ -43,11 +43,18 @@ class Handle
     protected $extensionAdditionalData;
 
     /**
-     * Additional data for customer.
+     * Data for customer.
      *
      * @var array
      */
     protected $customerData;
+
+    /**
+     * Additional data for customer.
+     *
+     * @var array
+     */
+    protected $customerAdditionalData;
 
     /**
      * Constructor
@@ -178,11 +185,27 @@ class Handle
      * @param array $fields
      * @return object $this
      */
-    public function setCustomerAdditionalData ($fields)
+    public function setCustomerData ($fields)
     {
         if(!empty($fields))
         {
             $this->customerData = $fields;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set the additional customer data.
+     *
+     * @param array $fields
+     * @return object $this
+     */
+    public function setCustomerAdditionalData ($fields)
+    {
+        if(!empty($fields))
+        {
+            $this->customerAdditionalData = $fields;
         }
 
         return $this;
@@ -203,6 +226,14 @@ class Handle
             foreach($this->customerData as $customerDataKey => $customerDataValue)
             {
                 $this->customer->$customerDataKey = $customerDataValue;
+            }
+        }
+
+        if(is_array($this->customerAdditionalData) && !empty($this->customerAdditionalData))
+        {
+            foreach($this->customerAdditionalData as $customerAdditionalDataKey => $customerAdditionalDataValue)
+            {
+                $this->customer->additionalData->set($customerAdditionalDataKey, $customerAdditionalDataValue);
             }
         }
 

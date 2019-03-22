@@ -1,6 +1,7 @@
 <?php
 namespace OpenProvider\API;
 use OpenProvider\WhmcsHelpers\CustomField;
+use WeDevelopCoffee\wPower\Domain\AdditionalFields;
 
 /**
  * Customer
@@ -182,6 +183,8 @@ class Customer
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
 //        $this->vat          =   CustomField::getValueFromCustomFields('VATNumber', $params['customfields']);;
+
+        $this->additionalData = new CustomerAdditionalData();
 
     }
 }
