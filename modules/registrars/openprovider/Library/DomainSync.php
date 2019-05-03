@@ -7,7 +7,6 @@ use OpenProvider\WhmcsHelpers\Activity;
 use OpenProvider\WhmcsHelpers\General;
 use OpenProvider\WhmcsHelpers\Registrar;
 use OpenProvider\WhmcsHelpers\DomainSync as helper_DomainSync;
-
 /**
  * Helper to synchronize the domain info.
  * OpenProvider Registrar module
@@ -125,6 +124,7 @@ class DomainSync
     public function process_domains()
     {
         $this->OpenProvider = new OpenProvider;
+		$excludedDomains = include("excludedDomains.php");
 
         foreach($this->domains as $domain)
         {
@@ -136,9 +136,11 @@ class DomainSync
                 $this->domain 			= $domain;
                 $this->op_domain_obj 	= $this->OpenProvider->domain($domain->domain);
                 $this->op_domain   		= $this->OpenProvider->api->retrieveDomainRequest($this->op_domain_obj);
-
-                // Set the expire and due date -> openprovider is leading
-                $this->process_expiry_and_due_date();
+				
+				if (!in_array($domain->domain, $excludedDomains)) {
+					// Set the expire and due date -> openprovider is leading
+					$this->process_expiry_and_due_date();
+				}
 
                 // Active or pending? -> openprovider is leading
                 $this->process_domain_status();
