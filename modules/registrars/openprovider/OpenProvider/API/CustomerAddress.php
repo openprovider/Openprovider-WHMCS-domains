@@ -35,8 +35,11 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
     protected function setAddress($fullAddress)
     {
         $splitAddress = AddressSplitter::splitAddress($fullAddress);
-        $housenumber = $splitAddress['houseNumberParts']['base'];
-        $convertedAddress = $splitAddress['streetName'] . ' ' . $splitAddress['additionToAddress2'];
+        $housenumber = $splitAddress['houseNumberParts']['base'] ;
+        if(isset($splitAddress['additionToAddress2']) && $splitAddress['additionToAddress2'] != '')
+            $housenumber .= ', ' . $splitAddress['additionToAddress2'];
+
+        $convertedAddress = $splitAddress['streetName'];
         
         $this->street   =   $convertedAddress;
         $this->number   =   $housenumber;

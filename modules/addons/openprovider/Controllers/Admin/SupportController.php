@@ -150,6 +150,8 @@ EOF;
 
         // Delete the temporarily file
         unlink($tmpFile);
+
+        exit;
     }
 
 

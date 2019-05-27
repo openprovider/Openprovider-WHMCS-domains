@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5737360d35c164383bc0003e813da1e8",
+    "content-hash": "22cfbd7b0402e58986b5133753586af6",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -392,21 +392,21 @@
                     "email": "daniel@wedevelop.coffee"
                 }
             ],
-            "description": "Communication package with OpenProvider",
+            "description": "Communication package with Openprovider",
             "time": "2018-03-28T16:59:34+00:00"
         },
         {
             "name": "wedevelopcoffee/wpower",
-            "version": "v1.0.7",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wedevelopcoffee/wPower.git",
-                "reference": "e97b9a99f954cc101f949d05b8a2c4a786c41141"
+                "reference": "cdcc6d1e228d252eaab5b09ab521f88490f6d9d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/e97b9a99f954cc101f949d05b8a2c4a786c41141",
-                "reference": "e97b9a99f954cc101f949d05b8a2c4a786c41141",
+                "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/cdcc6d1e228d252eaab5b09ab521f88490f6d9d2",
+                "reference": "cdcc6d1e228d252eaab5b09ab521f88490f6d9d2",
                 "shasum": ""
             },
             "require": {
@@ -440,7 +440,7 @@
                 }
             ],
             "description": "Add extra power to your WHMCS addon, registrar, gateway or server module.",
-            "time": "2018-12-17T13:39:00+00:00"
+            "time": "2019-02-20T12:46:26+00:00"
         }
     ],
     "packages-dev": [],

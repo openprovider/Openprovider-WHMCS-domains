@@ -879,7 +879,14 @@ $additionaldomainfields[".fi"][] = array(
     "op_name" => "orgType"
 );
 
- 
+$additionaldomainfields['.nu'][] = array(
+    'Name' => 'Identification Number',
+    "Remove" => true,
+);
+$additionaldomainfields['.nu'][] = array(
+    'Name' => 'VAT Number',
+    "Remove" => true,
+);
    
    
    

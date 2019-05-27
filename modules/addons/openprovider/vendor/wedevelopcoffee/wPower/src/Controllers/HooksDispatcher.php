@@ -29,7 +29,7 @@ class HooksDispatcher extends Dispatcher {
 
             $controllerNameAndFunction = $this->getControllerNameAndFunction($key);
 
-            $controller = $this->getController($controllerNameAndFunction['controller']);
+            $controller = wLaunch($this->getController($controllerNameAndFunction['controller']));
             $function   = $controllerNameAndFunction['function'];
 
             add_hook($route['hookPoint'], $route['priority'], [$controller, $function]);

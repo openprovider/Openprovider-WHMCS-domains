@@ -1,5 +1,6 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Library;
+use Carbon\Carbon;
 use WHMCS\Database\Capsule;
 use OpenProvider\WhmcsRegistrar\Library\Notification;
 use OpenProvider\WhmcsHelpers\Domain;
@@ -317,10 +318,10 @@ class DomainSync
 
         $op_status_converter = [
             'ACT' => 'Active',		// ACT	The domain name is active
-            'DEL' => 'Expired',		// DEL	The domain name has been deleted, but may still be restored.
+            'DEL' => 'Grace',		// DEL	The domain name has been deleted, but may still be restored.
             /* Leave FAI out of the array as we need to make the if statement fail in order to log an error. 'FAI' => 'error',	// FAI	The domain name request has failed.*/
             'PEN' => 'Pending',		// PEN	The domain name request is pending further information before the process can continue.
-            'REQ' => 'Pending',		// REQ	The domain name request has been placed, but not yet finished.
+            'REQ' => 'Pending Transfer',		// REQ	The domain name request has been placed, but not yet finished.
             'RRQ' => 'Pending',		// RRQ	The domain name restore has been requested, but not yet completed.
             'SCH' => 'Pending',		// SCH	The domain name is scheduled for transfer in the future.
         ];
@@ -329,6 +330,21 @@ class DomainSync
         {
             $op_domain_status = $op_status_converter[ $this->op_domain['status'] ];
 
+            if($this->op_domain['status'] == 'DEL' || $this->op_domain['status'] == 'RRQ')
+            {
+                $carbonNow = new Carbon();
+
+                // Check if the domain is in soft quarantaine
+                $carbonExpiration = new Carbon($this->op_domain['quarantineExpirationDate']);
+                if($carbonNow->diffInHours($carbonExpiration, false) > 0)
+                    $op_domain_status = 'grace';
+
+                // Check if the is in hard quarantaine
+                $carbonRestorableUntil = new Carbon($this->op_domain['hardQuarantineExpiryDate']);
+                if($carbonNow->diffInHours($carbonExpiration, false) > 0)
+                    $op_domain_status = 'Redemption';
+            }
+
             // Check if the status matches
             if($this->domain->status != $op_domain_status)
             {
@@ -336,7 +352,8 @@ class DomainSync
                 if($this->domain->status == 'Pending' || $this->domain->status == 'Pending Transfer')
                 {
                     $next_due_date_result = General::compare_dates($this->domain->nextduedate, $this->op_domain['renewalDate'], Registrar::get('nextDueDateOffset'), 'Y-m-d H:i:s', 'CEST');
-                    $this->update_due_date_for_domain($next_due_date_result);
+                    if($next_due_date_result != 'correct')
+                        $this->update_due_date_for_domain($next_due_date_result);
                 }
 
                 // It does not, let's update the data.

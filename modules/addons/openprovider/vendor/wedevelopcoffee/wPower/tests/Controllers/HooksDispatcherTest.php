@@ -55,7 +55,7 @@ class HooksDispatcherTest extends Base
             'hookPoint' => 'SomeWhmcsHookPoint',
             'priority' => $this->routes[$action]['priority'],
             'function' => [
-                0 => '\Tests\dependencies\Controllers\Hooks\HookController',
+                0 => new \Tests\dependencies\Controllers\Hooks\HookController(),
                 1 => 'some'
             ]
         ];
@@ -63,7 +63,7 @@ class HooksDispatcherTest extends Base
             'hookPoint' => 'indexWhmcsHookPoint',
             'priority' => $this->routes[$action]['priority'],
             'function' => [
-                    0 => '\Tests\dependencies\Controllers\Hooks\HookController',
+                    0 => new \Tests\dependencies\Controllers\Hooks\HookController(),
                     1 => 'index'
                 ]
         ];

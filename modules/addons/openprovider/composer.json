@@ -6,7 +6,7 @@
         }
     },
     "require": {
-        "wedevelopcoffee/wpower": "1.0.*",
+        "wedevelopcoffee/wpower": "1.1.*",
         "wedevelopcoffee/openprovider_api": "dev-master"
     }
 }

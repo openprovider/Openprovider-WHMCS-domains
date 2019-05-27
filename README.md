@@ -19,21 +19,21 @@ Features
 1. Download the module
 2. Upload `modules/registrars/openprovider` to `<WHMCS directory>/modules/registrars`
 3. [Optional] Upload `modules/addons/openprovider` to `<WHMCS directory>/modules/addons`
-4. Navigate to Setup -> Products/Services -> Domain Registrars and activate OpenProvider. Use `https://api.openprovider.eu` as the API url. DNS templates are loaded once valid login details are saved. Use the table below as a reference
+4. Navigate to Setup -> Products/Services -> Domain Registrars and activate Openprovider. Use `https://api.openprovider.eu` as the API url. DNS templates are loaded once valid login details are saved. Use the table below as a reference
 5. Click on Save
 6. Select the DNS template (if needed)
 
-![alt text](http://pic001.filehostserver.eu/116673.png "OpenProvider registrar configuration screen")
+![alt text](http://pic001.filehostserver.eu/116673.png "Openprovider registrar configuration screen")
 
 7. Click on Save
-8. Navigate to Setup -> Products/Services -> Domain Pricing and select OpenProvider as registrar for every TLD
+8. Navigate to Setup -> Products/Services -> Domain Pricing and select Openprovider as registrar for every TLD
 9. Install the Cron job: See below
 10. Add to `resources/domains/additionalfields.php` the following:
 ```
 <?php
 /**
-* OpenProvider only overrides additional fields that are configured in WHMCS Domain Pricing with OpenProvider as registrar.
-* Put this code above the other fields. Don't override additional fields manually for OpenProvider: we maintain this for you.
+* Openprovider only overrides additional fields that are configured in WHMCS Domain Pricing with Openprovider as registrar.
+* Put this code above the other fields. Don't override additional fields manually for Openprovider: we maintain this for you.
 */
 $additionaldomainfields = openprovider_additional_fields();
 ```
@@ -45,13 +45,13 @@ Option details:
 
 | Variable | Value |
 | ----- | ----- | 
-| OpenProvider URL	 | Should be `https://api.openprovider.eu` for production or `https://api.cte.openprovider.eu` for test environments. |
+| Openprovider URL	 | Should be `https://api.openprovider.eu` for production or `https://api.cte.openprovider.eu` for test environments. |
 |Support Premium Domains| Allows you to confirm that you allow the module to register domains with a premium price|
-| Username | Your OpenProvider username |
+| Username | Your Openprovider username |
 | Password | Your password or password hash |
 | Synchronize due-date with offset?	| Check if you want to offset the next due dates. By doing so, your client has to pay more in advance |
 | Due-date offset | The offset (by default 3) |
-| Update interval | The minimum delay in hours between every domain status update (by default 2). WARNING: lowering this can overload your and OpenProvider's system! |
+| Update interval | The minimum delay in hours between every domain status update (by default 2). WARNING: lowering this can overload your and Openprovider's system! |
 | Domain process limit | The maximum amount of domains to process in each cron run. |
 | Send empty activity reports | Send a report even when nothing has been updated in a cron run. |
 | DNS template | Select the DNS template you prefer. NOTE: only shows up after the correct login details have been saved!|
@@ -122,10 +122,10 @@ By selecting ID protection for a given TLD, when clients purchase it on a domain
 
 # Enable premium domains
 
-⚠️Make sure that the currency that you are using to pay OpenProvider is configured in Setup -> Payments -> Currencies (and click on Update Exchange Rate). Otherwise WHMCS will not use the premium fee correctly, meaning that your client pays the regular fee.⚠️
+⚠️Make sure that the currency that you are using to pay Openprovider is configured in Setup -> Payments -> Currencies (and click on Update Exchange Rate). Otherwise WHMCS will not use the premium fee correctly, meaning that your client pays the regular fee.⚠️
 
 1. Navigate to Setup -> Products / Services -> Domain Registrars
-2. Configure OpenProvider
+2. Configure Openprovider
 3. Enable "Support premium domains"
 4. Save Changes.
 

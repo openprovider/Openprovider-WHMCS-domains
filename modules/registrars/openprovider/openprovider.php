@@ -55,7 +55,7 @@ function openprovider_getConfigArray($params = array())
     (
         "OpenproviderAPI"   => array
         (
-            "FriendlyName"  => "OpenProvider URL",
+            "FriendlyName"  => "Openprovider URL",
             "Type"          => "text", 
             "Size"          => "60", 
             "Description"   => "Include https://",
@@ -136,13 +136,13 @@ function openprovider_getConfigArray($params = array())
         }
     }
 
-    if(isset($params['Password']) && isset($params['Username']) && isset($params['OpenproviderAPI']))
+    if(!isset($GLOBALS['op_registrar_module_config_dnsTemplate']) && isset($params['Password']) && isset($params['Username']) && isset($params['OpenproviderAPI']))
     {
         try
         { 
             $api                =   new \OpenProvider\API\API($params);
             $templates          =   $api->searchTemplateDnsRequest();
-            
+
             if(isset($templates['total']) && $templates['total'] > 0)
             {
                 $tpls   =   'None,';
@@ -159,6 +159,8 @@ function openprovider_getConfigArray($params = array())
                     "Description"   =>  "DNS template will be used when a domain is created or transferred to your account",
                     "Options"       =>  $tpls
                 );
+
+                $GLOBALS['op_registrar_module_config_dnsTemplate'] = $configarray['dnsTemplate'];
             }
         } 
         catch (Exception $ex) 
@@ -168,8 +170,12 @@ function openprovider_getConfigArray($params = array())
 
             $configarray['Username']['FriendlyName'] = '<b><strong style="color:Tomato;">*Username</strong></b>';
             $configarray['Password']['FriendlyName'] = '<b><strong style="color:Tomato;">*Password</strong></b>';
-            $configarray['OpenproviderAPI']['FriendlyName'] = '<b><strong style="color:Tomato;">*OpenProvider URL</strong></b>';
+            $configarray['OpenproviderAPI']['FriendlyName'] = '<b><strong style="color:Tomato;">*Openprovider URL</strong></b>';
         }
+    }
+    elseif(isset($GLOBALS['op_registrar_module_config_dnsTemplate']))
+    {
+        $configarray['dnsTemplate'] = $GLOBALS['op_registrar_module_config_dnsTemplate'];
     }
     
     return $configarray;
@@ -892,23 +898,20 @@ function openprovider_TransferSync($params)
 }
 
 /**
- * Sync Domain Status & Expiration Date.
+ * Mock a domain synchronisation.
  *
- * Domain syncing is intended to ensure domain status and expiry date
- * changes made directly at the domain registrar are synced to WHMCS.
- * It is called periodically for a domain.
- *
- * @param array $params common module parameters
- *
- * @see https://developers.whmcs.com/domain-registrars/module-parameters/
- *
+ * @param $params
  * @return array
  */
 function openprovider_Sync($params)
 {
-    // This function is here to prevent any errors from WHMCS. 
-    // Synchronisation is done in a separate cron job (see manual).
-    return[];
+    $domain = Domain::find($params['domainid']);
+    return array(
+        'expirydate' => $domain->expirydate, // Format: YYYY-MM-DD
+        'active' => true, // Return true if the domain is active
+        'expired' => false, // Return true if the domain has expired
+        'transferredAway' => false, // Return true if the domain is transferred out
+    );
 }
 
 
