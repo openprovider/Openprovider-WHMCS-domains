@@ -1,8 +1,6 @@
 <?php
 namespace WeDevelopCoffee\OpenProvider_Api;
 
-use DOMDocument;
-
 class Request
 {
     protected $cmd = null;
@@ -160,7 +158,6 @@ class Request
         $usernameElement->appendChild(
             $dom->createTextNode(Api::encode($this->username))
         );
-        
         $credentialsElement->appendChild($usernameElement);
         
         $passwordElement = $dom->createElement('password');

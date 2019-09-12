@@ -1,19 +1,25 @@
 <?php
 /**
- * OpenProvider Registrar module
+ * wPower Boostrap
  *
- * @copyright Copyright (c) Openprovider 2018
+ * @copyright Copyright (c) WeDevelopCoffee 2018
  */
 
-if (!defined("WHMCS"))
-{
+if (!defined("WHMCS")) {
     die("This file cannot be accessed directly");
 }
 
-require_once( __DIR__ . '/init.php');
+require_once(__DIR__ .'/init.php');
+
+openprovider_registrar_launch()
+    ->hooks();
+
+$core = openprovider_registrar_core('admin');
+$core->launch();
 
 
-use WeDevelopCoffee\wPower\Controllers\HooksDispatcher;
-$dispatcher = wLaunch(HooksDispatcher::class);
-$dispatcher->launch();
 
+$activate = $core->launcher->get(\WeDevelopCoffee\wPower\Module\Setup::class);
+$activate->enableFeature('handles');
+$activate->addMigrationPath(__DIR__.'/migrations');
+$activate->migrate();

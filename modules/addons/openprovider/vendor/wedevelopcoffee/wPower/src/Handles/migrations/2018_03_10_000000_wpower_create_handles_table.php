@@ -21,19 +21,16 @@ class WpowerCreateHandlesTable extends Migration
             $table->text('data');
             $table->timestamps();
         });
-
-        // For creating 
+        // For creating
         Capsule::schema()->create('wDomain_handle', function (Blueprint $table) {
             $table->increments('id');
             $table->string('type');
             $table->integer('domain_id')->unsigned();
             $table->integer('handle_id')->unsigned();
             $table->timestamps();
-
             $table->foreign('handle_id')->references('id')->on('wHandles');
         });
     }
-
     /**
      * Reverse the migrations.
      *

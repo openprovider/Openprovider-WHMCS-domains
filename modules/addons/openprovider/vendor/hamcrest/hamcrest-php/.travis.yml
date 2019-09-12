@@ -1,0 +1,37 @@
+language: php
+
+dist: trusty
+sudo: false
+
+php:
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+  - 7.3
+  - nightly
+  - hhvm
+  - hhvm-nightly
+
+matrix:
+  include:
+    - php: 5.3
+      dist: precise
+  allow_failures:
+    - php: nightly
+    - php: hhvm
+    - php: hhvm-nightly
+
+install:
+  - composer update --prefer-source
+
+script:
+  - mkdir -p build/logs
+  - vendor/bin/phpunit --coverage-clover=build/logs/clover.xml -c tests/phpunit.xml.dist
+
+after_script:
+  - vendor/bin/coveralls -v
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml

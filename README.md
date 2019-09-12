@@ -23,7 +23,7 @@ Features
 5. Click on Save
 6. Select the DNS template (if needed)
 
-![alt text](http://pic001.filehostserver.eu/116673.png "Openprovider registrar configuration screen")
+![alt text](http://pic001.filehostserver.eu/133632.png "Openprovider registrar configuration screen")
 
 7. Click on Save
 8. Navigate to Setup -> Products/Services -> Domain Pricing and select Openprovider as registrar for every TLD
@@ -40,17 +40,32 @@ $additionaldomainfields = openprovider_additional_fields();
 _**NB!** The default field definitions can be found in_ `/resources/domains/dist.additionalfields.php`. _This file should **not** be edited. To customise the fields, create a new file named_ `additionalfields.php` _within the_ `/resources/domains/` _directory._
 
 11. Click on Configure and grant access to the specified roles
+12. Open clientareadomaindetails.tpl in the template you are using and replace
+```
+{if $lockstatus eq "unlocked"}
+```
+with
+```
+{$domainSplit = "."|explode:$domain}
+{$domainTld = $domain|replace: $domainSplit.0 : ""}
+{if $lockstatus eq "unlocked" && $domainTld != '.eu' && $domainTld != '.nl' && $domainTld != '.be'}
+```
 
-Option details:
+## Configuration Option details:
 
 | Variable | Value |
 | ----- | ----- | 
 | Openprovider URL	 | Should be `https://api.openprovider.eu` for production or `https://api.cte.openprovider.eu` for test environments. |
-|Support Premium Domains| Allows you to confirm that you allow the module to register domains with a premium price|
+| Support Premium Domains| Allows you to confirm that you allow the module to register domains with a premium price|
 | Username | Your Openprovider username |
 | Password | Your password or password hash |
+| Synchronize Expiry date | Sync the synchronize the expiry date. |
+| Synchronize domain status | Sync the synchronize the domain status. |
+| Synchronize auto renew | Sync the synchronize the domain auto renew setting. |
+| Synchronize identity protection | Sync the synchronize the identity protection setting. |
 | Synchronize due-date with offset?	| Check if you want to offset the next due dates. By doing so, your client has to pay more in advance |
 | Due-date offset | The offset (by default 3) |
+| Due-date max difference in days | When the difference in days between the expiry date and next due date is more than this number, the next due date is not updated. This is required to prevent that the next due date is updated when the domain is automatically renewed, but not paid for. Or, when a domain is paid for 10 years in advance but is not renewed for 10 years.  |
 | Update interval | The minimum delay in hours between every domain status update (by default 2). WARNING: lowering this can overload your and Openprovider's system! |
 | Domain process limit | The maximum amount of domains to process in each cron run. |
 | Send empty activity reports | Send a report even when nothing has been updated in a cron run. |

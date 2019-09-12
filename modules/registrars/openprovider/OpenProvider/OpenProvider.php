@@ -1,6 +1,7 @@
 <?php
 namespace OpenProvider;
-use OpenProvider\WhmcsHelpers\Registrar;
+
+use WeDevelopCoffee\wPower\Models\Registrar;
 
 /**
  * Helper to communicate with OpenProvider.
@@ -34,9 +35,10 @@ class OpenProvider
 	{
 		// Get the registrar setting
     	if($params == null)
-    		$params 		= 	Registrar::get_login_data('openprovider');
+            $params = (new Registrar())->getRegistrarData()['openprovider'];
 
-		$this->api      =   new \OpenProvider\API\API($params);
+		$this->api      =   new \OpenProvider\API\API();
+		$this->api->setParams($params);
 	}
 
 	/**
@@ -89,29 +91,39 @@ class OpenProvider
 	 *
 	 * @return array|string
 	 **/
-	public function toggle_whois_protection($domain, $opInfo)
-	{
-		// Check if we should auto renew or use the default settings
-	    if($domain->idprotection == 0)
-            $idprotection = null; // OP sends the null value when no protection is set.
-	    else
-            $idprotection = '1';
+    /**
+     * Toggle Who is protection at OpenProvider
+     *
+     * @return array|string
+     **/
+    public function toggle_whois_protection($w_domain, \OpenProvider\API\Domain $domain, $opInfo)
+    {
+        // Check if we should auto renew or use the default settings
+        // Note: the settings are in reverse since WHMCS updates the table after this operation.
+        if($w_domain->idprotection == 1)
+            $idprotection = 1; // OP sends the null value when no protection is set.
+        else
+            $idprotection = '0';
 
-	    // Check if openprovider has the same data
-	    if($opInfo['isPrivateWhoisEnabled'] != $idprotection)
-	    {
-	        if($idprotection == null)
-	        {
+        // Check if openprovider has the same data
+        if($opInfo['isPrivateWhoisEnabled'] != $idprotection)
+        {
+            if($idprotection == '0')
+            {
                 $opInfo['isPrivateWhoisEnabled'] = 1;
                 $idprotection = '0';
-			}
+            }
 
-	    	return [ 'status'       => 'changed',
-                    'old_setting'   => $opInfo['isPrivateWhoisEnabled'],
-                    'new_setting'   => $idprotection];
-	    }
+            $this->api->setPrivateWhoisEnabled($domain, $idprotection);
 
-	    return 'correct';
-	}
+            return [ 'status'       => 'changed',
+                'old_setting'   => $opInfo['isPrivateWhoisEnabled'],
+                'new_setting'   => $idprotection];
+        }
+
+        return 'correct';
+    }
+
+
 
 } // END class OpenProvider

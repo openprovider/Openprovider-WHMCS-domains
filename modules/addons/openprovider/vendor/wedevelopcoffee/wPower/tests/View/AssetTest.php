@@ -1,7 +1,7 @@
 <?php
-namespace Tests\View;
+namespace WeDevelopCoffee\wPower\Tests\View;
 use Mockery;
-use Tests\TestCase;
+use WeDevelopCoffee\wPower\Tests\TestCase;
 use WeDevelopCoffee\wPower\Core\Router;
 use WeDevelopCoffee\wPower\View\Asset;
 

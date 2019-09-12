@@ -14,13 +14,21 @@ class AutoloadConstructor
     { 
         if($fields)
         {
+            $this->load($fields);
+        }
+    }
+
+    public function load($fields = array())
+    {
+        if($fields)
+        {
             foreach($fields as $key => $val)
-            {     
+            {
                 if(property_exists($this, $key))
                 {
                     $this->$key =   $val;
                 }
             }
-        }    
+        }
     }
 }

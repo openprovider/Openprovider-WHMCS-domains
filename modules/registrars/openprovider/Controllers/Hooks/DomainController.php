@@ -2,7 +2,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use WHMCS\Database\Capsule,
-    OpenProvider\WhmcsRegistrar\Library\OpenProvider;
+    OpenProvider\WhmcsRegistrar\src\OpenProvider;
 
 /**
  * Class DomainController
@@ -37,7 +37,7 @@ class DomainController{
             $op_domain          = $OpenProvider->api->retrieveDomainRequest($op_domain_obj);
             $OpenProvider->toggle_autorenew($domain, $op_domain);
         } catch (\Exception $e) {
-                \logModuleCall('OpenProvider', 'Save domain lock', $domain->domain, @$op_domain, $e->getMessage(), [$params['Password']]);
+                \logModuleCall('OpenProvider', 'Update auto renew', $domain->domain, @$op_domain, $e->getMessage(), [$params['Password']]);
             return false;
         }
     }
