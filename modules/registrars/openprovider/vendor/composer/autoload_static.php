@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit828f4c6252b9b169f35215baf14a4612
+class ComposerStaticInitdd6c27ef31b2291e88999bdc6fbff7fc
 {
     public static $files = array (
         '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
@@ -77,7 +77,7 @@ class ComposerStaticInit828f4c6252b9b169f35215baf14a4612
         ),
         'SuperClosure\\' => 
         array (
-            0 => __DIR__ . '/..' . '/jeremeamia/SuperClosure/src',
+            0 => __DIR__ . '/..' . '/jeremeamia/superclosure/src',
         ),
         'Psr\\Container\\' => 
         array (
@@ -134,9 +134,9 @@ class ComposerStaticInit828f4c6252b9b169f35215baf14a4612
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit828f4c6252b9b169f35215baf14a4612::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit828f4c6252b9b169f35215baf14a4612::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit828f4c6252b9b169f35215baf14a4612::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitdd6c27ef31b2291e88999bdc6fbff7fc::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitdd6c27ef31b2291e88999bdc6fbff7fc::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitdd6c27ef31b2291e88999bdc6fbff7fc::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }

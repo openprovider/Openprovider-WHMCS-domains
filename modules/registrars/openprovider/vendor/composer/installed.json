@@ -226,7 +226,7 @@
         "homepage": "http://laravel.com"
     },
     {
-        "name": "jeremeamia/SuperClosure",
+        "name": "jeremeamia/superclosure",
         "version": "2.4.0",
         "version_normalized": "2.4.0.0",
         "source": {

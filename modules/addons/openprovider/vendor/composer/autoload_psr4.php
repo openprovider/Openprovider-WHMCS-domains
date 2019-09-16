@@ -6,19 +6,19 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'phpmock\\mockery\\' => array($vendorDir . '/php-mock/php-mock-mockery/classes'),
-    'phpmock\\integration\\' => array($vendorDir . '/php-mock/php-mock-integration/classes'),
-    'phpmock\\' => array($vendorDir . '/php-mock/php-mock/classes', $vendorDir . '/php-mock/php-mock/tests'),
     'WeDevelopCoffee\\wPower\\' => array($vendorDir . '/wedevelopcoffee/wpower/src'),
     'WeDevelopCoffee\\OpenProvider_Api\\' => array($vendorDir . '/wedevelopcoffee/openprovider_api/src'),
+    'Symfony\\Polyfill\\Util\\' => array($vendorDir . '/symfony/polyfill-util'),
+    'Symfony\\Polyfill\\Php56\\' => array($vendorDir . '/symfony/polyfill-php56'),
     'Symfony\\Component\\Finder\\' => array($vendorDir . '/symfony/finder'),
+    'SuperClosure\\' => array($vendorDir . '/jeremeamia/superclosure/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
+    'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
     'PhpDocReader\\' => array($vendorDir . '/php-di/phpdoc-reader/src/PhpDocReader'),
     'OpenProvider\\WhmcsDomainAddon\\' => array($baseDir . '/'),
     'Invoker\\' => array($vendorDir . '/php-di/invoker/src'),
-    'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
     'Illuminate\\Support\\' => array($vendorDir . '/illuminate/support'),
     'Illuminate\\Filesystem\\' => array($vendorDir . '/illuminate/filesystem'),
     'Illuminate\\Contracts\\' => array($vendorDir . '/illuminate/contracts'),
-    'DI\\' => array($vendorDir . '/php-di/php-di/src/DI'),
+    'DI\\' => array($vendorDir . '/php-di/php-di/src'),
 );

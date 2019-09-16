@@ -4,21 +4,16 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd788438e2016030cad67eb2c28e01d43
+class ComposerStaticInitfd48336f2e4528d38eed93176f6ac4c4
 {
     public static $files = array (
         '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
+        'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
         '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
-        'bbf73f3db644d3dced353b837903e74c' => __DIR__ . '/..' . '/php-di/php-di/src/DI/functions.php',
+        'b33e3d135e5d9e47d845c576147bda89' => __DIR__ . '/..' . '/php-di/php-di/src/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'p' => 
-        array (
-            'phpmock\\mockery\\' => 16,
-            'phpmock\\integration\\' => 20,
-            'phpmock\\' => 8,
-        ),
         'W' => 
         array (
             'WeDevelopCoffee\\wPower\\' => 23,
@@ -26,11 +21,15 @@ class ComposerStaticInitd788438e2016030cad67eb2c28e01d43
         ),
         'S' => 
         array (
+            'Symfony\\Polyfill\\Util\\' => 22,
+            'Symfony\\Polyfill\\Php56\\' => 23,
             'Symfony\\Component\\Finder\\' => 25,
+            'SuperClosure\\' => 13,
         ),
         'P' => 
         array (
             'Psr\\Container\\' => 14,
+            'PhpParser\\' => 10,
             'PhpDocReader\\' => 13,
         ),
         'O' => 
@@ -40,7 +39,6 @@ class ComposerStaticInitd788438e2016030cad67eb2c28e01d43
         'I' => 
         array (
             'Invoker\\' => 8,
-            'Interop\\Container\\' => 18,
             'Illuminate\\Support\\' => 19,
             'Illuminate\\Filesystem\\' => 22,
             'Illuminate\\Contracts\\' => 21,
@@ -52,19 +50,6 @@ class ComposerStaticInitd788438e2016030cad67eb2c28e01d43
     );
 
     public static $prefixDirsPsr4 = array (
-        'phpmock\\mockery\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-mock/php-mock-mockery/classes',
-        ),
-        'phpmock\\integration\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-mock/php-mock-integration/classes',
-        ),
-        'phpmock\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/php-mock/php-mock/classes',
-            1 => __DIR__ . '/..' . '/php-mock/php-mock/tests',
-        ),
         'WeDevelopCoffee\\wPower\\' => 
         array (
             0 => __DIR__ . '/..' . '/wedevelopcoffee/wpower/src',
@@ -73,13 +58,29 @@ class ComposerStaticInitd788438e2016030cad67eb2c28e01d43
         array (
             0 => __DIR__ . '/..' . '/wedevelopcoffee/openprovider_api/src',
         ),
+        'Symfony\\Polyfill\\Util\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-util',
+        ),
+        'Symfony\\Polyfill\\Php56\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php56',
+        ),
         'Symfony\\Component\\Finder\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
         ),
+        'SuperClosure\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/jeremeamia/superclosure/src',
+        ),
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'PhpParser\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
         ),
         'PhpDocReader\\' => 
         array (
@@ -92,10 +93,6 @@ class ComposerStaticInitd788438e2016030cad67eb2c28e01d43
         'Invoker\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-di/invoker/src',
-        ),
-        'Interop\\Container\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
         ),
         'Illuminate\\Support\\' => 
         array (
@@ -111,18 +108,11 @@ class ComposerStaticInitd788438e2016030cad67eb2c28e01d43
         ),
         'DI\\' => 
         array (
-            0 => __DIR__ . '/..' . '/php-di/php-di/src/DI',
+            0 => __DIR__ . '/..' . '/php-di/php-di/src',
         ),
     );
 
     public static $prefixesPsr0 = array (
-        'M' => 
-        array (
-            'Mockery' => 
-            array (
-                0 => __DIR__ . '/..' . '/mockery/mockery/library',
-            ),
-        ),
         'D' => 
         array (
             'Doctrine\\Common\\Inflector\\' => 
@@ -132,85 +122,12 @@ class ComposerStaticInitd788438e2016030cad67eb2c28e01d43
         ),
     );
 
-    public static $classMap = array (
-        'Hamcrest\\Arrays\\IsArray' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/IsArray.php',
-        'Hamcrest\\Arrays\\IsArrayContaining' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/IsArrayContaining.php',
-        'Hamcrest\\Arrays\\IsArrayContainingInAnyOrder' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/IsArrayContainingInAnyOrder.php',
-        'Hamcrest\\Arrays\\IsArrayContainingInOrder' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/IsArrayContainingInOrder.php',
-        'Hamcrest\\Arrays\\IsArrayContainingKey' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/IsArrayContainingKey.php',
-        'Hamcrest\\Arrays\\IsArrayContainingKeyValuePair' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/IsArrayContainingKeyValuePair.php',
-        'Hamcrest\\Arrays\\IsArrayWithSize' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/IsArrayWithSize.php',
-        'Hamcrest\\Arrays\\MatchingOnce' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/MatchingOnce.php',
-        'Hamcrest\\Arrays\\SeriesMatchingOnce' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/SeriesMatchingOnce.php',
-        'Hamcrest\\AssertionError' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/AssertionError.php',
-        'Hamcrest\\BaseDescription' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/BaseDescription.php',
-        'Hamcrest\\BaseMatcher' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/BaseMatcher.php',
-        'Hamcrest\\Collection\\IsEmptyTraversable' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Collection/IsEmptyTraversable.php',
-        'Hamcrest\\Collection\\IsTraversableWithSize' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Collection/IsTraversableWithSize.php',
-        'Hamcrest\\Core\\AllOf' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/AllOf.php',
-        'Hamcrest\\Core\\AnyOf' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/AnyOf.php',
-        'Hamcrest\\Core\\CombinableMatcher' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/CombinableMatcher.php',
-        'Hamcrest\\Core\\DescribedAs' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/DescribedAs.php',
-        'Hamcrest\\Core\\Every' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/Every.php',
-        'Hamcrest\\Core\\HasToString' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/HasToString.php',
-        'Hamcrest\\Core\\Is' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/Is.php',
-        'Hamcrest\\Core\\IsAnything' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/IsAnything.php',
-        'Hamcrest\\Core\\IsCollectionContaining' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/IsCollectionContaining.php',
-        'Hamcrest\\Core\\IsEqual' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/IsEqual.php',
-        'Hamcrest\\Core\\IsIdentical' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/IsIdentical.php',
-        'Hamcrest\\Core\\IsInstanceOf' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/IsInstanceOf.php',
-        'Hamcrest\\Core\\IsNot' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/IsNot.php',
-        'Hamcrest\\Core\\IsNull' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/IsNull.php',
-        'Hamcrest\\Core\\IsSame' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/IsSame.php',
-        'Hamcrest\\Core\\IsTypeOf' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/IsTypeOf.php',
-        'Hamcrest\\Core\\Set' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/Set.php',
-        'Hamcrest\\Core\\ShortcutCombination' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Core/ShortcutCombination.php',
-        'Hamcrest\\Description' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Description.php',
-        'Hamcrest\\DiagnosingMatcher' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/DiagnosingMatcher.php',
-        'Hamcrest\\FeatureMatcher' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/FeatureMatcher.php',
-        'Hamcrest\\Internal\\SelfDescribingValue' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Internal/SelfDescribingValue.php',
-        'Hamcrest\\Matcher' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Matcher.php',
-        'Hamcrest\\MatcherAssert' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/MatcherAssert.php',
-        'Hamcrest\\Matchers' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Matchers.php',
-        'Hamcrest\\NullDescription' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/NullDescription.php',
-        'Hamcrest\\Number\\IsCloseTo' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Number/IsCloseTo.php',
-        'Hamcrest\\Number\\OrderingComparison' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Number/OrderingComparison.php',
-        'Hamcrest\\SelfDescribing' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/SelfDescribing.php',
-        'Hamcrest\\StringDescription' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/StringDescription.php',
-        'Hamcrest\\Text\\IsEmptyString' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Text/IsEmptyString.php',
-        'Hamcrest\\Text\\IsEqualIgnoringCase' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Text/IsEqualIgnoringCase.php',
-        'Hamcrest\\Text\\IsEqualIgnoringWhiteSpace' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Text/IsEqualIgnoringWhiteSpace.php',
-        'Hamcrest\\Text\\MatchesPattern' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Text/MatchesPattern.php',
-        'Hamcrest\\Text\\StringContains' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Text/StringContains.php',
-        'Hamcrest\\Text\\StringContainsIgnoringCase' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Text/StringContainsIgnoringCase.php',
-        'Hamcrest\\Text\\StringContainsInOrder' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Text/StringContainsInOrder.php',
-        'Hamcrest\\Text\\StringEndsWith' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Text/StringEndsWith.php',
-        'Hamcrest\\Text\\StringStartsWith' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Text/StringStartsWith.php',
-        'Hamcrest\\Text\\SubstringMatcher' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Text/SubstringMatcher.php',
-        'Hamcrest\\TypeSafeDiagnosingMatcher' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/TypeSafeDiagnosingMatcher.php',
-        'Hamcrest\\TypeSafeMatcher' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/TypeSafeMatcher.php',
-        'Hamcrest\\Type\\IsArray' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsArray.php',
-        'Hamcrest\\Type\\IsBoolean' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsBoolean.php',
-        'Hamcrest\\Type\\IsCallable' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsCallable.php',
-        'Hamcrest\\Type\\IsDouble' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsDouble.php',
-        'Hamcrest\\Type\\IsInteger' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsInteger.php',
-        'Hamcrest\\Type\\IsNumeric' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsNumeric.php',
-        'Hamcrest\\Type\\IsObject' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsObject.php',
-        'Hamcrest\\Type\\IsResource' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsResource.php',
-        'Hamcrest\\Type\\IsScalar' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsScalar.php',
-        'Hamcrest\\Type\\IsString' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Type/IsString.php',
-        'Hamcrest\\Util' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Util.php',
-        'Hamcrest\\Xml\\HasXPath' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Xml/HasXPath.php',
-        'Text_Template' => __DIR__ . '/..' . '/phpunit/php-text-template/src/Template.php',
-    );
-
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitd788438e2016030cad67eb2c28e01d43::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitd788438e2016030cad67eb2c28e01d43::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitd788438e2016030cad67eb2c28e01d43::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitd788438e2016030cad67eb2c28e01d43::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitfd48336f2e4528d38eed93176f6ac4c4::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitfd48336f2e4528d38eed93176f6ac4c4::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitfd48336f2e4528d38eed93176f6ac4c4::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }

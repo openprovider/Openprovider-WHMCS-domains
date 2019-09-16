@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     '5255c38a0faeba867671b61dfda6d864' => $vendorDir . '/paragonie/random_compat/lib/random.php',
+    'bd9634f2d41831496de0d3dfe4c94881' => $vendorDir . '/symfony/polyfill-php56/bootstrap.php',
     '72579e7bd17821bb1321b87411366eae' => $vendorDir . '/illuminate/support/helpers.php',
-    'bbf73f3db644d3dced353b837903e74c' => $vendorDir . '/php-di/php-di/src/DI/functions.php',
+    'b33e3d135e5d9e47d845c576147bda89' => $vendorDir . '/php-di/php-di/src/functions.php',
 );
