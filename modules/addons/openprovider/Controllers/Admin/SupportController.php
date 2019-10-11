@@ -1,6 +1,10 @@
 <?php
 namespace OpenProvider\WhmcsDomainAddon\Controllers\Admin;
 use Carbon\Carbon;
+use WeDevelopCoffee\wPower\Controllers\ViewBaseController;
+use WeDevelopCoffee\wPower\Core\Core;
+use WeDevelopCoffee\wPower\Validator\Validator;
+use WeDevelopCoffee\wPower\View\View;
 use WHMCS\Database\Capsule;
 use ZipArchive;
 use ZipStream\ZipStream;
@@ -9,7 +13,7 @@ use ZipStream\ZipStream;
 /**
  * Client controller dispatcher.
  */
-class SupportController{
+class SupportController extends ViewBaseController {
 
     /**
      * @var object WHMCS\Database\Capsule;
@@ -21,8 +25,13 @@ class SupportController{
      */
     private $carbon;
 
-    public function __construct(Capsule $capsule, Carbon $carbon)
+    /**
+     * ViewBaseController constructor.
+     */
+    public function __construct(Core $core, View $view, Validator $validator,Capsule $capsule, Carbon $carbon)
     {
+        parent::__construct($core, $view, $validator);
+
         $this->capsule = $capsule;
         $this->carbon = $carbon;
     }
@@ -39,7 +48,7 @@ class SupportController{
         else
             $zipAvailable = 'yes';
 
-        return wView('Support/index', ['zipAvailable' => $zipAvailable, 'LANG' => $params['_lang']]);
+        return $this->view('Support/index', ['zipAvailable' => $zipAvailable, 'LANG' => $params['_lang']]);
     }
 
     /**

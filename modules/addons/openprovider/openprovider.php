@@ -67,12 +67,10 @@ function openprovider_addon_migrate()
  *
  * @return string
  */
-function openprovider_output($vars)
+function openprovider_output($params)
 {
     $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
 
-    $dispatcher = wLaunch(AdminDispatcher::class);
-    $response = $dispatcher->dispatch($action, $vars);
-
-    echo $response;
+    echo openprovider_addon_launch('admin')
+        ->output($params, $action);
 }
