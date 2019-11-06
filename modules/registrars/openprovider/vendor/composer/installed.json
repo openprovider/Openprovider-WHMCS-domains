@@ -165,52 +165,6 @@
         "homepage": "http://laravel.com"
     },
     {
-        "name": "illuminate/pagination",
-        "version": "v5.2.45",
-        "version_normalized": "5.2.45.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/illuminate/pagination.git",
-            "reference": "a4450887251f443a1243ef537d98ce5bbea6b193"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/illuminate/pagination/zipball/a4450887251f443a1243ef537d98ce5bbea6b193",
-            "reference": "a4450887251f443a1243ef537d98ce5bbea6b193",
-            "shasum": ""
-        },
-        "require": {
-            "illuminate/contracts": "5.2.*",
-            "illuminate/support": "5.2.*",
-            "php": ">=5.5.9"
-        },
-        "time": "2016-08-01T13:49:14+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "5.2-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Illuminate\\Pagination\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Taylor Otwell",
-                "email": "taylor@laravel.com"
-            }
-        ],
-        "description": "The Illuminate Pagination package.",
-        "homepage": "http://laravel.com"
-    },
-    {
         "name": "illuminate/support",
         "version": "v5.2.45",
         "version_normalized": "5.2.45.0",
@@ -272,6 +226,119 @@
         "homepage": "http://laravel.com"
     },
     {
+        "name": "jeremeamia/superclosure",
+        "version": "2.4.0",
+        "version_normalized": "2.4.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/jeremeamia/super_closure.git",
+            "reference": "5707d5821b30b9a07acfb4d76949784aaa0e9ce9"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/jeremeamia/super_closure/zipball/5707d5821b30b9a07acfb4d76949784aaa0e9ce9",
+            "reference": "5707d5821b30b9a07acfb4d76949784aaa0e9ce9",
+            "shasum": ""
+        },
+        "require": {
+            "nikic/php-parser": "^1.2|^2.0|^3.0|^4.0",
+            "php": ">=5.4",
+            "symfony/polyfill-php56": "^1.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^4.0|^5.0"
+        },
+        "time": "2018-03-21T22:21:57+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.4-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "SuperClosure\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jeremy Lindblom",
+                "email": "jeremeamia@gmail.com",
+                "homepage": "https://github.com/jeremeamia",
+                "role": "Developer"
+            }
+        ],
+        "description": "Serialize Closure objects, including their context and binding",
+        "homepage": "https://github.com/jeremeamia/super_closure",
+        "keywords": [
+            "closure",
+            "function",
+            "lambda",
+            "parser",
+            "serializable",
+            "serialize",
+            "tokenizer"
+        ]
+    },
+    {
+        "name": "nikic/php-parser",
+        "version": "v4.2.4",
+        "version_normalized": "4.2.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/nikic/PHP-Parser.git",
+            "reference": "97e59c7a16464196a8b9c77c47df68e4a39a45c4"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/97e59c7a16464196a8b9c77c47df68e4a39a45c4",
+            "reference": "97e59c7a16464196a8b9c77c47df68e4a39a45c4",
+            "shasum": ""
+        },
+        "require": {
+            "ext-tokenizer": "*",
+            "php": ">=7.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^6.5 || ^7.0 || ^8.0"
+        },
+        "time": "2019-09-01T07:51:21+00:00",
+        "bin": [
+            "bin/php-parse"
+        ],
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "4.2-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "PhpParser\\": "lib/PhpParser"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Nikita Popov"
+            }
+        ],
+        "description": "A PHP parser written in PHP",
+        "keywords": [
+            "parser",
+            "php"
+        ]
+    },
+    {
         "name": "paragonie/random_compat",
         "version": "v1.4.3",
         "version_normalized": "1.4.3.0",
@@ -319,6 +386,206 @@
             "csprng",
             "pseudorandom",
             "random"
+        ]
+    },
+    {
+        "name": "php-di/invoker",
+        "version": "2.0.0",
+        "version_normalized": "2.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/PHP-DI/Invoker.git",
+            "reference": "540c27c86f663e20fe39a24cd72fa76cdb21d41a"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/PHP-DI/Invoker/zipball/540c27c86f663e20fe39a24cd72fa76cdb21d41a",
+            "reference": "540c27c86f663e20fe39a24cd72fa76cdb21d41a",
+            "shasum": ""
+        },
+        "require": {
+            "psr/container": "~1.0"
+        },
+        "require-dev": {
+            "athletic/athletic": "~0.1.8",
+            "phpunit/phpunit": "~4.5"
+        },
+        "time": "2017-03-20T19:28:22+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Invoker\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "description": "Generic and extensible callable invoker",
+        "homepage": "https://github.com/PHP-DI/Invoker",
+        "keywords": [
+            "callable",
+            "dependency",
+            "dependency-injection",
+            "injection",
+            "invoke",
+            "invoker"
+        ]
+    },
+    {
+        "name": "php-di/php-di",
+        "version": "6.0.9",
+        "version_normalized": "6.0.9.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/PHP-DI/PHP-DI.git",
+            "reference": "00a5eb0f0dd94deabb71acfbf44c37b80d53d0a1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/00a5eb0f0dd94deabb71acfbf44c37b80d53d0a1",
+            "reference": "00a5eb0f0dd94deabb71acfbf44c37b80d53d0a1",
+            "shasum": ""
+        },
+        "require": {
+            "jeremeamia/superclosure": "^2.0",
+            "nikic/php-parser": "^2.0|^3.0|^4.0",
+            "php": ">=7.0.0",
+            "php-di/invoker": "^2.0",
+            "php-di/phpdoc-reader": "^2.0.1",
+            "psr/container": "^1.0"
+        },
+        "provide": {
+            "psr/container-implementation": "^1.0"
+        },
+        "require-dev": {
+            "doctrine/annotations": "~1.2",
+            "friendsofphp/php-cs-fixer": "^2.4",
+            "mnapoli/phpunit-easymock": "~1.0",
+            "ocramius/proxy-manager": "~2.0.2",
+            "phpstan/phpstan": "^0.9.2",
+            "phpunit/phpunit": "~6.4"
+        },
+        "suggest": {
+            "doctrine/annotations": "Install it if you want to use annotations (version ~1.2)",
+            "ocramius/proxy-manager": "Install it if you want to use lazy injection (version ~2.0)"
+        },
+        "time": "2019-07-08T07:24:22+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "DI\\": "src/"
+            },
+            "files": [
+                "src/functions.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "description": "The dependency injection container for humans",
+        "homepage": "http://php-di.org/",
+        "keywords": [
+            "PSR-11",
+            "container",
+            "container-interop",
+            "dependency injection",
+            "di",
+            "ioc",
+            "psr11"
+        ]
+    },
+    {
+        "name": "php-di/phpdoc-reader",
+        "version": "2.1.1",
+        "version_normalized": "2.1.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/PHP-DI/PhpDocReader.git",
+            "reference": "15678f7451c020226807f520efb867ad26fbbfcf"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/PHP-DI/PhpDocReader/zipball/15678f7451c020226807f520efb867ad26fbbfcf",
+            "reference": "15678f7451c020226807f520efb867ad26fbbfcf",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~4.6"
+        },
+        "time": "2019-09-26T11:24:58+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "PhpDocReader\\": "src/PhpDocReader"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "description": "PhpDocReader parses @var and @param values in PHP docblocks (supports namespaced class names with the same resolution rules as PHP)",
+        "keywords": [
+            "phpdoc",
+            "reflection"
+        ]
+    },
+    {
+        "name": "psr/container",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-fig/container.git",
+            "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+            "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2017-02-14T16:28:37+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Psr\\Container\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "PHP-FIG",
+                "homepage": "http://www.php-fig.org/"
+            }
+        ],
+        "description": "Common Container Interface (PHP FIG PSR-11)",
+        "homepage": "https://github.com/php-fig/container",
+        "keywords": [
+            "PSR-11",
+            "container",
+            "container-interface",
+            "container-interop",
+            "psr"
         ]
     },
     {
@@ -373,18 +640,130 @@
         "homepage": "https://symfony.com"
     },
     {
-        "name": "viison/address-splitter",
-        "version": "0.3.2",
-        "version_normalized": "0.3.2.0",
+        "name": "symfony/polyfill-php56",
+        "version": "v1.12.0",
+        "version_normalized": "1.12.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/VIISON/AddressSplitting.git",
-            "reference": "6f5acd7d37641392f4fc1cf126d2cbfdd2f33946"
+            "url": "https://github.com/symfony/polyfill-php56.git",
+            "reference": "0e3b212e96a51338639d8ce175c046d7729c3403"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/VIISON/AddressSplitting/zipball/6f5acd7d37641392f4fc1cf126d2cbfdd2f33946",
-            "reference": "6f5acd7d37641392f4fc1cf126d2cbfdd2f33946",
+            "url": "https://api.github.com/repos/symfony/polyfill-php56/zipball/0e3b212e96a51338639d8ce175c046d7729c3403",
+            "reference": "0e3b212e96a51338639d8ce175c046d7729c3403",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3",
+            "symfony/polyfill-util": "~1.0"
+        },
+        "time": "2019-08-06T08:03:45+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.12-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Polyfill\\Php56\\": ""
+            },
+            "files": [
+                "bootstrap.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Nicolas Grekas",
+                "email": "p@tchwork.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony polyfill backporting some PHP 5.6+ features to lower PHP versions",
+        "homepage": "https://symfony.com",
+        "keywords": [
+            "compatibility",
+            "polyfill",
+            "portable",
+            "shim"
+        ]
+    },
+    {
+        "name": "symfony/polyfill-util",
+        "version": "v1.12.0",
+        "version_normalized": "1.12.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/polyfill-util.git",
+            "reference": "4317de1386717b4c22caed7725350a8887ab205c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/polyfill-util/zipball/4317de1386717b4c22caed7725350a8887ab205c",
+            "reference": "4317de1386717b4c22caed7725350a8887ab205c",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "time": "2019-08-06T08:03:45+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.12-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Polyfill\\Util\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Nicolas Grekas",
+                "email": "p@tchwork.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony utilities for portability of PHP codes",
+        "homepage": "https://symfony.com",
+        "keywords": [
+            "compat",
+            "compatibility",
+            "polyfill",
+            "shim"
+        ]
+    },
+    {
+        "name": "viison/address-splitter",
+        "version": "0.3.3",
+        "version_normalized": "0.3.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pickware/address-splitter.git",
+            "reference": "b434d98a482adc259e98f8be79b38c6ef12fe52d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pickware/address-splitter/zipball/b434d98a482adc259e98f8be79b38c6ef12fe52d",
+            "reference": "b434d98a482adc259e98f8be79b38c6ef12fe52d",
             "shasum": ""
         },
         "require": {
@@ -393,7 +772,7 @@
         "require-dev": {
             "phpunit/phpunit": "~4.0"
         },
-        "time": "2018-03-05T10:46:06+00:00",
+        "time": "2019-09-30T12:43:18+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -415,40 +794,37 @@
     },
     {
         "name": "wedevelopcoffee/wpower",
-        "version": "v1.1.0",
-        "version_normalized": "1.1.0.0",
+        "version": "dev-v2-dev",
+        "version_normalized": "dev-v2-dev",
         "source": {
             "type": "git",
             "url": "https://github.com/wedevelopcoffee/wPower.git",
-            "reference": "cdcc6d1e228d252eaab5b09ab521f88490f6d9d2"
+            "reference": "fb41c55690fb054f4d8cda06a3ce0dfa5f754e52"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/cdcc6d1e228d252eaab5b09ab521f88490f6d9d2",
-            "reference": "cdcc6d1e228d252eaab5b09ab521f88490f6d9d2",
+            "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/fb41c55690fb054f4d8cda06a3ce0dfa5f754e52",
+            "reference": "fb41c55690fb054f4d8cda06a3ce0dfa5f754e52",
             "shasum": ""
         },
         "require": {
             "doctrine/inflector": "1.1.*",
             "illuminate/filesystem": "5.2.*",
-            "illuminate/pagination": "5.2.*"
+            "php-di/php-di": "^6.0"
         },
         "require-dev": {
+            "illuminate/database": "5.2.*",
             "mockery/mockery": "^1.0",
             "php-mock/php-mock-mockery": "^1.2",
-            "phpunit/phpunit": "^6",
-            "smarty/smarty": "3.1.29"
+            "phpunit/phpunit": "^7"
         },
-        "time": "2019-02-20T12:46:26+00:00",
+        "time": "2019-08-18T08:08:41+00:00",
         "type": "library",
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-4": {
                 "WeDevelopCoffee\\wPower\\": "src"
-            },
-            "files": [
-                "src/helpers.php"
-            ]
+            }
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [

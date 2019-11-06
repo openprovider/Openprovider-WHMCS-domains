@@ -125,7 +125,7 @@ $additionaldomainfields[".jobs"][] = array(
     "op_location" => "customerExtensionAdditionalData",
     "op_name" => "contactTitle"
 );
-    
+
 $additionaldomainfields[".jobs"][] = array(
     "Name" => "HR Member",
     "LangVar" => "jobsHRMember",
@@ -887,7 +887,33 @@ $additionaldomainfields['.nu'][] = array(
     'Name' => 'VAT Number',
     "Remove" => true,
 );
-   
-   
-   
-  
+
+// .PRO
+$additionaldomainfields[".pro"][] = array(
+    "Name" => "Profession",
+    "Remove" => true,
+);
+$additionaldomainfields[".pro"][] = array(
+    "Name" => "License Number",
+    "Remove" => true,
+);
+$additionaldomainfields[".pro"][] = array(
+    "Name" => "Authority",
+    "Remove" => true,
+);
+$additionaldomainfields[".pro"][] = array(
+    "Name" => "Authority Website",
+    "Remove" => true,
+);
+
+// .TOP
+$additionaldomainfields[".top"][] = array(
+    "Name" => "Internationalized domain name Script (only for IDN domains)",
+    "LangVar" => "orgIdnScript",
+    "Type" => "dropdown",
+    "Options" => "None,AR - Arabic,ZH - Chinese,FR - French, DE - German, JA - Japanese, RU - Russian, ES - Spanish",
+    "op_explode" => " -",
+    "op_location" => "domainAdditionalData",
+    "op_name" => "idnScript",
+    "op_skip" => "None"
+);

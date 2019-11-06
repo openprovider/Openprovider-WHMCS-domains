@@ -1,6 +1,6 @@
 <?php
 namespace OpenProvider\WhmcsHelpers;
-use	Carbon\Carbon;
+use WeDevelopCoffee\wPower\Models\Registrar;
 
 /**
  * Activity log
@@ -49,8 +49,8 @@ class Activity
              * @param array $replaceVars An array of strings for replacement
              */
             $replaceVars = $data['replaceVars'];
-            $replaceVars [] = Registrar::get('Username');
-            $replaceVars [] = Registrar::get('Password');
+            $replaceVars [] = Registrar::getByKey('openprovider', 'Username');
+            $replaceVars [] = Registrar::getByKey('openprovider','Password');
 
             logModuleCall('openprovider', $activity, $data['requestString'], $data['responseData'], $data['processedData'], $replaceVars);
         }
@@ -73,8 +73,10 @@ class Activity
             case 'update_domain_next_due_date':
                 $log_entry = 'Updated next due date for domain ' . $data['domain'] .' from '. $data['old_date'] . ' to ' . $data['new_date'];
 
-                if(isset($activity['data'] [ 'old_due_date_in_future' ]))
-                    $log_entry .= ' Old next due date was in future ('.($activity['data'] [ 'old_due_date_in_future' ] * -1).' days)';
+                if(isset($activity['data'] [ 'old_due_date_too_late' ]))
+                    $log_entry .= ' Original next due date was too late ('.($activity['data'] [ 'old_due_date_too_late' ] * -1).' days)';
+                elseif(isset($activity['data'] [ 'old_due_date_too_early' ]))
+                    $log_entry .= ' Original next due date was too early ('.($activity['data'] [ 'old_due_date_too_early' ] * -1).' days)';
                 break;
 
             case 'update_domain_expiry_date':
@@ -118,8 +120,7 @@ class Activity
      */
     public static function send_email_report()
     {
-        // dd([self::$activity_log, Registrar::get('sendEmptyActivityEmail')]);
-        if(empty(self::$activity_log) && Registrar::get('sendEmptyActivityEmail') != 'on')
+        if(empty(self::$activity_log) && Registrar::getByKey('openprovider', 'sendEmptyActivityEmail') != 'on')
             return;
 
         $command    = 'SendAdminEmail';
@@ -146,6 +147,12 @@ class Activity
      */
     private static function generate_email()
     {
+        $setting['syncExpiryDate'] = Registrar::getByKey('openprovider', 'syncExpiryDate', 'on');
+        $setting['syncDomainStatus'] = Registrar::getByKey('openprovider', 'syncDomainStatus', 'on');
+        $setting['syncAutoRenewSetting'] = Registrar::getByKey('openprovider', 'syncAutoRenewSetting', 'on');
+        $setting['syncIdentityProtectionToggle'] = Registrar::getByKey('openprovider', 'syncIdentityProtectionToggle', 'on');
+        $setting['updateNextDueDate'] = Registrar::getByKey('openprovider', 'updateNextDueDate', 'off') ;
+
         $email = "<p>Dear Administrator,<br>
         <br>\n
         Please find the domain synchronisation update below for your Openprovider domains.<br>\n<br>\n";
@@ -170,7 +177,9 @@ class Activity
          }
 
         // Expiry
-        $email .= "
+        if($setting['syncExpiryDate'] == 'on')
+        {
+            $email .= "
         The following domains have been processed for <strong>expiry date</strong> updates:</p>
         <table>
         <tr>
@@ -178,24 +187,28 @@ class Activity
             <td>Old date</td>
             <td>New date</td>
         </tr>";
-        foreach (self::$activity_log['update_domain_expiry_date'] as $activity) {
-            $email .= "<tr>
+            foreach (self::$activity_log['update_domain_expiry_date'] as $activity) {
+                $email .= "<tr>
                 <td>" . $activity['data'] ['domain'] . "</td>
                 <td>" . $activity['data'] ['old_date'] . "</td>
                 <td>" . $activity['data'] ['new_date'] . "</td>
             </tr>\n";
+            }
+
+            $email .= "</table>\n";
         }
 
-        $email .= "</table>\n";
 
         // Due date
-        // First, check which domains have an updated invoice due date.
-        $updated_invoice_dates = [];
-        foreach (self::$activity_log['update_invoice_next_due_date'] as $activity) {
-            $updated_invoice_dates[$activity['data'] ['domain']] = true;
-        }
+        if($setting['updateNextDueDate'] == 'on')
+        {
+            // First, check which domains have an updated invoice due date.
+            $updated_invoice_dates = [];
+            foreach (self::$activity_log['update_invoice_next_due_date'] as $activity) {
+                $updated_invoice_dates[$activity['data'] ['domain']] = true;
+            }
 
-        $email .= "<p>
+            $email .= "<p>
         The following domains have been processed for <strong>due date</strong> updates:</p>
         <table>
         <tr>
@@ -205,86 +218,96 @@ class Activity
             <td>Invoice updated?</td>
             <td>Comments</td>
         </tr>";
-        foreach (self::$activity_log['update_domain_next_due_date'] as $activity) {
-            if (isset($updated_invoice_dates[$activity['data'] ['domain']]))
-                $invoice_update = 'yes';
-            else
-                $invoice_update = 'no';
+            foreach (self::$activity_log['update_domain_next_due_date'] as $activity) {
+                if (isset($updated_invoice_dates[$activity['data'] ['domain']]))
+                    $invoice_update = 'yes';
+                else
+                    $invoice_update = 'no';
 
-            $email .= "<tr>
+                $email .= "<tr>
                 <td>" . $activity['data'] ['domain'] . "</td>
                 <td>" . $activity['data'] ['old_date'] . "</td>
                 <td>" . $activity['data'] ['new_date'] . "</td>
                 <td>" . $invoice_update . "</td>
                 ";
 
-            if(isset($activity['data'] [ 'old_due_date_in_future' ]))
-                $email .= ' <td><strong><font color="red">Old next due date was in the future ('.($activity['data'] [ 'old_due_date_in_future' ] * -1).' days)</font></strong></td>';
-            else
-                $email .= ' <td></td>';
+                if(isset($activity['data'] [ 'old_due_date_too_late' ]))
+                    $email .= ' <td><strong><font color="red">Original next due date was too late ('.($activity['data'] [ 'old_due_date_too_late' ] * -1).' days)</font></strong></td>';
+                elseif(isset($activity['data'] [ 'old_due_date_too_early' ]))
+                    $email .= ' <td><strong><font color="red">Original next due date was too early ('.($activity['data'] [ 'old_due_date_too_early' ] * -1).' days)</font></strong></td>';
+                else
+                    $email .= ' <td></td>';
 
-            $email .= "
+                $email .= "
             </tr>\n";
+            }
+
+            $email .= "</table>\n";
         }
 
-        $email .= "</table>\n";
 
         // Domain status
-        $email .= "
-        The following domains have been processed for <strong>domain status</strong> updates:</p>
-        <table>
-        <tr>
-            <td>Domain</td>
-            <td>Old status</td>
-            <td>New status</td>
-        </tr>";
-        foreach (self::$activity_log['update_domain_status'] as $activity) {
-            $email .= "<tr>
-                <td>" . $activity['data'] ['domain'] . "</td>
-                <td>" . $activity['data'] ['old_status'] . "</td>
-                <td>" . $activity['data'] ['new_status'] . "</td>
-            </tr>\n";
-        }
+        if($setting['syncDomainStatus'] == 'on') {
+            $email .= "
+            The following domains have been processed for <strong>domain status</strong> updates:</p>
+            <table>
+            <tr>
+                <td>Domain</td>
+                <td>Old status</td>
+                <td>New status</td>
+            </tr>";
+            foreach (self::$activity_log['update_domain_status'] as $activity) {
+                $email .= "<tr>
+                    <td>" . $activity['data'] ['domain'] . "</td>
+                    <td>" . $activity['data'] ['old_status'] . "</td>
+                    <td>" . $activity['data'] ['new_status'] . "</td>
+                </tr>\n";
+            }
 
-        $email .= "</table>\n";
+            $email .= "</table>\n";
+        }
 
         // Domain auto renew setting
-        $email .= "
-        The following domains have been processed for <strong>domain autorenew</strong> updates:</p>
-        <table>
-        <tr>
-            <td>Domain</td>
-            <td>Old setting</td>
-            <td>New setting</td>
-        </tr>";
-        foreach (self::$activity_log['update_autorenew_setting'] as $activity) {
-            $email .= "<tr>
-                <td>" . $activity['data'] ['domain'] . "</td>
-                <td>" . $activity['data'] ['old_setting'] . "</td>
-                <td>" . $activity['data'] ['new_setting'] . "</td>
-            </tr>\n";
-        }
+        if($setting['syncAutoRenewSetting'] == 'on') {
+            $email .= "
+            The following domains have been processed for <strong>domain autorenew</strong> updates:</p>
+            <table>
+            <tr>
+                <td>Domain</td>
+                <td>Old setting</td>
+                <td>New setting</td>
+            </tr>";
+            foreach (self::$activity_log['update_autorenew_setting'] as $activity) {
+                $email .= "<tr>
+                    <td>" . $activity['data'] ['domain'] . "</td>
+                    <td>" . $activity['data'] ['old_setting'] . "</td>
+                    <td>" . $activity['data'] ['new_setting'] . "</td>
+                </tr>\n";
+            }
 
-        $email .= "</table>\n";
+            $email .= "</table>\n";
+        }
 
         // Domain whois protection setting
-        $email .= "
-        The following domains have been processed for <strong>domain whois privacy protection</strong> updates:</p>
-        <table>
-        <tr>
-            <td>Domain</td>
-            <td>Old setting</td>
-            <td>New setting</td>
-        </tr>";
-        foreach (self::$activity_log['update_identity_protection_setting'] as $activity) {
-            $email .= "<tr>
-                <td>" . $activity['data'] ['domain'] . "</td>
-                <td>" . ($activity['data'] ['old_setting'] == 1 ? 'Enabled' : 'Disabled') . "</td>
-                <td>" . ($activity['data'] ['new_setting'] == 1 ? 'Enabled' : 'Disabled') . "</td>
-            </tr>\n";
-        }
+        if($setting['syncIdentityProtectionToggle'] == 'on') {
+            $email .= "
+            The following domains have been processed for <strong>domain whois privacy protection</strong> updates:</p>
+            <table>
+            <tr>
+                <td>Domain</td>
+                <td>Old setting</td>
+                <td>New setting</td>
+            </tr>";
+            foreach (self::$activity_log['update_identity_protection_setting'] as $activity) {
+                $email .= "<tr>
+                    <td>" . $activity['data'] ['domain'] . "</td>
+                    <td>" . ($activity['data'] ['old_setting'] == 1 ? 'Enabled' : 'Disabled') . "</td>
+                    <td>" . ($activity['data'] ['new_setting'] == 1 ? 'Enabled' : 'Disabled') . "</td>
+                </tr>\n";
+            }
 
-        $email .= "</table>\n";
+            $email .= "</table>\n";
+        }
 
         return $email;
     }

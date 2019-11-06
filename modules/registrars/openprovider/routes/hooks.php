@@ -25,6 +25,16 @@ return [
         'hookPoint' => 'DomainEdit',
         'priority' =>  1,
         'controller' => 'DomainController@saveDomainEdit'
+    ],
+    [
+        'hookPoint' => 'ClientAreaPrimarySidebar',
+        'priority' =>  1,
+        'controller' => 'NavigationController@hideRegistrarLock'
+    ],
+    [
+        'hookPoint' => 'AdminHomeWidgets',
+        'priority' =>  1,
+        'controller' => 'AdminWidgetController@showBalance'
     ]
 ];
 

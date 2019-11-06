@@ -5,11 +5,6 @@
  * @copyright Copyright (c) Openprovider 2018
  */
 
-if (!defined("WHMCS"))
-{
-    die("This file cannot be accessed directly");
-}
-
 /**
  * Return the additional fields for OpenProvider.
  *
@@ -17,6 +12,8 @@ if (!defined("WHMCS"))
  */
 function openprovider_additional_fields()
 {
-    $additionalFields = wLaunch(OpenProvider\WhmcsRegistrar\Library\AdditionalFields::class);
+    $core = openprovider_registrar_core('admin');
+    $core->launch();
+    $additionalFields = $core->launcher->get(\OpenProvider\WhmcsRegistrar\src\AdditionalFields::class);
     return $additionalFields->get();
 }

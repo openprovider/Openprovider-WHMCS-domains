@@ -1,5 +1,5 @@
 <?php
-use OpenProvider\WhmcsRegistrar\Library\DomainSync;
+use OpenProvider\WhmcsRegistrar\src\DomainSync;
 use OpenProvider\WhmcsHelpers\Activity;
 
 /**
@@ -36,6 +36,10 @@ $DomainSync->process_domains();
 
 // 4. Send activity reports
 Activity::send_email_report();
+
+// Send a 200 HTTP code back. Some mod_php setups require this. Otherwise, a HTTP 500 is returned.
+header("HTTP/1.1 200 OK");
+exit();
 
 /**
  * Check if we are running command line.

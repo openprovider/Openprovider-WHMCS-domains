@@ -1,7 +1,6 @@
 <?php
 namespace WeDevelopCoffee\OpenProvider_Api;
 
-use DOMDocument;
 use WeDevelopCoffee\OpenProvider_Api\Exceptions\ApiException;
 
 class Api
@@ -24,7 +23,7 @@ class Api
         return $this;
     }
 
-    public function processRawReply (Request $r) {
+    public function processRawReply (OP_Request $r) {
         if ($this->debug) {
             echo $r->getRaw() . "\n";
         }
@@ -41,14 +40,13 @@ class Api
         return $str;
     }
 
-    public function process (Request $r) {
+    public function process (OP_Request $r) {
         if ($this->debug) {
             echo $r->getRaw() . "\n";
         }
-        
+
         $msg = $r->getRaw();
         $str = $this->_send($msg);
-        
         if (!$str) {
             throw new ApiException("Bad reply", 4004);
         }
@@ -91,13 +89,13 @@ class Api
 
     static function encode ($str)
     {
-        $ret = @htmlentities($str, null, Api::$encoding);
+        $ret = @htmlentities($str, null, OP_API::$encoding);
         // Some tables have data stored in two encodings
         if (strlen($str) && !strlen($ret)) {
             error_log('ISO charset date = ' . date('d.m.Y H:i:s') . ',STR = ' . $str);
             $str = iconv('ISO-8859-1', 'UTF-8', $str);
         } 
-        
+
         if (!empty($str) && is_object($str)) {
             error_log('Exception convertPhpObjToDom date = ' . date('d.m.Y H:i:s') . ', object class = ' . get_class($str));
             if (method_exists($str , '__toString')) {
@@ -109,7 +107,7 @@ class Api
 
         if (!empty($str) && is_string($str) && !self::checkCreateXml($str)) {
             error_log('Exception convertPhpObjToDom date = ' . date('d.m.Y H:i:s') . ', STR = ' . $str);
-            $str = htmlentities($str, null, Api::$encoding);
+            $str = htmlentities($str, null, OP_API::$encoding);
         }
 
         return $str;
@@ -122,7 +120,7 @@ class Api
 
     static function createRequest ($xmlStr = null)
     {
-        return new Request ($xmlStr);
+        return new OP_Request ($xmlStr);
     }
 
     static function createReply ($xmlStr = null)

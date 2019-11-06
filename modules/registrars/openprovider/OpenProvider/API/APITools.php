@@ -39,7 +39,8 @@ class APITools
 
             if (empty($nsIp))
             {
-                $api = new \OpenProvider\API\API($params);
+                $api = new \OpenProvider\API\API();
+                $api->setParams($params);
                 $searchRasult = $api->sendRequest('searchNsRequest', array(
                     'pattern' => $nsName,
                 ));

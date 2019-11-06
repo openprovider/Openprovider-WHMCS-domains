@@ -1,42 +1,35 @@
 <?php
-namespace Tests\Core;
-use Tests\TestCase;
-use WeDevelopCoffee\wPower\Core\Core;
 
+namespace WeDevelopCoffee\wPower\Tests\Core;
+
+use WeDevelopCoffee\wPower\Core\Core;
+use WeDevelopCoffee\wPower\Tests\TestCase;
+
+/**
+ * Class LaunchTest
+ * @package WeDevelopCoffee\wPower\Tests\Launch
+ */
 class CoreTest extends TestCase
 {
-    protected $core;
-
-
-    public function test_cli()
-    {
-        $result = $this->core->isCli();
-        $this->assertTrue($result);
-    }
-
-    public function test_get_level()
-    {
-        $result = $this->core->getLevel();
-        $this->assertEquals('hooks', $result);
-    }
-
-    public function test_set_level()
-    {
-        $level = 'admin';
-
-        $this->core->setLevel($level);
-        $result = $this->core->getLevel();
-        $this->assertEquals($level, $result);
-    }
-   
     /**
-    * setUp
-    * 
-    */
-    public function setUp ()
+     * @var object $launch The \WeDevelopCoffee\wPower\Core\Launch::class
+     */
+    protected $launch;
+
+
+    public function test_launch_core()
     {
-        $this->core   = new Core();
+        $core = new Core();
+
+        // Configure the instance.
+        $core->setNamespace($this->testData['namespace'])
+            ->setModuleType($this->testData['moduleType'])
+            ->setModuleName($this->testData['moduleName'])
+            ->setLevel($this->testData['level']);
+
+        $this->launch = $core->launch();
+
+        $this->assertIsObject($this->launch);
     }
-    
-    
+
 }

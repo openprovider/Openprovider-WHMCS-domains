@@ -1,6 +1,5 @@
 <?php
 namespace OpenProvider;
-use Carbon\Carbon;
 use WHMCS\Database\Capsule;
 use OpenProvider\Notification;
 use \OpenProvider\WhmcsHelpers\Domain;
@@ -329,6 +328,7 @@ class DomainSync
         if(isset($op_status_converter[ $this->op_domain['status'] ]))
         {
             $op_domain_status = $op_status_converter[ $this->op_domain['status'] ];
+
             if($this->op_domain['status'] == 'DEL' || $this->op_domain['status'] == 'RRQ')
             {
                 $carbonNow = new Carbon();

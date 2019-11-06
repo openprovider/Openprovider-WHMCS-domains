@@ -34,7 +34,8 @@ try {
 try
 {
     $d  =   explode('.', $_REQUEST['domain'], 2);
-    $api = new \OpenProvider\API\API($params);
+    $api = new \OpenProvider\API\API();
+    $api->setParams($params);
 
     $domain = new \OpenProvider\API\Domain();
     $domain->extension = $d[1];

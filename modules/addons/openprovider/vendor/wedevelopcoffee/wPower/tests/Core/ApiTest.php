@@ -1,6 +1,6 @@
 <?php
-namespace Tests\Core;
-use Tests\TestCase;
+namespace WeDevelopCoffee\wPower\Tests\Core;
+use WeDevelopCoffee\wPower\Tests\TestCase;
 use WeDevelopCoffee\wPower\Core\API;
 
 class ApiTest extends TestCase

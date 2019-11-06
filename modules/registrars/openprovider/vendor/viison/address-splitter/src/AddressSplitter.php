@@ -8,6 +8,67 @@ use VIISON\AddressSplitter\Exceptions\SplittingException;
  */
 class AddressSplitter
 {
+    private static $generalNumberPrefixes = array(
+        // English
+        'No [.:]?',
+        'Nos ([.:]|\s)',
+        'Number \s',
+
+        // German
+        'Nr [.:]?',
+        'Nummer \s',
+
+        // Other
+        '№ [.:]?',
+        'Nº [.:]?',
+        'n° [.:]?'
+    );
+
+    private static $additionalHouseNumberPrefixes = array(
+        // German
+        'Hausnummer \s',
+        'Hausnr [.:]?'
+    );
+
+    private static function getHouseNumberPrefixes()
+    {
+        return self::getRegexForNumberPrefixes(self::$generalNumberPrefixes + self::$additionalHouseNumberPrefixes);
+    }
+
+    private static function getGeneralNumberPrefixes()
+    {
+        return self::getRegexForNumberPrefixes(self::$generalNumberPrefixes);
+    }
+
+    /**
+     * Creates an anonymous group matching the supplied alternative regular expressions for number prefixes.
+     *
+     * The generated regular expression
+     *
+     * * assumes 'x' and 'u' pattern modifiers,
+     *
+     * * assumes each alternative must either be at the start of the string or be preceded by whitespace,
+     *
+     * * assumes each alternative to be case insensitive.
+     *
+     * @param array $numberPrefixes a list of regular expressions (assuming 'x' and 'u' flags)
+     * @return string a regular expression for an anonymous group matching the alternatives supplied in the argument
+     */
+    private static function getRegexForNumberPrefixes(array $numberPrefixes)
+    {
+         return self::concatenateRegexAlternatives(array_map(
+            function ($numberPrefix) {
+                return '(?: ^ | (?<=\s)) (?i: ' . $numberPrefix . ' )';
+            },
+            $numberPrefixes
+        ));
+    }
+
+    private static function concatenateRegexAlternatives(array $alternatives)
+    {
+        return '(?:' . implode('|', $alternatives) . ')';
+    }
+
     /**
      * This function splits an address line like for example "Pallaswiesenstr. 45 App 231" into its individual parts.
      * Supported parts are additionToAddress1, streetName, houseNumber and additionToAddress2. AdditionToAddress1
@@ -21,9 +82,20 @@ class AddressSplitter
      */
     public static function splitAddress($address)
     {
+        $houseNumberPrefixes = self::getHouseNumberPrefixes();
+        $numberPrefixes = self::getGeneralNumberPrefixes();
+
         /* Matching this group signifies the following text is part of
-         * additionToAddress2. */
+         * additionToAddress2.
+         *
+         * See [1] for some of the English language stop words and abbreviations.
+         *
+         * [1] <https://web.archive.org/web/20180410130330/http://maf.directory/zp4/abbrev.html>
+         */
         $addition2Introducers = '(?:
+
+            # {{{ Additions relating to who (a natural person) is addressed
+
             \s+ [Cc] \s* \/ \s* [Oo] \s
             | ℅
             | \s+ care \s+ of \s+
@@ -38,6 +110,107 @@ class AddressSplitter
                 (?: V | V.\s* | (?<=\s)Vertreter\s+ )
                 (?: i | i.\s* | (?<=\s)im\s+ )
                 (?: A | A.\s* | (?<=\s)Amt\s+ )
+
+            # }}}
+            # {{{ Additions which further specify more precisely the location
+
+            | \s+ (?: Haus ' . $numberPrefixes . '? ) \s
+            | \s+ (?: WG | W\.G\. | WG\. | Wohngemeinschaft ) ' . $numberPrefixes .'? ($ | \s)
+            | \s+ (?: [Aa]partment | APT \.? | Apt \.? ) ' . $numberPrefixes .'? \s
+            | \s+ (?: [Ff]lat ) ' . $numberPrefixes .'? \s
+            | (?: # Numeric-based location specifiers (e.g., "3. Stock"):
+                \s+
+                (?:
+                    [\p{N}]+ # A number, …
+                    (?i: st | nd | rd | th)? # …, optionally followed by an English number suffix
+                    \.? # …, followed by an optional dot,
+                    \s* # …, followed by optional spacing
+                )?
+                (?: # Specifying category:
+                    (?i: Stock | Stockwerk)
+                    | App \.? | Apt \.? | (?i: Appartment | Apartment)
+                )
+                # At the end of the string or followed by a space
+                (?: $ | \s)
+            )
+            | (?:
+                \s+ (?:
+                    # English language stop words wrt location from source [1]
+                    # (extracted only those which may not be _exclusively_ part of
+                    # street names):
+                    | ANX \.? | (?i: ANNEX)
+                    | APT \.? | (?i: APARTMENT)
+                    | ARC \.? | (?i: ARCADE)
+                    | AVE \.? | (?i: AVENUE)
+                    | BSMT \.? | (?i: BASEMENT)
+                    | BLDG \.? | (?i: BUILDING)
+                    | CP \.? | (?i: CAMP)
+                    | COR \.? | (?i: CORNER)
+                    | CORS \.? | (?i: CORNERS)
+                    | CT \.? | (?i: COURT)
+                    | CTS \.? | (?i: COURTS)
+                    | DEPT \.? | (?i: DEPARTMENT)
+                    | DV \.? | (?i: DIVIDE)
+                    | EST \.? | (?i: ESTATE)
+                    | EXT \.? | (?i: EXTENSION)
+                    | FRY \.? | (?i: FERRY)
+                    | FLD \.? | (?i: FIELD)
+                    | FLDS \.? | (?i: FIELDS)
+                    | FLT \.? | (?i: FLAT)
+                    | FL \.? | (?i: FLOOR)
+                    | FRNT \.? | (?i: FRONT)
+                    | GDNS \.? | (?i: GARDEN)
+                    | GDNS \.? | (?i: GARDENS)
+                    | GTWY \.? | (?i: GATEWAY)
+                    | GRN \.? | (?i: GREEN)
+                    | GRV \.? | (?i: GROVE)
+                    | HNGR \.? | (?i: HANGER)
+                    | HBR \.? | (?i: HARBOR)
+                    | HVN \.? | (?i: HAVEN)
+                    | KY \.? | (?i: KEY)
+                    | LBBY \.? | (?i: LOBBY)
+                    | LCKS \.? | (?i: LOCK)
+                    | LCKS \.? | (?i: LOCKS)
+                    | LDG \.? | (?i: LODGE)
+                    | MNR \.? | (?i: MANOR)
+                    | OFC \.? | (?i: OFFICE)
+                    | PKWY \.? | (?i: PARKWAY)
+                    | PH \.? | (?i: PENTHOUSE)
+                    | PRT \.? | (?i: PORT)
+                    | RADL \.? | (?i: RADIAL)
+                    | RM \.? | (?i: ROOM)
+                    | SPC \.? | (?i: SPACE)
+                    | SQ \.? | (?i: SQUARE)
+                    | STA \.? | (?i: STATION)
+                    | STE \.? | (?i: SUITE)
+                    | TER \.? | (?i: TERRACE)
+                    | TRAK \.? | (?i: TRACK)
+                    | TRL \.? | (?i: TRAIL)
+                    | TRLR \.? | (?i: TRAILER)
+                    | TUNL \.? | (?i: TUNNEL)
+                    | VW \.? | (?i: VIEW)
+                    | VIS \.? | (?i: VISTA)
+
+                    # Custom custom additions:
+                    | (?i: Story | Storey)
+                    | LVL \.? | (?i: Level)
+                )
+                ' . $numberPrefixes . '?
+                # May optionally be followed directly by a number+letter
+                # combination (e.g., "LVL3C"):
+                (?: [\p{N}]+[\p{L}]* )?
+                # Occurs at the end of the string or followed by a space:
+                ($ | \s)
+            )
+
+            # Heuristic to match location specifiers. These must not be
+            # conflated with house number extensions as in "12 AB". Hence
+            # our heuristic is at least 3 letters with the first letter being
+            # spelled as a capital. E.g., it would match "Haus", "Gebäude" or
+            # "Arbeitspl.", but not "AAB".
+            | \s+ ( [\p{Lu}\p{Lt}] [\p{Ll}\p{Lo}]{2,}  \.? ) ($ | \s)
+
+            # }}}
         )';
 
         $regex = '
@@ -47,7 +220,7 @@ class AddressSplitter
                 # [<Addition to address 2>]                                             #
                 #########################################################################
                 (?:(?P<A_Addition_to_address_1>.*?),\s*)? # Addition to address 1
-            (?:No\.\s*)?
+                (?: ' . $houseNumberPrefixes . ' \s*)?
                 (?P<A_House_number_match>
                      (?P<A_House_number_base>
                         \pN+(\s+\d+\/\d+)?
@@ -60,15 +233,16 @@ class AddressSplitter
                 )
             \s*,?\s*
                 (?P<A_Street_name>(?:[a-zA-Z]\s*|\pN\pL{2,}\s\pL)\S[^,#]*?(?<!\s)) # Street name
-            \s*(?:(?:[,\/]|(?=\#))\s*(?!\s*No\.)
+            \s*(?:(?:[,\/]|(?=\#))\s*(?!\s* ' . $houseNumberPrefixes . ')
                 (?P<A_Addition_to_address_2>(?!\s).*?))? # Addition to address 2
             |   #########################################################################
                 # Option B: [<Addition to address 1>] <Street name> <House number>      #
                 # [<Addition to address 2>]                                             #
                 #########################################################################
                 (?:(?P<B_Addition_to_address_1>.*?),\s*(?=.*[,\/]))? # Addition to address 1
-                (?!\s*No\.)(?P<B_Street_name>[^0-9# ]\s*\S(?:[^,#](?!\b\pN+\s))*?(?<!\s)) # Street name
-            \s*[\/,]?\s*(?:\sNo[.:])?\s*
+                (?!\s* ' . $houseNumberPrefixes . ')
+                (?P<B_Street_name>[^0-9# ]\s*\S(?:[^,#](?!\b\pN+\s))*?(?<!\s)) # Street name
+            \s*[\/,]?\s*(?:\s ' . $houseNumberPrefixes . ')?\s*
                 (?P<B_House_number_match>
                      (?P<B_House_number_base>
                         \pN+
@@ -100,7 +274,10 @@ class AddressSplitter
                      )?
                 ) # House number
                 (?:
-                    (?:\s*[-,\/]|(?=\#)|\s)\s*(?!\s*No\.)\s*
+                    (?:\s*[-,\/]|(?=\#)|\s)
+                    \s*
+                    (?!\s* ' . $houseNumberPrefixes . ' )
+                    \s*
                     (?P<B_Addition_to_address_2>(?!\s).*?)
                 )?
             )
@@ -148,7 +325,7 @@ class AddressSplitter
         $regex =
             '/
             \A\s* # Trim white spaces at the beginning
-            (?:[nN][oO][\.:]?\s*)? # Trim sth. like No.
+            (?: ' . self::getHouseNumberPrefixes() . '?\s*)?
             (?:\#\s*)? # Trim #
             (?<House_number_base>
                 [\pN]+ # House Number base (only the number)

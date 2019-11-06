@@ -4,6 +4,7 @@ use Smarty;
 use WeDevelopCoffee\wPower\Core\Router;
 use WeDevelopCoffee\wPower\Core\Path;
 use Illuminate\Pagination\Paginator;
+use WeDevelopCoffee\wPower\Security\Csrf;
 
 
 class View
@@ -42,7 +43,11 @@ class View
     * @var object
     */
     protected $path;
-    
+    /**
+     * @var Csrf
+     */
+    private $csrf;
+
     /**
     * Constructor
     *
@@ -50,12 +55,13 @@ class View
     * @param Object $asset
     * @param Object $path
     */
-    public function __construct(Smarty $smarty, Router $router, Asset $asset, Path $path)
+    public function __construct(Smarty $smarty, Router $router, Asset $asset, Path $path, Csrf $csrf)
     {
         $this->smarty   = $smarty;
         $this->router   = $router;
         $this->asset    = $asset;
         $this->path     = $path;
+        $this->csrf     = $csrf;
     }
     
     /**
@@ -69,12 +75,13 @@ class View
         $smarty->registerPlugin('function', 'get_route', [$this, 'getRoute']);
         $smarty->registerPlugin('function', 'get_admin_route', [$this, 'getAdminRoute']);
         $smarty->registerPlugin('function', 'get_current_url', [$this->router, 'getCurrentURL']);
+        $smarty->registerPlugin('function', 'generate_csrf', [$this, 'generateCsrf']);
         $smarty->registerPlugin('function', 'asset', [$this->asset, 'asset'] );
         $smarty->registerPlugin('function', 'asset_url', [$this->asset, 'assetURL'] );
         
         $smarty->assign($this->data);
         
-        $views_path = $this->path->getAddonPath() . 'resources/views/';
+        $views_path = $this->path->getModulePath() . 'resources/views/';
         
         return $smarty->display( $views_path . $this->view . '.tpl');
     }
@@ -97,6 +104,17 @@ class View
             return 1;
         });
         
+    }
+
+    /**
+     * Generate the CSRf
+     * @return string
+     * @throws \Exception
+     */
+    public function generateCsrf()
+    {
+        $token = $this->csrf->generateCsrf();
+        return '<input type="hidden" name=\'_csrf\' value="' . $token . '">';
     }
     
     /**
@@ -122,7 +140,8 @@ class View
     {
         $route = $this->router->setAdminRoute($var['route'])
         ->setParams($var)
-        ->getURL();
+        ->getAdminURL();
+
         return $route;
     }
     

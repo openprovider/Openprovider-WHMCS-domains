@@ -1,12 +1,15 @@
 {
-    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "OpenProvider\\WhmcsDomainAddon\\": "./"
         }
     },
     "require": {
-        "wedevelopcoffee/wpower": "1.1.*",
+        "wedevelopcoffee/wpower": "dev-v2-dev",
         "wedevelopcoffee/openprovider_api": "dev-master"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.0",
+        "php-mock/php-mock-mockery": "^1.2"
     }
 }

@@ -4,12 +4,13 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit375b9933452e9e0b85682a562d94475d
+class ComposerStaticInit862ebb83a297d337e522a1e6a05e138b
 {
     public static $files = array (
         '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
+        'bd9634f2d41831496de0d3dfe4c94881' => __DIR__ . '/..' . '/symfony/polyfill-php56/bootstrap.php',
         '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
-        '476d35b3cbaa28c118819f7dd37c9539' => __DIR__ . '/..' . '/wedevelopcoffee/wpower/src/helpers.php',
+        'b33e3d135e5d9e47d845c576147bda89' => __DIR__ . '/..' . '/php-di/php-di/src/functions.php',
         '2dcc1fe700145c8f64875eb0ae323e56' => __DIR__ . '/../..' . '/helpers.php',
     );
 
@@ -24,7 +25,16 @@ class ComposerStaticInit375b9933452e9e0b85682a562d94475d
         ),
         'S' => 
         array (
+            'Symfony\\Polyfill\\Util\\' => 22,
+            'Symfony\\Polyfill\\Php56\\' => 23,
             'Symfony\\Component\\Finder\\' => 25,
+            'SuperClosure\\' => 13,
+        ),
+        'P' => 
+        array (
+            'Psr\\Container\\' => 14,
+            'PhpParser\\' => 10,
+            'PhpDocReader\\' => 13,
         ),
         'O' => 
         array (
@@ -33,10 +43,14 @@ class ComposerStaticInit375b9933452e9e0b85682a562d94475d
         ),
         'I' => 
         array (
+            'Invoker\\' => 8,
             'Illuminate\\Support\\' => 19,
-            'Illuminate\\Pagination\\' => 22,
             'Illuminate\\Filesystem\\' => 22,
             'Illuminate\\Contracts\\' => 21,
+        ),
+        'D' => 
+        array (
+            'DI\\' => 3,
         ),
     );
 
@@ -49,9 +63,33 @@ class ComposerStaticInit375b9933452e9e0b85682a562d94475d
         array (
             0 => __DIR__ . '/..' . '/viison/address-splitter/src',
         ),
+        'Symfony\\Polyfill\\Util\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-util',
+        ),
+        'Symfony\\Polyfill\\Php56\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php56',
+        ),
         'Symfony\\Component\\Finder\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
+        ),
+        'SuperClosure\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/jeremeamia/superclosure/src',
+        ),
+        'Psr\\Container\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'PhpParser\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
+        ),
+        'PhpDocReader\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-di/phpdoc-reader/src/PhpDocReader',
         ),
         'OpenProvider\\WhmcsRegistrar\\' => 
         array (
@@ -61,13 +99,13 @@ class ComposerStaticInit375b9933452e9e0b85682a562d94475d
         array (
             0 => __DIR__ . '/../..' . '/OpenProvider',
         ),
+        'Invoker\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-di/invoker/src',
+        ),
         'Illuminate\\Support\\' => 
         array (
             0 => __DIR__ . '/..' . '/illuminate/support',
-        ),
-        'Illuminate\\Pagination\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/pagination',
         ),
         'Illuminate\\Filesystem\\' => 
         array (
@@ -76,6 +114,10 @@ class ComposerStaticInit375b9933452e9e0b85682a562d94475d
         'Illuminate\\Contracts\\' => 
         array (
             0 => __DIR__ . '/..' . '/illuminate/contracts',
+        ),
+        'DI\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-di/php-di/src',
         ),
     );
 
@@ -92,9 +134,9 @@ class ComposerStaticInit375b9933452e9e0b85682a562d94475d
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit375b9933452e9e0b85682a562d94475d::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit375b9933452e9e0b85682a562d94475d::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit375b9933452e9e0b85682a562d94475d::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit862ebb83a297d337e522a1e6a05e138b::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit862ebb83a297d337e522a1e6a05e138b::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit862ebb83a297d337e522a1e6a05e138b::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }
