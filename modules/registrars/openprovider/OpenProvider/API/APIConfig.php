@@ -10,7 +10,7 @@ namespace OpenProvider\API;
 
 class APIConfig
 {
-    static public $moduleVersion        =   'whmcs-3.0';
+    static public $moduleVersion        =   'whmcs-3.1';
     static public $supportedDnsTypes    =   array('A', 'AAAA', 'CNAME', 'MX', 'SPF', 'TXT');
     static public $dnsRecordTtl         =   86400; 
     static public $dnsRecordPriority    =   10; 
@@ -26,4 +26,21 @@ class APIConfig
         'techHandle'                    =>  'Tech',
         'resellerHandle'                =>  'Reseller'
     );
+
+    /**
+     * Check what is generating the API call.
+     *
+     * @return string
+     */
+    public static function getInitiator()
+    {
+        if(strpos($_SERVER['SCRIPT_NAME'], 'api.php'))
+            return 'api';
+        elseif(isset($_SESSION['adminid']))
+            return 'admin';
+        elseif(isset($_SESSION['uid']))
+            return 'customer';
+        else
+            return 'system';
+    }
 }

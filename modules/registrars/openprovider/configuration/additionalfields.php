@@ -917,3 +917,9 @@ $additionaldomainfields[".top"][] = array(
     "op_name" => "idnScript",
     "op_skip" => "None"
 );
+
+// .EU
+$additionaldomainfields[".eu"][] = array(
+    "Name" => "Entity Type",
+    "Remove" => true,
+);

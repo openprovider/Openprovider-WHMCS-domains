@@ -5,6 +5,7 @@ use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
 use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
+use WeDevelopCoffee\wPower\Models\Registrar;
 
 /**
  * Class TransferSyncController
@@ -45,10 +46,13 @@ class TransferSyncController extends BaseController
             $params['tld'] = $params['domainObj']->getTopLevel();
         }
 
+        $domainModel = \OpenProvider\WhmcsRegistrar\Models\Domain::where('id', $params['domainid'])->first();
+
         try
         {
             // get data from op
             $api                = new \OpenProvider\API\API();
+            $params['Password'] = html_entity_decode($params['Password']);
             $api->setParams($params);
             $domain             =   new \OpenProvider\API\Domain(array(
                 'name'          =>  $params['sld'],
@@ -59,10 +63,18 @@ class TransferSyncController extends BaseController
 
             if($opInfo['status'] == 'ACT')
             {
+                if($domainModel->check_renew_domain_setting_upon_completed_transfer() == true)
+                {
+                    $api->renewDomain($domain, $params['regperiod']);
+
+                    // Fetch updated information
+                    $opInfo             =   $api->retrieveDomainRequest($domain);
+                }
+
                 return array
                 (
                     'completed'     =>  true,
-                    'expirydate'    =>  date('Y-m-d', strtotime($opInfo['renewalDate'])),
+                    'expirydate'    =>  date('Y-m-d', strtotime($opInfo['renewalDate']))
                 );
             }
 
@@ -77,5 +89,29 @@ class TransferSyncController extends BaseController
         }
 
         return [];
+    }
+
+    /**
+     * Check if the domain should be renewed.
+     *
+     * @param $domain
+     */
+    protected function check_renew_domain_setting_upon_completed_transfer($domain)
+    {
+        $setting_value = Registrar::getByKey('openprovider', 'renewTldsUponTransferCompletion', '');
+
+        // When nothing was found; return false.
+        if(count($setting_value) == 0
+            || count($setting_value ) && $setting_value == '')
+            return false;
+
+        $tlds = explode(",",$setting_value);
+
+        // We found it!
+        if(in_array($domain->extension, $tlds))
+            return true;
+
+        // The domain TLD does not match with the renewal TLDs.
+        return false;
     }
 }

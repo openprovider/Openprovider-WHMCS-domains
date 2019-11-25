@@ -47,9 +47,10 @@ class Path
         }
 
         $parts = explode(DIRECTORY_SEPARATOR, getcwd());
-        if ($parts[sizeof($parts) - 1] == $customadminpath) {
+        if (last( $parts) == $customadminpath || last( $parts) == 'includes') {
             unset($parts[sizeof($parts) - 1]);
         }
+
         return implode(DIRECTORY_SEPARATOR, $parts);
     }
 

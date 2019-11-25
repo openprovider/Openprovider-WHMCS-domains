@@ -14,14 +14,11 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
     protected $description = '';
     protected $weight = 150;
     protected $columns = 1;
-    protected $cache = false;
+    protected $cache = true;
     protected $cacheExpiry = 120;
     protected $requiredPermission = '';
+
     public function getData()
-    {
-        return array();
-    }
-    public function generateOutput($data)
     {
         $openprovider = new OpenProvider();
         $balance = $openprovider->api->getResellerBalance()['balance'];
@@ -30,25 +27,34 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 
         $domainsTotal = $statistics['domain']['total'];
 
-        if($balance <= 100)
+        $returnData = [
+            'balance' => $balance,
+            'domainsTotal' => $domainsTotal
+        ];
+        return $returnData;
+    }
+
+    public function generateOutput($data)
+    {
+        if($data['balance'] <= 100)
             $balance_css = 'color-red';
 
         return <<<EOF
 <div class="widget-content-padded">
     <div class="row">
-    <div class="col-sm-6 bordered-right">
-        <div class="item">
-            <div class="data $balance_css">€$balance</div>
-            <div class="note">Balance</div>
+        <div class="col-sm-6 bordered-right">
+            <div class="item">
+                <div class="data $balance_css">€{$data['balance']}</div>
+                <div class="note">Balance</div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="item">
+                <div class="data color-orange">{$data['domainsTotal']}</div>
+                <div class="note">Domains</div>
+            </div>
         </div>
     </div>
-    <div class="col-sm-6">
-        <div class="item">
-            <div class="data color-orange">$domainsTotal</div>
-            <div class="note">Domains</div>
-        </div>
-    </div>
-</div>
 </div>
 EOF;
     }

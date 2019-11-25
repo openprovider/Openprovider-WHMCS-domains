@@ -70,6 +70,9 @@ class Activity
                 $log_entry = 'Updated next due date for domain ' . $data['domain'] .' from '. $data['old_date'] . ' to ' . $data['new_date'] .' on Invoice ID: '.$data['invoiceid'];
                 break;
 
+            case 'update_domain_empty_next_due_date':
+                $log_entry = 'Updated empty next due date for domain ' . $data['domain'] .' from '. $data['old_date'] . ' to ' . $data['new_date'];
+
             case 'update_domain_next_due_date':
                 $log_entry = 'Updated next due date for domain ' . $data['domain'] .' from '. $data['old_date'] . ' to ' . $data['new_date'];
 
@@ -198,6 +201,45 @@ class Activity
             $email .= "</table>\n";
         }
 
+        // Due date
+        if(isset(self::$activity_log['update_domain_empty_next_due_date']) && !empty(self::$activity_log['update_domain_empty_next_due_date']))
+        {
+            // First, check which domains have an updated invoice due date.
+            $updated_invoice_dates = [];
+            foreach (self::$activity_log['update_domain_empty_next_due_date'] as $activity) {
+                $updated_invoice_dates[$activity['data'] ['domain']] = true;
+            }
+
+            $email .= "<p>
+        The following domains had 00/00/0000 as next due dates. This usually happens after a completed registration or transfer.</p>
+        <table>
+        <tr>
+            <td>Domain</td>
+            <td>Old date</td>
+            <td>New date</td>
+        </tr>";
+            foreach (self::$activity_log['update_domain_empty_next_due_date'] as $activity) {
+                if (isset($updated_invoice_dates[$activity['data'] ['domain']]))
+                    $invoice_update = 'yes';
+                else
+                    $invoice_update = 'no';
+
+                $email .= "<tr>
+                <td>" . $activity['data'] ['domain'] . "</td>
+                <td>" . $activity['data'] ['old_date'] . "</td>
+                <td>" . $activity['data'] ['new_date'] . "</td>
+                <td>" . $invoice_update . "</td>
+                ";
+
+
+                $email .= ' <td></td>';
+
+                $email .= "
+            </tr>\n";
+            }
+
+            $email .= "</table>\n";
+        }
 
         // Due date
         if($setting['updateNextDueDate'] == 'on')

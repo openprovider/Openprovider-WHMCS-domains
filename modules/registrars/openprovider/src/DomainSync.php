@@ -3,7 +3,6 @@ namespace OpenProvider\WhmcsRegistrar\src;
 use Carbon\Carbon;
 use WeDevelopCoffee\wPower\Models\Registrar;
 use WHMCS\Database\Capsule;
-use OpenProvider\WhmcsRegistrar\src\Notification;
 use OpenProvider\WhmcsHelpers\Domain;
 use OpenProvider\WhmcsHelpers\Activity;
 use OpenProvider\WhmcsHelpers\General;
@@ -213,6 +212,8 @@ class DomainSync
         if($setting['updateNextDueDate'] == 'on')
             $this->process_next_due_dates();
 
+        $this->process_empty_next_due_dates();
+
         // Send global notification when the wpp contract us unsigned.
         if(!empty($this->unsigned_wpp_contract_domains))
         {
@@ -279,6 +280,34 @@ class DomainSync
     }
 
     /**
+     * Update domains with the next due date set to something like 00/00/0000 to the expiry date.
+     */
+    protected function process_empty_next_due_dates()
+    {
+        $days_before_expiry_date = Registrar::getByKey('openprovider', 'nextDueDateOffset','14');
+
+        $updated_domains = $this->domain->updateEmptyNextDueDates('openprovider', $days_before_expiry_date);
+
+        // Nothing has been updated.
+        if(empty($updated_domains))
+            return;
+
+        foreach($updated_domains as $domain)
+        {
+            $activity_data = [
+                'id' => $domain['domain']->id,
+                'domain' => $domain['domain']->domain,
+                'old_date'      => $domain['original_nextduedate']->toDateString(),
+                'new_date'      => $domain['domain']->nextduedate
+            ];
+
+            Activity::log('update_domain_empty_next_due_date', $activity_data);
+        }
+
+
+    }
+
+    /**
      * Process the Domain status setting
      *
      * @param  string $status Set the domain status
@@ -324,12 +353,19 @@ class DomainSync
             // Check if the status matches
             if($this->objectDomain->status != $op_domain_status)
             {
-                // Update the due date
-                if($this->objectDomain->status == 'Pending' || $this->objectDomain->status == 'Pending Transfer')
+                if($this->objectDomain->status == 'Pending Transfer' && $op_domain_status == 'Active')
                 {
-                    $next_due_date_result = General::compare_dates($this->objectDomain->nextduedate, $this->op_domain['renewalDate'], Registrar::getByKey('openprovider', 'nextDueDateOffset'), 'Y-m-d H:i:s', 'CEST');
-                    if($next_due_date_result != 'correct')
-                        $this->update_due_date_for_domain($next_due_date_result);
+                    if($this->objectDomain->check_renew_domain_setting_upon_completed_transfer() == true)
+                    {
+                        $this->OpenProvider->api->renewDomain($this->op_domain_obj, $this->objectDomain->registrationperiod);
+
+                        // Fetch updated information
+                        $this->op_domain             =    $this->OpenProvider->api->retrieveDomainRequest($this->op_domain_obj);
+                    }
+
+                    // Since this is a transfer, we will always update the expiration date. We ignore the configuration setting
+                    // since this is an initial transfer.
+                    $this->process_expiry_date();
                 }
 
                 // It does not, let's update the data.

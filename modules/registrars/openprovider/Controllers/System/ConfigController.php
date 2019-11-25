@@ -178,6 +178,13 @@ class ConfigController extends BaseController
                 "Size"          => "20",
                 "Description"   => "Openprovider password",
             ),
+            "sync_settings" => array
+            (
+                "FriendlyName"  => "Synchronisation settings",
+                "Type"          => "text",
+                "Description"   => $this->getSyncDescription(),
+                "Default"       => ""
+            ),
             "syncExpiryDate" => array
             (
                 "FriendlyName"  => "Synchronize Expiry date from Openprovider?",
@@ -252,6 +259,61 @@ class ConfigController extends BaseController
                 "Description"   => "Receive emails from domain sync even if no domains were updated",
                 "Default"       => "no"
             ),
+            "various_settings" => array
+            (
+                "FriendlyName"  => "Synchronisation settings",
+                "Type"          => "text",
+                "Description"   => $this->getVariousSettings(),
+                "Default"       => ""
+            ),
+            "renewTldsUponTransferCompletion" => array
+            (
+                "FriendlyName"  => "Renew domains upon transfer completion",
+                "Type"          => "text",
+                "Size"          => "20",
+                "Description"   => "<i>Enter the TLDs - without a leading dot - like nl,eu with a comma as a separator.</i><br>Some TLDs offer a free transfer, like the nl TLD. If the expiration date is within 30 days, the domain may expiry if the renewal is not performed in time. This setting will always try to renew the TLD. ",
+                "Default"       => ""
+            ),
         );
+    }
+
+    /**
+     * Return the sync settings description.
+     * @return string
+     */
+    protected function getSyncDescription()
+    {
+        $syncDescription = <<<EOF
+<style>
+#openproviderconfig input[name="sync_settings"] {
+    display: none;
+}
+#openproviderconfig h1
+{
+    margin-top: 20px;
+    color: #bb1929;
+}
+</style>
+<h1>Synchronisation options</h1>
+<p>Choose what settings you want to synchronise between WHMCS and Openprovider</p>
+EOF;
+        return $syncDescription;
+    }
+
+    /**
+     * Return the various settings description.
+     * @return string
+     */
+    protected function getVariousSettings()
+    {
+        $syncDescription = <<<EOF
+<style>
+#openproviderconfig input[name="various_settings"] {
+    display: none;
+}
+</style>
+<h1>Various settings</h1>
+EOF;
+        return $syncDescription;
     }
 }
