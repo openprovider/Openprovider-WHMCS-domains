@@ -1,6 +1,14 @@
 # Changelog
 
-# All previous versions to V3.0
+## V3.1
+
+- Feature: Execute renewal action for free domain transfers (#126)
+- Bugfix: Removed the by WHMCS introduced field "Eurid Entity type" for .eu (#130)
+- Bugfix: Fixed addon activation (#119)
+- Bugfix: Domains in Pending transfer are skipped by DomainSync (#131)
+
+
+## All previous versions to V3.0
 
 Manual action required: Check step 12 of hte installation manual in order to remove the domain lock warning for certain TLDs.
 

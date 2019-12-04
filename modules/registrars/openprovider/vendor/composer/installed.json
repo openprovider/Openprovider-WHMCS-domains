@@ -287,17 +287,17 @@
     },
     {
         "name": "nikic/php-parser",
-        "version": "v4.2.4",
-        "version_normalized": "4.2.4.0",
+        "version": "v4.3.0",
+        "version_normalized": "4.3.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/nikic/PHP-Parser.git",
-            "reference": "97e59c7a16464196a8b9c77c47df68e4a39a45c4"
+            "reference": "9a9981c347c5c49d6dfe5cf826bb882b824080dc"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/97e59c7a16464196a8b9c77c47df68e4a39a45c4",
-            "reference": "97e59c7a16464196a8b9c77c47df68e4a39a45c4",
+            "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/9a9981c347c5c49d6dfe5cf826bb882b824080dc",
+            "reference": "9a9981c347c5c49d6dfe5cf826bb882b824080dc",
             "shasum": ""
         },
         "require": {
@@ -305,16 +305,17 @@
             "php": ">=7.0"
         },
         "require-dev": {
+            "ircmaxell/php-yacc": "0.0.5",
             "phpunit/phpunit": "^6.5 || ^7.0 || ^8.0"
         },
-        "time": "2019-09-01T07:51:21+00:00",
+        "time": "2019-11-08T13:50:10+00:00",
         "bin": [
             "bin/php-parse"
         ],
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "4.2-dev"
+                "dev-master": "4.3-dev"
             }
         },
         "installation-source": "dist",
@@ -435,17 +436,17 @@
     },
     {
         "name": "php-di/php-di",
-        "version": "6.0.9",
-        "version_normalized": "6.0.9.0",
+        "version": "6.0.10",
+        "version_normalized": "6.0.10.0",
         "source": {
             "type": "git",
             "url": "https://github.com/PHP-DI/PHP-DI.git",
-            "reference": "00a5eb0f0dd94deabb71acfbf44c37b80d53d0a1"
+            "reference": "a6c813bf6b0d0bdeade3ac5a920e2c2a5b1a6ce3"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/00a5eb0f0dd94deabb71acfbf44c37b80d53d0a1",
-            "reference": "00a5eb0f0dd94deabb71acfbf44c37b80d53d0a1",
+            "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/a6c813bf6b0d0bdeade3ac5a920e2c2a5b1a6ce3",
+            "reference": "a6c813bf6b0d0bdeade3ac5a920e2c2a5b1a6ce3",
             "shasum": ""
         },
         "require": {
@@ -471,7 +472,7 @@
             "doctrine/annotations": "Install it if you want to use annotations (version ~1.2)",
             "ocramius/proxy-manager": "Install it if you want to use lazy injection (version ~2.0)"
         },
-        "time": "2019-07-08T07:24:22+00:00",
+        "time": "2019-10-21T11:58:24+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -753,17 +754,17 @@
     },
     {
         "name": "viison/address-splitter",
-        "version": "0.3.3",
-        "version_normalized": "0.3.3.0",
+        "version": "0.3.4",
+        "version_normalized": "0.3.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/pickware/address-splitter.git",
-            "reference": "b434d98a482adc259e98f8be79b38c6ef12fe52d"
+            "reference": "ebad709276aaadce94a3a1fe2507aa38a467a94a"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/pickware/address-splitter/zipball/b434d98a482adc259e98f8be79b38c6ef12fe52d",
-            "reference": "b434d98a482adc259e98f8be79b38c6ef12fe52d",
+            "url": "https://api.github.com/repos/pickware/address-splitter/zipball/ebad709276aaadce94a3a1fe2507aa38a467a94a",
+            "reference": "ebad709276aaadce94a3a1fe2507aa38a467a94a",
             "shasum": ""
         },
         "require": {
@@ -772,7 +773,7 @@
         "require-dev": {
             "phpunit/phpunit": "~4.0"
         },
-        "time": "2019-09-30T12:43:18+00:00",
+        "time": "2019-10-24T09:23:47+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -794,17 +795,17 @@
     },
     {
         "name": "wedevelopcoffee/wpower",
-        "version": "dev-v2-dev",
-        "version_normalized": "dev-v2-dev",
+        "version": "v2.0.2",
+        "version_normalized": "2.0.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/wedevelopcoffee/wPower.git",
-            "reference": "fb41c55690fb054f4d8cda06a3ce0dfa5f754e52"
+            "reference": "493b257415e3a7afa190df66de3feafa7b6a899f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/fb41c55690fb054f4d8cda06a3ce0dfa5f754e52",
-            "reference": "fb41c55690fb054f4d8cda06a3ce0dfa5f754e52",
+            "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/493b257415e3a7afa190df66de3feafa7b6a899f",
+            "reference": "493b257415e3a7afa190df66de3feafa7b6a899f",
             "shasum": ""
         },
         "require": {
@@ -818,9 +819,9 @@
             "php-mock/php-mock-mockery": "^1.2",
             "phpunit/phpunit": "^7"
         },
-        "time": "2019-08-18T08:08:41+00:00",
+        "time": "2019-11-18T19:42:20+00:00",
         "type": "library",
-        "installation-source": "source",
+        "installation-source": "dist",
         "autoload": {
             "psr-4": {
                 "WeDevelopCoffee\\wPower\\": "src"
@@ -833,7 +834,7 @@
         "authors": [
             {
                 "name": "Daniel Koop",
-                "email": "daniel@yourwebhoster.eu"
+                "email": "daniel@wedevelop.coffee"
             }
         ],
         "description": "Add extra power to your WHMCS addon, registrar, gateway or server module."

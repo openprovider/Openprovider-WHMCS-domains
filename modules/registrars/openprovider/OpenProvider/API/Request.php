@@ -46,6 +46,13 @@ class Request
         );
         $credentialsElement->appendChild($clientElement);
 
+        $initiator = \OpenProvider\API\APIConfig::getInitiator();
+        $clientElement = $dom->createElement('initiator');
+        $clientElement->appendChild(
+            $dom->createTextNode(mb_convert_encoding($initiator, \OpenProvider\API\APIConfig::$encoding))
+        );
+        $credentialsElement->appendChild($clientElement);
+
         $rootElement = $dom->createElement('openXML');
         $rootElement->appendChild($credentialsElement);
 

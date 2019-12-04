@@ -1,6 +1,6 @@
 <?php
 namespace OpenProvider\WhmcsHelpers;
-use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
+use OpenProvider\WhmcsRegistrar\Models\Domain as DomainModel;
 use WeDevelopCoffee\wPower\Models\Registrar;
 use WHMCS\Database\Capsule,
     OpenProvider\WhmcsHelpers\Schemes\DomainSyncScheme,

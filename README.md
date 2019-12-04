@@ -13,6 +13,7 @@ Features
 - Whois lookup service: more reliable than the default whois servers in WHMCS
 - Domain status extended Synchronisation (more reliable than WHMCS's synchronisation)
 - Domain status synchronisation reports
+- Renew domains upon transfer completion
 
 
 # Installation
@@ -69,6 +70,7 @@ with
 | Update interval | The minimum delay in hours between every domain status update (by default 2). WARNING: lowering this can overload your and Openprovider's system! |
 | Domain process limit | The maximum amount of domains to process in each cron run. |
 | Send empty activity reports | Send a report even when nothing has been updated in a cron run. |
+| Renew domains upon transfer completion | Enter the TLDs - without a leading dot - like nl,eu with a comma as a separator.  Some TLDs offer a free transfer, like the nl TLD. If the expiration date is within 30 days, the domain may expiry if the renewal is not performed in time. This setting will always try to renew the TLD. |
 | DNS template | Select the DNS template you prefer. NOTE: only shows up after the correct login details have been saved!|
 
 # Openprovider Domain Sync
