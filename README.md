@@ -170,11 +170,12 @@ If "automatic renew on payment" is selected (which can be found in WHMCS admin a
 
 When a domain expires in Openprovider, depending on the TLD, it can be put into 'Soft Suarantine.' When a domain is in soft quarantine it can be restored for the normal renewal fee, but restoration needs to be requested with the "restore domain request" API command. Openprovider domain module automatically detects when the domain is in soft quarantine, and makes an appropriate API request. The module will not request renewal if the domain has already passed into "Hard Quarantine" and can only be restored for an additional fee.
 
+## Auto Renew Configurations
+WHMCS suggests that you have auto renew to "off" in the Openprovider system. This greatly reduces the chance that a domain will be "double renewed" in your account, which is possible if a domain has a once from auto renew, and again when the customer pays. Please thoroughly read the WHMCS documentation before deciding on the business logic you will use concerning auto-renew settings.
+
 # Using Custom DNS Templates
 Once you've created a custom DNS template in the Openprovider control panel (DNS management -> Manage DNS templates), and selected it in the module configuration window, any domain created with the Openprovider name servers will have a DNS zone automatically created on the Openprovider name servers.
 
-# Auto Renew Configurations
-WHMCS suggests that you have auto renew to "off" in the Openprovider system. This greatly reduces the chance that a domain will be "double renewed" in your account, which is possible if a domain has a once from auto renew, and again when the customer pays. Please thoroughly read the WHMCS documentation before deciding on the business logic you will use concerning auto-renew settings.
 
 # Troubleshooting
 If there are any connectivity issues with Openprovider, or API commands are not working for some reason, the first troubleshooting step should be to look at the API logs. Navigate to Utilities -> Logs -> Module Logs ​or `<WHMCS directory>/admin/systemmodulelog.php`​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved.
