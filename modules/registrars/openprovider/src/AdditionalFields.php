@@ -123,20 +123,88 @@ class AdditionalFields
 
             $this->ceAdditionalData->setTld($domain->extension);
 
-            // Set parant array
-            $op_parent = [];
+            /**
+             * op_name                  Fieldname with OP
+             * op_explode               The explode delimiter.
+             * op_location              Location where the data exists (customerExtensionAdditionalData, customerAdditionalData, domainAdditionalData or customer)
+             * op_skip                  Do not send the parameter when the value is the same as op_skip.
+             * op_dropdown_for_op_name  The value provided by the customer is used to define the op_name fieldname.
+             */
 
-            // Detect the parents and get the values.
-            list($op_parent, $additionalFields) = $this->detectedParents($params,
-                $additionalFields, $domainExtension, $ignoreIdnScript, $op_parent);
+            // Loop through all fields to find a decision master.
+            foreach($additionalFields[$domainExtension] as $key => $field)
+            {
+                if(isset($field['op_dropdown_for_op_name']))
+                {
+                    // Set the name for the dynamic field.
+                    $raw_options = explode(',', $field['Options']);
+                    $dropdown_value = $params['additionalfields'][$field['Name']];
+                    $valid_value = '';
 
-            // Process the childs and set the additional fields.
-            list($params, $additionalFields) = $this->processChildren($params, $additionalFields,
-                $domainExtension, $ignoreIdnScript, $op_parent);
+                    // Since the input value is external input, we'll need to validate that the value
+                    // really is configured in the field options.
+                    foreach($raw_options as $raw_option)
+                    {
+                        $option = explode('|', $raw_option);
 
-            // Process values, including childs and normal ones.
-            list($ceCustomerAdditionalData, $customerAdditionalData, $customerData) = $this->processValues($params,
-                $additionalFields, $domainExtension, $ignoreIdnScript);
+                        // Check if the provided value matches with the pre-configured allowed values.
+                        if($option[0] == $dropdown_value)
+                            $valid_value = $dropdown_value;
+                    }
+
+                    $dropdown_op_name_fields[$field['op_dropdown_for_op_name']] = $valid_value;
+                }
+            }
+
+            // Loop through every additional field to determine the location
+            foreach($additionalFields[$domainExtension] as $field)
+            {
+                // Do not run when the op_name is idnScript or when the field is a op_decision_master.
+                if($field['op_name'] == 'idnScript' && isset($ignoreIdnScript)
+                    || isset($field['op_decision_master']))
+                    continue;
+
+                // Check if a op_dropdown_for_op_name field is defined.
+                if(isset($dropdown_op_name_fields[$field['op_name']]))
+                    // There is. Change the op_name.
+                    $field['op_name'] = $dropdown_op_name_fields[$field['op_name']];
+
+                $value = $params['additionalfields'][$field['Name']];
+
+                // Check if we have to run an explode.
+                if(isset($field['Options']))
+                {
+                    if(isset($field['op_explode']) && strpos($value,'-'))
+                        $value = explode($field['op_explode'], $value)[0];
+                    elseif(isset($field['op_skip']) && $value == $field['op_skip'])
+                        // Skip this value.
+                        continue;
+                        
+                }
+                elseif($field['Type']  == 'tickbox' && $value == 'on')
+                    $value = 1;
+
+                if($field['op_location'] == 'customerExtensionAdditionalData' && isset($params['additionalfields'][$field['Name']]))
+                {
+                    $name = $field['op_name'];
+                    $this->ceAdditionalData->$name = $value;
+                    $ceCustomerAdditionalData = true;
+                } elseif($field['op_location'] == 'customerAdditionalData' && isset($params['additionalfields'][$field['Name']]))
+                {
+                    $name = $field['op_name'];
+                    $this->customerAdditionalData[$name] = $value;
+                    $customerAdditionalData = true;
+                } elseif($field['op_location'] == 'domainAdditionalData' && isset($params['additionalfields'][$field['Name']]))
+                {
+                    $name = $field['op_name'];
+                    $this->domainAdditionalData->$name = $value;
+                } elseif($field['op_location'] == 'customer' && isset($params['additionalfields'][$field['Name']]))
+                {
+                    $name = $field['op_name'];
+                    $this->customerData[$name] = $value;
+                    $customerData = true;
+                }
+            }
         }
 
         if(isset($ceCustomerAdditionalData))
@@ -149,162 +217,8 @@ class AdditionalFields
             $foundAdditionalFields['customer']   = $this->customerData;
 
         $foundAdditionalFields['domainAdditionalData']              = $this->domainAdditionalData;
-
+        
         return $foundAdditionalFields;
-    }
-
-    /**
-     * @param $params
-     * @param $field
-     * @return array
-     */
-    public function detectValue($params, $field): array
-    {
-        $value = $params['additionalfields'][$field['Name']];
-
-        // Check if we have to run an explode.
-        if (isset($field['Options'])) {
-            if (isset($field['op_explode']) && strpos($value, '-')) {
-                $value = explode($field['op_explode'], $value)[0];
-            }
-            elseif(isset($field['op_skip']) && $value == $field['op_skip'])
-//             Skip this value.
-                return [['continue' => true], $field];
-
-        } elseif ($field['Type'] == 'tickbox' && $value == 'on') {
-            $value = 1;
-        }
-        return array ($value, $field);
-    }
-
-    /**
-     * Loop through the additional fields and find the parents.
-     *
-     * @param $params
-     * @param array $additionalFields
-     * @param string $domainExtension
-     * @param bool $ignoreIdnScript
-     * @param array $op_parent
-     * @return array
-     */
-    public function detectedParents(
-        $params,
-        array $additionalFields,
-        string $domainExtension,
-        bool $ignoreIdnScript,
-        array $op_parent
-    ): array {
-        foreach ($additionalFields[$domainExtension] as $key => $field) {
-            if (
-                ($field['op_name'] == 'idnScript' && isset($ignoreIdnScript))
-                || !isset($field['op_is_parent'])
-            ) {
-                continue;
-            }
-
-            list($value, $field) = $this->detectValue($params, $field);
-            if (isset($value['continue'])) {
-                continue;
-            }
-
-            $field ['value'] = $value;
-
-            $op_parent [$field['op_name']] = $field;
-
-            // Parent should not get processed.
-            unset($additionalFields[$domainExtension][$key]);
-        }
-        return array ($op_parent, $additionalFields);
-    }
-
-    /**
-     * Loop through the additional data and process childs.
-     *
-     * @param $params
-     * @param $additionalFields
-     * @param string $domainExtension
-     * @param bool $ignoreIdnScript
-     * @param $op_parent
-     * @return array
-     */
-    public function processChildren(
-        $params,
-        $additionalFields,
-        string $domainExtension,
-        bool $ignoreIdnScript,
-        $op_parent
-    ): array {
-        foreach ($additionalFields[$domainExtension] as $key => $field) {
-            if (
-                ($field['op_name'] == 'idnScript' && isset($ignoreIdnScript))
-                || !isset($field['op_has_parent'])
-            ) {
-                continue;
-            }
-
-            list($value, $field) = $this->detectValue($params, $field);
-            if (isset($value['continue'])) {
-                continue;
-            }
-
-            if (isset($op_parent [$field['op_has_parent']])) {
-                $parent = $op_parent [$field['op_has_parent']];
-
-                $tmpField = [
-                    'Name' => $parent['value'], // The value of the parent is the field name in OpenProvider.
-                    'op_name' => $parent['value'],
-                    'op_location' => $parent['op_location'],
-                ];
-                $additionalFields[$domainExtension][] = $tmpField;
-
-                $params['additionalfields'][$tmpField['Name']] = $value;
-
-                // Child should not get processed.
-                unset($additionalFields[$domainExtension][$key]);
-                unset($params['additionalfields'][$field['Name']]);
-            }
-        }
-        return [$params, $additionalFields];
-    }
-
-    /**
-     * @param $params
-     * @param $additionalFields
-     * @param string $domainExtension
-     * @param bool $ignoreIdnScript
-     * @return array
-     */
-    public function processValues($params, $additionalFields, string $domainExtension, bool $ignoreIdnScript): array
-    {
-        foreach ($additionalFields[$domainExtension] as $field) {
-            if ($field['op_name'] == 'idnScript' && isset($ignoreIdnScript)) {
-                continue;
-            }
-
-            list($value, $field) = $this->detectValue($params, $field);
-
-            if (isset($value['continue'])) {
-                continue;
-            }
-
-            if ($field['op_location'] == 'customerExtensionAdditionalData' && isset($params['additionalfields'][$field['Name']])) {
-                $name = $field['op_name'];
-                $this->ceAdditionalData->$name = $value;
-                $ceCustomerAdditionalData = true;
-            } elseif ($field['op_location'] == 'customerAdditionalData' && isset($params['additionalfields'][$field['Name']])) {
-                $name = $field['op_name'];
-                $this->customerAdditionalData[$name] = $value;
-                $customerAdditionalData = true;
-            } elseif ($field['op_location'] == 'domainAdditionalData' && isset($params['additionalfields'][$field['Name']])) {
-                $name = $field['op_name'];
-                $this->domainAdditionalData->$name = $value;
-            } elseif ($field['op_location'] == 'customer' && isset($params['additionalfields'][$field['Name']])) {
-                $name = $field['op_name'];
-                $this->customerData[$name] = $value;
-                $customerData = true;
-            }
-        }
-        return array ($ceCustomerAdditionalData, $customerAdditionalData, $customerData);
     }
 
 }   

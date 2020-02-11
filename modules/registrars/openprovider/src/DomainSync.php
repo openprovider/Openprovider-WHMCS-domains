@@ -232,7 +232,14 @@ class DomainSync
     {
         // Sync the expiry date
         $whmcs_expiry_date = new Carbon($this->objectDomain->expirydate);
-        $expiry_date_result = General::compare_dates($whmcs_expiry_date->toDateString(), $this->op_domain['renewalDate'], '0', 'Y-m-d H:i:s');
+
+        // Check if we have a valid timestamp.
+        if($whmcs_expiry_date->getTimestamp() > 0)
+            $expiry_date_result = General::compare_dates($whmcs_expiry_date->toDateString(), $this->op_domain['renewalDate'], '0', 'Y-m-d H:i:s');
+        else
+            // There is no valid timestamp.
+            $expiry_date_result = 'incorrect';
+
         if($expiry_date_result != 'correct')
         {
             $this->update_domain_data['expirydate'] = $expiry_date_result['date'];

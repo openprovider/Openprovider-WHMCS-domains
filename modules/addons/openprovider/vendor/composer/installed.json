@@ -436,17 +436,17 @@
     },
     {
         "name": "php-di/php-di",
-        "version": "6.0.10",
-        "version_normalized": "6.0.10.0",
+        "version": "6.0.11",
+        "version_normalized": "6.0.11.0",
         "source": {
             "type": "git",
             "url": "https://github.com/PHP-DI/PHP-DI.git",
-            "reference": "a6c813bf6b0d0bdeade3ac5a920e2c2a5b1a6ce3"
+            "reference": "9bdcc2f41f5fb700ddd01bc4fa8d5bd7b3f94620"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/a6c813bf6b0d0bdeade3ac5a920e2c2a5b1a6ce3",
-            "reference": "a6c813bf6b0d0bdeade3ac5a920e2c2a5b1a6ce3",
+            "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/9bdcc2f41f5fb700ddd01bc4fa8d5bd7b3f94620",
+            "reference": "9bdcc2f41f5fb700ddd01bc4fa8d5bd7b3f94620",
             "shasum": ""
         },
         "require": {
@@ -472,7 +472,7 @@
             "doctrine/annotations": "Install it if you want to use annotations (version ~1.2)",
             "ocramius/proxy-manager": "Install it if you want to use lazy injection (version ~2.0)"
         },
-        "time": "2019-10-21T11:58:24+00:00",
+        "time": "2019-12-12T07:58:02+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -786,17 +786,17 @@
     },
     {
         "name": "wedevelopcoffee/wpower",
-        "version": "v2.0.4",
-        "version_normalized": "2.0.4.0",
+        "version": "v2.0.6",
+        "version_normalized": "2.0.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/wedevelopcoffee/wPower.git",
-            "reference": "680a654c093f186a24165d3577a6ec0895375cd5"
+            "reference": "9d4eb62fb38f2a9d2f21a91f4af7f165f375a3a4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/680a654c093f186a24165d3577a6ec0895375cd5",
-            "reference": "680a654c093f186a24165d3577a6ec0895375cd5",
+            "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/9d4eb62fb38f2a9d2f21a91f4af7f165f375a3a4",
+            "reference": "9d4eb62fb38f2a9d2f21a91f4af7f165f375a3a4",
             "shasum": ""
         },
         "require": {
@@ -810,7 +810,7 @@
             "php-mock/php-mock-mockery": "^1.2",
             "phpunit/phpunit": "^7"
         },
-        "time": "2019-11-30T11:53:21+00:00",
+        "time": "2020-02-08T19:05:10+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

@@ -89,11 +89,18 @@ class Handle
         }
 
         // Check if we have found a valid handle.
-        if($foundHandle != false)
+        if($foundHandle == true)
         {
-            $this->model = $foundHandle;
-            $this->model->type = $type;
-            $this->model->saveWithDomain($params['domainid'], $type);
+            // Check if the custom data matches.
+            if($this->checkIfAdditionalDataMatches($foundHandle)) {
+                // Additional data did match.
+                $this->model = $foundHandle;
+                $this->model->type = $type;
+                $this->model->saveWithDomain($params['domainid'], $type);
+            }
+            else
+                // A handle was found; but the additional data did not match.
+                $this->create($params, $type);
         }
         else
         {
@@ -101,6 +108,39 @@ class Handle
         }
 
         return $this->model->handle;
+    }
+
+    /**
+     * Check if the handle matches with the additional data.
+     * @param $foundHandle
+     * @return bool
+     */
+    public function checkIfAdditionalDataMatches($foundHandle)
+    {
+        $foundCustomer = $foundHandle->data;
+
+        if($this->customer->extensionAdditionalData != $foundCustomer->extensionAdditionalData)
+            exit('no similar extensions');
+
+        if(is_array($this->customerData) && !empty($this->customerData))
+        {
+            foreach($this->customerData as $customerDataKey => $customerDataValue)
+            {
+                if($foundCustomer->$customerDataKey != $customerDataValue)
+                    return false;
+            }
+        }
+
+        if(is_array($this->customerAdditionalData) && !empty($this->customerAdditionalData))
+        {
+            foreach($this->customerAdditionalData as $customerAdditionalDataKey => $customerAdditionalDataValue)
+            {
+                if($foundCustomer->additionalData->$customerAdditionalDataKey != $customerAdditionalDataValue)
+                    return false;
+            }
+        }
+
+        return true;
     }
 
     /**

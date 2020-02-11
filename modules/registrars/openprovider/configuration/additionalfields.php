@@ -388,30 +388,20 @@ $additionaldomainfields[".ro"][] = array(
 $additionaldomainfields[".no"] = $additionaldomainfields[".ro"];
 
 // .ES
-$es_identification_methods = [
-    "companyRegistrationNumber|CIF/NIF (Company Registration Number):",
-    "socialSecurityNumber|Número Seguridad Social (Social Security Number):",
-    "passportNumber|Pasaporte/DNI (Passport Number):"
-];
-
 $additionaldomainfields[".es"][] = array(
     "Name" => "Identification type",
     "LangVar" => "esIdentificationType",
+    "Options" => "companyRegistrationNumber|CIF/NIF (Company Registration Number),socialSecurityNumber|Número Seguridad Social (Social Security Number),passportNumber|Pasaporte/DNI (Passport Number)",
     "Type" => "dropdown",
-    "Size" => "30",
-    "op_name" => "esIdentificationType",
-    "op_is_parent" => true,
-    "op_location" => "customerAdditionalData",
-    "Options" => implode(',', $es_identification_methods)
+    "op_dropdown_for_op_name" => "esIdentificationNumber"
 );
 
-$additionaldomainfields[".es"][] = array(
-    "Name" => "Value",
-    "LangVar" => "esIdentificationValue",
+$additionaldomainfields['.es'][] = array(
+    'Name' => 'Identification number',
     "Type" => "text",
-    "Required" => true,
     "Size" => "30",
-    "op_has_parent" => "esIdentificationType" // Relate to the dropdown
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "esIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
 
 // .SG

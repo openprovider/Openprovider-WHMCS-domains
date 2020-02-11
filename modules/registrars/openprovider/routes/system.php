@@ -42,6 +42,5 @@ return [
     'requestDelete' => 'RequestDeleteController@request',
     'getEppCode' => 'EppController@get',
     'transferSync' => 'TransferSyncController@sync',
-    'domainSync' => 'DomainSyncController@sync',
     'checkAvailability' => 'CheckAvailabilityController@check',
 ];

@@ -67,9 +67,10 @@ class CheckAvailabilityController  extends BaseController
         $api = $this->API;
         $api->setParams($params);
 
+        $domains = [];
         foreach($params['tldsToInclude'] as $tld)
         {
-            $domain             = $this->domain;
+            $domain             = clone $this->domain;
             $domain->extension  = substr($tld, 1);
             $domain->name       = $params['isIdnDomain'] ? $params['punyCodeSearchTerm'] : $params['searchTerm'];
             $domains[]          = $domain;
@@ -103,7 +104,7 @@ class CheckAvailabilityController  extends BaseController
         foreach($status as $domain_status)
         {
             $domain_sld = explode('.', $domain_status['domain'])[0];
-            $domain_tld = substr(str_replace($domain_sld, '', $domain_status['domain']), 1);
+            $domain_tld = str_replace($domain_sld . '.', '', $domain_status['domain']);
 
             $searchResult = new SearchResult($domain_sld, $domain_tld);
 

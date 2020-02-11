@@ -37,7 +37,8 @@ class Path
         if($this->core->isCli())
         {
             // DOC_ROOT does not work with cli
-            // WARNING: This part of the code is not tested!
+            // WARNING: This part of the code is not tested!+
+            $full_path = dirname(__FILE__);
             $currentDir = explode('modules', $full_path)[0];
 
             // If empty, fall back on the old method.
@@ -52,7 +53,7 @@ class Path
         }
 
         $parts = explode(DIRECTORY_SEPARATOR, getcwd());
-        if (last( $parts) == $customadminpath || last( $parts) == 'includes') {
+        if (last( $parts) == $customadminpath || last( $parts) == 'includes' || last( $parts) == 'crons') {
             unset($parts[sizeof($parts) - 1]);
         }
 
