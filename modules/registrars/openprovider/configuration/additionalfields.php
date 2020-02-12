@@ -400,6 +400,7 @@ $additionaldomainfields['.es'][] = array(
     'Name' => 'Identification number',
     "Type" => "text",
     "Size" => "30",
+    "Required" => true,
     "op_location" => "customerAdditionalData",
     "op_name"  => "esIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
