@@ -2,6 +2,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\API;
+use WeDevelopCoffee\wPower\Models\Registrar;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -90,6 +91,18 @@ class ConfigController extends BaseController
      */
     protected function fetchDnsTemplates($params, $configarray)
     {
+        if(!strpos($_SERVER['PHP_SELF'], 'configregistrars.php'))
+        {
+            // We are not on the admin page. Let's use a cached version of this.
+            $cached_dns_template = Registrar::getByKey('openprovider', 'dnstemplate_cache');
+
+            if($cached_dns_template != '')
+            {
+                $configarray['dnsTemplate'] = json_decode($cached_dns_template, true);
+                return $configarray;
+            }
+        }
+
         if(isset($GLOBALS['op_registrar_module_config_dnsTemplate']))
         {
             $configarray['dnsTemplate'] = $GLOBALS['op_registrar_module_config_dnsTemplate'];
@@ -117,6 +130,8 @@ class ConfigController extends BaseController
         }
 
         $GLOBALS['op_registrar_module_config_dnsTemplate'] = $configarray['dnsTemplate'];
+
+        Registrar::updateByKey('openprovider', 'dnstemplate_cache', json_encode($configarray['dnsTemplate']));
 
         return $configarray;
     }

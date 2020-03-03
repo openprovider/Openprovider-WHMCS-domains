@@ -3,6 +3,7 @@ namespace WeDevelopCoffee\wPower\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Punic\Exception;
 
 /**
  * Domain model
@@ -21,6 +22,8 @@ class Registrar extends Model {
      * @var array
      */
     protected $appends = ['decodedValue'];
+
+    public $timestamps = false;
 
     /**
      * List all registrars.
@@ -76,6 +79,32 @@ class Registrar extends Model {
     }
 
     /**
+     * Update the registrar key value.
+     *
+     * @return array|string
+     */
+    public function updateByKey($registrar, $key, $value = '')
+    {
+        $value = self::encode($value);
+        try {
+            $data = self::where('registrar', $registrar)
+                ->where('setting', $key)
+                ->firstOrFail();
+        } catch ( ModelNotFoundException $e)
+        {
+            // Create the record.
+            $data = new Registrar();
+            $data->registrar = $registrar;
+            $data->setting = $key;
+        }
+
+        $data->value = $value;
+        $data->save();
+
+        return true;
+    }
+
+    /**
      * Get the TLDs
      *
      * @param $registrar
@@ -113,6 +142,17 @@ class Registrar extends Model {
     protected function decode($data)
     {
         return html_entity_decode(\localAPI('DecryptPassword', ['password2' => $data])['password']);
+    }
+
+    /**
+     * Decode the retrieved data.
+     *
+     * @param $data
+     * @return mixed
+     */
+    protected function encode($data)
+    {
+        return html_entity_decode(\localAPI('EncryptPassword', ['password2' => $data])['password']);
     }
 
 }

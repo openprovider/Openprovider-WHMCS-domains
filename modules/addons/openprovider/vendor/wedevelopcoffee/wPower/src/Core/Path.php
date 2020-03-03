@@ -34,6 +34,11 @@ class Path
     {
         global $customadminpath;
 
+        if(defined('ROOTDIR'))
+        {
+            return ROOTDIR;
+        }
+
         if($this->core->isCli())
         {
             // DOC_ROOT does not work with cli

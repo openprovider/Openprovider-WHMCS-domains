@@ -642,28 +642,28 @@
     },
     {
         "name": "symfony/polyfill-php56",
-        "version": "v1.13.1",
-        "version_normalized": "1.13.1.0",
+        "version": "v1.14.0",
+        "version_normalized": "1.14.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-php56.git",
-            "reference": "53dd1cdf3cb986893ccf2b96665b25b3abb384f4"
+            "reference": "16ec91cb06998b609501b55b7177b7d7c02badb3"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-php56/zipball/53dd1cdf3cb986893ccf2b96665b25b3abb384f4",
-            "reference": "53dd1cdf3cb986893ccf2b96665b25b3abb384f4",
+            "url": "https://api.github.com/repos/symfony/polyfill-php56/zipball/16ec91cb06998b609501b55b7177b7d7c02badb3",
+            "reference": "16ec91cb06998b609501b55b7177b7d7c02badb3",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3",
             "symfony/polyfill-util": "~1.0"
         },
-        "time": "2019-11-27T13:56:44+00:00",
+        "time": "2020-01-13T11:15:53+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.13-dev"
+                "dev-master": "1.14-dev"
             }
         },
         "installation-source": "dist",
@@ -700,27 +700,27 @@
     },
     {
         "name": "symfony/polyfill-util",
-        "version": "v1.13.1",
-        "version_normalized": "1.13.1.0",
+        "version": "v1.14.0",
+        "version_normalized": "1.14.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/polyfill-util.git",
-            "reference": "964a67f293b66b95883a5ed918a65354fcd2258f"
+            "reference": "ba3cfcea6d0192cae46c62041f61cbb704b526d3"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-util/zipball/964a67f293b66b95883a5ed918a65354fcd2258f",
-            "reference": "964a67f293b66b95883a5ed918a65354fcd2258f",
+            "url": "https://api.github.com/repos/symfony/polyfill-util/zipball/ba3cfcea6d0192cae46c62041f61cbb704b526d3",
+            "reference": "ba3cfcea6d0192cae46c62041f61cbb704b526d3",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3"
         },
-        "time": "2019-11-27T13:56:44+00:00",
+        "time": "2020-01-13T11:15:53+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.13-dev"
+                "dev-master": "1.14-dev"
             }
         },
         "installation-source": "dist",
@@ -795,17 +795,17 @@
     },
     {
         "name": "wedevelopcoffee/wpower",
-        "version": "v2.0.6",
-        "version_normalized": "2.0.6.0",
+        "version": "v2.0.7",
+        "version_normalized": "2.0.7.0",
         "source": {
             "type": "git",
             "url": "https://github.com/wedevelopcoffee/wPower.git",
-            "reference": "9d4eb62fb38f2a9d2f21a91f4af7f165f375a3a4"
+            "reference": "e982d511623d701b2387df45d8d268848fbd3f0f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/9d4eb62fb38f2a9d2f21a91f4af7f165f375a3a4",
-            "reference": "9d4eb62fb38f2a9d2f21a91f4af7f165f375a3a4",
+            "url": "https://api.github.com/repos/wedevelopcoffee/wPower/zipball/e982d511623d701b2387df45d8d268848fbd3f0f",
+            "reference": "e982d511623d701b2387df45d8d268848fbd3f0f",
             "shasum": ""
         },
         "require": {
@@ -819,7 +819,7 @@
             "php-mock/php-mock-mockery": "^1.2",
             "phpunit/phpunit": "^7"
         },
-        "time": "2020-02-08T19:05:10+00:00",
+        "time": "2020-02-14T16:02:43+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
