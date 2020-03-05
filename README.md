@@ -49,7 +49,7 @@ with
 ```
 {$domainSplit = "."|explode:$domain}
 {$domainTld = $domain|replace: $domainSplit.0 : ""}
-{if $lockstatus eq "unlocked" && $domainTld != '.eu' && $domainTld != '.nl' && $domainTld != '.be'}
+{if $lockstatus eq "unlocked" && $domainTld != '.eu' && $domainTld != '.nl' && $domainTld != '.be'  && $domainTld != '.es'}
 ```
 
 ## Configuration Option details
