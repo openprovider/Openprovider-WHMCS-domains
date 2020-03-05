@@ -42,7 +42,7 @@ class AdminEmail extends BaseEmail
      * @param array $mergeFields
      * @return AdminEmail
      */
-    public function setMergeFields($key, $value)
+    public function setMergeField($key, $value)
     {
         $this->mergeFields [$key] = $value;
         return $this;

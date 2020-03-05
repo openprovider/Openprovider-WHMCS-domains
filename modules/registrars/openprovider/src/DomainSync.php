@@ -132,6 +132,7 @@ class DomainSync
      **/
     public function process_domains()
     {
+        $this->printDebug('PROCESSING DOMAINS...');
         $this->OpenProvider = new OpenProvider;
 
         $setting['syncExpiryDate'] = Registrar::getByKey('openprovider', 'syncExpiryDate', 'on');
@@ -142,6 +143,7 @@ class DomainSync
 
         foreach($this->domains as $domain)
         {
+            $this->printDebug('WORKING ON ' . $domain->domain);
             $this->update_executed_logs = null;
             $this->update_domain_data = null;
 
@@ -165,7 +167,7 @@ class DomainSync
 
                 // Identity protection or not? -> WHMCS is leading.
                 if($setting['syncIdentityProtectionToggle'] == 'on')
-                    $this->process_idenity_protection();
+                    $this->process_identity_protection();
             }
             catch (\Exception $ex)
             {
@@ -221,6 +223,8 @@ class DomainSync
             $notification->WPP_contract_unsigned_multiple_domains($this->unsigned_wpp_contract_domains)
                 ->send_to_admins();
         }
+
+        $this->printDebug('DONE PROCESSING DOMAINS');
     }
 
     /**
@@ -230,11 +234,27 @@ class DomainSync
      **/
     private function process_expiry_date()
     {
+        $this->printDebug('PROCESSING EXPIRY DATE FOR ' . $this->objectDomain->domain .' (WAS ' . $this->objectDomain->expirydate . ')');
+
         // Sync the expiry date
         $whmcs_expiry_date = new Carbon($this->objectDomain->expirydate);
-        $expiry_date_result = General::compare_dates($whmcs_expiry_date->toDateString(), $this->op_domain['renewalDate'], '0', 'Y-m-d H:i:s');
+
+        // Check if we have a valid timestamp.
+        if($whmcs_expiry_date->getTimestamp() > 0)
+        {
+            $expiry_date_result = General::compare_dates($whmcs_expiry_date->toDateString(), $this->op_domain['renewalDate'], '0', 'Y-m-d H:i:s');
+        }
+        else
+        {
+            // There is no valid timestamp.
+            $expiry_date_result = [
+                'date' => $this->op_domain['renewalDate']
+            ];
+        }
+
         if($expiry_date_result != 'correct')
         {
+            $this->printDebug('UPDATING EXPIRY DATE FOR ' . $this->objectDomain->domain .' TO ' . $expiry_date_result['date'] . ')');
             $this->update_domain_data['expirydate'] = $expiry_date_result['date'];
 
             $activity_data = [
@@ -248,6 +268,7 @@ class DomainSync
 
     protected function process_next_due_dates()
     {
+        $this->printDebug('PROCESSING NEXT DUE DATES SYNC FOR ALL OP DOMAINS');
         $days_before_expiry_date = Registrar::getByKey('openprovider', 'nextDueDateOffset','14');
         $nextDueDateUpdateMaxDayDifference = Registrar::getByKey('openprovider', 'nextDueDateUpdateMaxDayDifference', '100');
 
@@ -266,6 +287,8 @@ class DomainSync
                 'new_date'      => $domain['domain']->nextduedate
             ];
 
+            $this->printDebug('NEXT DUE DATE WAS UPDATED FOR ' . $domain['domain']->domain . ' FROM ' . $activity_data['old_date'] . ' TO ' . $activity_data['new_date']);
+
             $diff_in_days = $domain['domain']->new_nextduedate_difference;
 
             if($diff_in_days < 0)
@@ -276,7 +299,7 @@ class DomainSync
             Activity::log('update_domain_next_due_date', $activity_data);
         }
 
-
+        $this->printDebug('DONE PROCESSING NEXT DUE DATES');
     }
 
     /**
@@ -284,6 +307,8 @@ class DomainSync
      */
     protected function process_empty_next_due_dates()
     {
+        $this->printDebug('START PROCESSING EMPTY NEXT DUE DATES');
+
         $days_before_expiry_date = Registrar::getByKey('openprovider', 'nextDueDateOffset','14');
 
         $updated_domains = $this->domain->updateEmptyNextDueDates('openprovider', $days_before_expiry_date);
@@ -301,10 +326,12 @@ class DomainSync
                 'new_date'      => $domain['domain']->nextduedate
             ];
 
+            $this->printDebug('EMPTY NEXT DUE DATE WAS UPDATED FOR ' . $domain['domain']->domain . ' FROM ' . $activity_data['old_date'] . ' TO ' . $activity_data['new_date']);
+
             Activity::log('update_domain_empty_next_due_date', $activity_data);
         }
 
-
+        $this->printDebug('DONE PROCESSING EMPTY NEXT DUE DATES');
     }
 
     /**
@@ -315,6 +342,7 @@ class DomainSync
      **/
     private function process_domain_status($status = null)
     {
+
         if($status == 'Cancelled' || $status == 'Expired')
         {
             // Nothing to do.
@@ -379,9 +407,12 @@ class DomainSync
                     'new_status'      => $op_domain_status
                 ];
 
+                $this->printDebug('PROCESSING DOMAIN STATUS CHANGE ' . $this->objectDomain->domain .' ( ' . $this->objectDomain->status . ' => ' . $op_domain_status . ')');
+
                 $this->update_executed_logs[] = ['activity' => 'update_domain_status', 'data' => $activity_data];
 
             }
+
         }
         else
         {
@@ -400,6 +431,7 @@ class DomainSync
 
         if($result != 'correct')
         {
+            $this->printDebug('PROCESSING AUTO RENEW CHANGE FOR ' . $this->objectDomain->domain .' ( ' . $result['old_setting'] . ' => ' . $result['new_setting'] . ')');
             /**
              * Log the activity data
              */
@@ -419,7 +451,7 @@ class DomainSync
      *
      * @return void
      **/
-    private function process_idenity_protection()
+    private function process_identity_protection()
     {
         try {
             $result = $this->OpenProvider->toggle_whois_protection($this->objectDomain,$this->op_domain_obj, $this->op_domain);
@@ -442,10 +474,16 @@ class DomainSync
                 'new_setting'   => $result['new_setting'],
             ];
 
+            $this->printDebug('PROCESSING IDENTITY PROTECTIONS CHANGE FOR ' . $this->objectDomain->domain .' ( ' . $result['old_setting'] . ' => ' . $result['new_setting'] . ')');
+
             Activity::log('update_identity_protection_setting', $activity_data);
         }
     }
 
-
+    public function printDebug($message)
+    {
+        if(defined('OP_REG_DEBUG'))
+            echo $message . "\n";
+    }
 
 } // END class DomainSync

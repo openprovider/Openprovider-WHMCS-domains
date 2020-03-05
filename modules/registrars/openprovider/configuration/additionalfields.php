@@ -389,40 +389,21 @@ $additionaldomainfields[".no"] = $additionaldomainfields[".ro"];
 
 // .ES
 $additionaldomainfields[".es"][] = array(
-    "Name" => "CIF/NIF (Company Registration Number)",
-    "LangVar" => "esCompanyRegistrationNumber",
-    "Type" => "text",
-    "Size" => "30",
-    "op_location" => "customerAdditionalData",
-    "op_name"  => "companyRegistrationNumber"
+    "Name" => "Identification type",
+    "LangVar" => "esIdentificationType",
+    "Options" => "companyRegistrationNumber|CIF/NIF (Company Registration Number),socialSecurityNumber|Número Seguridad Social (Social Security Number),passportNumber|Pasaporte/DNI (Passport Number)",
+    "Type" => "dropdown",
+    "op_dropdown_for_op_name" => "esIdentificationNumber"
 );
 
-$additionaldomainfields[".es"][] = array(
-    "Name" => "Número Seguridad Social (Social Security Number)",
-    "LangVar" => "esSocialSecurityNumber",
+$additionaldomainfields['.es'][] = array(
+    'Name' => 'Identification number',
     "Type" => "text",
     "Size" => "30",
+    "Required" => true,
     "op_location" => "customerAdditionalData",
-    "op_name"   => "socialSecurityNumber"
+    "op_name"  => "esIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
-
-$additionaldomainfields[".es"][] = array(
-    "Name" => "Pasaporte/DNI (Passport Number)",
-    "LangVar" => "esPassportNumber",
-    "Type" => "text",
-    "Size" => "30",
-    "op_location" => "customerAdditionalData",
-    "op_name" => "passportNumber"
-);
-
-//$additionaldomainfields[".es"][] = array(
-//    "Name" => "VAT",
-//    "LangVar" => "esVat",
-//    "Type" => "text",
-//    "op_location" => "customerAdditionalData",
-//    "op_name" => "vat"
-//);
-
 
 // .SG
 

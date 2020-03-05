@@ -104,7 +104,7 @@ class AdditionalFields
     {
         // Get the additional fields of OpenProvider.
         $additionalFields = $this->get();
-        // dd($additionalFields);
+
         $domainExtension = '.'.$domain->extension;
 
         // Prepare return data
@@ -121,15 +121,54 @@ class AdditionalFields
                 $ignoreIdnScript = true;
             }
 
-            // dd([$params,$additionalFields[$domainExtension]]);
             $this->ceAdditionalData->setTld($domain->extension);
-            
+
+            /**
+             * op_name                  Fieldname with OP
+             * op_explode               The explode delimiter.
+             * op_location              Location where the data exists (customerExtensionAdditionalData, customerAdditionalData, domainAdditionalData or customer)
+             * op_skip                  Do not send the parameter when the value is the same as op_skip.
+             * op_dropdown_for_op_name  The value provided by the customer is used to define the op_name fieldname.
+             */
+
+            // Loop through all fields to find a decision master.
+            foreach($additionalFields[$domainExtension] as $key => $field)
+            {
+                if(isset($field['op_dropdown_for_op_name']))
+                {
+                    // Set the name for the dynamic field.
+                    $raw_options = explode(',', $field['Options']);
+                    $dropdown_value = $params['additionalfields'][$field['Name']];
+                    $valid_value = '';
+
+                    // Since the input value is external input, we'll need to validate that the value
+                    // really is configured in the field options.
+                    foreach($raw_options as $raw_option)
+                    {
+                        $option = explode('|', $raw_option);
+
+                        // Check if the provided value matches with the pre-configured allowed values.
+                        if($option[0] == $dropdown_value)
+                            $valid_value = $dropdown_value;
+                    }
+
+                    $dropdown_op_name_fields[$field['op_dropdown_for_op_name']] = $valid_value;
+                }
+            }
+
             // Loop through every additional field to determine the location
             foreach($additionalFields[$domainExtension] as $field)
             {
-                if($field['op_name'] == 'idnScript' && isset($ignoreIdnScript))
+                // Do not run when the op_name is idnScript or when the field is a op_decision_master.
+                if($field['op_name'] == 'idnScript' && isset($ignoreIdnScript)
+                    || isset($field['op_decision_master']))
                     continue;
-                    
+
+                // Check if a op_dropdown_for_op_name field is defined.
+                if(isset($dropdown_op_name_fields[$field['op_name']]))
+                    // There is. Change the op_name.
+                    $field['op_name'] = $dropdown_op_name_fields[$field['op_name']];
+
                 $value = $params['additionalfields'][$field['Name']];
 
                 // Check if we have to run an explode.

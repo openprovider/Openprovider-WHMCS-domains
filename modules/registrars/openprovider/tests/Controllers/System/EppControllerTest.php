@@ -5,7 +5,7 @@ namespace OpenProvider\WhmcsRegistrar\Tests\Controllers\System;
 use Mockery;
 use OpenProvider\API\API;
 use OpenProvider\API\Domain;
-use OpenProvider\WhmcsRegistrar\Controllers\System\ContactController;
+use OpenProvider\WhmcsRegistrar\Controllers\System\CronController;
 use OpenProvider\WhmcsRegistrar\Controllers\System\EppController;
 use OpenProvider\WhmcsRegistrar\Tests\TestCase;
 use WeDevelopCoffee\wPower\Core\Core;

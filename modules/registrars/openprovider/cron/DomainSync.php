@@ -17,6 +17,9 @@ if((!isset($_SESSION['adminid']) && $_SESSION['adminid'] == false) && !is_cli())
     exit('ACCESS DENIED. CONFIGURE CLI CRON.');
 }
 
+if(isset($argv[1]) == '--debug')
+    define('OP_REG_DEBUG', true);
+
 // 1. Get all domains for $openprovider who need an update
 $DomainSync = new DomainSync();
 

@@ -34,6 +34,7 @@ class ViewBaseController
      */
     public function __construct(Core $core, View $view, Validator $validator)
     {
+        $this->core = $core;
         $this->view = $view;
         $this->validator = $validator;
 

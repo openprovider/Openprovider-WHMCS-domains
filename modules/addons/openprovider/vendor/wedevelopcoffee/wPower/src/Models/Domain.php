@@ -103,6 +103,12 @@ tbldomains.*', [$days, $days])
 
             // Calculate the new date with the offset.
             $new_nextduedate = new Carbon($domain->expirydate);
+
+            // Check if we have a valid timestamp
+            if($new_nextduedate->getTimestamp() < 0)
+                // We do not have a valid timestamp, let's ignore this domain.
+                continue;
+
             $new_nextduedate->subDays($days_offset);
 
             // Update with the new date.

@@ -100,7 +100,7 @@ class AdminEmailTest extends TestCase
         // Execute
         $this->adminEmail->setCustomSubject($subject);
         $this->adminEmail->setCustomMessage($message);
-        $this->adminEmail->setMergeFields($varKey, $varValue);
+        $this->adminEmail->setMergeField($varKey, $varValue);
 
         $result = $this->adminEmail->send();
 
