@@ -59,14 +59,10 @@ class IdProtectController extends BaseController
 
         try {
             $OpenProvider       = new OP();
-            $op_domain_obj      = $this->domain;
-            $op_domain_obj->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
+            $op_domain_obj      = $OpenProvider->domain($domain->domain);
 
             $op_domain          = $OpenProvider->api->retrieveDomainRequest($op_domain_obj);
-            $OpenProvider->toggle_whois_protection($domain, $op_domain_obj, $op_domain);
+            $OpenProvider->toggle_whois_protection($domain, $op_domain);
 
             return array(
                 'success' => 'success',

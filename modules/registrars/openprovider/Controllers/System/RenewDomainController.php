@@ -81,7 +81,7 @@ class RenewDomainController extends BaseController
         {
             if(!$api->getSoftRenewalExpiryDate($domain)) {
                 $api->renewDomain($domain, $period);
-            } elseif ((new Carbon($api->getSoftRenewalExpiryDate($domain), 'CEST'))->gt(Carbon::now())) {
+            } elseif ((new Carbon($api->getSoftRenewalExpiryDate($domain), 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
                 $api->restoreDomain($domain, $period);
             } else {
                 // This only happens when the isInRedemptionGracePeriod was not true.

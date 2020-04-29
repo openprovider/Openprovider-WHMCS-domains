@@ -16,6 +16,7 @@ return [
     'registerDomain' => 'DomainController@register',
     'transferDomain' => 'DomainController@transfer',
     'renewDomain' => 'RenewDomainController@renew',
+    'GetDomainInformation' => 'DomainInformationController@get',
 
 
     // Nameservers
@@ -42,5 +43,7 @@ return [
     'requestDelete' => 'RequestDeleteController@request',
     'getEppCode' => 'EppController@get',
     'transferSync' => 'TransferSyncController@sync',
+    'domainSync' => 'DomainSyncController@sync',
     'checkAvailability' => 'CheckAvailabilityController@check',
+    'getTldPricing' => 'TldPricingController@get',
 ];

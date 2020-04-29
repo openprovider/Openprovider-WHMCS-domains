@@ -99,7 +99,7 @@ class ContactController extends BaseController
                 $customers['billingHandle'] = $handle->updateOrCreate($params, 'billing');
 
             // Sleep for 10 seconds. Some registrars accept a new contact but do not process this immediately.
-            sleep(10);
+            sleep(2);
 
             $finalCustomers = [];
 

@@ -74,7 +74,7 @@ class TransferSyncController extends BaseController
                 return array
                 (
                     'completed'     =>  true,
-                    'expirydate'    =>  date('Y-m-d', strtotime($opInfo['renewalDate']))
+                    'expirydate'    =>  Carbon::createFromFormat('Y-m-d H:i:s',$opInfo['renewalDate'], 'Europe/Amsterdam')->toDateString())
                 );
             }
 

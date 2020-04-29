@@ -21,6 +21,7 @@ class API
     protected $debug            =   null;
     protected $username         =   null;
     protected $password         =   null;
+    protected $cache; // Cache responses made in this request.
 
     /**
      * API constructor.
@@ -228,9 +229,31 @@ class API
         return $this->sendRequest('retrieveResellerRequest');
     }
 
-    public function getResellerStatistics()
+    public function getResellerStatistics($task = '')
     {
-        return $this->sendRequest('retrieveStatisticsResellerRequest');
+        if(isset($task))
+        {
+            $args = [
+                'task' => $task
+            ];
+        }
+        else
+            $args = [];
+
+        return $this->sendRequest('retrieveStatisticsResellerRequest', $args);
+    }
+
+    /**
+     * Returns all TLDs and the price
+     * @return array
+     * @throws \Exception
+     */
+    public function getTldsAndPricing()
+    {
+        $args = array(
+            'withPrice'        => true,
+        );
+        return $this->sendRequest('searchExtensionRequest', $args);
     }
 
     protected function searchZoneDnsRequest(\OpenProvider\API\Domain $domain)
@@ -268,11 +291,12 @@ class API
     /**
      * Get domain name servers
      * @param \OpenProvider\API\Domain $domain
-     * @return type
+     * @param bool $cache
+     * @return array
      */
-    public function getNameservers(\OpenProvider\API\Domain $domain)
+    public function getNameservers(\OpenProvider\API\Domain $domain, $cache = false)
     {
-        $result = $this->retrieveDomainRequest($domain);
+        $result = $this->retrieveDomainRequest($domain, $cache);
 
         $nameservers    =   array();
         foreach($result['nameServers'] as $ns)
@@ -640,16 +664,25 @@ class API
     /**
      * Get information about domain
      * @param \OpenProvider\API\Domain $domain
-     * @return type
+     * @param bool $cache
+     * @return array
+     * @throws \Exception
      */
-    public function retrieveDomainRequest(\OpenProvider\API\Domain $domain)
+    public function retrieveDomainRequest(\OpenProvider\API\Domain $domain, $cache = false)
     {
-        $args = array
-        (
-            'domain' => $domain,
-        );
+        $domain_name = $domain->getFullName();
 
-        return $this->sendRequest('retrieveDomainRequest', $args);
+        if(!isset($this->cache[$domain_name]) || $cache == false)
+        {
+            $args = array
+            (
+                'domain' => $domain,
+            );
+
+            $this->cache[$domain_name] =  $this->sendRequest('retrieveDomainRequest', $args);
+        }
+
+        return $this->cache[$domain_name];
     }
 
     /**
@@ -755,4 +788,21 @@ class API
 
         return $this->sendRequest('tryAgainDomainRequest', $args);
     }
+
+    /**
+     * Get the DNS Single Domain Token
+     * @param Domain $domain
+     * @return array
+     * @throws \Exception
+     */
+    public function getDnsSingleDomainTokenUrl($domain)
+    {
+        $args = array
+        (
+            'domain'    =>  $domain
+        );
+
+        return $this->sendRequest('generateSingleDomainTokenRequest', $args);
+    }
+
 }

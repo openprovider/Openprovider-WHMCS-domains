@@ -148,8 +148,8 @@ class DomainController extends BaseController
                     unset($domainRegistration->additionalData->idnScript);
                 }
 
-            // Sleep for 10 seconds. Some registrars accept a new contact but do not process this immediately.
-            sleep(10);
+            // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
+            sleep(2);
 
             $api->registerDomain($domainRegistration);
         }
@@ -226,8 +226,8 @@ class DomainController extends BaseController
             if(isset($additionalFields['domainAdditionalData']))
                 $domainTransfer->additionalData = json_decode(json_encode($additionalFields['domainAdditionalData']),1);
 
-            // Sleep for 10 seconds. Some registrars accept a new contact but do not process this immediately.
-            sleep(10);
+            // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
+            sleep(2);
             $api->transferDomain($domainTransfer);
         }
         catch (\Exception $e)

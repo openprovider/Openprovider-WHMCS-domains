@@ -10,9 +10,10 @@ namespace OpenProvider\API;
 
 class APIConfig
 {
-    static public $moduleVersion        =   'whmcs-3.2';
-    static public $supportedDnsTypes    =   array('A', 'AAAA', 'CNAME', 'MX', 'SPF', 'TXT');
-    static public $dnsRecordTtl         =   86400; 
+    static public $moduleVersion        =   'whmcs-3.3';
+    static public $supportedDnsTypes    =   array('A', 'AAAA', 'CNAME', 'MX','SPF', 'TXT');
+//    static public $supportedDnsTypes    =   array('A', 'AAAA', 'CAA', 'CNAME', 'MX', 'NS', 'SOA', 'SPF', 'SSHFP', 'SRV', 'TLSA', 'TXT');
+    static public $dnsRecordTtl         =   86400;
     static public $dnsRecordPriority    =   10; 
     static public $autoRenew            =   'on';
     static public $encoding             =   'UTF-8';
@@ -42,5 +43,15 @@ class APIConfig
             return 'customer';
         else
             return 'system';
+    }
+
+    /**
+     * Get the module version.
+     * @return string|string[]
+     */
+    public static function getModuleVersion()
+    {
+        $moduleVersion = str_replace('whmcs-', 'v', self::$moduleVersion);
+        return $moduleVersion;
     }
 }

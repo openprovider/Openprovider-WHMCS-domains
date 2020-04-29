@@ -69,7 +69,6 @@ class OpenProvider
 	 **/
 	public function toggle_autorenew($domain, $opInfo)
 	{
-
 		// Check if we should auto renew or use the default settings
 	    if($domain->donotrenew == 0)
 	        $auto_renew = 'default';
@@ -94,7 +93,7 @@ class OpenProvider
 	 *
 	 * @return array|string
 	 **/
-	public function toggle_whois_protection($w_domain, \OpenProvider\API\Domain $domain, $opInfo)
+	public function toggle_whois_protection($w_domain, $opInfo)
 	{
 		// Check if we should auto renew or use the default settings
         // Note: the settings are in reverse since WHMCS updates the table after this operation.
@@ -116,7 +115,7 @@ class OpenProvider
                 $idprotection = '0';
 			}
 
-			$this->api->setPrivateWhoisEnabled($domain, $idprotection);
+			$this->api->setPrivateWhoisEnabled($this->domain, $idprotection);
 
 	    	return [ 'status'       => 'changed',
                     'old_setting'   => $opInfo['isPrivateWhoisEnabled'],

@@ -2,6 +2,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\API;
+use OpenProvider\API\APIConfig;
 use WeDevelopCoffee\wPower\Models\Registrar;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
@@ -165,13 +166,19 @@ class ConfigController extends BaseController
     {
         return array
         (
+            "version"   => array
+            (
+                "FriendlyName"  => "Module Version",
+                "Type"          => "text",
+                "Description"   => APIConfig::getModuleVersion() . "<style>input[name='version']{display: none;}</style>",
+            ),
             "OpenproviderAPI"   => array
             (
                 "FriendlyName"  => "Openprovider URL",
                 "Type"          => "text",
                 "Size"          => "60",
                 "Description"   => "Include https://",
-                "Default"       => "https://"
+                "Default"       => "https://rcp.openprovider.eu"
             ),
             "OpenproviderPremium"   => array
             (
@@ -193,6 +200,13 @@ class ConfigController extends BaseController
                 "Size"          => "20",
                 "Description"   => "Openprovider password",
             ),
+            "require_op_dns_servers"          => array
+            (
+                "Type"          => "yesno",
+                "FriendlyName"  => "Require Openprovider DNS servers for DNS management",
+                "Description"   => "Show a warning when DNS management is enabled but the Openprovider nameservers are not used.",
+                "Default"       => "yes"
+            ),
             "sync_settings" => array
             (
                 "FriendlyName"  => "Synchronisation settings",
@@ -200,11 +214,11 @@ class ConfigController extends BaseController
                 "Description"   => $this->getSyncDescription(),
                 "Default"       => ""
             ),
-            "syncExpiryDate" => array
+            "syncUseNativeWHMCS" => array
             (
-                "FriendlyName"  => "Synchronize Expiry date from Openprovider?",
+                "FriendlyName"  => "Use the native WHMCS synchronisation?",
                 "Type"          => "yesno",
-                "Description"   => "Expiry dates will be synced from Openprovider to WHMCS..",
+                "Description"   => "Up to V3.3, Openprovider had an internal synchronisation system. Set to no if you want to use the openprovider's own synchronisation engine.",
                 "Default"       => "yes"
             ),
             "syncDomainStatus" => array
@@ -228,18 +242,25 @@ class ConfigController extends BaseController
                 "Description"   => "The identity protection setting will be synced to Openprovider from WHMCS.",
                 "Default"       => "yes"
             ),
+            "syncExpiryDate" => array
+            (
+                "FriendlyName"  => "Synchronize Expiry date from Openprovider?",
+                "Type"          => "yesno",
+                "Description"   => "<strong>Setting applies on non-native synchronisation only.</strong> - Expiry dates will be synced from Openprovider to WHMCS.",
+                "Default"       => "yes"
+            ),
             "updateNextDueDate" => array
             (
                 "FriendlyName"  => "Synchronize due-date with offset?",
                 "Type"          => "yesno",
-                "Description"   => "WHMCS due dates will be synchronized using the due-date offset ",
+                "Description"   => "<strong>Setting applies on non-native synchronisation only.</strong> - WHMCS due dates will be synchronized using the due-date offset.",
             ),
             "nextDueDateOffset" => array
             (
                 "FriendlyName"  => "Due-date offset",
                 "Type"          => "text",
                 "Size"          => "2",
-                "Description"   => "Number of days to set the WHMCS due date before the Openprovider expiration date",
+                "Description"   => "<strong>Setting applies on non-native synchronisation only.</strong> - Number of days to set the WHMCS due date before the Openprovider expiration date.",
                 "Default"       => "3"
             ),
             "nextDueDateUpdateMaxDayDifference" => array
@@ -247,7 +268,7 @@ class ConfigController extends BaseController
                 "FriendlyName"  => "Due-date max difference in days",
                 "Type"          => "text",
                 "Size"          => "2",
-                "Description"   => "When the difference in days between the expiry date and next due date is more than this number, the next due date is not updated. This is required to prevent that the next due date is updated when the domain is automatically renewed, but not paid for. Or, when a domain is paid for 10 years in advance but is not renewed for 10 years.",
+                "Description"   => "<strong>Setting applies on non-native synchronisation only.</strong> - When the difference in days between the expiry date and next due date is more than this number, the next due date is not updated. This is required to prevent that the next due date is updated when the domain is automatically renewed, but not paid for. Or, when a domain is paid for 10 years in advance but is not renewed for 10 years.",
                 "Default"       => "100"
             ),
             "updateInterval"     => array
@@ -255,7 +276,7 @@ class ConfigController extends BaseController
                 "FriendlyName"  => "Update interval",
                 "Type"          => "text",
                 "Size"          => "2",
-                "Description"   => "The minimum number of hours between each domain synchronization",
+                "Description"   => "The minimum number of hours between each domain synchronization.",
                 "Default"       => "2"
             ),
             "domainProcessingLimit"     => array
@@ -263,7 +284,7 @@ class ConfigController extends BaseController
                 "FriendlyName"  => "Domain process limit",
                 "Type"          => "text",
                 "Size"          => "4",
-                "Description"   => "Maximum number of domains processed each time domain sync runs",
+                "Description"   => "Maximum number of domains processed each time domain sync runs.",
                 "Default"       => "200"
             ),
             "sendEmptyActivityEmail" => array
@@ -271,12 +292,12 @@ class ConfigController extends BaseController
                 "FriendlyName"  => "Send empty activity reports?",
                 "Type"          => "yesno",
                 "Size"          => "20",
-                "Description"   => "Receive emails from domain sync even if no domains were updated",
+                "Description"   => "Receive emails from domain sync even if no domains were updated.",
                 "Default"       => "no"
             ),
             "various_settings" => array
             (
-                "FriendlyName"  => "Synchronisation settings",
+                "FriendlyName"  => "Various settings",
                 "Type"          => "text",
                 "Description"   => $this->getVariousSettings(),
                 "Default"       => ""
@@ -289,6 +310,15 @@ class ConfigController extends BaseController
                 "Description"   => "<i>Enter the TLDs - without a leading dot - like nl,eu with a comma as a separator.</i><br>Some TLDs offer a free transfer, like the nl TLD. If the expiration date is within 30 days, the domain may expiry if the renewal is not performed in time. This setting will always try to renew the TLD. ",
                 "Default"       => ""
             ),
+            "useNewDnsManagerFeature" => array
+            (
+                "FriendlyName"  => "Use new DNS feature?",
+                "Type"          => "yesno",
+                "Size"          => "20",
+                "Description"   => "Only enable this when OpenProvider has enabled this for your account.",
+                "Default"       => ""
+            ),
+
         );
     }
 
@@ -308,9 +338,47 @@ class ConfigController extends BaseController
     margin-top: 20px;
     color: #bb1929;
 }
+#openproviderconfig .op-disabled,
+#openproviderconfig .op-disabled label
+{
+    text-decoration: line-through;
+    opacity: 0.8;
+}
 </style>
 <h1>Synchronisation options</h1>
 <p>Choose what settings you want to synchronise between WHMCS and Openprovider</p>
+<script>
+jQuery(document).ready(function(){
+    jQuery.fn.extend({
+        op_update_sync_options: function()
+        {
+            // Comment this for showing the options with a strikethrough and uncomment the following part.
+            jQuery("#openproviderconfig input[name='syncExpiryDate']").parent().parent().parent().toggle();
+            jQuery("#openproviderconfig input[name='updateNextDueDate']").parent().parent().parent().toggle();
+            jQuery("#openproviderconfig input[name='nextDueDateOffset']").parent().parent().toggle();
+            jQuery("#openproviderconfig input[name='nextDueDateUpdateMaxDayDifference']").parent().parent().toggle();
+            
+            // Uncomment this for showing the options with a strikethrough
+            // jQuery("#openproviderconfig input[name='syncExpiryDate']").parent().parent().parent().toggleClass('op-disabled');
+            // jQuery("#openproviderconfig input[name='syncExpiryDate']").prop('disabled', function(i, v) { return !v; });
+            // jQuery("#openproviderconfig input[name='updateNextDueDate']").parent().parent().parent().toggleClass('op-disabled');
+            // jQuery("#openproviderconfig input[name='updateNextDueDate']").prop('disabled', function(i, v) { return !v; });
+            // jQuery("#openproviderconfig input[name='nextDueDateOffset']").parent().parent().toggleClass('op-disabled');
+            // jQuery("#openproviderconfig input[name='nextDueDateOffset']").prop('disabled', function(i, v) { return !v; });
+            // jQuery("#openproviderconfig input[name='nextDueDateUpdateMaxDayDifference']").parent().parent().toggleClass('op-disabled');
+            // jQuery("#openproviderconfig input[name='nextDueDateUpdateMaxDayDifference']").prop('disabled', function(i, v) { return !v; });
+        },
+    });
+    
+    if(jQuery("#openproviderconfig input[name='syncUseNativeWHMCS']").is(':checked'))
+        jQuery('#openproviderconfig').op_update_sync_options();
+    
+    jQuery("#openproviderconfig input[name='syncUseNativeWHMCS']").change(function(){
+        jQuery(this).op_update_sync_options();
+    });
+});
+</script>
+</script>
 EOF;
         return $syncDescription;
     }

@@ -25,7 +25,7 @@ class Activity
      * @param $data
      * @param $moduleLog = false
      */
-	public static function log($activity, $data, $moduleLog = false)
+    public static function log($activity, $data, $moduleLog = false)
     {
         $log_entry = self::generate_log_entry($activity, $data);
 
@@ -105,7 +105,7 @@ class Activity
             case 'activity_email_not_sent':
                 $log_entry = 'Domain sync activity NOT e-mailed to admins. Subject: "' . $data['subject'] .'"';
                 break;
-            
+
             case 'unexpected_error':
                 $log_entry = 'Error while syncing status for '.$data['domain'].'. OpenProvider API response: ' . $data['message'] .'"';
                 break;
@@ -160,24 +160,24 @@ class Activity
         <br>\n
         Please find the domain synchronisation update below for your Openprovider domains.<br>\n<br>\n";
 
-         // Did we find unexpected settings?
-         if(isset(self::$activity_log['unexpected_error']))
-         {
-             $email .= "
+        // Did we find unexpected settings?
+        if(isset(self::$activity_log['unexpected_error']))
+        {
+            $email .= "
              <font color=\"red\">ERRORS: Please check manually the following domains:</font>
              <table>
              <tr>
                  <td>Domain</td>
                  <td>Message</td>
              </tr>";
-             foreach (self::$activity_log['unexpected_error'] as $activity) {
-                 $email .= "<tr>
+            foreach (self::$activity_log['unexpected_error'] as $activity) {
+                $email .= "<tr>
                      <td>" . $activity['data'] ['domain'] . "</td>
                      <td>" . $activity['data'] ['message'] . "</td>
                  </tr>\n";
-             }
-             $email .= "</table>\n";
-         }
+            }
+            $email .= "</table>\n";
+        }
 
         // Expiry
         if($setting['syncExpiryDate'] == 'on')
@@ -242,7 +242,7 @@ class Activity
         }
 
         // Due date
-        if($setting['updateNextDueDate'] == 'on')
+        if(Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '') == '' && $setting['updateNextDueDate'] == 'on')
         {
             // First, check which domains have an updated invoice due date.
             $updated_invoice_dates = [];
@@ -310,7 +310,7 @@ class Activity
         }
 
         // Domain auto renew setting
-        if($setting['syncAutoRenewSetting'] == 'on') {
+        if(Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '') == '' && $setting['syncAutoRenewSetting'] == 'on') {
             $email .= "
             The following domains have been processed for <strong>domain autorenew</strong> updates:</p>
             <table>
@@ -331,7 +331,7 @@ class Activity
         }
 
         // Domain whois protection setting
-        if($setting['syncIdentityProtectionToggle'] == 'on') {
+        if(Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '') == '' && $setting['syncIdentityProtectionToggle'] == 'on') {
             $email .= "
             The following domains have been processed for <strong>domain whois privacy protection</strong> updates:</p>
             <table>

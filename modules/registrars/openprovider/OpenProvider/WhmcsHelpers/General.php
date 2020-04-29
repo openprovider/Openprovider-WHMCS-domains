@@ -24,7 +24,7 @@ class General
      * @param  integer $allowed_difference_in_days *optional*  If set, this margin will be used.
 	 * @return string When the dates matches, 'correct' is returned. If not, the date is returned.
 	 **/
-	public static function compare_dates($first_date, $second_date, $offset_in_days = '0', $second_date_format = 'Y-m-d', $second_date_timezone = 'CEST', $allowed_difference_in_days = 0)
+	public static function compare_dates($first_date, $second_date, $offset_in_days = '0', $second_date_format = 'Y-m-d', $second_date_timezone = 'Europe/Amsterdam', $allowed_difference_in_days = 0)
 	{
 		$system_timezone = date_default_timezone_get();
 
