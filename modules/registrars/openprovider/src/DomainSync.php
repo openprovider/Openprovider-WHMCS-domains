@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use WeDevelopCoffee\wPower\Models\Registrar;
 use WHMCS\Database\Capsule;
 use OpenProvider\WhmcsHelpers\Domain;
+use OpenProvider\API\Domain as api_domain;
 use OpenProvider\WhmcsHelpers\Activity;
 use OpenProvider\WhmcsHelpers\General;
 use OpenProvider\WhmcsHelpers\DomainSync as helper_DomainSync;
@@ -134,15 +135,27 @@ class DomainSync
     {
         $this->printDebug('PROCESSING DOMAINS...');
         $this->OpenProvider = new OpenProvider;
+        $this->OpenProvider->api->getResellerStatistics('domainsync');
 
         $setting['syncExpiryDate'] = Registrar::getByKey('openprovider', 'syncExpiryDate', 'on');
         $setting['syncDomainStatus'] = Registrar::getByKey('openprovider', 'syncDomainStatus', 'on');
         $setting['syncAutoRenewSetting'] = Registrar::getByKey('openprovider', 'syncAutoRenewSetting', 'on');
         $setting['syncIdentityProtectionToggle'] = Registrar::getByKey('openprovider', 'syncIdentityProtectionToggle', 'on');
         $setting['updateNextDueDate'] = Registrar::getByKey('openprovider', 'updateNextDueDate', 'off') ;
+        $setting['syncUseNativeWHMCS'] = Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '');
 
         foreach($this->domains as $domain)
         {
+            // Do not process domains marked as fraud.
+            if($setting['syncUseNativeWHMCS'] == 'on' && strtolower($domain->status) == 'fraud')
+                continue;
+
+            // Do not process active or pending transfer domains when the native sync feature is enabled.
+            if($setting['syncUseNativeWHMCS'] == 'on'
+                && (strtolower($domain->status) == 'active'
+                || strtolower($domain->status) == 'pending'))
+                continue;
+
             $this->printDebug('WORKING ON ' . $domain->domain);
             $this->update_executed_logs = null;
             $this->update_domain_data = null;
@@ -161,13 +174,18 @@ class DomainSync
                 if($setting['syncDomainStatus'] == 'on')
                     $this->process_domain_status();
 
-                // auto renew on or not? -> WHMCS is leading.
-                if($setting['syncAutoRenewSetting'] == 'on')
-                    $this->process_auto_renew();
+                if(Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '') == '') {
+                    // auto renew on or not? -> WHMCS is leading.
+                    if ($setting['syncAutoRenewSetting'] == 'on') {
+                        $this->process_auto_renew();
+                    }
 
-                // Identity protection or not? -> WHMCS is leading.
-                if($setting['syncIdentityProtectionToggle'] == 'on')
-                    $this->process_identity_protection();
+                    // Identity protection or not? -> WHMCS is leading.
+                    if ($setting['syncIdentityProtectionToggle'] == 'on') {
+                        $this->process_identity_protection();
+                    }
+                }
+
             }
             catch (\Exception $ex)
             {
@@ -211,8 +229,10 @@ class DomainSync
             }
         }
 
-        if($setting['updateNextDueDate'] == 'on')
-            $this->process_next_due_dates();
+        if(Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '') == '') {
+            if($setting['updateNextDueDate'] == 'on')
+                $this->process_next_due_dates();
+        }
 
         $this->process_empty_next_due_dates();
 
@@ -342,7 +362,6 @@ class DomainSync
      **/
     private function process_domain_status($status = null)
     {
-
         if($status == 'Cancelled' || $status == 'Expired')
         {
             // Nothing to do.
@@ -364,20 +383,10 @@ class DomainSync
             return;
         }
 
-        $op_status_converter = [
-            'ACT' => 'Active',		// ACT	The domain name is active
-            'DEL' => 'Grace',		// DEL	The domain name has been deleted, but may still be restored.
-            /* Leave FAI out of the array as we need to make the if statement fail in order to log an error. 'FAI' => 'error',	// FAI	The domain name request has failed.*/
-            'PEN' => 'Pending',		// PEN	The domain name request is pending further information before the process can continue.
-            'REQ' => 'Pending Transfer',		// REQ	The domain name request has been placed, but not yet finished.
-            'RRQ' => 'Pending',		// RRQ	The domain name restore has been requested, but not yet completed.
-            'SCH' => 'Pending',		// SCH	The domain name is scheduled for transfer in the future.
-        ];
+        $op_domain_status = api_domain::convertOpStatusToWhmcs($this->op_domain['status']);
 
-        if(isset($op_status_converter[ $this->op_domain['status'] ]))
+        if($op_domain_status != false)
         {
-            $op_domain_status = $op_status_converter[ $this->op_domain['status'] ];
-
             // Check if the status matches
             if($this->objectDomain->status != $op_domain_status)
             {
@@ -454,11 +463,11 @@ class DomainSync
     private function process_identity_protection()
     {
         try {
-            $result = $this->OpenProvider->toggle_whois_protection($this->objectDomain,$this->op_domain_obj, $this->op_domain);
-    
+            $result = $this->OpenProvider->toggle_whois_protection($this->objectDomain, $this->op_domain);
+
         } catch (\Exception $e) {
-            \logModuleCall('OpenProvider', 'Save identity toggle', $params['domainname'], [$OpenProvider->domain, @$op_domain, $OpenProvider], $e->getMessage(), [$params['Password']]);
-            
+            \logModuleCall('OpenProvider', 'Save identity toggle', $this->objectDomain->domain, [$this->op_domain_obj->domain, @$this->op_domain, $this->op_domain_obj], $e->getMessage(), [$params['Password']]);
+
             $this->unsigned_wpp_contract_domains[] = $this->objectDomain->domain;
         }
 
@@ -479,6 +488,7 @@ class DomainSync
             Activity::log('update_identity_protection_setting', $activity_data);
         }
     }
+
 
     public function printDebug($message)
     {

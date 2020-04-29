@@ -66,7 +66,7 @@ class Setup
      */
     protected function addFeatureMigrationPath ($feature)
     {
-        $path = realpath(dirname(__FILE__) . '/../' . $feature . '/migrations/');
+        $path = realpath(dirname(__FILE__) . '/../' . $feature . '/Migrations/');
         $this->addMigrationPath($path);
     }
 

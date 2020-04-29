@@ -54,40 +54,6 @@ $additionaldomainfields[".xxx"][] = array(
     "op_name" => "defensive",
 );
 
-// .pro
-$additionaldomainfields[".pro"][] = array(
-    "Name" => "Profession",
-    "LangVar" => "proProfession",
-    "Type" => "text",
-    "Required" => true,
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "profession",
-);
-
-$additionaldomainfields[".pro"][] = array(
-    "Name" => "Authority Name",
-    "LangVar" => "proAuthorityName",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "authorityName",
-);
-
-$additionaldomainfields[".pro"][] = array(
-    "Name" => "Authority URL",
-    "LangVar" => "proAuthorityUrl",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "authorityUrl",
-);
-
-$additionaldomainfields[".pro"][] = array(
-    "Name" => "License Number",
-    "LangVar" => "proLicenseNumber",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "licenseNumber",
-);
-
 // .JOBS
 $additionaldomainfields[".jobs"][] = array(
     "Name" => "Website",
@@ -404,6 +370,12 @@ $additionaldomainfields['.es'][] = array(
     "op_location" => "customerAdditionalData",
     "op_name"  => "esIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
+
+// All .ES SLDs
+$additionaldomainfields[".com.es"] = $additionaldomainfields[".es"];
+$additionaldomainfields[".nom.es"] = $additionaldomainfields[".es"];
+$additionaldomainfields[".edu.es"] = $additionaldomainfields[".es"];
+$additionaldomainfields[".org.es"] = $additionaldomainfields[".es"];
 
 // .SG
 
@@ -902,5 +874,19 @@ $additionaldomainfields[".top"][] = array(
 // .EU
 $additionaldomainfields[".eu"][] = array(
     "Name" => "Entity Type",
+    "Remove" => true,
+);
+
+// .DE
+$additionaldomainfields[".de"][] = array(
+    "Name" => "Tax ID",
+    "Remove" => true
+);
+$additionaldomainfields[".de"][] = array(
+    "Name" => "Address Confirmation",
+    "Remove" => true,
+);
+$additionaldomainfields[".de"][] = array(
+    "Name" => "Agree to DE Terms",
     "Remove" => true,
 );

@@ -35,6 +35,22 @@ return [
         'hookPoint' => 'AdminHomeWidgets',
         'priority' =>  1,
         'controller' => 'AdminWidgetController@showBalance'
+    ],
+    [
+        'hookPoint' => 'ClientAreaPageDomainDNSManagement',
+        'priority' => 10,
+        'controller' => 'DnsNotificationController@notify'
+    ],
+    [
+        'hookPoint' => 'ClientAreaPrimarySidebar',
+        'priority'  => 1,
+        'controller' => 'DnsAuthController@replaceDnsMenuItem'
+    ],
+    [
+        'hookPoint' => 'ClientAreaPageDomainDNSManagement',
+        'priority'  => 1,
+        'controller' => 'DnsAuthController@redirectDnsManagementPage'
     ]
+
 ];
 

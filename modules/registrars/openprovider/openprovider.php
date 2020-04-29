@@ -70,6 +70,18 @@ function openprovider_TransferDomain($params)
 }
 
 /**
+ * Get domain information (WHMCS > v7.6).
+ *
+ * @param type $params
+ * @return type
+ */
+function openprovider_GetDomainInformation($params)
+{
+    return openprovider_registrar_launch('system')
+        ->output($params, 'GetDomainInformation');
+}
+
+/**
  * Get domain name servers.
  *
  * @param type $params
@@ -266,15 +278,21 @@ function openprovider_TransferSync($params)
  */
 function openprovider_Sync($params)
 {
-    $domain = Domain::find($params['domainid']);
-    return array(
-        'expirydate' => $domain->expirydate, // Format: YYYY-MM-DD
-        'active' => true, // Return true if the domain is active
-        'expired' => false, // Return true if the domain has expired
-        'transferredAway' => false, // Return true if the domain is transferred out
-    );
+    return openprovider_registrar_launch('system')
+        ->output($params, 'domainSync');
 }
 
+/**
+ * Get the TLD pricing.
+ *
+ * @param array $params
+ * @return mixed
+ */
+function openprovider_GetTldPricing(array $params)
+{
+    return openprovider_registrar_launch('system')
+        ->output($params, 'getTldPricing');
+}
 
 /**
  * Check the domains availability.

@@ -1,5 +1,19 @@
 # Changelog
 
+## V3.3
+Notes:
+To improve DNS support, perform the actions are instructed in "Install the DNS management options". We have created a [request for WHMCS to make this easier. Please upvote this request here](https://requests.whmcs.com/topic/add-support-for-custom-dns-types).
+
+- Feature: #128 - Import domain pricing (WHMCS 7.10)
+- Feature: #131 - Reach DNS record type parity with Openprovider
+- Feature: #146 Changed how synchronisation works. Uses native WHMCS function and synchronises expired domains separatedly.
+- Feature: #149 Show the version number in the configuration page.
+- Feature: #144 Add support for GetDomainInformation
+- Feature: #125 Warn users about setting the correct DNS servers when enabling DNS management
+- Feature: #84 - Initial support for next-gen DNS.
+- Improvement: #132 Remove non-required .de required fields
+- Improvement: #148 Skip domains marked as fraud in synchronisation
+
 ## V3.1
 
 - Feature: Execute renewal action for free domain transfers (#126)
