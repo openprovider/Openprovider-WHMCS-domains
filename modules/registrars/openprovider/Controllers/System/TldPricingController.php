@@ -63,7 +63,9 @@ class TldPricingController extends BaseController
                 ->setCurrency($extension['prices']['resellerPrice']['reseller']['currency'])
                 ->setEppRequired($extension['isTransferAuthCodeRequired']);
 
-            if(isset($extension['prices']['createPrice']['reseller']['price']))
+            if(isset($extension['prices']['resellerPrice']['reseller']['price']))
+                $item->setRegisterPrice($extension['prices']['resellerPrice']['reseller']['price']);
+            elseif(isset($extension['prices']['createPrice']['reseller']['price']))
                 $item->setRegisterPrice($extension['prices']['createPrice']['reseller']['price']);
 
             if(isset($extension['prices']['renewPrice']['reseller']['price']))
@@ -71,7 +73,8 @@ class TldPricingController extends BaseController
 
             if(isset($extension['softQuarantinePeriod']) && isset($extension['prices']['softRestorePrice']['reseller']['price']))
             {
-                $item->setGraceFeeDays($extension['softQuarantinePeriod']);//$extension['softQuarantinePeriod']);
+                $item->setGraceFeeDays($extension['softQuarantinePeriod']);
+
                 $item->setGraceFeePrice($extension['prices']['softRestorePrice']['reseller']['price']);
             }
             else
