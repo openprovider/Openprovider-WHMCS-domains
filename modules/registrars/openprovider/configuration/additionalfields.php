@@ -125,7 +125,7 @@ $additionaldomainfields[".pt"][] = array(
     "LangVar" => "ptCompanyRegistrationNumber",
     "Type" => "text",
     "Size" => "30",
-    "op_location" => "customerExtensionAdditionalData",
+    "op_location" => "customerAdditionalData",
     "op_name"  => "companyRegistrationNumber"
 );
 
@@ -134,7 +134,7 @@ $additionaldomainfields[".pt"][] = array(
     "LangVar" => "ptSocialSecurityNumber",
     "Type" => "text",
     "Size" => "30",
-    "op_location" => "customerExtensionAdditionalData",
+    "op_location" => "customerAdditionalData",
     "op_name"   => "socialSecurityNumber"
 );
 
@@ -143,7 +143,7 @@ $additionaldomainfields[".pt"][] = array(
     "LangVar" => "ptPassportNumber",
     "Type" => "text",
     "Size" => "30",
-    "op_location" => "customerExtensionAdditionalData",
+    "op_location" => "customerAdditionalData",
     "op_name" => "passportNumber"
 );
 
