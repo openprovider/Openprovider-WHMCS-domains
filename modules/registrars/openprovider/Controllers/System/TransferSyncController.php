@@ -6,6 +6,7 @@ use OpenProvider\API\API;
 use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Models\Registrar;
+use Carbon\Carbon;
 
 /**
  * Class TransferSyncController
