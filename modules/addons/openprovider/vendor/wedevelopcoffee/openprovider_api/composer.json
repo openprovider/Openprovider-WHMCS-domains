@@ -1,0 +1,17 @@
+{
+    "name": "wedevelopcoffee/openprovider_api",
+    "description": "Communication package with OpenProvider",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Daniel Koop",
+            "email": "daniel@wedevelop.coffee"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "WeDevelopCoffee\\OpenProvider_Api\\": "./src/"
+        }
+    },
+    "require": {}
+}
