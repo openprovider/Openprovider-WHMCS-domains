@@ -400,7 +400,6 @@ class API
             'type' => 'master',
             'records' => $dnsRecordsArr,
         );
-
         if ($result['total'] > 0)
         {
             $this->sendRequest('modifyZoneDnsRequest', $args);
@@ -553,6 +552,21 @@ class API
     }
 
     /**
+     * Search a domain in Openprovider.
+     * @param array $filters
+     * @throws \Exception
+     */
+    public function searchDomain($filters = [])
+    {
+        $args = [
+            'offset' => 0, //Will only return results if more than 50 domains found
+            'limit'  => 50
+        ] + $filters;
+
+        return $this->sendRequest('searchDomainRequest', $args);
+    }
+
+    /**
      * Transfer domain
      * @param \OpenProvider\API\DomainTransfer $domainTransfer
      */
@@ -576,6 +590,23 @@ class API
         }
 
         $this->sendRequest('transferDomainRequest', $domainTransfer);
+    }
+
+    /**
+     *
+     * @param \OpenProvider\API\Domain $domain
+     * @param \DateTime $scheduled_date
+     * @return array
+     */
+    public function modifyScheduledTransferDate(\OpenProvider\API\Domain $domain, $scheduled_date)
+    {
+        $args = array
+        (
+            'domain'        =>  $domain,
+            'scheduledAt'   =>  $scheduled_date,
+        );
+
+        return $this->sendRequest('modifyDomainRequest', $args);
     }
 
 

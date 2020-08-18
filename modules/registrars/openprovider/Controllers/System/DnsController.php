@@ -113,7 +113,6 @@ class DnsController extends BaseController
 
         $dnsRecordsArr = array();
         $values = array();
-
         foreach ($params['dnsrecords'] as $tmpDnsRecord)
         {
             if (!$tmpDnsRecord['hostname'] && !$tmpDnsRecord['address'])
@@ -127,7 +126,7 @@ class DnsController extends BaseController
             $dnsRecord->value   =   $tmpDnsRecord['address'];
             $dnsRecord->ttl     =   \OpenProvider\API\APIConfig::$dnsRecordTtl;
 
-            if ($dnsRecord->type == 'MX' || $dnsRecord->type == 'SRV') // priority - required for MX records; ignored for all other record types
+            if ('MX' == $dnsRecord->type) // priority - required for MX records; ignored for all other record types
             {
                 if (is_numeric($tmpDnsRecord['priority']))
                 {

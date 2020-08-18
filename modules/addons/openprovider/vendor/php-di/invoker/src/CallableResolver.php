@@ -2,9 +2,12 @@
 
 namespace Invoker;
 
+use Closure;
 use Invoker\Exception\NotCallableException;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use ReflectionException;
+use ReflectionMethod;
 
 /**
  * Resolves a callable from a container.
@@ -30,9 +33,9 @@ class CallableResolver
      *
      * @return callable Real PHP callable.
      *
-     * @throws NotCallableException
+     * @throws NotCallableException|ReflectionException
      */
-    public function resolve($callable)
+    public function resolve($callable): callable
     {
         if (is_string($callable) && strpos($callable, '::') !== false) {
             $callable = explode('::', $callable, 2);
@@ -49,22 +52,20 @@ class CallableResolver
 
     /**
      * @param callable|string|array $callable
-     * @return callable
-     * @throws NotCallableException
+     * @return callable|mixed
+     * @throws NotCallableException|ReflectionException
      */
     private function resolveFromContainer($callable)
     {
         // Shortcut for a very common use case
-        if ($callable instanceof \Closure) {
+        if ($callable instanceof Closure) {
             return $callable;
         }
 
-        $isStaticCallToNonStaticMethod = false;
-
         // If it's already a callable there is nothing to do
         if (is_callable($callable)) {
-            $isStaticCallToNonStaticMethod = $this->isStaticCallToNonStaticMethod($callable);
-            if (! $isStaticCallToNonStaticMethod) {
+            // TODO with PHP 8 that should not be necessary to check this anymore
+            if (! $this->isStaticCallToNonStaticMethod($callable)) {
                 return $callable;
             }
         }
@@ -92,17 +93,8 @@ class CallableResolver
                 if ($this->container->has($callable[0])) {
                     throw $e;
                 }
-                if ($isStaticCallToNonStaticMethod) {
-                    throw new NotCallableException(sprintf(
-                        'Cannot call %s::%s() because %s() is not a static method and "%s" is not a container entry',
-                        $callable[0],
-                        $callable[1],
-                        $callable[1],
-                        $callable[0]
-                    ));
-                }
                 throw new NotCallableException(sprintf(
-                    'Cannot call %s on %s because it is not a class nor a valid container entry',
+                    'Cannot call %s() on %s because it is not a class nor a valid container entry',
                     $callable[1],
                     $callable[0]
                 ));
@@ -117,13 +109,14 @@ class CallableResolver
      * Check if the callable represents a static call to a non-static method.
      *
      * @param mixed $callable
-     * @return bool
+     *
+     * @throws ReflectionException
      */
-    private function isStaticCallToNonStaticMethod($callable)
+    private function isStaticCallToNonStaticMethod($callable): bool
     {
         if (is_array($callable) && is_string($callable[0])) {
-            list($class, $method) = $callable;
-            $reflection = new \ReflectionMethod($class, $method);
+            [$class, $method] = $callable;
+            $reflection = new ReflectionMethod($class, $method);
 
             return ! $reflection->isStatic();
         }

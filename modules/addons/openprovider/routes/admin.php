@@ -18,4 +18,9 @@ return [
     'supportDownload' => 'SupportController@download',
     'supportIndex' => 'SupportController@index',
 
+    // Domain transfers
+    'scheduledDomainTransfers' => 'ScheduledDomainTransferController@index',
+    'cleanScheduledDomainTransfers' => 'ScheduledDomainTransferController@clean',
+    'toggleFilterScheduledDomainTransfers' => 'ScheduledDomainTransferController@toggle',
+
 ];

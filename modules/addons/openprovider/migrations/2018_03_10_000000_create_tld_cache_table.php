@@ -12,7 +12,8 @@ class CreateTldCacheTable extends Migration
      */
     public function up()
     {
-        Capsule::schema()->drop('OpenProviderTLDCache');
+        if(Capsule::schema()->hasTable('OpenProviderTLDCache'))
+            Capsule::schema()->drop('OpenProviderTLDCache');
     }
 
     /**
@@ -22,6 +23,5 @@ class CreateTldCacheTable extends Migration
      */
     public function down()
     {
-        Capsule::schema()->drop('OpenProviderTLDCache');
     }
 }

@@ -11,7 +11,8 @@ namespace OpenProvider\API;
 class APIConfig
 {
     static public $moduleVersion        =   'whmcs-3.3';
-    static public $supportedDnsTypes    =   array('A', 'AAAA', 'CNAME', 'MX', 'SPF', 'SRV', 'TXT', 'TLSA', 'SSHFP', 'CAA');
+    static public $supportedDnsTypes    =   array('A', 'AAAA', 'CNAME', 'MX','SPF', 'TXT');
+//    static public $supportedDnsTypes    =   array('A', 'AAAA', 'CAA', 'CNAME', 'MX', 'NS', 'SOA', 'SPF', 'SSHFP', 'SRV', 'TLSA', 'TXT');
     static public $dnsRecordTtl         =   86400;
     static public $dnsRecordPriority    =   10; 
     static public $autoRenew            =   'on';

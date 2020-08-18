@@ -7,7 +7,7 @@
         "files": ["helpers.php"]
     },
     "require": {
-        "wedevelopcoffee/wpower": "2.0.*",
+        "wedevelopcoffee/wpower": "2.1.*",
         "viison/address-splitter": "^0.3.2"
     },
     "require-dev": {
