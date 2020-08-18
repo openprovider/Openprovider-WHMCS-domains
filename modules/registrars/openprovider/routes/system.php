@@ -46,4 +46,7 @@ return [
     'domainSync' => 'DomainSyncController@sync',
     'checkAvailability' => 'CheckAvailabilityController@check',
     'getTldPricing' => 'TldPricingController@get',
+
+    // Cron
+    'DownloadTldPricesCron' => 'DownloadTldPricesCronController@Download'
 ];
