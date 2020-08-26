@@ -55,7 +55,9 @@ with
 ## Install the DNS management options
 To match the DNS types supported by Openprovider in WHMCS, you will need to install this in the template files. We have created a [request for WHMCS to make this easier. Please upvote this request here](https://requests.whmcs.com/topic/add-support-for-custom-dns-types).
 
-_Step 1:_ Open templates/YOUR_TEMPLATE/clientareadomaindns.tpl and search for `<select name="dnsrecordtype[]" class="form-control">`. This will appear two times. Search for the version with the options like the one below. Note that it includes the "selected" string.
+_Step 1:_ Open `whmcs/templates/CURRENT_THEME_TEMPLATE/clientareadomaindns.tpl` and search for `<select name="dnsrecordtype[]" class="form-control">`. This will appear two times. 
+
+Search for the version with the options like the one below. Note that it includes the "selected" substring:
 
 `<option value="A"{if $dnsrecord.type eq "A"} selected="selected"{/if}>A (Address)</option>`
 
@@ -73,7 +75,9 @@ Replace the options with the following:
 <option value="TXT"{if $dnsrecord.type eq "TXT"} selected="selected"{/if}>TXT (recommended for SPF)</option>
 ```
 
-_Step 2:_ Search for the second `<select name="dnsrecordtype[]" class="form-control">`. Search for the version with the options like the one below. Note that this time, the "selected" string is not used.
+_Step 2:_ Search for the second `<select name="dnsrecordtype[]" class="form-control">`. Search for the version with the options like the one below. 
+
+Note that this time, the "selected" substring is not used.
 
 `<option value="A">A (Address)</option>`
 
@@ -91,12 +95,18 @@ Replace the options with the following:
 <option value="TXT">TXT (recommended for SPF)</option>
 ```
 
-_Step 3:_ Update the MX priority field with ` or $dnsrecord.type eq "SRV"` in the if/else. This if statement is used two times in the file. Replace both.
-```
-{if $dnsrecord.type eq "MX"} ```
+_Step 3:_ Update the MX priority field with `or $dnsrecord.type eq "SRV"` in the 'if/else' block. 
+
+This 'if' statement is used twice in the file. Replace both.
 
 ```
-{if $dnsrecord.type eq "MX" or $dnsrecord.type eq "SRV"} ```
+{if $dnsrecord.type eq "MX"} 
+```
+
+
+```
+{if $dnsrecord.type eq "MX" or $dnsrecord.type eq "SRV"} 
+```
 
 ## Configuration Option details
 

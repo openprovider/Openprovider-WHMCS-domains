@@ -126,7 +126,7 @@ class DnsController extends BaseController
             $dnsRecord->value   =   $tmpDnsRecord['address'];
             $dnsRecord->ttl     =   \OpenProvider\API\APIConfig::$dnsRecordTtl;
 
-            if ('MX' == $dnsRecord->type) // priority - required for MX records; ignored for all other record types
+            if ('MX' == $dnsRecord->type or 'SRV' == $dnsRecord->type) // priority - required for MX records and SRV records; ignored for all other record types
             {
                 if (is_numeric($tmpDnsRecord['priority']))
                 {
