@@ -2,7 +2,10 @@
 ## DOMAIN TRANSFER
 
 
-
+## V3.4
+- [FEATURE] Added support for TLD price caching.
+- [IMPROVEMENT] Replaced API URL with a test mode checkbox instead.
+- [BUGFIX] An incorrect password does not show a blank WHMCS dashboard.
 
 ## V3.3
 Notes:

@@ -2,6 +2,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks\Widgets;
 
 use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use Punic\Exception;
 
 /**
  * Show OP balance
@@ -20,10 +21,15 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 
     public function getData()
     {
-        $openprovider = new OpenProvider();
-        $balance = $openprovider->api->getResellerBalance()['balance'];
+        try {
+            $openprovider = new OpenProvider();
+            $balance = $openprovider->api->getResellerBalance()['balance'];
 
-        $statistics = $openprovider->api->getResellerStatistics();
+            $statistics = $openprovider->api->getResellerStatistics();
+        } catch ( \Exception $e)
+        {
+            return ['error' => 'The Openprovider module could not be loaded, please check that an API connection can be established and that the login details are correct.'];
+        }
 
         $domainsTotal = $statistics['domain']['total'];
 
@@ -36,6 +42,17 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 
     public function generateOutput($data)
     {
+        if(isset($data['error']))
+        {
+            return <<<EOF
+<div class="widget-content-padded">
+            <div style="color:red; font-weight: bold">
+                {$data['error']}
+            </div>
+</div>
+EOF;
+        }
+
         if($data['balance'] <= 100)
             $balance_css = 'color-red';
 

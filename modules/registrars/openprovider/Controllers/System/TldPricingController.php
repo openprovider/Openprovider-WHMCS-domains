@@ -1,6 +1,7 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+use OpenProvider\WhmcsRegistrar\src\TldPriceCache;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
 use OpenProvider\API\Domain;
@@ -44,13 +45,12 @@ class TldPricingController extends BaseController
         // A connection error should return a simple array with error key and message
         // return ['error' => 'This error occurred',];
 
-        try {
-            $this->API->setParams($params);
-            $extensionData = $this->API->getTldsAndPricing();
-        } catch ( \Exception $e)
-        {
-            return ['error' => 'This error occurred: ' . $e->getMessage()];
-        }
+        $tldPriceCache = new TldPriceCache();
+
+        if(!$tldPriceCache->has())
+            throw new \Exception('The cron for downloading the TLD prices was not run yet. <a href="../modules/registrar/openprovider/cron/DownloadTldPrices.php">You can run the TLD download manually here</a>. If this fails, it is likely that your WHMCS installation does not support a long execution time. Check the manual to run the cron command instead.');
+
+        $extensionData = $tldPriceCache->get();
 
         $results = new ResultsList;
 

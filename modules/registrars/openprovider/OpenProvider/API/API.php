@@ -2,6 +2,8 @@
 
 namespace OpenProvider\API;
 
+use OpenProvider\WhmcsRegistrar\src\Configuration;
+
 require_once __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
 
 /**
@@ -38,7 +40,10 @@ class API
      */
     public function setParams($params, $debug = 0)
     {
-        $this->url = $params['OpenproviderAPI'];
+        if(isset($params['test_mode']) && $params['test_mode'] == 'on')
+            $this->url = Configuration::get('api_url_cte');
+        else
+            $this->url = Configuration::get('api_url');
 
         $this->request->setAuth(array(
             'username' => $params["Username"],

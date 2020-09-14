@@ -145,16 +145,21 @@ class ConfigController extends BaseController
      */
     protected function generateLoginError($configarray)
     {
-        //warn user that login failed
-        $configarray['loginFailed'] = [
+        $loginFailed = [
             'FriendlyName' => '<b><strong style="color:Tomato;">Login Unsuccessful:</strong></b>',
-            'Description' => '<b><strong style="color:Tomato;">please ensure credentials and URL are correct</strong></b>'
+            'Description' => '<b><strong style="color:Tomato;">Please ensure credentials and URL are correct</strong></b>'
         ];
+
+        // Create a separate array to put the warning at the top as well.
+        $firstArray[] = $loginFailed;
+
+        //warn user that login failed at the end.
+        $configarray['loginFailed'] = $loginFailed;
 
         $configarray['Username']['FriendlyName'] = '<b><strong style="color:Tomato;">*Username</strong></b>';
         $configarray['Password']['FriendlyName'] = '<b><strong style="color:Tomato;">*Password</strong></b>';
-        $configarray['OpenproviderAPI']['FriendlyName'] = '<b><strong style="color:Tomato;">*Openprovider URL</strong></b>';
-        return $configarray;
+
+        return array_merge($firstArray, $configarray);
     }
 
     /**
@@ -172,13 +177,12 @@ class ConfigController extends BaseController
                 "Type"          => "text",
                 "Description"   => APIConfig::getModuleVersion() . "<style>input[name='version']{display: none;}</style>",
             ),
-            "OpenproviderAPI"   => array
+            "test_mode"   => array
             (
-                "FriendlyName"  => "Openprovider URL",
-                "Type"          => "text",
-                "Size"          => "60",
-                "Description"   => "Include https://",
-                "Default"       => "https://rcp.openprovider.eu"
+                "FriendlyName"  => "Openprovider Test mode",
+                "Type"          => "yesno",
+                "Description"   => "Enable this to use api.cte.openprovider.eu. Defaults to production API.",
+                "Default"       => "no"
             ),
             "OpenproviderPremium"   => array
             (
@@ -357,16 +361,6 @@ jQuery(document).ready(function(){
             jQuery("#openproviderconfig input[name='updateNextDueDate']").parent().parent().parent().toggle();
             jQuery("#openproviderconfig input[name='nextDueDateOffset']").parent().parent().toggle();
             jQuery("#openproviderconfig input[name='nextDueDateUpdateMaxDayDifference']").parent().parent().toggle();
-            
-            // Uncomment this for showing the options with a strikethrough
-            // jQuery("#openproviderconfig input[name='syncExpiryDate']").parent().parent().parent().toggleClass('op-disabled');
-            // jQuery("#openproviderconfig input[name='syncExpiryDate']").prop('disabled', function(i, v) { return !v; });
-            // jQuery("#openproviderconfig input[name='updateNextDueDate']").parent().parent().parent().toggleClass('op-disabled');
-            // jQuery("#openproviderconfig input[name='updateNextDueDate']").prop('disabled', function(i, v) { return !v; });
-            // jQuery("#openproviderconfig input[name='nextDueDateOffset']").parent().parent().toggleClass('op-disabled');
-            // jQuery("#openproviderconfig input[name='nextDueDateOffset']").prop('disabled', function(i, v) { return !v; });
-            // jQuery("#openproviderconfig input[name='nextDueDateUpdateMaxDayDifference']").parent().parent().toggleClass('op-disabled');
-            // jQuery("#openproviderconfig input[name='nextDueDateUpdateMaxDayDifference']").prop('disabled', function(i, v) { return !v; });
         },
     });
     
