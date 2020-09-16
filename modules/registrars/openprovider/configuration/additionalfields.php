@@ -147,6 +147,23 @@ $additionaldomainfields[".pt"][] = array(
     "op_name" => "passportNumber"
 );
 
+// it
+$additionaldomainfields[".it"][] = array(
+    "Name" => "Identification type",
+    "LangVar" => "itIdentificationType",
+    "Options" => "companyRegistrationNumber|Company Registration Number,socialSecurityNumber|Social Security Number,passportNumber|Passport Number",
+    "Type" => "dropdown",
+    "op_dropdown_for_op_name" => "itIdentificationNumber"
+);
+
+$additionaldomainfields['.it'][] = array(
+    'Name' => 'Identification number',
+    "Type" => "text",
+    "Size" => "30",
+    "Required" => true,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "itIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
+);
 
 // .ru & .рф (xn--p1ai)
 // $additionaldomainfields[".ru"][] = array(
