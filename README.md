@@ -28,7 +28,7 @@ Features
 
 7. Click **Save**
 8. Navigate to **Setup > Products/Services > Domain Pricing** and select Openprovider as registrar for every TLD
-9. Configure the [cron job](https://gitlab.ispnoc.net/-/ide/project/WHMCS/openprovider/blob/op-v3.2/-/README.md#setting-up-cron-task)
+9. Configure the [cron job](#setting-up-cron-task)
 10. Add to `resources/domains/additionalfields.php` the following:
 ```
 <?php
