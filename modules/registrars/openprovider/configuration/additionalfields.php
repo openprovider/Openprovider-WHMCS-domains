@@ -165,6 +165,34 @@ $additionaldomainfields['.it'][] = array(
     "op_name"  => "itIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
 
+// .IT
+
+$additionaldomainfields[".it"][] = array("Name" => "Legal Type", "LangVar" => "ittldlegaltype", "Type" => "dropdown", "Options" => "Italian and foreign natural persons,Companies/one man companies,Freelance workers/professionals,non-profit organizations,public organizations,other subjects,non natural foreigners", "Default" => "Italian and foreign natural persons", "Description" => "Legal type of registrant",);
+$additionaldomainfields[".it"][] = array("Name" => "Tax ID", "LangVar" => "ittldtaxid", "Type" => "text", "Size" => "20", "Default" => "", "Required" => true,);
+$additionaldomainfields[".it"][] = array("Name" => "Publish Personal Data", "LangVar" => "ittlddata", "Type" => "tickbox",);
+$additionaldomainfields[".it"][] = array("Name" => "Accept Section 3 of .IT registrar contract", "LangVar" => "ittldsec3", "Type" => "tickbox",);
+$additionaldomainfields[".it"][] = array("Name" => "Accept Section 5 of .IT registrar contract", "LangVar" => "ittldsec5", "Type" => "tickbox",);
+$additionaldomainfields[".it"][] = array("Name" => "Accept Section 6 of .IT registrar contract", "LangVar" => "ittldsec6", "Type" => "tickbox",);
+$additionaldomainfields[".it"][] = array("Name" => "Accept Section 7 of .IT registrar contract", "LangVar" => "ittldsec7", "Type" => "tickbox",);
+
+$additionaldomainfields[".it"][] = array(
+    "Name" => "Passport Number",
+    "LangVar" => "itPassportNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "op_location" => "customerExtensionAdditionalData",
+    "op_name" => "passportNumber"
+);
+
+$additionaldomainfields[".it"][] = array(
+    "Name" => "VAT",
+    "LangVar" => "itVat",
+    "Type" => "text",
+    "op_location" => "customerExtensionAdditionalData",
+    "op_name" => "vat"
+);
+
+
 // .ru & .рф (xn--p1ai)
 // $additionaldomainfields[".ru"][] = array(
 //     "Name" => "Company Name Cyrillic",

@@ -17,10 +17,13 @@ class TldPriceCache
      */
     public function has()
     {
-        if(@is_file($this->getLocation()))
-            return true;
-        else
+        if(!@is_file($this->getLocation()))
             return false;
+
+        if(empty($this->get()))
+            return false;
+
+        return true;
     }
 
     /**

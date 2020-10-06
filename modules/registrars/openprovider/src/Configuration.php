@@ -10,7 +10,7 @@ namespace OpenProvider\WhmcsRegistrar\src;
 
 class Configuration
 {
-    protected static $api_url = 'https://api.openprovider.eu';
+    protected static $api_url = 'https://api.openprovider.eu/';
     protected static $api_url_cte = 'https://api.cte.openprovider.eu/';
 
     /**

@@ -1,6 +1,9 @@
 # Changelog
 ## DOMAIN TRANSFER
 
+# NEXT RELEASE
+- [FEATURE] Add support for status updates of Openprovider.
+- [IMPROVEMENT] Replaced the XML processing with a more efficient method (>300 secs vs 13 secs XML parsing time with 1500 TLDs). 
 
 ## V3.4
 - [FEATURE] Added support for TLD price caching.

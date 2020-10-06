@@ -28,6 +28,7 @@ class Reply
 
     protected function _parseReply($str = '')
     {
+        $start = microtime(true);
         $dom = new \DOMDocument;
         $result = $dom->loadXML($str);
 
@@ -36,10 +37,12 @@ class Reply
             logModuleCall('openprovider', 'connecting_with_openprovider_error', null, $str, $result, null);
             throw new \Exception('Cannot parse XML');
         }
-        $arr = \OpenProvider\API\APITools::convertXmlToPhpObj($dom->documentElement);
+        $arr = \OpenProvider\API\APITools::convertXmlToPhpArray($str);
+
         $this->faultCode = (int) $arr['reply']['code'];
         $this->faultString = $arr['reply']['desc'];
         $this->value = $arr['reply']['data'];
+
         if (isset($arr['reply']['warnings']))
         {
             $this->warnings = $arr['reply']['warnings'];

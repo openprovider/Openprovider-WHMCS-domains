@@ -119,47 +119,52 @@ class APITools
         }
     }
 
-    public static function convertXmlToPhpObj($node)
+    public static function convertXmlToPhpArray($xml)
     {
-        $ret = array();
+        $simplexml = simplexml_load_string($xml);
 
-        if (is_object($node) && $node->hasChildNodes())
-        {
-            foreach ($node->childNodes as $child)
-            {
-                $name = mb_convert_encoding($child->nodeName, \OpenProvider\API\APIConfig::$encoding);
-                if ($child->nodeType == XML_TEXT_NODE)
-                {
-                    $ret = mb_convert_encoding($child->nodeValue, \OpenProvider\API\APIConfig::$encoding);
-                }
-                else
-                {
-                    if ('array' === $name)
-                    {
-                        return self::parseArray($child);
-                    }
-                    else
-                    {
-                        $ret[$name] = self::convertXmlToPhpObj($child);
-                    }
-                }
-            }
-        }
-        return 0 < count($ret) ? $ret : null;
+        $array = self::convertObjToArray($simplexml);
+
+        return $array;
     }
-    
-    // parse array
-    protected static function parseArray ($node)
+
+    public static function convertObjToArray($obj)
     {
-            $ret = array();
-            foreach ($node->childNodes as $child) {
-                    $name = mb_convert_encoding($child->nodeName, \OpenProvider\API\APIConfig::$encoding);
-                    if ('item' !== $name) {
-                            throw new \Exception('Wrong message format');
-                    }
-                    $ret[] = self::convertXmlToPhpObj($child);
+        if(!is_object($obj))
+            return false;
+
+        $returnArray = [];
+
+        foreach($obj as $key => $value)
+        {
+            $key = mb_convert_encoding($key, \OpenProvider\API\APIConfig::$encoding);
+
+            if($key == 'array')
+                return self::convertObjToArray($value);
+
+            // Check if we have children.
+            if(count($value) != 0)
+            {
+                $array = self::convertObjToArray($value);
+                $value = $array;
             }
-            return $ret;
+            else
+            {
+                $value = mb_convert_encoding((string) $value, \OpenProvider\API\APIConfig::$encoding);
+            }
+
+            if($key == 'item')
+            {
+                $returnArray[] = $value;
+            }
+            else
+            {
+                $returnArray[$key] = $value;
+            }
+
+        }
+
+        return $returnArray;
     }
 
     public static function checkIfNsIsDefault(array $nameservers) {

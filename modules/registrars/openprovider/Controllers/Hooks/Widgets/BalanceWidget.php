@@ -26,17 +26,40 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
             $balance = $openprovider->api->getResellerBalance()['balance'];
 
             $statistics = $openprovider->api->getResellerStatistics();
+
         } catch ( \Exception $e)
         {
             return ['error' => 'The Openprovider module could not be loaded, please check that an API connection can be established and that the login details are correct.'];
         }
 
+        $html = '';
+        try {
+            // Get the update message.
+            $messages = $openprovider->api->getUpdateMessage();
+        } catch ( \Exception $e)
+        {
+            // Do nothing.
+        }
+
         $domainsTotal = $statistics['domain']['total'];
+
+        if(isset($messages['results']))
+        {
+            foreach($messages['results'] as $message)
+            {
+                $html .= "<div class=\"row\">
+    <div class=\"col-sm-12\">" . $message['html'] . "
+    </div>
+</div>";
+            }
+        }
 
         $returnData = [
             'balance' => $balance,
-            'domainsTotal' => $domainsTotal
+            'domainsTotal' => $domainsTotal,
+            'html' => $html
         ];
+
         return $returnData;
     }
 
@@ -58,6 +81,7 @@ EOF;
 
         return <<<EOF
 <div class="widget-content-padded">
+    {$data['html']}
     <div class="row">
         <div class="col-sm-6 bordered-right">
             <div class="item">

@@ -75,8 +75,10 @@ class API
         // prepare request
         $this->request->setCommand($requestCommand);
 
+        $this->request->setArgs(null);
+
         // prepare args
-        if (isset($args))
+        if (isset($args) && !is_null($args))
         {
             $args = json_decode(json_encode($args), true);
 
@@ -135,7 +137,10 @@ class API
             {
                 if(is_array($value))
                 {
-                    $msg .= ':<br> '.$value['description'].' '.(isset($value['options']) ? '('.implode(',', $value['options']).')' : '' );
+                    if(isset($value['description']))
+                        $msg .= ':<br> ' . $value['description'] . ' '.(isset($value['options']) ? '('.implode(',', $value['options']).')' : '' );
+                    else
+                        $msg .= implode(', ', $value);
                 }
                 else
                 {
@@ -232,6 +237,11 @@ class API
     public function getResellerBalance()
     {
         return $this->sendRequest('retrieveResellerRequest');
+    }
+
+    public function getUpdateMessage()
+    {
+        return $this->sendRequest('retrieveUpdateMessageRequest');
     }
 
     public function getResellerStatistics($task = '')

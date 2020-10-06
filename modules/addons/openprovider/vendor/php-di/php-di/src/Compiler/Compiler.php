@@ -185,7 +185,7 @@ class Compiler
 
     private function writeFileAtomic(string $fileName, string $content) : int
     {
-        $tmpFile = tempnam(dirname($fileName), 'swap-compile');
+        $tmpFile = @tempnam(dirname($fileName), 'swap-compile');
         if ($tmpFile === false) {
             throw new InvalidArgumentException(
                 sprintf('Error while creating temporary file in %s', dirname($fileName))
@@ -202,8 +202,8 @@ class Compiler
 
         @chmod($tmpFile, 0666);
         $renamed = @rename($tmpFile, $fileName);
-        @unlink($tmpFile);
         if (!$renamed) {
+            @unlink($tmpFile);
             throw new InvalidArgumentException(sprintf('Error while renaming %s to %s', $tmpFile, $fileName));
         }
 
