@@ -48,7 +48,7 @@ class TldPricingController extends BaseController
         $tldPriceCache = new TldPriceCache();
 
         if(!$tldPriceCache->has())
-            throw new \Exception('The cron for downloading the TLD prices was not run yet. <a href="../modules/registrars/openprovider/cron/DownloadTldPrices.php">You can run the TLD download manually here</a>. If this fails, it is likely that your WHMCS installation does not support a long execution time. Check the manual to run the cron command instead.');
+            throw new \Exception('The cron for downloading the TLD prices was not run yet. You can run the prices download manually here. If this fails, it is likely that your WHMCS installation does not support a long execution time. <a href="https://github.com/openprovider/OP-WHMCS7/blob/master/docs/TLD_Pricing_sync_Utility.md" target="_blank">Check the manual to run the cron command instead</a>.');
 
         $extensionData = $tldPriceCache->get();
 
