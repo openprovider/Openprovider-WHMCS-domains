@@ -5,7 +5,6 @@ if(!class_exists(\DI\Container::class))
     require_once(__DIR__ . '/../../vendor/autoload.php'); // @todo remove this for production.
 
 use DI\Container;
-use Illuminate\Database\ConnectionResolver;
 use Illuminate\Database\ConnectionResolverInterface;
 use WeDevelopCoffee\wPower\Database\DatabaseMigrationRepository;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
@@ -129,7 +128,12 @@ class Core
 
             return $object;
         });
-        $this->launcher->set(ConnectionResolverInterface::class, \DI\get(ConnectionResolver::class));
+
+        $this->launcher->set(ConnectionResolverInterface::class,  function () {
+            $connection = Capsule::connection();
+            $resolver = new ConnectionResolver([null => $connection]);
+            return $resolver;
+        });
 
         $this->launcher->set(ClientArea::class, function(){
             return new ClientArea();

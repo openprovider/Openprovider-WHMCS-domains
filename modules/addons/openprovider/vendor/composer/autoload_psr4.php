@@ -8,14 +8,10 @@ $baseDir = dirname($vendorDir);
 return array(
     'WeDevelopCoffee\\wPower\\' => array($vendorDir . '/wedevelopcoffee/wpower/src'),
     'WeDevelopCoffee\\OpenProvider_Api\\' => array($vendorDir . '/wedevelopcoffee/openprovider_api/src'),
-    'Symfony\\Component\\Finder\\' => array($vendorDir . '/symfony/finder'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'PhpDocReader\\' => array($vendorDir . '/php-di/phpdoc-reader/src/PhpDocReader'),
     'Opis\\Closure\\' => array($vendorDir . '/opis/closure/src'),
     'OpenProvider\\WhmcsDomainAddon\\' => array($baseDir . '/'),
     'Invoker\\' => array($vendorDir . '/php-di/invoker/src'),
-    'Illuminate\\Support\\' => array($vendorDir . '/illuminate/support'),
-    'Illuminate\\Filesystem\\' => array($vendorDir . '/illuminate/filesystem'),
-    'Illuminate\\Contracts\\' => array($vendorDir . '/illuminate/contracts'),
     'DI\\' => array($vendorDir . '/php-di/php-di/src'),
 );

@@ -4,11 +4,9 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit8c568b056b7d032e8596e0d9914f3b0d
+class ComposerStaticInit87f4d9003b1d1c97a4dda09d9abcdc24
 {
     public static $files = array (
-        '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
-        '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
         '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
         'b33e3d135e5d9e47d845c576147bda89' => __DIR__ . '/..' . '/php-di/php-di/src/functions.php',
         '2dcc1fe700145c8f64875eb0ae323e56' => __DIR__ . '/../..' . '/helpers.php',
@@ -22,10 +20,6 @@ class ComposerStaticInit8c568b056b7d032e8596e0d9914f3b0d
         'V' => 
         array (
             'VIISON\\AddressSplitter\\' => 23,
-        ),
-        'S' => 
-        array (
-            'Symfony\\Component\\Finder\\' => 25,
         ),
         'P' => 
         array (
@@ -41,9 +35,6 @@ class ComposerStaticInit8c568b056b7d032e8596e0d9914f3b0d
         'I' => 
         array (
             'Invoker\\' => 8,
-            'Illuminate\\Support\\' => 19,
-            'Illuminate\\Filesystem\\' => 22,
-            'Illuminate\\Contracts\\' => 21,
         ),
         'D' => 
         array (
@@ -59,10 +50,6 @@ class ComposerStaticInit8c568b056b7d032e8596e0d9914f3b0d
         'VIISON\\AddressSplitter\\' => 
         array (
             0 => __DIR__ . '/..' . '/viison/address-splitter/src',
-        ),
-        'Symfony\\Component\\Finder\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/finder',
         ),
         'Psr\\Container\\' => 
         array (
@@ -88,40 +75,17 @@ class ComposerStaticInit8c568b056b7d032e8596e0d9914f3b0d
         array (
             0 => __DIR__ . '/..' . '/php-di/invoker/src',
         ),
-        'Illuminate\\Support\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/support',
-        ),
-        'Illuminate\\Filesystem\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/filesystem',
-        ),
-        'Illuminate\\Contracts\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/contracts',
-        ),
         'DI\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-di/php-di/src',
         ),
     );
 
-    public static $prefixesPsr0 = array (
-        'D' => 
-        array (
-            'Doctrine\\Common\\Inflector\\' => 
-            array (
-                0 => __DIR__ . '/..' . '/doctrine/inflector/lib',
-            ),
-        ),
-    );
-
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit8c568b056b7d032e8596e0d9914f3b0d::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit8c568b056b7d032e8596e0d9914f3b0d::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit8c568b056b7d032e8596e0d9914f3b0d::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit87f4d9003b1d1c97a4dda09d9abcdc24::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit87f4d9003b1d1c97a4dda09d9abcdc24::$prefixDirsPsr4;
 
         }, null, ClassLoader::class);
     }
