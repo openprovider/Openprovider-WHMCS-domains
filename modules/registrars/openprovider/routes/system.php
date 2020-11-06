@@ -12,40 +12,41 @@
 return [
 
     //
-    'config' => 'ConfigController@getConfig',
-    'registerDomain' => 'DomainController@register',
-    'transferDomain' => 'DomainController@transfer',
-    'renewDomain' => 'RenewDomainController@renew',
+    'config'               => 'ConfigController@getConfig',
+    'registerDomain'       => 'DomainController@register',
+    'transferDomain'       => 'DomainController@transfer',
+    'renewDomain'          => 'RenewDomainController@renew',
     'GetDomainInformation' => 'DomainInformationController@get',
 
-
     // Nameservers
-    'getNameservers' => 'NameserverController@get',
-    'saveNameservers' => 'NameserverController@save',
+    'getNameservers'     => 'NameserverController@get',
+    'saveNameservers'    => 'NameserverController@save',
     'registerNameserver' => 'NameserverController@register',
-    'modifyNameserver' => 'NameserverController@modify',
-    'deleteNameserver' => 'NameserverController@delete',
+    'modifyNameserver'   => 'NameserverController@modify',
+    'deleteNameserver'   => 'NameserverController@delete',
 
     // Registrar lock
-    'getRegistrarLock' => 'RegistrarLockController@get',
+    'getRegistrarLock'  => 'RegistrarLockController@get',
     'saveRegistrarLock' => 'RegistrarLockController@save',
 
     // DNS
-    'getDns' => 'DnsController@get',
+    'getDns'  => 'DnsController@get',
     'saveDns' => 'DnsController@save',
 
     // Contact
-    'getContactDetails' => 'ContactController@getDetails',
+    'getContactDetails'  => 'ContactController@getDetails',
     'saveContactDetails' => 'ContactController@saveDetails',
 
     // Various
-    'idProtect' => 'IdProtectController@toggle',
-    'requestDelete' => 'RequestDeleteController@request',
-    'getEppCode' => 'EppController@get',
-    'transferSync' => 'TransferSyncController@sync',
-    'domainSync' => 'DomainSyncController@sync',
-    'checkAvailability' => 'CheckAvailabilityController@check',
-    'getTldPricing' => 'TldPricingController@get',
+    'idProtect'               => 'IdProtectController@toggle',
+    'requestDelete'           => 'RequestDeleteController@request',
+    'getEppCode'              => 'EppController@get',
+    'transferSync'            => 'TransferSyncController@sync',
+    'domainSync'              => 'DomainSyncController@sync',
+    'checkAvailability'       => 'CheckAvailabilityController@check',
+    'getDomainSuggestions'    => 'GetDomainSuggestions@check',
+    'getTldPricing'           => 'TldPricingController@get',
+    'DomainSuggestionOptions' => 'DomainSuggestionOptionsController@getConfig',
 
     // Cron
     'DownloadTldPricesCron' => 'DownloadTldPricesCronController@Download'

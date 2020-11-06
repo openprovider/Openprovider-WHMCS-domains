@@ -309,11 +309,23 @@ function openprovider_CheckAvailability($params)
 /**
  * get Domain suggestions
  *
- * This is not available in OpenProvider yet.
+ * @param $params
+ * @return mixed
  */
 function openprovider_GetDomainSuggestions($params)
 {
-    $results = new ResultsList();
+    return openprovider_registrar_launch('system')
+        ->output($params, 'getDomainSuggestions');
+}
 
-    return $results;
+/**
+ * Domain Suggestion Options
+ *
+ * @param $params
+ * @return mixed
+ */
+function openprovider_DomainSuggestionOptions($params)
+{
+    return openprovider_registrar_launch('system')
+        ->output($params, 'DomainSuggestionOptions');
 }

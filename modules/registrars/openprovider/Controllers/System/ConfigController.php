@@ -187,7 +187,7 @@ class ConfigController extends BaseController
             "OpenproviderPremium"   => array
             (
                 "FriendlyName"  => "Support premium domains",
-                "Description"   => "Yes <i>NOTE: Premium pricing must also be activated in WHMCS via Setup -> Products / Services -> Domain pricing</i>. <br><br><strong>WARNING</strong>: to prevent billing problems with premium domains, your WHMCS currency must be the same as the currency you use in Openprovider. Otherwise, you will be billed the premium fee but your client will be billed the non-premium fee due to a <a href=\"https://requests.whmcs.com/topic/major-bug-premium-domains-billed-incorrectly\" target=\"_blank\">bug in WHMCS.</a>",
+                "Description"   => "Yes <i>NOTE: Premium pricing must also be activated in WHMCS via Setup > Products / Services > Domain pricing</i>. <br><br><strong>WARNING</strong>: to prevent billing problems with premium domains, your WHMCS currency must be the same as the currency you use in Openprovider. Otherwise, you will be billed the premium fee but your client will be billed the non-premium fee due to a <a href=\"https://requests.whmcs.com/topic/major-bug-premium-domains-billed-incorrectly\" target=\"_blank\">bug in WHMCS.</a>",
                 "Type"          => "yesno"
             ),
             "Username"          => array
@@ -222,7 +222,7 @@ class ConfigController extends BaseController
             (
                 "FriendlyName"  => "Use the native WHMCS synchronisation?",
                 "Type"          => "yesno",
-                "Description"   => "Up to V3.3, Openprovider had an internal synchronisation system. Set to no if you want to use the openprovider's own synchronisation engine.",
+                "Description"   => "Up to v3.3, Openprovider relied only on its internal synchronisation system. Uncheck if you want to use the Openprovider's synchronisation engine.",
                 "Default"       => "yes"
             ),
             "syncDomainStatus" => array
