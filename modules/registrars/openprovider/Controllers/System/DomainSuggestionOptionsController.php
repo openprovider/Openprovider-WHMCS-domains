@@ -14,7 +14,7 @@ class DomainSuggestionOptionsController extends BaseController
      * Generate the configuration array.
      * @return array|mixed
      */
-    public function getConfig()
+    public function get()
     {
         // Get the basic data.
         return $this->getConfigArray();

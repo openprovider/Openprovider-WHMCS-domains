@@ -37,16 +37,18 @@ return [
     'getContactDetails'  => 'ContactController@getDetails',
     'saveContactDetails' => 'ContactController@saveDetails',
 
+    // DomainSuggestions
+    'getDomainSuggestions' => 'DomainSuggestionsController@get',
+
     // Various
-    'idProtect'               => 'IdProtectController@toggle',
-    'requestDelete'           => 'RequestDeleteController@request',
-    'getEppCode'              => 'EppController@get',
-    'transferSync'            => 'TransferSyncController@sync',
-    'domainSync'              => 'DomainSyncController@sync',
-    'checkAvailability'       => 'CheckAvailabilityController@check',
-    'getDomainSuggestions'    => 'GetDomainSuggestions@check',
-    'getTldPricing'           => 'TldPricingController@get',
-    'DomainSuggestionOptions' => 'DomainSuggestionOptionsController@getConfig',
+    'idProtect'                  => 'IdProtectController@toggle',
+    'requestDelete'              => 'RequestDeleteController@request',
+    'getEppCode'                 => 'EppController@get',
+    'transferSync'               => 'TransferSyncController@sync',
+    'domainSync'                 => 'DomainSyncController@sync',
+    'checkAvailability'          => 'CheckAvailabilityController@check',
+    'getTldPricing'              => 'TldPricingController@get',
+    'getDomainSuggestionOptions' => 'DomainSuggestionOptionsController@get',
 
     // Cron
     'DownloadTldPricesCron' => 'DownloadTldPricesCronController@Download'

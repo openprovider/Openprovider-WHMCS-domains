@@ -327,5 +327,5 @@ function openprovider_GetDomainSuggestions($params)
 function openprovider_DomainSuggestionOptions($params)
 {
     return openprovider_registrar_launch('system')
-        ->output($params, 'DomainSuggestionOptions');
+        ->output($params, 'getDomainSuggestionOptions');
 }

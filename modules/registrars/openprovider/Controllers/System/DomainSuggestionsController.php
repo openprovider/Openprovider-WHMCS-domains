@@ -18,7 +18,7 @@ use WHMCS\Domains\DomainLookup\SearchResult;
  * Class GetDomainSuggestions
  * @package OpenProvider\WhmcsRegistrar\Controllers\System
  */
-class GetDomainSuggestions extends BaseController
+class DomainSuggestionsController extends BaseController
 {
     /**
      * @var API
@@ -51,7 +51,7 @@ class GetDomainSuggestions extends BaseController
      * @return ResultsList
      * @throws Exception
      */
-    public function check($params)
+    public function get($params)
     {
         $api = $this->API;
         $api->setParams($params);
