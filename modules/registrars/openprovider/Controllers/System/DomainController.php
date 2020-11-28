@@ -119,7 +119,7 @@ class DomainController extends BaseController
             $domainRegistration->billingHandle  =   $handles['billingHandle'];
             $domainRegistration->nameServers    =   $nameServers; 
             $domainRegistration->dnsmanagement  =   $params['dnsmanagement'];
-            $domainRegistration->isDnssecEnabled =  false;
+            $domainRegistration->isDnssecEnabled =  0;
 
             if(isset($additionalFields['domainAdditionalData']))
                 $domainRegistration->additionalData = json_decode(json_encode($additionalFields['domainAdditionalData']),1);
@@ -208,7 +208,7 @@ class DomainController extends BaseController
             $domainTransfer->billingHandle  =   $adminHandle;
             $domainTransfer->authCode       =   $params['transfersecret'];
             $domainTransfer->dnsmanagement  =   $params['dnsmanagement'];
-            $domainTransfer->isDnssecEnabled =  false;
+            $domainTransfer->isDnssecEnabled =  0;
 
             // Check if premium is enabled. If so, set the received premium cost.
             if($params['premiumEnabled'] == true && $params['premiumCost'] != '')

@@ -7,12 +7,12 @@ The module keeps domain expiration dates and auto renew settings synchronized be
 Additionally, the module allows you to use the Openprovider API to check for domain availability, increasing performance over the default domain availability check. 
 
 Features
-- Domain registratons and transfers
+- Domain registrations and transfers
 - Domain updates
 - Whois Privacy Protection
 - Whois lookup service
 - Extended Synchronization of domain data
-- Domain status synchronisation reports
+- Domain status synchronization reports
 - Renew domains upon transfer completion
 
 
@@ -111,7 +111,7 @@ This 'if' statement is used twice in the file. Replace both.
 ## Configuration Option details
 
 | Option | Description |
-| ----- | ----- | 
+| ----- | ----- |
 | Openprovider URL	 | `https://api.openprovider.eu` for production or `https://api.cte.openprovider.eu` for test environments. |
 | Support Premium Domains| Allows you to confirm that you let the module to register domains with a premium price|
 | Username | Openprovider username |
@@ -242,7 +242,7 @@ If **Automatic renew on payment** is selected (which can be found in WHMCS admin
 When a domain expires in Openprovider, depending on the TLD, it can be put into 'Soft Quarantine' state. While in that state, it can be restored for a normal renewal fee, but restoration needs to be requested with the [`restoreDomainRequest`](https://doc.openprovider.eu/API_Module_Domain_restoreDomainRequest) API command. The module automatically detects when the domain is in Soft Quarantine, and makes an appropriate API request. The module will not request renewal if the domain has already passed into "Hard Quarantine" and can only be restored for an additional fee.
 
 ## Auto Renew Configurations
-Default WHMCS workflow suggests that one has Auto renew set to “Off” in Openprovider RCP. This greatly reduces the chance of a domain being renewed twice unwittigly.
+Default WHMCS workflow suggests that one has Auto renew set to “Off” in Openprovider RCP. This greatly reduces the chance of a domain being renewed twice unwittingly.
 Please explore WHMCS documentation thoroughly before deciding on the business logic to use in your workflow.
 
 **Scenario 1**
