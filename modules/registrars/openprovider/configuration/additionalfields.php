@@ -545,6 +545,36 @@ $additionaldomainfields[".vote"][] = array(
     "op_name" => "voteAcceptance"
 );
 
+// .AE
+$additionaldomainfields[".ae"][] = array(
+    "Name" => "Accept .ae Registry Policy",
+    "LangVar" => "aeAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "aeAcceptance"
+);
+
+// .BANK
+$additionaldomainfields[".bank"][] = array(
+    "Name" => "Accept fTLD Registry Policy",
+    "LangVar" => "bankAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "bankAcceptance"
+);
+
+// .INSURANCE
+$additionaldomainfields[".insurance"][] = array(
+    "Name" => "Accept fTLD Registry Policy",
+    "LangVar" => "insuranceAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "insuranceAcceptance"
+);
+
 // .SCOT
 $additionaldomainfields[".scot"][] = array(
     "Name" => "Intended Use",
