@@ -2,6 +2,7 @@
 namespace OpenProvider\WhmcsRegistrar\src;
 
 use OpenProvider\API\Customer;
+use OpenProvider\WhmcsRegistrar\Models\Tld;
 use WeDevelopCoffee\wPower\Models\Domain;
 use WeDevelopCoffee\wPower\Handles\Models\Handle as ModelHandle;
 
@@ -259,6 +260,14 @@ class Handle
     {
         $this->customer             = new Customer($params, $type);
         $this->customer->extensionAdditionalData = $this->extensionAdditionalData;
+
+        // Check if tld need short state
+        if (isset($params['tld'])) {
+            $domainTld = new Tld($params['tld']);
+            if ($domainTld->isNeededShortState()) {
+                $this->customer->setAddressStateShort();
+            }
+        }
 
         if(is_array($this->customerData) && !empty($this->customerData))
         {

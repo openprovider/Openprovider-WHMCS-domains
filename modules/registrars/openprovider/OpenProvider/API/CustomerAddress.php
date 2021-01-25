@@ -48,6 +48,5 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
             else
                 throw $e;
         }
-
     }
 }

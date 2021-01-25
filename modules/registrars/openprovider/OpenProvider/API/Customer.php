@@ -1,6 +1,7 @@
 <?php
 namespace OpenProvider\API;
 use OpenProvider\WhmcsHelpers\CustomField;
+use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
 use WeDevelopCoffee\wPower\Domain\AdditionalFields;
 
 /**
@@ -71,6 +72,11 @@ class Customer
      * @var \OpenProvider\API\CustomerExtensionAdditionalData
      */
     public $extensionAdditionalData  =   null;
+
+    /**
+     * @var \OpenProvider\API\CustomerTags
+     */
+    public $tags = null;
 
     /**
      *
@@ -175,6 +181,12 @@ class Customer
             ));
         }
 
+        // Tags
+        if (isset($params['tags']))
+            $tags = new \OpenProvider\API\CustomerTags($params['tags']);
+        else
+            $tags = new \OpenProvider\API\CustomerTags('');
+
         // set values
         $this->name         =   $name;
         $this->gender       =   isset($params[$indexes['gender']]) ? $params[$indexes['gender']] : \OpenProvider\API\APIConfig::$defaultGender;
@@ -182,9 +194,24 @@ class Customer
         $this->phone        =   $phone;
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
+        $this->tags         =   $tags->getTags();
 //        $this->vat          =   CustomField::getValueFromCustomFields('VATNumber', $params['customfields']);;
 
         $this->additionalData = new CustomerAdditionalData();
+    }
 
+    public function setAddressStateShort()
+    {
+        switch ($this->address->country) {
+            case 'US':
+                $USStates = Dictionary::get(Dictionary::USStates);
+                $state = ucwords(strtolower($this->address->state));
+                if ($this->address->state && isset($USStates[$state]))
+                    $this->address->state = $USStates[$state];
+                break;
+
+            default:
+                break;
+        }
     }
 }

@@ -860,4 +860,13 @@ class API
         return $this->sendRequest('generateSingleDomainTokenRequest', $args);
     }
 
+    /**
+     * Get All SSL Orders
+     * @return array
+     * @throws \Exception
+     */
+    public function searchSSL()
+    {
+        return $this->sendRequest('searchOrderSslCertRequest');
+    }
 }

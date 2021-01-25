@@ -1,6 +1,7 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WHMCS\Carbon;
 use OpenProvider\WhmcsHelpers\Activity;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider;
@@ -57,7 +58,7 @@ class DomainSyncController extends BaseController
     public function sync($params)
     {
         // Check if the native synchronisation feature
-        if(Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '') == '') {
+        if(Configuration::getOrDefault('syncUseNativeWHMCS', false) == false) {
             $domain = Domain::find($params['domainid']);
             return array (
                 'expirydate' => $domain->expirydate, // Format: YYYY-MM-DD
@@ -70,24 +71,24 @@ class DomainSyncController extends BaseController
 
 
         $this->domain = $this->domain->find($params['domainid']);
-        $setting['syncAutoRenewSetting'] = Registrar::getByKey('openprovider', 'syncAutoRenewSetting', 'on');
-        $setting['syncIdentityProtectionToggle'] = Registrar::getByKey('openprovider', 'syncIdentityProtectionToggle', 'on');
+        $setting['syncAutoRenewSetting'] = Configuration::getOrDefault('syncAutoRenewSetting', true);
+        $setting['syncIdentityProtectionToggle'] = Configuration::getOrDefault('syncIdentityProtectionToggle', true);
 
         try
         {
             // get data from op
             $this->api_domain   = $this->openprovider->domain($this->domain->domain);
-            $op_domain_result   =   $this->openprovider->api->retrieveDomainRequest($this->api_domain, true);
+            $op_domain_result   = $this->openprovider->api->retrieveDomainRequest($this->api_domain, true);
             $expiration_date    = Carbon::createFromFormat('Y-m-d H:i:s', $op_domain_result['expirationDate'], 'Europe/Amsterdam');
 
             if($op_domain_result['status'] == 'ACT')
             {
                 // auto renew on or not? -> WHMCS is leading.
-                if($setting['syncAutoRenewSetting'] == 'on')
+                if($setting['syncAutoRenewSetting'] == true)
                     $this->process_auto_renew($op_domain_result);
 
                 // Identity protection or not? -> WHMCS is leading.
-                if($setting['syncIdentityProtectionToggle'] == 'on')
+                if($setting['syncIdentityProtectionToggle'] == true)
                     $this->process_identity_protection($op_domain_result);
 
                 return array(

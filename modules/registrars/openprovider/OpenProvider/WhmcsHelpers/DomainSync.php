@@ -1,6 +1,7 @@
 <?php
 namespace OpenProvider\WhmcsHelpers;
 use OpenProvider\WhmcsRegistrar\Models\Domain as DomainModel;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WeDevelopCoffee\wPower\Models\Registrar;
 use WHMCS\Database\Capsule,
     OpenProvider\WhmcsHelpers\Schemes\DomainSyncScheme,
@@ -101,7 +102,7 @@ class DomainSync
         try {
             $domains = DomainModel::leftJoin($table_name, 'tbldomains.id', '=', $table_name . '.id')
                 ->where('tbldomains.registrar', $registrar)
-                ->where($table_name.'.last_sync', '<', Carbon::now()->subHour(Registrar::getByKey($registrar, 'updateInterval')))
+                ->where($table_name.'.last_sync', '<', Carbon::now()->subHour(Configuration::getOrDefault('updateInterval', 2)))
                 ->select('tbldomains.*')
                 ->orderBy($table_name.'.last_sync', 'ASC');
             if($limit != 0)

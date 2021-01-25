@@ -1,6 +1,7 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
 use OpenProvider\API\Domain;
@@ -99,7 +100,7 @@ class TransferSyncController extends BaseController
      */
     protected function check_renew_domain_setting_upon_completed_transfer($domain)
     {
-        $setting_value = Registrar::getByKey('openprovider', 'renewTldsUponTransferCompletion', '');
+        $setting_value = Configuration::getOrDefault('renewTldsUponTransferCompletion', '');
 
         // When nothing was found; return false.
         if(count($setting_value) == 0

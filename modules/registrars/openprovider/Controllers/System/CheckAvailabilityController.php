@@ -53,7 +53,7 @@ class CheckAvailabilityController  extends BaseController
     public function check($params)
     {
         // Safety feature: Make premium opt-in with warning only. See https://requests.whmcs.com/topic/major-bug-premium-domains-billed-incorrectly.
-        if(isset($params['OpenproviderPremium']) && $params['OpenproviderPremium'] == 'on')
+        if(isset($params['OpenproviderPremium']) && $params['OpenproviderPremium'] === true)
         {
             $premiumEnabled = (bool) $params['premiumEnabled'];
         }
