@@ -1,14 +1,13 @@
 # Changelog
 ## DOMAIN TRANSFER
 
-# NEXT RELEASE
-- [FEATURE] Add support for status updates of Openprovider.
-- [IMPROVEMENT] Replaced the XML processing with a more efficient method (>300 secs vs 13 secs XML parsing time with 1500 TLDs). 
-
-## V3.4
+## V3.4.1
 - [FEATURE] Added support for TLD price caching.
-- [IMPROVEMENT] Replaced API URL with a test mode checkbox instead.
-- [BUGFIX] An incorrect password does not show a blank WHMCS dashboard.
+- [IMPROVEMENT] Simplified login page and moved advanced configuration options to a file
+- [BUGFIX] Incorrect credentials were sometimes not being indicated when activating the module
+- [FEATURE] Allow end users to manage DNSSEC settings on their domains
+- [FEATURE] Added support for WHMCS feature domain verification as described in [the WHMCS documentaitno](https://docs.whmcs.com/Domain_Contact_Verification)
+- [FEATURE] Adds support for assigning tags to specific clients, which allows the WHMCS administrator to send custom emails to the client and all of the client's contacts
 
 ## V3.3
 Notes:
@@ -49,4 +48,5 @@ Manual action required: Check step 12 of hte installation manual in order to rem
 - Bugfix: Delete domain prior to zone deletion in requestDelete()
 
 Known bugs in WHMCS:
+
 - Module shouldn't convert contact data to ASCI (CORE-13427)

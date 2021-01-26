@@ -11,10 +11,8 @@ Note: loading the TLD prices still requires some time to process after running t
 2. Navigate to `modules/registrars/openprovider/cron`
 3. Execute `php -d max_execution_time=0 DownloadTldPrices.php`
 
-_Replace php with the correct path if needed_
-
 ### Using Cron
-The cron method can be used when you do not have SSH access. Once the cron has been executed, make sure to disable the cron. Otherwise, you may overload the Openprovider API with chance of reduced access.
+The cron method can be used when you do not have SSH access. Once the cron has been executed, you may want to either remove the cron task, since it is a memory intensive task for your WHMCS server.
 
 Set the cron job to run in 5 minutes from your current time. In this example, we are assuming that it is 13:10. This means that the cron should run at 13:15. By using 5 minutes, we ensure that we have plenty of time to save before the cron should run. 
 

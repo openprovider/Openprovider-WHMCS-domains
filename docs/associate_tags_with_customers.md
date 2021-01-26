@@ -1,5 +1,3 @@
-Coming soon!! this will be included in version 3.5 of the module
-
 # Send custom emails to different clients with tags
 
 The Openprovider whitelabel email functionality is a powerful tool which allows you to send custom emails to clients and end users with any design and branding you choose. From the [settings page](https://cp.openprovider.eu/account/overview-configuration.php) in you account, you can see all the emails which can be customized. 

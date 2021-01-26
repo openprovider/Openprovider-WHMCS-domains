@@ -1,8 +1,9 @@
-#Domain sync explanation
+# Domain sync explanation
 
-##domain next_due_date synchronization
+## domain next_due_date synchronization
 In configuration file we have four settings,
 which have influence on domain's next_due_date synchronization:
+
  - 'syncUseNativeWHMCS' => true,
  - 'updateNextDueDate'  => true,
  - 'nextDueDateOffset'  => int,

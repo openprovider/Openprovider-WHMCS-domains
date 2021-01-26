@@ -1,8 +1,11 @@
-#Instruction how to import data from csv
+# Instruction how to import data from csv
 
-##Instruction
+Openprovider has included a number of import scripts for your convenience. Using these scripts, you can import the following from CSV files: Clients, contacts, domains, and invoices.
+
+## Instructions
+
 To import data from csv you need to go to module path, 
-then into import/<data-to-import-folder> 
+then into `import/<data-to-import-folder> `
 and then write following command:
 
 ```php import.php <csv filepath>```
@@ -15,11 +18,12 @@ Rollback command:
 
 ```php rollback.php <import-report csv filepath>```
 
-##Domain import
+## Domain import
 To import domains you need to fill configuration file ```domain-import-config.php```.
 This file placed here: ```<module-folder>/import/domain-import-config.php```
 
-###Options
+### Options
+
  - DEFAULT_CLIENT_ID => In the case of missing client id
  - DEFAULT_CONTACT_ID => In the case of missing contact id(optional)
  - DOMAIN_STATUSES_TO_IMPORT => Allowed domain statuses to import
