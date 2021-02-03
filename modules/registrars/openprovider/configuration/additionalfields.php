@@ -400,15 +400,15 @@ $additionaldomainfields[".no"] = $additionaldomainfields[".ro"];
 
 // .ES
 $additionaldomainfields[".es"][] = array(
-    "Name" => "Identification type",
+    "Name" => "Tipo de identificación",
     "LangVar" => "esIdentificationType",
-    "Options" => "companyRegistrationNumber|CIF/NIF (Company Registration Number),socialSecurityNumber|Número Seguridad Social (Social Security Number),passportNumber|Pasaporte/DNI (Passport Number)",
+    "Options" => "passportNumber|DNI (Si es un particular),companyRegistrationNumber|CIF (Si es una empresa)",
     "Type" => "dropdown",
     "op_dropdown_for_op_name" => "esIdentificationNumber"
 );
 
 $additionaldomainfields['.es'][] = array(
-    'Name' => 'Identification number',
+    'Name' => 'Número de identificación',
     "Type" => "text",
     "Size" => "30",
     "Required" => true,
