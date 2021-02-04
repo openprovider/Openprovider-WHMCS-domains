@@ -65,19 +65,19 @@ class DomainRegistration extends \OpenProvider\API\AutoloadConstructor
      *
      * @var string
      */
-    public $nsTemplateName  =   null;
+    public $nsTemplateName  =   '';
     
     /**
      *
-     * @var int (0|1) default 0
+     * @var bool (true|false) default false
      */
-    public $useDomicile = 0;
+    public $useDomicile = false;
 
     /**
      *
-     * @var int (0|1) default 0
+     * @var bool (true|false) default false
      */
-    public $isPrivateWhoisEnabled = 0;
+    public $isPrivateWhoisEnabled = false;
 
     /**
      * The cost for a premium domain.
@@ -91,5 +91,4 @@ class DomainRegistration extends \OpenProvider\API\AutoloadConstructor
      * @var boolean
      */
     public $isDnssecEnabled;
-
 }

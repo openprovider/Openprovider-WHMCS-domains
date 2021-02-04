@@ -3,6 +3,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
+use OpenProvider\API\JsonAPI;
 use OpenProvider\WhmcsRegistrar\src\Notification;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider as OP;
 use WHMCS\Database\Capsule;
@@ -29,7 +30,7 @@ class IdProtectController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, JsonAPI $API, Domain $domain)
     {
         parent::__construct($core);
 
@@ -60,9 +61,9 @@ class IdProtectController extends BaseController
         try {
             $OpenProvider       = new OP();
             $op_domain_obj      = $OpenProvider->domain($domain->domain);
-
-            $op_domain          = $OpenProvider->api->retrieveDomainRequest($op_domain_obj);
-            $OpenProvider->toggle_whois_protection($domain, $op_domain);
+            $this->API->setParams($params);
+            $op_domain          = $this->API->getDomainRequest($op_domain_obj);
+            $OpenProvider->toggle_whois_protection($domain, $op_domain, $this->API);
 
             return array(
                 'success' => 'success',

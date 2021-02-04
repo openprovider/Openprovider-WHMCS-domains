@@ -1,6 +1,7 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+use OpenProvider\API\JsonAPI;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
@@ -23,7 +24,7 @@ class RequestDeleteController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, JsonAPI $API, Domain $domain)
     {
         parent::__construct($core);
 
@@ -39,14 +40,14 @@ class RequestDeleteController extends BaseController
 
         try
         {
-            $api                =   new \OpenProvider\API\API();
+            $api                =   $this->API;
             $api->setParams($params);
             $domain             =   new \OpenProvider\API\Domain(array(
                 'name'          =>  $params['sld'],
                 'extension'     =>  $params['tld']
             ));
 
-            $api->requestDelete($domain);
+            $api->deleteDomainRequest($domain);
         }
         catch (\Exception $e)
         {

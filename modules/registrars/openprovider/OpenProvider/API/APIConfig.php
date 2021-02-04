@@ -26,6 +26,14 @@ class APIConfig
         'techHandle'                    =>  'Tech',
         'resellerHandle'                =>  'Reseller'
     );
+    static public $handlesNamesFromJson = array
+    (
+        'owner_handle'                   =>  'Owner',
+        'billing_handle'                 =>  'Billing',
+        'admin_handle'                   =>  'Admin',
+        'tech_handle'                    =>  'Tech',
+        'reseller_handle'                =>  'Reseller'
+    );
 
     /**
      * Check what is generating the API call.

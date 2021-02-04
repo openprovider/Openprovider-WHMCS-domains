@@ -77,7 +77,7 @@ class Handle
 
         $foundHandle = $this->model->findExisting();
 
-        if($foundHandle != false && !$this->checkIfHandleStillExists($foundHandle))
+        if($foundHandle != false && !$this->checkIfHandleStillExistsJson($foundHandle))
         {
             // Detach all domains.
             $foundHandle->domains()->detach();
@@ -299,11 +299,11 @@ class Handle
      * @param ModelHandle $model
      * @return bool
      */
-    public function checkIfHandleStillExists(\WeDevelopCoffee\wPower\Handles\Models\Handle $model)
+    public function checkIfHandleStillExistsJson(\WeDevelopCoffee\wPower\Handles\Models\Handle $model)
     {
         try
         {
-            $opCustomer = $this->api->retrieveCustomerRequest($model->handle, true);
+            $opCustomer = $this->api->getCustomerRequest($model->handle, true);
             return true;
         } catch ( \Exception $e)
         {
@@ -321,7 +321,7 @@ class Handle
     {
         try
         {
-            $opCustomer = $this->api->retrieveCustomerRequest($this->model->handle, true);
+            $opCustomer = $this->api->getCustomerRequest($this->model->handle, true);
         }
         catch ( \Exception $e)
         {
@@ -330,27 +330,27 @@ class Handle
         }
 
         if(
-            $this->customer->companyName == $opCustomer['companyName']  &&
+            $this->customer->companyName == $opCustomer['company_name']  &&
             $this->customer->name->initials == $opCustomer['name']['initials'] &&
-            $this->customer->name->firstName == $opCustomer['name']['firstName'] &&
-            $this->customer->name->lastName == $opCustomer['name']['lastName'] &&
+            $this->customer->name->firstName == $opCustomer['name']['first_mame'] &&
+            $this->customer->name->lastName == $opCustomer['name']['last_name'] &&
             $this->customer->gender == $opCustomer['gender'] &&
             $this->customer->address->street == $opCustomer['address']['street'] &&
             $this->customer->address->number == $opCustomer['address']['number'] &&
             $this->customer->address->city == $opCustomer['address']['city'] &&
             $this->customer->address->state == $opCustomer['address']['state'] &&
-            $this->customer->phone->countryCode == $opCustomer['phone']['countryCode'] &&
-            $this->customer->phone->areaCode == $opCustomer['phone']['areaCode'] &&
-            $this->customer->phone->subscriberNumber == $opCustomer['phone']['subscriberNumber'] &&
+            $this->customer->phone->countryCode == $opCustomer['phone']['country_code'] &&
+            $this->customer->phone->areaCode == $opCustomer['phone']['area_code'] &&
+            $this->customer->phone->subscriberNumber == $opCustomer['phone']['subscriber_number'] &&
             $this->customer->email == $opCustomer['email']
         )
         {
             return false;
         }
         //if name & company name are the same, then call modifyCustomerRequest only
-        elseif ($opCustomer['name']['firstName'] == $this->customer->name->firstName &&
-            $opCustomer['name']['lastName'] == $this->customer->name->lastName &&
-            $opCustomer['companyName'] == $this->customer->companyName &&
+        elseif ($opCustomer['name']['first_name'] == $this->customer->name->firstName &&
+            $opCustomer['name']['last_name'] == $this->customer->name->lastName &&
+            $opCustomer['company_name'] == $this->customer->companyName &&
             $this->model->isUsedByOtherDomains($params['domainid']) === false)
             return 'update';
         else
@@ -364,7 +364,7 @@ class Handle
      */
     protected function create ($params, $type)
     {
-        $result                 = $this->api->createCustomerInOPdatabase($this->customer);
+        $result                 = $this->api->createCustomerRequest($this->customer);
         $this->model->id        = '';
         $this->model->exists    = false;
         $this->model->handle    = $result['handle'];
@@ -381,7 +381,7 @@ class Handle
     protected function update ($params)
     {
         $this->customer->handle = $this->model->handle;
-        $result                 = $this->api->modifyCustomer($this->customer);
+        $result                 = $this->api->updateCustomerRequest($this->customer);
         $this->model->data      = $this->customer;
         $this->model->save(['overrideUniqueCheck' => true]);
 

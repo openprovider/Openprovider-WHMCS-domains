@@ -9,6 +9,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
  */
 use OpenProvider\API\API;
 use OpenProvider\API\Domain;
+use OpenProvider\API\JsonAPI;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -26,7 +27,7 @@ class DnsController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, JsonAPI $API, Domain $domain)
     {
         parent::__construct($core);
 
@@ -55,7 +56,7 @@ class DnsController extends BaseController
             $api                =   $this->API;
             $api->setParams($params);
 
-            $dnsInfo            =   $api->getDNS($this->domain);
+            $dnsInfo            =   $api->getDNSZoneRecordsRequest($this->domain);
 
             if (is_null($dnsInfo))
             {
@@ -64,7 +65,7 @@ class DnsController extends BaseController
 
             $supportedDnsTypes  =   \OpenProvider\API\APIConfig::$supportedDnsTypes;
             $domainName         =   $params['sld'] . '.' . $params['tld'];
-            foreach ($dnsInfo['records'] as $dnsRecord)
+            foreach ($dnsInfo['results'] as $dnsRecord)
             {
                 if (!in_array($dnsRecord['type'], $supportedDnsTypes))
                 {
@@ -161,11 +162,11 @@ class DnsController extends BaseController
             $api->setParams($params);
             if (count($dnsRecordsArr))
             {
-                $api->saveDNS($domain, $dnsRecordsArr);
+                $api->createOrUpdateDNSZoneRequest($domain, $dnsRecordsArr);
             }
             else
             {
-                $api->deleteDNS($domain);
+                $api->deleteDNSZoneRequest($domain);
             }
 
             return "success";

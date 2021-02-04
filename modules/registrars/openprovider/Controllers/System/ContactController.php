@@ -4,6 +4,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\API;
 use OpenProvider\API\Domain;
+use OpenProvider\API\JsonAPI;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
 use OpenProvider\WhmcsRegistrar\Models\Tld;
@@ -36,7 +37,7 @@ class ContactController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, Handle $handle)
+    public function __construct(Core $core, JsonAPI $API, Domain $domain, Handle $handle)
     {
         parent::__construct($core);
 
@@ -64,7 +65,7 @@ class ContactController extends BaseController
 
             $api                =   $this->API;
             $api->setParams($params);
-            $values             =   $api->getContactDetails($this->domain);
+            $values             =   $api->getDomainContactsRequest($this->domain);
         }
         catch (\Exception $e)
         {
@@ -125,7 +126,7 @@ class ContactController extends BaseController
         {
             $api                =   $this->API;
             $api->setParams($params);
-            $handles            =   array_flip(\OpenProvider\API\APIConfig::$handlesNames);
+
             $this->domain->load(array(
                 'name'          =>  $params['sld'],
                 'extension'     =>  $params['tld']
@@ -134,12 +135,12 @@ class ContactController extends BaseController
             $handle = $this->handle;
             $handle->setApi($api);
 
-            $customers['ownerHandle']   = $handle->updateOrCreate($params, 'registrant');
-            $customers['adminHandle']   = $handle->updateOrCreate($params, 'admin');
-            $customers['techHandle']    = $handle->updateOrCreate($params, 'tech');
+            $customers['owner_handle']   = $handle->updateOrCreate($params, 'registrant');
+            $customers['admin_handle']   = $handle->updateOrCreate($params, 'admin');
+            $customers['tech_handle']    = $handle->updateOrCreate($params, 'tech');
 
             if(isset($params['contactdetails']['Billing']))
-                $customers['billingHandle'] = $handle->updateOrCreate($params, 'billing');
+                $customers['billing_handle'] = $handle->updateOrCreate($params, 'billing');
 
             // Sleep for 10 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
@@ -151,8 +152,10 @@ class ContactController extends BaseController
                     $finalCustomers[$key] = $handle;
             });
 
-            if(!empty($finalCustomers))
-                $api->modifyDomainCustomers($this->domain, $finalCustomers);
+            if(!empty($finalCustomers)) {
+                $domain = $api->getDomainRequest($this->domain);
+                $api->updateDomainRequest($domain['id'], $finalCustomers);
+            }
 
             return ['success' => true];
         }

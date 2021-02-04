@@ -1,6 +1,7 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
+use OpenProvider\API\JsonAPI;
 use OpenProvider\OpenProvider;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WeDevelopCoffee\wPower\Models\Registrar;
@@ -35,7 +36,7 @@ class DnsNotificationController{
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, api_domain $api_domain, Domain $domain)
+    public function __construct(Core $core, JsonAPI $API, api_domain $api_domain, Domain $domain)
     {
         $this->API = $API;
         $this->api_domain = $api_domain;
@@ -53,6 +54,8 @@ class DnsNotificationController{
         if($domain->registrar != 'openprovider' || Configuration::getOrDefault('require_op_dns_servers', true) != true)
             return;
 
+        $this->API->setParams($params);
+
         $openprovider = new OpenProvider();
 
         try {
@@ -63,10 +66,10 @@ class DnsNotificationController{
                 'extension' => $domain->getTldAttribute()
             ));
 
-            $op_domain                  = $openprovider->api->retrieveDomainRequest($op_api_domain, true);
+            $op_domain = $this->API->getDomainRequest($op_api_domain);
 
             $notOpenproviderNameservers = [];
-            foreach($op_domain['nameServers'] as $nameserver)
+            foreach($op_domain['name_servers'] as $nameserver)
             {
                 if(!in_array($nameserver['name'], $this->op_nameservers))
                 {
@@ -74,7 +77,7 @@ class DnsNotificationController{
                 }
             }
 
-            $conditionDisplayAlert = (count($op_domain['nameServers'])
+            $conditionDisplayAlert = (count($op_domain['name_servers'])
                 - count($notOpenproviderNameservers)) < 2;
             if ($conditionDisplayAlert) {
                 $notOpenproviderNameserversString = implode(', ', $notOpenproviderNameservers);

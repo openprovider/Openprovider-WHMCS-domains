@@ -1,9 +1,8 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-use OpenProvider\API\API;
 use OpenProvider\API\APIConfig;
-use WeDevelopCoffee\wPower\Models\Registrar;
+use OpenProvider\API\JsonAPI;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -20,7 +19,7 @@ class ConfigController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API)
+    public function __construct(Core $core, JsonAPI $API)
     {
         parent::__construct($core);
 
@@ -149,8 +148,8 @@ class ConfigController extends BaseController
         try {
             $this->API->setParams($params);
             // Try to login and fetch the DNS template data.
-            $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
-            return $configarray;
+            if ($this->API->checkCredentials())
+                return $configarray;
         } catch (\Exception $ex) {}
 
         // Failed to login. Generate a warning.
@@ -158,28 +157,35 @@ class ConfigController extends BaseController
 
         if ($isTestMode) {
             $params['test_mode'] = '';
-            $this->API->setParams($params);
-            try {
-                $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
+            if ($this->_checkCredentials($params))
                 // Incorrect mode
                 $configarray = $this->generateLoginError($configarray, true);
-            } catch (\Exception $e) {
-                // Incorrect credentials
+            else
                 $configarray = $this->generateLoginError($configarray);
-            }
         } else {
             $params['test_mode'] = 'on';
-            $this->API->setParams($params);
-            try {
-                $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
+            if ($this->_checkCredentials($params))
                 // Incorrect mode
                 $configarray = $this->generateLoginError($configarray, true);
-            } catch (\Exception $e) {
-                // Incorrect credentials
+            else
                 $configarray = $this->generateLoginError($configarray);
-            }
         }
 
         return $configarray;
+    }
+
+    private function _checkCredentials($params)
+    {
+        try {
+            $this->API->setParams($params);
+
+            // Incorrect mode
+            if ($this->API->checkCredentials())
+                return true;
+            return false;
+        } catch (\Exception $e) {
+            // Incorrect credentials
+            return false;
+        }
     }
 }

@@ -2,6 +2,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
+use OpenProvider\API\JsonAPI;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
@@ -24,7 +25,7 @@ class NameserverController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, JsonAPI $API, Domain $domain)
     {
         parent::__construct($core);
 
@@ -51,7 +52,7 @@ class NameserverController extends BaseController
                 'name' => $params['sld'],
                 'extension' => $params['tld']
             ));
-            $nameservers = $api->getNameservers($domain);
+            $nameservers = $api->getDomainNameserversRequst($domain);
             $return = array ();
             $i = 1;
 
@@ -84,6 +85,7 @@ class NameserverController extends BaseController
         {
             $api                =   $this->API;
             $api->setParams($params);
+
             $domain             =   $this->domain;
             $domain->load(array(
                 'name'          =>  $params['sld'],
@@ -91,7 +93,8 @@ class NameserverController extends BaseController
             ));
             $nameServers        =   \OpenProvider\API\APITools::createNameserversArray($params);
 
-            $api->saveNameservers($domain, $nameServers);
+            $api->updateDomainNameserversRequest($domain, $nameServers);
+
         }
         catch (\Exception $e)
         {
@@ -135,9 +138,9 @@ class NameserverController extends BaseController
                 throw new Exception('You must enter all required fields');
             }
 
-            $api = new \OpenProvider\API\API();
+            $api = new \OpenProvider\API\JsonAPI();
             $api->setParams($params);
-            $api->nameserverRequest('create', $nameServer);
+            $api->createDnsNameserversRequest($nameServer);
 
             return 'success';
         }
@@ -189,7 +192,7 @@ class NameserverController extends BaseController
 
             $api                =   $this->API;
             $api->setParams($params);
-            $api->nameserverRequest('modify', $nameServer, $currentIp);
+            $api->updateDnsNameserversRequest($nameServer, $currentIp);
         }
         catch (\Exception $e)
         {
@@ -230,7 +233,7 @@ class NameserverController extends BaseController
 
             $api                =   $this->API;
             $api->setParams($params);
-            $api->nameserverRequest('delete', $nameServer);
+            $api->deleteDnsNameserversRequest($nameServer);
 
             return 'success';
         }

@@ -1,10 +1,14 @@
 <?php
 
 return [
-    //Openprovider Production and CTE API endpoints
+    //Openprovider Production and CTE API endpoints XML format
     'api_url'                           => 'https://api.openprovider.eu/', 
     'api_url_cte'                       => 'https://api.cte.openprovider.eu/', 
-    
+
+    //Openprovider Production and CTE API endpoints JSON format
+    'api_url_v1beta'                    => 'https://api.openprovider.eu/v1beta',
+    'api_url_cte_v1beta'                => 'https://api.cte.openprovider.eu/v1beta',
+
     //  Default: false, boolean - Set to true to allow support for premium domains
     'OpenproviderPremium'               => false, 
     //  Default: true,  boolean - Set to true to Require Openprovider DNS servers for DNS management

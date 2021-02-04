@@ -142,7 +142,7 @@ $(document).on('ready', function () {
             method: 'GET',
             url: apiUrlTurnOnOffDnssec,
             data: {
-                isDnssecEnabled: 0,
+                isDnssecEnabled: false,
                 domainId: domainId,
             }
         }).done(function (reply) {
@@ -173,13 +173,13 @@ $(document).on('ready', function () {
         const {
                   flags,
                   alg,
-                  pubKey,
+                  pub_key,
               } = props;
 
         return `<tr>
             <td>` + flags + `</td>
             <td>` + alg + `</td>
-            <td>` + pubKey + `</td>
+            <td>` + pub_key + `</td>
             <td>
                 <input type="button" name="deleteDnsSecRecord" class="btn btn-danger" value="Delete" />
             </td>

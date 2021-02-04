@@ -4,6 +4,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Carbon\Carbon;
 use Exception;
+use OpenProvider\API\JsonAPI;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
@@ -26,7 +27,7 @@ class RenewDomainController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, JsonAPI $API, Domain $domain)
     {
         parent::__construct($core);
 
@@ -45,7 +46,7 @@ class RenewDomainController extends BaseController
 
         $period = $params['regperiod'];
 
-        $api = new \OpenProvider\API\API();
+        $api = $this->API;
         $api->setParams($params);
 
         // If isInGracePeriod is true, renew the domain.
@@ -53,7 +54,7 @@ class RenewDomainController extends BaseController
         {
             try
             {
-                $api->restoreDomain($domain, $period);
+                $api->renewDomainRequest($domain, $period);
             } catch (\Exception $e) {
                 return ['error' => $e->getMessage()];
             }
@@ -66,7 +67,7 @@ class RenewDomainController extends BaseController
         {
             try
             {
-                $api->restoreDomain($domain, $period);
+                $api->restoreDomainRequest($domain);
             } catch (\Exception $e) {
                 return ['error' => $e->getMessage()];
             }
@@ -79,10 +80,12 @@ class RenewDomainController extends BaseController
 
         try
         {
-            if(!$api->getSoftRenewalExpiryDate($domain)) {
-                $api->renewDomain($domain, $period);
-            } elseif ((new Carbon($api->getSoftRenewalExpiryDate($domain), 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
-                $api->restoreDomain($domain, $period);
+            $domainSoftQuarantineExpireDate = $api->getDomainSoftQuarantineExpiryDate($domain);
+
+            if(!$domainSoftQuarantineExpireDate) {
+                $api->restoreDomainRequest($domain);
+            } elseif ((new Carbon($domainSoftQuarantineExpireDate, 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
+                $api->renewDomainRequest($domain, $period);
             } else {
                 // This only happens when the isInRedemptionGracePeriod was not true.
                 throw new Exception("Domain has expired and additional costs may be applied. Please check the domain in your reseller control panel", 1);

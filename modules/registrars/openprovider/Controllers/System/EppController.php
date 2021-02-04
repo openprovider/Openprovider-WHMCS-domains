@@ -3,6 +3,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
+use OpenProvider\API\JsonAPI;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
@@ -25,7 +26,7 @@ class EppController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, JsonAPI $API, Domain $domain)
     {
         parent::__construct($core);
 
@@ -55,7 +56,7 @@ class EppController extends BaseController
 
             $api                =   $this->API;
             $api->setParams($params);
-            $eppCode = $api->getEPPCode($domain);
+            $eppCode = $api->getDomainAuthCodeRequest($domain);
 
             if(!$eppCode)
             {

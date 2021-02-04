@@ -6,7 +6,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\API;
 use OpenProvider\API\Domain;
-use Punic\Exception;
+use OpenProvider\API\JsonAPI;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -24,7 +24,7 @@ class IRTPVerificationEmailController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, JsonAPI $API, Domain $domain)
     {
         parent::__construct($core);
 
@@ -51,7 +51,7 @@ class IRTPVerificationEmailController extends BaseController
             $domain = new Domain();
             $domain->name = $params['domainObj']->getSecondLevel();
             $domain->extension = $params['domainObj']->getTopLevel();
-            $ownerInfo = $api->getContactDetails($domain);
+            $ownerInfo = $api->getDomainContactsRequest($domain);
             $ownerEmail = $ownerInfo['Owner']['Email Address'];
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
@@ -62,12 +62,8 @@ class IRTPVerificationEmailController extends BaseController
             return ['error' => 'No owner email'];
         }
 
-        $args = [
-            'email' => $ownerEmail,
-        ];
-
         try {
-            $api->sendRequest('restartCustomerEmailVerificationRequest', $args);
+            $api->restartCustomersVerificationsEmailsRequest($ownerEmail);
         } catch (\Exception $e) {
             $success = false;
             $errorMessage = $e->getMessage();

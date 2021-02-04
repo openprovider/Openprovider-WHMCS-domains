@@ -214,4 +214,9 @@ class Customer
                 break;
         }
     }
+
+    public function getArgumentsForRequest()
+    {
+
+    }
 }

@@ -58,37 +58,37 @@ class TldPricingController extends BaseController
             // All the set methods can be chained and utilised together.
             $item = (new ImportItem)
                 ->setExtension($extension['name'])
-                ->setMinYears($extension['minPeriod'])
-                ->setMaxYears($extension['maxPeriod'])
-                ->setCurrency($extension['prices']['resellerPrice']['reseller']['currency'])
-                ->setEppRequired($extension['isTransferAuthCodeRequired']);
+                ->setMinYears($extension['min_period'])
+                ->setMaxYears($extension['max_period'])
+                ->setCurrency($extension['prices']['reseller_price']['reseller']['currency'])
+                ->setEppRequired($extension['is_transfer_auth_code_required']);
 
-            if(isset($extension['prices']['resellerPrice']['reseller']['price']))
-                $item->setRegisterPrice($extension['prices']['resellerPrice']['reseller']['price']);
-            elseif(isset($extension['prices']['createPrice']['reseller']['price']))
-                $item->setRegisterPrice($extension['prices']['createPrice']['reseller']['price']);
+            if(isset($extension['prices']['reseller_price']['reseller']['price']))
+                $item->setRegisterPrice($extension['prices']['reseller_price']['reseller']['price']);
+            elseif(isset($extension['prices']['create_price']['reseller']['price']))
+                $item->setRegisterPrice($extension['prices']['create_price']['reseller']['price']);
 
-            if(isset($extension['prices']['renewPrice']['reseller']['price']))
-                $item->setRenewPrice($extension['prices']['renewPrice']['reseller']['price']);
+            if(isset($extension['prices']['renew_price']['reseller']['price']))
+                $item->setRenewPrice($extension['prices']['renew_price']['reseller']['price']);
 
-            if(isset($extension['softQuarantinePeriod']) && isset($extension['prices']['softRestorePrice']['reseller']['price']))
+            if(isset($extension['soft_quarantine_period']) && isset($extension['prices']['soft_restore_price']['reseller']['price']))
             {
-                $item->setGraceFeeDays($extension['softQuarantinePeriod']);
+                $item->setGraceFeeDays($extension['soft_quarantine_period']);
 
-                $item->setGraceFeePrice($extension['prices']['softRestorePrice']['reseller']['price']);
+                $item->setGraceFeePrice($extension['prices']['soft_restore_price']['reseller']['price']);
             }
             else
                 $item->setGraceFeePrice(0);
 
-            if(isset($extension['quarantinePeriod']) && isset($extension['prices']['restorePrice']['reseller']['price'])) {
-                $item->setRedemptionFeePrice($extension['prices']['restorePrice']['reseller']['price']);
-                $item->setRedemptionFeeDays($extension['quarantinePeriod']);
+            if(isset($extension['quarantine_period']) && isset($extension['prices']['restore_price']['reseller']['price'])) {
+                $item->setRedemptionFeePrice($extension['prices']['restore_price']['reseller']['price']);
+                $item->setRedemptionFeeDays($extension['quarantine_period']);
             }
             else
                 $item->setRedemptionFeePrice(0);
 
-            if($extension['transferAvailable'])
-                $item->setTransferPrice($extension['prices']['transferPrice']['reseller']['price']);
+            if($extension['transfer_available'])
+                $item->setTransferPrice($extension['prices']['transfer_price']['reseller']['price']);
 
             $results[] = $item;
         }

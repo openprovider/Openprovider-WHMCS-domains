@@ -7,6 +7,7 @@ use OpenProvider\API\Domain;
 use OpenProvider\API\APITools;
 use OpenProvider\API\DomainTransfer;
 use OpenProvider\API\DomainRegistration;
+use OpenProvider\API\JsonAPI;
 use OpenProvider\WhmcsRegistrar\src\PremiumDomain;
 use OpenProvider\WhmcsRegistrar\src\Handle;
 use OpenProvider\WhmcsRegistrar\src\AdditionalFields;
@@ -50,7 +51,7 @@ class DomainController extends BaseController
     * 
     * @return void
     */
-    public function __construct(Core $core, API $API, Domain $domain, PremiumDomain $premiumDomain, AdditionalFields $additionalFields, Handle $handle)
+    public function __construct(Core $core, JsonAPI $API, Domain $domain, PremiumDomain $premiumDomain, AdditionalFields $additionalFields, Handle $handle)
     {
         parent::__construct($core);
 
@@ -86,7 +87,6 @@ class DomainController extends BaseController
             $api->setParams($params);
             $handle         = $this->handle;
             $handle->setApi($api);
-            
             // Prepare the additional data
             $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
             if(isset($additionalFields['extensionCustomerAdditionalData']))
@@ -119,7 +119,7 @@ class DomainController extends BaseController
             $domainRegistration->billingHandle  =   $handles['billingHandle'];
             $domainRegistration->nameServers    =   $nameServers; 
             $domainRegistration->dnsmanagement  =   $params['dnsmanagement'];
-            $domainRegistration->isDnssecEnabled =  0;
+            $domainRegistration->isDnssecEnabled =  false;
 
             if(isset($additionalFields['domainAdditionalData']))
                 $domainRegistration->additionalData = json_decode(json_encode($additionalFields['domainAdditionalData']),1);
@@ -130,7 +130,7 @@ class DomainController extends BaseController
 
             
             if($params['idprotection'] == 1)
-                $domainRegistration->isPrivateWhoisEnabled = 1;
+                $domainRegistration->isPrivateWhoisEnabled = true;
             
             //use dns templates
             if(isset($params['dnsTemplate']) && !empty($params['dnsTemplate']))
@@ -150,7 +150,7 @@ class DomainController extends BaseController
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
 
-            $api->registerDomain($domainRegistration);
+            $api->registerDomainRequest($domainRegistration);
         }
         catch (\Exception $e)
         {
@@ -179,7 +179,7 @@ class DomainController extends BaseController
                 'name'          =>  $params['sld'],
                 'extension'     =>  $params['tld']
             ));
-            $api = new API();
+            $api = $this->API;
             $api->setParams($params);
 
             $nameServers = APITools::createNameserversArray($params);
@@ -208,14 +208,14 @@ class DomainController extends BaseController
             $domainTransfer->billingHandle  =   $adminHandle;
             $domainTransfer->authCode       =   $params['transfersecret'];
             $domainTransfer->dnsmanagement  =   $params['dnsmanagement'];
-            $domainTransfer->isDnssecEnabled =  0;
+            $domainTransfer->isDnssecEnabled =  false;
 
             // Check if premium is enabled. If so, set the received premium cost.
             if($params['premiumEnabled'] == true && $params['premiumCost'] != '')
                 $domainTransfer->acceptPremiumFee = $this->premiumDomain->getRegistrarPriceWhenResellerPriceMatches('transfer', $params['sld'], $params['tld'], $params['premiumCost']);
 
             if($params['idprotection'] == 1)
-                $domainTransfer->isPrivateWhoisEnabled = 1;
+                $domainTransfer->isPrivateWhoisEnabled = true;
 
             if(isset($params['dnsTemplate']) && !empty($params['dnsTemplate']))
             {
@@ -227,7 +227,7 @@ class DomainController extends BaseController
 
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
-            $api->transferDomain($domainTransfer);
+            $api->transferDomainRequest($domainTransfer);
         }
         catch (\Exception $e)
         {

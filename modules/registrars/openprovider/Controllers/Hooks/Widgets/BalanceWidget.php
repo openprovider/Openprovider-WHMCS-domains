@@ -23,9 +23,10 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
     {
         try {
             $openprovider = new OpenProvider();
-            $balance = $openprovider->api->getResellerBalance()['balance'];
+            $reseller = $openprovider->api->getResellersRequest();
+            $balance = $reseller['balance'];
 
-            $statistics = $openprovider->api->getResellerStatistics();
+            $statistics = $reseller['statistics'];
 
         } catch ( \Exception $e)
         {

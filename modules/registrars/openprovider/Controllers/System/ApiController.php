@@ -4,12 +4,14 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 
+use OpenProvider\API\JsonAPI;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\ApiResponse;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
+use WeDevelopCoffee\wPower\Models\Registrar;
 use WHMCS\Database\Capsule;
 
 class ApiController extends BaseController
@@ -19,13 +21,16 @@ class ApiController extends BaseController
      */
     private $openProvider;
 
+    private $API;
+
     /**
      * ApiController constructor.
      */
-    public function __construct(Core $core, OpenProvider $openProvider)
+    public function __construct(Core $core, OpenProvider $openProvider, JsonAPI $API)
     {
         parent::__construct($core);
         $this->openProvider = $openProvider;
+        $this->API          = $API;
     }
 
     /**
@@ -70,6 +75,7 @@ class ApiController extends BaseController
                 return $contact->handle;
             });
 
+        $this->_setApiParams();
         $this->_modifyContactsTag($usersContacts, $tags);
 
         ApiResponse::success();
@@ -87,8 +93,8 @@ class ApiController extends BaseController
             return;
         }
 
-        $domain = $this->_checkDomainExistInDatabase($params['domainId']);
-        if (!$domain) {
+        $domainDatabase = $this->_checkDomainExistInDatabase($params['domainId']);
+        if (!$domainDatabase) {
             ApiResponse::error('Domain not found!');
             return;
         }
@@ -98,25 +104,23 @@ class ApiController extends BaseController
             'flags'    => $params['flags'],
             'alg'      => $params['alg'],
             'protocol' => 3,
-            'pubKey'   => $params['pubKey'],
+            'pub_key'   => $params['pubKey'],
         ];
-        $api = $this->openProvider->api;
 
-        $domainArray = $this->_getDomainNameExtension($domain->domain);
+        $domain = $this->openProvider->domain($domainDatabase->domain);
         // checking for duplicate dnssecKeys
         $dnssecKeys = [];
         $dnssecKeysHashes = [];
         try {
-            $domain = $api->sendRequest('retrieveDomainRequest', [
-                'domain' => $domainArray,
-            ]);
-            foreach($domain['dnssecKeys'] as $dnssec) {
-                $dnssecKeysHashes[] = md5($dnssec['flags'] . $dnssec['alg'] . $dnssec['protocol'] . trim($dnssec['pubKey']));
+            $this->_setApiParams();
+            $domainInfo = $this->API->getDomainRequest($domain);
+            foreach($domainInfo['dnssec_keys'] as $dnssec) {
+                $dnssecKeysHashes[] = md5($dnssec['flags'] . $dnssec['alg'] . $dnssec['protocol'] . trim($dnssec['pub_key']));
                 $dnssecKeys[] = [
                     'flags'    => $dnssec['flags'],
                     'alg'      => $dnssec['alg'],
                     'protocol' => 3,
-                    'pubKey'   => $dnssec['pubKey'],
+                    'pub_key'   => $dnssec['pub_key'],
                 ];
             }
         } catch (\Exception $e) {}
@@ -133,22 +137,23 @@ class ApiController extends BaseController
 
         // update dnssecKeys with new record,
         $args = [
-            'dnssecKeys'      => $modifiedDnsSecKeys,
-            'domain'          => $domainArray,
+            'dnssec_keys'     => $modifiedDnsSecKeys,
         ];
 
         if (count($modifiedDnsSecKeys) > 0)
-            $args['isDnssecEnabled'] = 1;
+            $args['is_dnssec_enabled'] = true;
         else
-            $args['isDnssecEnabled'] = 0;
+            $args['is_dnssec_enabled'] = false;
 
         try {
-            $api->sendRequest('modifyDomainRequest', $args);
+            $this->_setApiParams();
+
+            $this->API->updateDomainRequest($domainInfo['id'], $args);
         } catch (\Exception $e) {
             ApiResponse::error(400, $e->getMessage());
             return;
         }
-        ApiResponse::success(['dnssecKeys' => $args['dnssecKeys']]);
+        ApiResponse::success(['dnssecKeys' => $args['dnssec_keys']]);
     }
 
     /**
@@ -163,25 +168,27 @@ class ApiController extends BaseController
             return;
         }
 
-        $domain = $this->_checkDomainExistInDatabase($params['domainId']);
-        if (!$domain) {
+        $domainDatabase = $this->_checkDomainExistInDatabase($params['domainId']);
+        if (!$domainDatabase) {
             ApiResponse::error('Domain not found!');
             return;
         }
 
-        $api = $this->openProvider->api;
 
-        $isDnssecEnabled = $params['isDnssecEnabled'];
+        $isDnssecEnabled = $params['isDnssecEnabled'] == 'true';
 
-        $domainArray = $this->_getDomainNameExtension($domain->domain);
+        $domain = $this->openProvider->domain($domainDatabase->domain);
 
         $args = [
-            'isDnssecEnabled' => $isDnssecEnabled,
-            'domain'          => $domainArray,
+            'is_dnssec_enabled' => $isDnssecEnabled,
         ];
 
         try {
-            $api->sendRequest('modifyDomainRequest', $args);
+            $this->_setApiParams();
+
+            $domainOp = $this->API->getDomainRequest($domain);
+
+            $this->API->updateDomainRequest($domainOp['id'], $args);
         } catch (\Exception $e) {
             ApiResponse::error(400, $e->getMessage());
             return;
@@ -200,7 +207,7 @@ class ApiController extends BaseController
      */
     private function _createDnsSecRecord($dnssecKeys, $dnssecKeysHashes, $dnssecKey)
     {
-        if (in_array(md5($dnssecKey['flags'] . $dnssecKey['alg'] . strval(3) . trim($dnssecKey['pubKey'])), $dnssecKeysHashes))
+        if (in_array(md5($dnssecKey['flags'] . $dnssecKey['alg'] . strval(3) . trim($dnssecKey['pub_key'])), $dnssecKeysHashes))
             return $dnssecKeys;
 
         $dnssecKeys[] = $dnssecKey;
@@ -217,7 +224,7 @@ class ApiController extends BaseController
      */
     private function _deleteDnsSecRecord($dnssecKeys, $dnssecKeysHashes, $dnssecKey)
     {
-        $recordIndex = array_search(md5($dnssecKey['flags'] . $dnssecKey['alg'] . strval(3) . trim($dnssecKey['pubKey'])), $dnssecKeysHashes);
+        $recordIndex = array_search(md5($dnssecKey['flags'] . $dnssecKey['alg'] . strval(3) . trim($dnssecKey['pub_key'])), $dnssecKeysHashes);
         if ($recordIndex === false)
             return $dnssecKeys;
 
@@ -233,16 +240,9 @@ class ApiController extends BaseController
      */
     private function _modifyContactsTag($contactsHandles, $tags = '')
     {
-        $api = $this->openProvider->api;
-
         foreach ($contactsHandles as $contactHandle) {
             try {
-                $params = [
-                    'handle' => $contactHandle,
-                    'tags' => $tags,
-                ];
-
-                $api->sendRequest('modifyCustomerRequest', $params);
+                $this->API->updateCustomerTagsRequest($contactHandle, $tags);
             } catch (\Exception $e) {
                 continue;
             }
@@ -253,7 +253,7 @@ class ApiController extends BaseController
      * Return domain by domain's Id from database or false
      *
      * @param int $domainId Domain id from database
-     * @return (false|databaseRow)
+     * @return false|databaseRow
      */
     private function _checkDomainExistInDatabase($domainId)
     {
@@ -267,19 +267,11 @@ class ApiController extends BaseController
         return false;
     }
 
-    /**
-     * return Domain format ['name' => '*', 'extension' => '.*']
-     *
-     * @param string $domain
-     * @return array
-     */
-    private function _getDomainNameExtension($domain)
+    private function _setApiParams()
     {
-        $domainArray = explode('.', $domain);
-        return [
-            'extension' => $domainArray[count($domainArray)-1],
-            'name' => implode('.', array_slice($domainArray, 0, count($domainArray)-1)),
-        ];
+        $params = (new Registrar())->getRegistrarData()['openprovider'];
+
+        $this->API->setParams($params);
     }
 }
 

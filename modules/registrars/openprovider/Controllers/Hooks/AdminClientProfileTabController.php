@@ -3,10 +3,12 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use Carbon\Carbon;
+use OpenProvider\API\JsonAPI;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use WeDevelopCoffee\wPower\Models\Registrar;
 use WHMCS\Database\Capsule;
 
 /**
@@ -21,12 +23,19 @@ class AdminClientProfileTabController
 {
     public function additionalFields($vars)
     {
-        $tagsData     = [];
-        $userId       = $vars['userid'];
-        $OpenProvider = new OpenProvider();
+        $tagsData = [];
+        $userId   = $vars['userid'];
 
+        // I dont know why, but if we use OpenProvider constructor
+        // We have no more error with idna_converter class
+        $Openprovider = new OpenProvider();
         try {
-            $tagsData = $OpenProvider->api->sendRequest('searchTagRequest');
+
+            $args = [
+                'key' => 'customer',
+            ];
+
+            $tagsData = $Openprovider->api->listTagsRequest($args);
         } catch (\Exception $e) {}
 
         $tags = [];
@@ -110,8 +119,6 @@ class AdminClientProfileTabController
                     ['clientid' => $userId],
                     ['tag' => $tag, 'updated_at' => Carbon::now()]
                 );
-        } catch (\Exception $e) {
-            var_dump($e->getMessage());die;
-        }
+        } catch (\Exception $e) {}
     }
 }

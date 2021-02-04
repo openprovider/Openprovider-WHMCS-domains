@@ -49,7 +49,7 @@ class DownloadTldPricesCronController extends BaseController
         // return ['error' => 'This error occurred',];
 
         try {
-            $extensionData = $this->openProvider->api->getTldsAndPricing();
+            $extensionData = $this->openProvider->api->listTldsRequest();
         } catch ( \Exception $e)
         {
             return ['error' => 'This error occurred: ' . $e->getMessage()];

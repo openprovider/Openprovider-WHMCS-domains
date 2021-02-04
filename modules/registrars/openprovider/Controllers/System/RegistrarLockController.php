@@ -1,6 +1,7 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+use OpenProvider\API\JsonAPI;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
@@ -23,7 +24,7 @@ class RegistrarLockController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, JsonAPI $API, Domain $domain)
     {
         parent::__construct($core);
 
@@ -52,7 +53,7 @@ class RegistrarLockController extends BaseController
                 'extension'     =>  $params['tld']
             ));
 
-            $lockStatus         =   $api->getRegistrarLock($domain);
+            $lockStatus         =   $api->getDomainRegistrarLockRequest($domain);
         }
         catch (\Exception $e)
         {
@@ -84,9 +85,9 @@ class RegistrarLockController extends BaseController
                 'name'          =>  $params['sld'],
                 'extension'     =>  $params['tld']
             ));
-            $lockStatus         =   $params["lockenabled"] == "locked" ? 1 : 0;
+            $lockStatus         =   $params["lockenabled"] == "locked";
 
-            $api->saveRegistrarLock($domain, $lockStatus);
+            $api->updateDomainRegistrarLockRequest($domain, $lockStatus);
         }
         catch (\Exception $e)
         {
