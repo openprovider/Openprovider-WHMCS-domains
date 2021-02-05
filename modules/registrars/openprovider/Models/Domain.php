@@ -2,6 +2,7 @@
 
 namespace OpenProvider\WhmcsRegistrar\Models;
 
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WeDevelopCoffee\wPower\Models\Registrar;
 
 /**
@@ -18,7 +19,7 @@ class Domain extends \WeDevelopCoffee\wPower\Models\Domain
      */
     public function check_renew_domain_setting_upon_completed_transfer()
     {
-        $setting_value = Registrar::getByKey('openprovider', 'renewTldsUponTransferCompletion', '');
+        $setting_value = Configuration::getOrDefault('renewTldsUponTransferCompletion', '');
 
         // When nothing was found; return false.
         if(count($setting_value) == 0

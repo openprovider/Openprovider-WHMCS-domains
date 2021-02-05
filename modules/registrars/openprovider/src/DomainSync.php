@@ -94,7 +94,7 @@ class DomainSync
         // Get all unprocessed domains
         if($limit === false)
         {
-            $limit = Registrar::getByKey('openprovider', 'domainProcessingLimit');
+            $limit = Configuration::getOrDefault('domainProcessingLimit', 200);
         }
 
         $this->get_unprocessed_domains($limit);
@@ -137,51 +137,51 @@ class DomainSync
         $this->OpenProvider = new OpenProvider;
         $this->OpenProvider->api->getResellerStatistics('domainsync');
 
-        $setting['syncExpiryDate'] = Registrar::getByKey('openprovider', 'syncExpiryDate', 'on');
-        $setting['syncDomainStatus'] = Registrar::getByKey('openprovider', 'syncDomainStatus', 'on');
-        $setting['syncAutoRenewSetting'] = Registrar::getByKey('openprovider', 'syncAutoRenewSetting', 'on');
-        $setting['syncIdentityProtectionToggle'] = Registrar::getByKey('openprovider', 'syncIdentityProtectionToggle', 'on');
-        $setting['updateNextDueDate'] = Registrar::getByKey('openprovider', 'updateNextDueDate', 'off') ;
-        $setting['syncUseNativeWHMCS'] = Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '');
+        $setting['syncExpiryDate'] = Configuration::getOrDefault('syncExpiryDate', true);
+        $setting['syncDomainStatus'] = Configuration::getOrDefault('syncDomainStatus', true);
+        $setting['syncAutoRenewSetting'] = Configuration::getOrDefault('syncAutoRenewSetting', true);
+        $setting['syncIdentityProtectionToggle'] = Configuration::getOrDefault('syncIdentityProtectionToggle', true);
+        $setting['updateNextDueDate'] = Configuration::getOrDefault('updateNextDueDate', false) ;
+        $setting['syncUseNativeWHMCS'] = Configuration::getOrDefault('syncUseNativeWHMCS', false);
 
         foreach($this->domains as $domain)
         {
             // Do not process domains marked as fraud.
-            if($setting['syncUseNativeWHMCS'] == 'on' && strtolower($domain->status) == 'fraud')
+            if($setting['syncUseNativeWHMCS'] == true && strtolower($domain->status) == 'fraud')
                 continue;
 
             // Do not process active or pending transfer domains when the native sync feature is enabled.
-            if($setting['syncUseNativeWHMCS'] == 'on'
+            if($setting['syncUseNativeWHMCS'] == true
                 && (strtolower($domain->status) == 'active'
                 || strtolower($domain->status) == 'pending'))
                 continue;
 
             $this->printDebug('WORKING ON ' . $domain->domain);
             $this->update_executed_logs = null;
-            $this->update_domain_data = null;
+            $this->update_domain_data   = null;
 
             try
             {
-                $this->objectDomain 			= $domain;
-                $this->op_domain_obj 	= $this->OpenProvider->domain($domain->domain);
-                $this->op_domain   		= $this->OpenProvider->api->retrieveDomainRequest($this->op_domain_obj);
+                $this->objectDomain  = $domain;
+                $this->op_domain_obj = $this->OpenProvider->domain($domain->domain);
+                $this->op_domain   	 = $this->OpenProvider->api->retrieveDomainRequest($this->op_domain_obj);
 
                 // Set the expire and due date -> openprovider is leading
-                if($setting['syncExpiryDate'] == 'on')
+                if($setting['syncExpiryDate'] == true)
                     $this->process_expiry_date();
 
                 // Active or pending? -> openprovider is leading
-                if($setting['syncDomainStatus'] == 'on')
+                if($setting['syncDomainStatus'] == true)
                     $this->process_domain_status();
 
-                if(Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '') == '') {
+                if(Configuration::getOrDefault('syncUseNativeWHMCS', false) == false) {
                     // auto renew on or not? -> WHMCS is leading.
-                    if ($setting['syncAutoRenewSetting'] == 'on') {
+                    if ($setting['syncAutoRenewSetting'] == true) {
                         $this->process_auto_renew();
                     }
 
                     // Identity protection or not? -> WHMCS is leading.
-                    if ($setting['syncIdentityProtectionToggle'] == 'on') {
+                    if ($setting['syncIdentityProtectionToggle'] == true) {
                         $this->process_identity_protection();
                     }
                 }
@@ -229,8 +229,8 @@ class DomainSync
             }
         }
 
-        if(Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '') == '') {
-            if($setting['updateNextDueDate'] == 'on')
+        if(Configuration::getOrDefault('syncUseNativeWHMCS', false) == false) {
+            if($setting['updateNextDueDate'] == true)
                 $this->process_next_due_dates();
         }
 
@@ -289,8 +289,8 @@ class DomainSync
     protected function process_next_due_dates()
     {
         $this->printDebug('PROCESSING NEXT DUE DATES SYNC FOR ALL OP DOMAINS');
-        $days_before_expiry_date = Registrar::getByKey('openprovider', 'nextDueDateOffset','14');
-        $nextDueDateUpdateMaxDayDifference = Registrar::getByKey('openprovider', 'nextDueDateUpdateMaxDayDifference', '100');
+        $days_before_expiry_date = Configuration::getOrDefault('nextDueDateOffset',14);
+        $nextDueDateUpdateMaxDayDifference = Configuration::getOrDefault('nextDueDateUpdateMaxDayDifference', 100);
 
         $updated_domains = $this->domain->updateNextDueDateOffset($days_before_expiry_date, $nextDueDateUpdateMaxDayDifference, 'openprovider');
 
@@ -329,7 +329,7 @@ class DomainSync
     {
         $this->printDebug('START PROCESSING EMPTY NEXT DUE DATES');
 
-        $days_before_expiry_date = Registrar::getByKey('openprovider', 'nextDueDateOffset','14');
+        $days_before_expiry_date = Configuration::getOrDefault('nextDueDateOffset',14);
 
         $updated_domains = $this->domain->updateEmptyNextDueDates('openprovider', $days_before_expiry_date);
 

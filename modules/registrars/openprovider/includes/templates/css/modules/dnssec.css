@@ -1,0 +1,19 @@
+.mt--25 {
+    margin-top: 25px;
+}
+
+.d-flex {
+    display: -webkit-box!important;
+    display: -ms-flexbox!important;
+    display: flex!important;
+}
+
+.ml-auto, .mx-auto {
+    margin-left: auto!important;
+}
+
+.align-items-center {
+    -webkit-box-align: center!important;
+    -ms-flex-align: center!important;
+    align-items: center!important;
+}

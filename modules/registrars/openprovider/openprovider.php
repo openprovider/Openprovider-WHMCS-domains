@@ -6,7 +6,7 @@
  */
 
 use WeDevelopCoffee\wPower\Models\Domain;
-use WHMCS\Domains\DomainLookup\ResultsList;
+use \OpenProvider\WhmcsRegistrar\src\Configuration;
 
 if (!defined("WHMCS"))
 {
@@ -40,8 +40,7 @@ spl_autoload_register(function ($className)
  */
 function openprovider_getConfigArray($params = array())
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'config');
+    return openprovider_registrar_launch_decorator('config', $params);
 }
 
 
@@ -53,8 +52,7 @@ function openprovider_getConfigArray($params = array())
  */
 function openprovider_RegisterDomain($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'registerDomain');
+    return openprovider_registrar_launch_decorator('registerDomain', $params);
 }
 
 /**
@@ -65,8 +63,7 @@ function openprovider_RegisterDomain($params)
  */
 function openprovider_TransferDomain($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'transferDomain');
+    return openprovider_registrar_launch_decorator('transferDomain', $params);
 }
 
 /**
@@ -77,8 +74,7 @@ function openprovider_TransferDomain($params)
  */
 function openprovider_GetDomainInformation($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'GetDomainInformation');
+    return openprovider_registrar_launch_decorator('GetDomainInformation', $params);
 }
 
 /**
@@ -89,8 +85,7 @@ function openprovider_GetDomainInformation($params)
  */
 function openprovider_GetNameservers($params) 
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'getNameservers');
+    return openprovider_registrar_launch_decorator('getNameservers', $params);
 }
 
 /**
@@ -101,8 +96,7 @@ function openprovider_GetNameservers($params)
  */
 function openprovider_SaveNameservers($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'saveNameservers');
+    return openprovider_registrar_launch_decorator('saveNameservers', $params);
 }
 
 /**
@@ -113,8 +107,7 @@ function openprovider_SaveNameservers($params)
  */
 function openprovider_GetRegistrarLock($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'getRegistrarLock');
+    return openprovider_registrar_launch_decorator('getRegistrarLock', $params);
 }
 
 
@@ -126,8 +119,7 @@ function openprovider_GetRegistrarLock($params)
  */
 function openprovider_SaveRegistrarLock($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'saveRegistrarLock');
+    return openprovider_registrar_launch_decorator('saveRegistrarLock', $params);
 }
 
 /**
@@ -138,8 +130,7 @@ function openprovider_SaveRegistrarLock($params)
  */
 function openprovider_GetDNS($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'getDns');
+    return openprovider_registrar_launch_decorator('getDns', $params);
 }
 
 /**
@@ -150,8 +141,7 @@ function openprovider_GetDNS($params)
  */
 function openprovider_SaveDNS($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'saveDns');
+    return openprovider_registrar_launch_decorator('saveDns', $params);
 }
 
 /**
@@ -162,8 +152,7 @@ function openprovider_SaveDNS($params)
  */
 function openprovider_IDProtectToggle($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'idProtect');
+    return openprovider_registrar_launch_decorator('idProtect', $params);
 }
 
 /**
@@ -174,8 +163,7 @@ function openprovider_IDProtectToggle($params)
  */
 function openprovider_RequestDelete($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'requestDelete');
+    return openprovider_registrar_launch_decorator('requestDelete', $params);
 }
 
 /**
@@ -186,8 +174,7 @@ function openprovider_RequestDelete($params)
  */
 function openprovider_RenewDomain($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'renewDomain');
+    return openprovider_registrar_launch_decorator('renewDomain', $params);
 }
 
 
@@ -198,8 +185,7 @@ function openprovider_RenewDomain($params)
  */
 function openprovider_GetContactDetails($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'getContactDetails');
+    return openprovider_registrar_launch_decorator('getContactDetails', $params);
 }
 
 /**
@@ -209,8 +195,7 @@ function openprovider_GetContactDetails($params)
  */
 function openprovider_SaveContactDetails($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'saveContactDetails');
+    return openprovider_registrar_launch_decorator('saveContactDetails', $params);
 }
 
 /**
@@ -220,8 +205,7 @@ function openprovider_SaveContactDetails($params)
  */
 function openprovider_GetEPPCode($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'getEppCode');
+    return openprovider_registrar_launch_decorator('getEppCode', $params);
 }
 
 
@@ -232,8 +216,7 @@ function openprovider_GetEPPCode($params)
  */
 function openprovider_RegisterNameserver($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'registerNameserver');
+    return openprovider_registrar_launch_decorator('registerNameserver', $params);
 }
 
 
@@ -244,8 +227,7 @@ function openprovider_RegisterNameserver($params)
  */
 function openprovider_ModifyNameserver($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'modifyNameserver');
+    return openprovider_registrar_launch_decorator('modifyNameserver', $params);
 }
 
 /**
@@ -255,8 +237,7 @@ function openprovider_ModifyNameserver($params)
  */
 function openprovider_DeleteNameserver($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'deleteNameserver');
+    return openprovider_registrar_launch_decorator('deleteNameserver', $params);
 }
 
 /**
@@ -266,8 +247,7 @@ function openprovider_DeleteNameserver($params)
  */
 function openprovider_TransferSync($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'transferSync');
+    return openprovider_registrar_launch_decorator('transferSync', $params);
 }
 
 /**
@@ -278,8 +258,7 @@ function openprovider_TransferSync($params)
  */
 function openprovider_Sync($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'domainSync');
+    return openprovider_registrar_launch_decorator('domainSync', $params);
 }
 
 /**
@@ -290,8 +269,7 @@ function openprovider_Sync($params)
  */
 function openprovider_GetTldPricing(array $params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'getTldPricing');
+    return openprovider_registrar_launch_decorator('getTldPricing', $params);
 }
 
 /**
@@ -302,8 +280,7 @@ function openprovider_GetTldPricing(array $params)
  */
 function openprovider_CheckAvailability($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'checkAvailability');
+    return openprovider_registrar_launch_decorator('checkAvailability', $params);
 }
 
 /**
@@ -314,8 +291,7 @@ function openprovider_CheckAvailability($params)
  */
 function openprovider_GetDomainSuggestions($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'getDomainSuggestions');
+    return openprovider_registrar_launch_decorator('getDomainSuggestions', $params);
 }
 
 /**
@@ -326,6 +302,34 @@ function openprovider_GetDomainSuggestions($params)
  */
 function openprovider_DomainSuggestionOptions($params)
 {
-    return openprovider_registrar_launch('system')
-        ->output($params, 'getDomainSuggestionOptions');
+    return openprovider_registrar_launch_decorator('getDomainSuggestionOptions', $params);
+}
+
+/**
+ * Resend IRTP Verification Email
+ *
+ * @param array $params
+ * @return mixed
+ */
+function openprovider_ResendIRTPVerificationEmail(array $params)
+{
+    // Perform API call to initiate resending of the IRTP Verification Email
+    return openprovider_registrar_launch_decorator('resendIRTPVerificationEmail', $params);
+}
+
+/**
+ * Decorator for merge configuration params with static params from
+ * \OpenProvider\WhmcsRegistrar\src\Configuration class
+ *
+ * @param string $route
+ * @param array $params
+ * @param string $level
+ * @return mixed
+ */
+function openprovider_registrar_launch_decorator($route, $params = [], $level = 'system')
+{
+    $modifiedParams = array_merge($params, Configuration::getParams());
+    $modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
+    return openprovider_registrar_launch($level)
+        ->output($modifiedParams, $route);
 }

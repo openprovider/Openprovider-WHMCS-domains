@@ -1,8 +1,8 @@
 # Scheduled domain transfers
 
-Openprovider supports scheduled domain transfers. You can create them in [RCP](https://rcp.openprovider.eu) by starting a regular domain transfer with a scheduled transfer date.
+Openprovider supports scheduled domain transfers. You can create them in [your control panel](https://cp.openprovider.eu) by starting a regular domain transfer with a scheduled transfer date.
 
-If you have a number of domains to be transferred, you can use the portfolio consilidation feature in Openprovider.
+If you have a number of domains to be transferred, you can use the portfolio consolidation feature in Openprovider. Our support team or account managers will be happy to assist you in exploring the different options you might have for bulk transfers.
 
 ## How does this work?
 

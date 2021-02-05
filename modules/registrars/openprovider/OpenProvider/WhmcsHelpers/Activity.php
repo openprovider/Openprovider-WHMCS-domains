@@ -1,5 +1,6 @@
 <?php
 namespace OpenProvider\WhmcsHelpers;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WeDevelopCoffee\wPower\Models\Registrar;
 
 /**
@@ -123,7 +124,7 @@ class Activity
      */
     public static function send_email_report()
     {
-        if(empty(self::$activity_log) && Registrar::getByKey('openprovider', 'sendEmptyActivityEmail') != 'on')
+        if(empty(self::$activity_log) && Configuration::getOrDefault('sendEmptyActivityEmail') != true)
             return;
 
         $command    = 'SendAdminEmail';
@@ -150,11 +151,11 @@ class Activity
      */
     private static function generate_email()
     {
-        $setting['syncExpiryDate'] = Registrar::getByKey('openprovider', 'syncExpiryDate', 'on');
-        $setting['syncDomainStatus'] = Registrar::getByKey('openprovider', 'syncDomainStatus', 'on');
-        $setting['syncAutoRenewSetting'] = Registrar::getByKey('openprovider', 'syncAutoRenewSetting', 'on');
-        $setting['syncIdentityProtectionToggle'] = Registrar::getByKey('openprovider', 'syncIdentityProtectionToggle', 'on');
-        $setting['updateNextDueDate'] = Registrar::getByKey('openprovider', 'updateNextDueDate', 'off') ;
+        $setting['syncExpiryDate'] = Configuration::getOrDefault('syncExpiryDate', true);
+        $setting['syncDomainStatus'] = Configuration::getOrDefault('syncDomainStatus', true);
+        $setting['syncAutoRenewSetting'] = Configuration::getOrDefault('syncAutoRenewSetting', true);
+        $setting['syncIdentityProtectionToggle'] = Configuration::getOrDefault('syncIdentityProtectionToggle', true);
+        $setting['updateNextDueDate'] = Configuration::getOrDefault('updateNextDueDate', false) ;
 
         $email = "<p>Dear Administrator,<br>
         <br>\n
@@ -180,7 +181,7 @@ class Activity
         }
 
         // Expiry
-        if($setting['syncExpiryDate'] == 'on')
+        if($setting['syncExpiryDate'] == true)
         {
             $email .= "
         The following domains have been processed for <strong>expiry date</strong> updates:</p>
@@ -242,7 +243,7 @@ class Activity
         }
 
         // Due date
-        if(Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '') == '' && $setting['updateNextDueDate'] == 'on')
+        if(Configuration::getOrDefault('syncUseNativeWHMCS', false) == false && $setting['updateNextDueDate'] == true)
         {
             // First, check which domains have an updated invoice due date.
             $updated_invoice_dates = [];
@@ -289,7 +290,7 @@ class Activity
 
 
         // Domain status
-        if($setting['syncDomainStatus'] == 'on') {
+        if($setting['syncDomainStatus'] == true) {
             $email .= "
             The following domains have been processed for <strong>domain status</strong> updates:</p>
             <table>
@@ -310,7 +311,7 @@ class Activity
         }
 
         // Domain auto renew setting
-        if(Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '') == '' && $setting['syncAutoRenewSetting'] == 'on') {
+        if(Configuration::getOrDefault('syncUseNativeWHMCS', false) == false && $setting['syncAutoRenewSetting'] == true) {
             $email .= "
             The following domains have been processed for <strong>domain autorenew</strong> updates:</p>
             <table>
@@ -331,7 +332,7 @@ class Activity
         }
 
         // Domain whois protection setting
-        if(Registrar::getByKey('openprovider', 'syncUseNativeWHMCS', '') == '' && $setting['syncIdentityProtectionToggle'] == 'on') {
+        if(Configuration::getOrDefault('syncUseNativeWHMCS', false) == false && $setting['syncIdentityProtectionToggle'] == true) {
             $email .= "
             The following domains have been processed for <strong>domain whois privacy protection</strong> updates:</p>
             <table>

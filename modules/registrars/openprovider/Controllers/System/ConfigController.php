@@ -41,20 +41,12 @@ class ConfigController extends BaseController
         list($configarray, $params) = $this->parsePostInput($params, $configarray);
 
         // If we have some login data, let's try to login.
-        if(isset($params['Password']) && isset($params['Username']) && isset($params['OpenproviderAPI']))
+        $areCredentialsExist = isset($params['Password']) && isset($params['Username'])
+            && (!empty($params['Password']) || !empty($params['Username']));
+        if($areCredentialsExist)
         {
-            try
-            {
-                // Try to login and fetch the DNS template data.
-                $configarray = $this->fetchDnsTemplates($params, $configarray);
-            }
-            catch (\Exception $ex)
-            {
-                // Failed to login. Generate a warning.
-                $configarray = $this->generateLoginError($configarray);
-            }
+            $configarray = $this->checkCredentials($configarray, $params);
         }
-
         return $configarray;
     }
 
@@ -84,85 +76,6 @@ class ConfigController extends BaseController
     }
 
     /**
-     * Try to login and fetch the DNS templates.
-     *
-     * @param $params
-     * @param $configarray
-     * @return mixed
-     */
-    protected function fetchDnsTemplates($params, $configarray)
-    {
-        if(!strpos($_SERVER['PHP_SELF'], 'configregistrars.php'))
-        {
-            // We are not on the admin page. Let's use a cached version of this.
-            $cached_dns_template = Registrar::getByKey('openprovider', 'dnstemplate_cache');
-
-            if($cached_dns_template != '')
-            {
-                $configarray['dnsTemplate'] = json_decode($cached_dns_template, true);
-                return $configarray;
-            }
-        }
-
-        if(isset($GLOBALS['op_registrar_module_config_dnsTemplate']))
-        {
-            $configarray['dnsTemplate'] = $GLOBALS['op_registrar_module_config_dnsTemplate'];
-            return $configarray;
-        }
-
-        $api = $this->API;
-        $api->setParams($params);
-        $templates = $api->searchTemplateDnsRequest();
-
-        if (isset($templates['total']) && $templates['total'] > 0) {
-            $tpls = 'None,';
-            foreach ($templates['results'] as $template) {
-                $tpls .= $template['name'] . ',';
-            }
-            $tpls = trim($tpls, ',');
-
-            $configarray['dnsTemplate'] = array
-            (
-                "FriendlyName" => "DNS Template",
-                "Type" => "dropdown",
-                "Description" => "DNS template will be used when a domain is created or transferred to your account",
-                "Options" => $tpls
-            );
-        }
-
-        $GLOBALS['op_registrar_module_config_dnsTemplate'] = $configarray['dnsTemplate'];
-
-        Registrar::updateByKey('openprovider', 'dnstemplate_cache', json_encode($configarray['dnsTemplate']));
-
-        return $configarray;
-    }
-
-    /**
-     * Generate a login error message.
-     *
-     * @param $configarray
-     * @return mixed
-     */
-    protected function generateLoginError($configarray)
-    {
-        $loginFailed = [
-            'FriendlyName' => '<b><strong style="color:Tomato;">Login Unsuccessful:</strong></b>',
-            'Description' => '<b><strong style="color:Tomato;">Please ensure credentials and URL are correct</strong></b>'
-        ];
-
-        // Create a separate array to put the warning at the top as well.
-        $firstArray[] = $loginFailed;
-
-        //warn user that login failed at the end.
-        $configarray['loginFailed'] = $loginFailed;
-
-        $configarray['Username']['FriendlyName'] = '<b><strong style="color:Tomato;">*Username</strong></b>';
-        $configarray['Password']['FriendlyName'] = '<b><strong style="color:Tomato;">*Password</strong></b>';
-
-        return array_merge($firstArray, $configarray);
-    }
-
-    /**
      * The configuration array base.
      *
      * @return array
@@ -176,19 +89,6 @@ class ConfigController extends BaseController
                 "FriendlyName"  => "Module Version",
                 "Type"          => "text",
                 "Description"   => APIConfig::getModuleVersion() . "<style>input[name='version']{display: none;}</style>",
-            ),
-            "test_mode"   => array
-            (
-                "FriendlyName"  => "Openprovider Test mode",
-                "Type"          => "yesno",
-                "Description"   => "Enable this to use api.cte.openprovider.eu. Defaults to production API.",
-                "Default"       => "no"
-            ),
-            "OpenproviderPremium"   => array
-            (
-                "FriendlyName"  => "Support premium domains",
-                "Description"   => "Yes <i>NOTE: Premium pricing must also be activated in WHMCS via Setup > Products / Services > Domain pricing</i>. <br><br><strong>WARNING</strong>: to prevent billing problems with premium domains, your WHMCS currency must be the same as the currency you use in Openprovider. Otherwise, you will be billed the premium fee but your client will be billed the non-premium fee due to a <a href=\"https://requests.whmcs.com/topic/major-bug-premium-domains-billed-incorrectly\" target=\"_blank\">bug in WHMCS.</a>",
-                "Type"          => "yesno"
             ),
             "Username"          => array
             (
@@ -204,193 +104,82 @@ class ConfigController extends BaseController
                 "Size"          => "20",
                 "Description"   => "Openprovider password",
             ),
-            "require_op_dns_servers"          => array
+            "test_mode"   => array
             (
+                "FriendlyName"  => "Enable Openprovider Test mode",
                 "Type"          => "yesno",
-                "FriendlyName"  => "Require Openprovider DNS servers for DNS management",
-                "Description"   => "Show a warning when DNS management is enabled but the Openprovider nameservers are not used.",
-                "Default"       => "yes"
-            ),
-            "sync_settings" => array
-            (
-                "FriendlyName"  => "Synchronisation settings",
-                "Type"          => "text",
-                "Description"   => $this->getSyncDescription(),
-                "Default"       => ""
-            ),
-            "syncUseNativeWHMCS" => array
-            (
-                "FriendlyName"  => "Use the native WHMCS synchronisation?",
-                "Type"          => "yesno",
-                "Description"   => "Up to v3.3, Openprovider relied only on its internal synchronisation system. Uncheck if you want to use the Openprovider's synchronisation engine.",
-                "Default"       => "yes"
-            ),
-            "syncDomainStatus" => array
-            (
-                "FriendlyName"  => "Synchronize Domain status from Openprovider?",
-                "Type"          => "yesno",
-                "Description"   => "The domain status will be synced from Openprovider to WHMCS.",
-                "Default"       => "yes"
-            ),
-            "syncAutoRenewSetting" => array
-            (
-                "FriendlyName"  => "Synchronize Auto renew setting to Openprovider?",
-                "Type"          => "yesno",
-                "Description"   => "The auto renewal will be synced to Openprovider from WHMCS.",
-                "Default"       => "yes"
-            ),
-            "syncIdentityProtectionToggle" => array
-            (
-                "FriendlyName"  => "Synchronize Identity protection to Openprovider?",
-                "Type"          => "yesno",
-                "Description"   => "The identity protection setting will be synced to Openprovider from WHMCS.",
-                "Default"       => "yes"
-            ),
-            "syncExpiryDate" => array
-            (
-                "FriendlyName"  => "Synchronize Expiry date from Openprovider?",
-                "Type"          => "yesno",
-                "Description"   => "<strong>Setting applies on non-native synchronisation only.</strong> - Expiry dates will be synced from Openprovider to WHMCS.",
-                "Default"       => "yes"
-            ),
-            "updateNextDueDate" => array
-            (
-                "FriendlyName"  => "Synchronize due-date with offset?",
-                "Type"          => "yesno",
-                "Description"   => "<strong>Setting applies on non-native synchronisation only.</strong> - WHMCS due dates will be synchronized using the due-date offset.",
-            ),
-            "nextDueDateOffset" => array
-            (
-                "FriendlyName"  => "Due-date offset",
-                "Type"          => "text",
-                "Size"          => "2",
-                "Description"   => "<strong>Setting applies on non-native synchronisation only.</strong> - Number of days to set the WHMCS due date before the Openprovider expiration date.",
-                "Default"       => "3"
-            ),
-            "nextDueDateUpdateMaxDayDifference" => array
-            (
-                "FriendlyName"  => "Due-date max difference in days",
-                "Type"          => "text",
-                "Size"          => "2",
-                "Description"   => "<strong>Setting applies on non-native synchronisation only.</strong> - When the difference in days between the expiry date and next due date is more than this number, the next due date is not updated. This is required to prevent that the next due date is updated when the domain is automatically renewed, but not paid for. Or, when a domain is paid for 10 years in advance but is not renewed for 10 years.",
-                "Default"       => "100"
-            ),
-            "updateInterval"     => array
-            (
-                "FriendlyName"  => "Update interval",
-                "Type"          => "text",
-                "Size"          => "2",
-                "Description"   => "The minimum number of hours between each domain synchronization.",
-                "Default"       => "2"
-            ),
-            "domainProcessingLimit"     => array
-            (
-                "FriendlyName"  => "Domain process limit",
-                "Type"          => "text",
-                "Size"          => "4",
-                "Description"   => "Maximum number of domains processed each time domain sync runs.",
-                "Default"       => "200"
-            ),
-            "sendEmptyActivityEmail" => array
-            (
-                "FriendlyName"  => "Send empty activity reports?",
-                "Type"          => "yesno",
-                "Size"          => "20",
-                "Description"   => "Receive emails from domain sync even if no domains were updated.",
+                "Description"   => "Choose this option if you are using CTE credentials and want to connect to the test API.",
                 "Default"       => "no"
             ),
-            "various_settings" => array
-            (
-                "FriendlyName"  => "Various settings",
-                "Type"          => "text",
-                "Description"   => $this->getVariousSettings(),
-                "Default"       => ""
-            ),
-            "renewTldsUponTransferCompletion" => array
-            (
-                "FriendlyName"  => "Renew domains upon transfer completion",
-                "Type"          => "text",
-                "Size"          => "20",
-                "Description"   => "<i>Enter the TLDs - without a leading dot - like nl,eu with a comma as a separator.</i><br>Some TLDs offer a free transfer, like the nl TLD. If the expiration date is within 30 days, the domain may expiry if the renewal is not performed in time. This setting will always try to renew the TLD. ",
-                "Default"       => ""
-            ),
-            "useNewDnsManagerFeature" => array
-            (
-                "FriendlyName"  => "Use new DNS feature?",
-                "Type"          => "yesno",
-                "Size"          => "20",
-                "Description"   => "Only enable this when OpenProvider has enabled this for your account.",
-                "Default"       => ""
-            ),
-
         );
     }
 
     /**
-     * Return the sync settings description.
-     * @return string
+     * Generate a login error message.
+     *
+     * @param array $configarray
+     * @param bool $wrongMode
+     * @return mixed
      */
-    protected function getSyncDescription()
+    protected function generateLoginError(array $configarray, $wrongMode = false)
     {
-        $syncDescription = <<<EOF
-<style>
-#openproviderconfig input[name="sync_settings"] {
-    display: none;
-}
-#openproviderconfig h1
-{
-    margin-top: 20px;
-    color: #bb1929;
-}
-#openproviderconfig .op-disabled,
-#openproviderconfig .op-disabled label
-{
-    text-decoration: line-through;
-    opacity: 0.8;
-}
-</style>
-<h1>Synchronisation options</h1>
-<p>Choose what settings you want to synchronise between WHMCS and Openprovider</p>
-<script>
-jQuery(document).ready(function(){
-    jQuery.fn.extend({
-        op_update_sync_options: function()
-        {
-            // Comment this for showing the options with a strikethrough and uncomment the following part.
-            jQuery("#openproviderconfig input[name='syncExpiryDate']").parent().parent().parent().toggle();
-            jQuery("#openproviderconfig input[name='updateNextDueDate']").parent().parent().parent().toggle();
-            jQuery("#openproviderconfig input[name='nextDueDateOffset']").parent().parent().toggle();
-            jQuery("#openproviderconfig input[name='nextDueDateUpdateMaxDayDifference']").parent().parent().toggle();
-        },
-    });
-    
-    if(jQuery("#openproviderconfig input[name='syncUseNativeWHMCS']").is(':checked'))
-        jQuery('#openproviderconfig').op_update_sync_options();
-    
-    jQuery("#openproviderconfig input[name='syncUseNativeWHMCS']").change(function(){
-        jQuery(this).op_update_sync_options();
-    });
-});
-</script>
-</script>
-EOF;
-        return $syncDescription;
+        $loginFailed = [
+            'FriendlyName' => '<b><strong style="color:Tomato;">Login Unsuccessful:</strong></b>',
+        ];
+        if ($wrongMode) {
+            $loginFailed['Description'] = '<b><strong style="color:#ff6347;">Please ensure environment is correct</strong></b>';
+            $configarray['test_mode']['FriendlyName'] = '<b><strong style="color:Tomato;">*Openprovider Test mode</strong></b>';
+        } else {
+            $loginFailed['Description'] = '<b><strong style="color:Tomato;">Please ensure credentials are correct</strong></b>';
+            $configarray['Username']['FriendlyName'] = '<b><strong style="color:Tomato;">*Username</strong></b>';
+            $configarray['Password']['FriendlyName'] = '<b><strong style="color:Tomato;">*Password</strong></b>';
+        }
+
+        // Create a separate array to put the warning at the top as well.
+        $firstArray[] = $loginFailed;
+
+        //warn user that login failed at the end.
+//        $configarray['loginFailed'] = $loginFailed;
+
+        return array_merge($firstArray, $configarray);
     }
 
-    /**
-     * Return the various settings description.
-     * @return string
-     */
-    protected function getVariousSettings()
+    protected function checkCredentials($configarray, $params)
     {
-        $syncDescription = <<<EOF
-<style>
-#openproviderconfig input[name="various_settings"] {
-    display: none;
-}
-</style>
-<h1>Various settings</h1>
-EOF;
-        return $syncDescription;
+        try {
+            $this->API->setParams($params);
+            // Try to login and fetch the DNS template data.
+            $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
+            return $configarray;
+        } catch (\Exception $ex) {}
+
+        // Failed to login. Generate a warning.
+        $isTestMode = $params['test_mode'] == 'on';
+
+        if ($isTestMode) {
+            $params['test_mode'] = '';
+            $this->API->setParams($params);
+            try {
+                $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
+                // Incorrect mode
+                $configarray = $this->generateLoginError($configarray, true);
+            } catch (\Exception $e) {
+                // Incorrect credentials
+                $configarray = $this->generateLoginError($configarray);
+            }
+        } else {
+            $params['test_mode'] = 'on';
+            $this->API->setParams($params);
+            try {
+                $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
+                // Incorrect mode
+                $configarray = $this->generateLoginError($configarray, true);
+            } catch (\Exception $e) {
+                // Incorrect credentials
+                $configarray = $this->generateLoginError($configarray);
+            }
+        }
+
+        return $configarray;
     }
 }

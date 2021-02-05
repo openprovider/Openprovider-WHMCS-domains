@@ -2,6 +2,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use OpenProvider\OpenProvider;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WeDevelopCoffee\wPower\Models\Registrar;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
@@ -49,7 +50,7 @@ class DnsNotificationController{
     public function notify ($params)
     {
         $domain = $this->domain->find($params['domainid']);
-        if($domain->registrar != 'openprovider' || Registrar::getByKey('openprovider','require_op_dns_servers', 'on') != 'on')
+        if($domain->registrar != 'openprovider' || Configuration::getOrDefault('require_op_dns_servers', true) != true)
             return;
 
         $openprovider = new OpenProvider();
@@ -64,23 +65,35 @@ class DnsNotificationController{
 
             $op_domain                  = $openprovider->api->retrieveDomainRequest($op_api_domain, true);
 
+            $notOpenproviderNameservers = [];
             foreach($op_domain['nameServers'] as $nameserver)
             {
                 if(!in_array($nameserver['name'], $this->op_nameservers))
                 {
-                    $error_message = 'Please configure the following nameservers before you can change the DNS records: ' . implode(', ', $this->op_nameservers);
-
-                    return [
-                        'additionalClasses' => 'alert-danger',
-                        'type'  => 'error',
-                        'errorshtml' => $error_message,
-                    ];
+                    $notOpenproviderNameservers[] = $nameserver['name'];
                 }
             }
 
+            $conditionDisplayAlert = (count($op_domain['nameServers'])
+                - count($notOpenproviderNameservers)) < 2;
+            if ($conditionDisplayAlert) {
+                $notOpenproviderNameserversString = implode(', ', $notOpenproviderNameservers);
+                $error_message = "
+                    The domain “{$domain->domain}” is currently assigned the following nameservers: 
+                    {$notOpenproviderNameserversString}. 
+                    You will need to assign the nameservers “ns1.openprovider.nl”, “ns2.openprovider.be” and “ns3.openprovider.eu” 
+                    to your domain for the below DNS records to take effect.";
+
+                return [
+                    'additionalClasses' => 'alert-danger',
+                    'type'  => 'error',
+                    'errorshtml' => $error_message,
+                ];
+            }
+
+            return;
         } catch (\Exception $e) {
             return;
         }
-
     }
 }
