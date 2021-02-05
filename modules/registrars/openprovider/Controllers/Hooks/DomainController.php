@@ -35,15 +35,10 @@ class DomainController
             return false;
 
         try {
-            $API    = new JsonAPI();
-            $params = (new Registrar())->getRegistrarData()['openprovider'];
-            $API->setParams($params);
-
             $OpenProvider = new OpenProvider();
-            $OpenProvider->api = $API;
 
             $op_domain_obj = $OpenProvider->domain($domain->domain);
-            $op_domain     = $API->getDomainRequest($op_domain_obj);
+            $op_domain     = $OpenProvider->api->getDomainRequest($op_domain_obj);
             $OpenProvider->toggle_autorenew($domain, $op_domain);
         } catch (\Exception $e) {
             \logModuleCall('OpenProvider', 'Update auto renew', $domain->domain, @$op_domain, $e->getMessage(), [$params['Password']]);

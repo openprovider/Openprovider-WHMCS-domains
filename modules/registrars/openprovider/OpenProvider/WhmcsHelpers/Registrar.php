@@ -1,7 +1,6 @@
 <?php
 namespace OpenProvider\WhmcsHelpers;
 use WHMCS\Database\Capsule;
-use WeDevelopCoffee\wPower\Core\Crypt;
 
 /**
  * Manage the Registrar data
@@ -36,7 +35,7 @@ class Registrar
 
         foreach($registrar_raw_data as $data)
         {
-        	$return_data [ $data->setting ] = Crypt::decrypt($data->value);
+        	$return_data [ $data->setting ] = \OpenProvider\WhmcsHelpers\Crypt::decrypt($data->value);
         }
 
         self::$data = $return_data;

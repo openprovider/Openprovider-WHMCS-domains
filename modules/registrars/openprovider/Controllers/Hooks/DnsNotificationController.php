@@ -54,8 +54,6 @@ class DnsNotificationController{
         if($domain->registrar != 'openprovider' || Configuration::getOrDefault('require_op_dns_servers', true) != true)
             return;
 
-        $this->API->setParams($params);
-
         $openprovider = new OpenProvider();
 
         try {
@@ -66,7 +64,7 @@ class DnsNotificationController{
                 'extension' => $domain->getTldAttribute()
             ));
 
-            $op_domain = $this->API->getDomainRequest($op_api_domain);
+            $op_domain = $openprovider->api->getDomainRequest($op_api_domain);
 
             $notOpenproviderNameservers = [];
             foreach($op_domain['name_servers'] as $nameserver)

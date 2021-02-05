@@ -3,7 +3,8 @@
 namespace OpenProvider\API;
 
 use OpenProvider\WhmcsRegistrar\src\Configuration;
-use idna_convert;
+
+require_once (realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php'));
 
 class JsonAPI
 {
@@ -42,6 +43,7 @@ class JsonAPI
      */
     public function setParams(array $params, int $debug = self::DEBUG_DISABLED): self
     {
+        session_start();
         // Set URL depend of mode
         if (isset($params['test_mode']) && $params['test_mode'] == 'on')
             $this->url = Configuration::get('api_url_cte_v1beta');
@@ -50,9 +52,14 @@ class JsonAPI
 
         // if api object haven't token,
         // we get it from openprovider by getToken method
-        if (is_null($this->token) || empty($this->token)) {
-            $reply       = $this->authLoginRequest($params['Username'], $params['Password']);
-            $this->token = $reply['token'];
+        $tokenNameHash = md5("{$this->url}-{$params['Username']}-{$params['Password']}");
+        $sessionTokenVariable = "token-{$tokenNameHash}";
+        if (isset($_SESSION[$sessionTokenVariable]) && !empty($_SESSION[$sessionTokenVariable]))
+            $this->token = $_SESSION[$sessionTokenVariable];
+        else {
+            $reply                           = $this->authLoginRequest($params['Username'], $params['Password']);
+            $this->token                     = $reply['token'];
+            $_SESSION[$sessionTokenVariable] = $reply['token'];
         }
 
         $this->debug = $debug;
@@ -111,7 +118,7 @@ class JsonAPI
         $args = json_decode(json_encode($args), true);
 
         if (!empty($args)) {
-            $idn = new idna_convert();
+            $idn = new \idna_convert();
 
             // idn
             if (isset($args['domain']['name']) && isset($args['domain']['extension'])) {
@@ -485,6 +492,12 @@ class JsonAPI
                 $params['full_name'] = $domain['domain'];
             if (isset($domain['with_verification_email']))
                 $params['with_verification_email'] = $domain['with_verification_email'];
+            if (is_array($domain['domain'])) {
+                if (isset($domain['domain']['name']))
+                    $params['domain_name_pattern'] = $domain['domain']['name'];
+                if (isset($domain['domain']['extension']))
+                    $params['extension'] = $domain['domain']['extension'];
+            }
 
         } else if (is_object($domain)) {
             if (isset($domain->id)) {
@@ -923,7 +936,7 @@ class JsonAPI
 
     // Reseller
 
-    public function getResellerRequest($args = [])
+    public function getResellersRequest($args = [])
     {
         return $this->_sendRequest(
             APIEndpoints::RESELLERS,

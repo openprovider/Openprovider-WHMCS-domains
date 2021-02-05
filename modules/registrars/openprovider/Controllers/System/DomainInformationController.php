@@ -6,7 +6,6 @@ use WHMCS\Carbon;
 use WHMCS\Domain\Registrar\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
 use OpenProvider\API\Domain as api_domain;
 
 /**

@@ -54,7 +54,6 @@ class DnsClientJavascriptController
         $openprovider = new OpenProvider();
 
         try {
-            $openprovider->api->setParams($params);
             $op_api_domain = $this->api_domain;
             $op_api_domain->load(array(
                 'name'      => str_replace('.' . $domain->getTldAttribute(), '', $domain->domain),

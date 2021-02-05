@@ -1,7 +1,9 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks\Widgets;
 
+use OpenProvider\WhmcsHelpers\Registrar;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use OpenProvider\API\API;
 use Punic\Exception;
 
 /**
@@ -35,8 +37,11 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 
         $html = '';
         try {
+            $api = new API();
+            $params = (new Registrar())->getLoginData();
+            $api->setParams($params);
             // Get the update message.
-            $messages = $openprovider->api->getUpdateMessage();
+            $messages = $api->getUpdateMessage();
         } catch ( \Exception $e)
         {
             // Do nothing.

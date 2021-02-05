@@ -2,7 +2,6 @@
 namespace OpenProvider;
 
 use OpenProvider\WhmcsHelpers\General;
-use	Carbon\Carbon;
 
 /**
  * Notification

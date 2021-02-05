@@ -40,7 +40,7 @@ class OpenProvider
         if ($params == null)
             $params = (new Registrar())->getRegistrarData()['openprovider'];
 
-        $this->api = new \OpenProvider\API\JsonAPI();
+        $this->api = new JsonAPI();
         $this->api->setParams($params);
     }
 

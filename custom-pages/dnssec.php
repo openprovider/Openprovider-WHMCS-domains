@@ -44,7 +44,7 @@ $args = [
 $dnssecKeys = [];
 $isDnssecEnabled = false;
 try {
-    $domain = $api->sendRequest('retrieveDomainRequest', $args);
+    $domain = $api->getDomainRequest($args);
     $dnssecKeys = $domain['dnssecKeys'];
     $isDnssecEnabled = $domain['isDnssecEnabled'];
 } catch (\Exception $e) {
