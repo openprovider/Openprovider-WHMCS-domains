@@ -2,10 +2,9 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
-use OpenProvider\API\JsonAPI;
-use WeDevelopCoffee\wPower\Models\Registrar;
-use WHMCS\Database\Capsule,
-    OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use WHMCS\Database\Capsule;
+
+use OpenProvider\OpenProvider;
 
 /**
  * Class DomainController
@@ -16,9 +15,8 @@ use WHMCS\Database\Capsule,
 class DomainController
 {
     /**
-     *
-     *
-     * @return
+     * @param $vars
+     * @return false|void
      */
     public function saveDomainEdit($vars)
     {
@@ -37,8 +35,10 @@ class DomainController
         try {
             $OpenProvider = new OpenProvider();
 
+            $api = $OpenProvider->getApi();
+
             $op_domain_obj = $OpenProvider->domain($domain->domain);
-            $op_domain     = $OpenProvider->api->getDomainRequest($op_domain_obj);
+            $op_domain     = $api->getDomainRequest($op_domain_obj);
             $OpenProvider->toggle_autorenew($domain, $op_domain);
         } catch (\Exception $e) {
             \logModuleCall('OpenProvider', 'Update auto renew', $domain->domain, @$op_domain, $e->getMessage(), [$params['Password']]);

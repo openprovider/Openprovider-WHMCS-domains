@@ -1,8 +1,6 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\src;
 use Carbon\Carbon;
-use WeDevelopCoffee\wPower\Models\Registrar;
-use WHMCS\Database\Capsule;
 use OpenProvider\WhmcsHelpers\Domain;
 use OpenProvider\API\Domain as api_domain;
 use OpenProvider\WhmcsHelpers\Activity;

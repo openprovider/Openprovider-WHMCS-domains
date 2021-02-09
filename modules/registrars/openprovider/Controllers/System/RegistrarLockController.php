@@ -1,11 +1,12 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
-use OpenProvider\API\JsonAPI;
+
+use OpenProvider\API\Domain;
+use OpenProvider\OpenProvider;
+
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
-use OpenProvider\API\Domain;
 
 /**
  * Class RegistrarLockController
@@ -14,22 +15,23 @@ use OpenProvider\API\Domain;
 class RegistrarLockController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
     private $domain;
+
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, JsonAPI $API, Domain $domain)
+    public function __construct(Core $core, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->API = $API;
-        $this->domain = $domain;
+        $this->openProvider = new OpenProvider();
+        $this->domain       = $domain;
     }
 
     /**
@@ -40,23 +42,13 @@ class RegistrarLockController extends BaseController
      */
     public function get($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $api = $this->openProvider->getApi();
 
-        try
-        {
-            $api                =   $this->API;
-            $api->setParams($params);
-            $domain             =   $this->domain;
-            $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
+        $this->domain = $this->openProvider->domain($params['domain']);
 
-            $lockStatus         =   $api->getDomainRegistrarLockRequest($domain);
-        }
-        catch (\Exception $e)
-        {
+        try {
+            $lockStatus = $api->getDomainRegistrarLockRequest($this->domain);
+        } catch (\Exception $e) {
             //Nothing...
         }
 
@@ -71,26 +63,17 @@ class RegistrarLockController extends BaseController
      */
     public function save($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $api = $this->openProvider->getApi();
+
+        $this->domain = $this->openProvider->domain($params['domain']);
 
         $values = array();
 
-        try
-        {
-            $api                =   $this->API;
-            $api->setParams($params);
-            $domain             =   $this->domain;
-            $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
-            $lockStatus         =   $params["lockenabled"] == "locked";
+        try {
+            $lockStatus = $params["lockenabled"] == "locked";
 
-            $api->updateDomainRegistrarLockRequest($domain, $lockStatus);
-        }
-        catch (\Exception $e)
-        {
+            $api->updateDomainRegistrarLockRequest($this->domain, $lockStatus);
+        } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
         return $values;

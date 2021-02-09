@@ -4,14 +4,15 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 
-use OpenProvider\API\JsonAPI;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\ApiResponse;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use OpenProvider\OpenProvider;
+
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Models\Registrar;
+
 use WHMCS\Database\Capsule;
 
 class ApiController extends BaseController
@@ -21,16 +22,13 @@ class ApiController extends BaseController
      */
     private $openProvider;
 
-    private $API;
-
     /**
      * ApiController constructor.
      */
-    public function __construct(Core $core, OpenProvider $openProvider, JsonAPI $API)
+    public function __construct(Core $core, OpenProvider $openProvider)
     {
         parent::__construct($core);
         $this->openProvider = $openProvider;
-        $this->API          = $API;
     }
 
     /**
@@ -75,7 +73,6 @@ class ApiController extends BaseController
                 return $contact->handle;
             });
 
-        $this->_setApiParams();
         $this->_modifyContactsTag($usersContacts, $tags);
 
         ApiResponse::success();
@@ -99,6 +96,8 @@ class ApiController extends BaseController
             return;
         }
 
+        $api = $this->openProvider->getApi();
+
         $action = $params['action'];
         $dnssecKey = [
             'flags'    => $params['flags'],
@@ -112,8 +111,7 @@ class ApiController extends BaseController
         $dnssecKeys = [];
         $dnssecKeysHashes = [];
         try {
-            $this->_setApiParams();
-            $domainInfo = $this->API->getDomainRequest($domain);
+            $domainInfo = $api->getDomainRequest($domain);
             foreach($domainInfo['dnssec_keys'] as $dnssec) {
                 $dnssecKeysHashes[] = md5($dnssec['flags'] . $dnssec['alg'] . $dnssec['protocol'] . trim($dnssec['pub_key']));
                 $dnssecKeys[] = [
@@ -146,9 +144,8 @@ class ApiController extends BaseController
             $args['is_dnssec_enabled'] = false;
 
         try {
-            $this->_setApiParams();
 
-            $this->API->updateDomainRequest($domainInfo['id'], $args);
+            $api->updateDomainRequest($domainInfo['id'], $args);
         } catch (\Exception $e) {
             ApiResponse::error(400, $e->getMessage());
             return;
@@ -174,6 +171,7 @@ class ApiController extends BaseController
             return;
         }
 
+        $api = $this->openProvider->getApi();
 
         $isDnssecEnabled = $params['isDnssecEnabled'] == 'true';
 
@@ -184,11 +182,9 @@ class ApiController extends BaseController
         ];
 
         try {
-            $this->_setApiParams();
+            $domainOp = $api->getDomainRequest($domain);
 
-            $domainOp = $this->API->getDomainRequest($domain);
-
-            $this->API->updateDomainRequest($domainOp['id'], $args);
+            $api->updateDomainRequest($domainOp['id'], $args);
         } catch (\Exception $e) {
             ApiResponse::error(400, $e->getMessage());
             return;
@@ -240,9 +236,11 @@ class ApiController extends BaseController
      */
     private function _modifyContactsTag($contactsHandles, $tags = '')
     {
+        $api = $this->openProvider->getApi();
+
         foreach ($contactsHandles as $contactHandle) {
             try {
-                $this->API->updateCustomerTagsRequest($contactHandle, $tags);
+                $api->updateCustomerTagsRequest($contactHandle, $tags);
             } catch (\Exception $e) {
                 continue;
             }
@@ -265,13 +263,6 @@ class ApiController extends BaseController
             return $domain;
 
         return false;
-    }
-
-    private function _setApiParams()
-    {
-        $params = (new Registrar())->getRegistrarData()['openprovider'];
-
-        $this->API->setParams($params);
     }
 }
 

@@ -12,18 +12,18 @@ use WeDevelopCoffee\wPower\Core\Core;
 class ConfigController extends BaseController
 {
     /**
-     * @var API
+     * @var JsonAPI
      */
     private $API;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, JsonAPI $API)
+    public function __construct(Core $core)
     {
         parent::__construct($core);
 
-        $this->API = $API;
+        $this->API = new JsonAPI();
     }
 
     /**
@@ -146,9 +146,8 @@ class ConfigController extends BaseController
     protected function checkCredentials($configarray, $params)
     {
         try {
-            $this->API->setParams($params);
             // Try to login and fetch the DNS template data.
-            if ($this->API->checkCredentials())
+            if ($this->API->checkToken())
                 return $configarray;
         } catch (\Exception $ex) {}
 
@@ -156,36 +155,28 @@ class ConfigController extends BaseController
         $isTestMode = $params['test_mode'] == 'on';
 
         if ($isTestMode) {
-            $params['test_mode'] = '';
-            if ($this->_checkCredentials($params))
-                // Incorrect mode
-                $configarray = $this->generateLoginError($configarray, true);
-            else
-                $configarray = $this->generateLoginError($configarray);
+            $this->API->clearToken()->setTestMode(JsonAPI::TEST_MODE_OFF);
+            $configarray = $this->_checkCredentials($params, $configarray);
         } else {
-            $params['test_mode'] = 'on';
-            if ($this->_checkCredentials($params))
-                // Incorrect mode
-                $configarray = $this->generateLoginError($configarray, true);
-            else
-                $configarray = $this->generateLoginError($configarray);
+            $this->API->clearToken()->setTestMode(JsonAPI::TEST_MODE_ON);
+            $configarray = $this->_checkCredentials($params, $configarray);
         }
 
         return $configarray;
     }
 
-    private function _checkCredentials($params)
+    private function _checkCredentials ($params, $configarray)
     {
         try {
-            $this->API->setParams($params);
-
-            // Incorrect mode
-            if ($this->API->checkCredentials())
-                return true;
-            return false;
-        } catch (\Exception $e) {
-            // Incorrect credentials
-            return false;
+            $reply = $this->API->authLoginRequest($params['Username'], $params['Password']);
+            if (isset($reply['token']))
+                $configarray = $this->generateLoginError($configarray, true);
+            else
+                $configarray = $this->generateLoginError($configarray);
+        } catch (\Exception $ex) {
+            $configarray = $this->generateLoginError($configarray);
         }
+
+        return $configarray;
     }
 }

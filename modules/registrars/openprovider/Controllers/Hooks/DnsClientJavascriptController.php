@@ -53,14 +53,12 @@ class DnsClientJavascriptController
 
         $openprovider = new OpenProvider();
 
-        try {
-            $op_api_domain = $this->api_domain;
-            $op_api_domain->load(array(
-                'name'      => str_replace('.' . $domain->getTldAttribute(), '', $domain->domain),
-                'extension' => $domain->getTldAttribute()
-            ));
+        $api = $openprovider->getApi();
 
-            $op_domain = $openprovider->api->getDomainRequest($op_api_domain);
+        try {
+            $op_api_domain = $openprovider->domain($domain->domain);
+
+            $op_domain = $api->getDomainRequest($op_api_domain);
 
             foreach ($op_domain['name_servers'] as $nameserver) {
                 if (in_array($nameserver['name'], $this->op_nameservers)) {

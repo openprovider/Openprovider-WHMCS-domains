@@ -2,9 +2,8 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-use OpenProvider\API\API;
 use OpenProvider\API\Domain;
-use OpenProvider\API\JsonAPI;
+use OpenProvider\OpenProvider;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
 use OpenProvider\WhmcsRegistrar\Models\Tld;
@@ -22,9 +21,9 @@ use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
 class ContactController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
@@ -37,42 +36,35 @@ class ContactController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, JsonAPI $API, Domain $domain, Handle $handle)
+    public function __construct(Core $core, Domain $domain, Handle $handle)
     {
         parent::__construct($core);
 
-        $this->API = $API;
+        $this->openProvider = new OpenProvider();
         $this->domain = $domain;
         $this->handle = $handle;
     }
 
+
     /**
-     * Get the contact details.
      * @param $params
-     * @return \OpenProvider\API\type
+     * @return array
      */
     public function getDetails($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $api = $this->openProvider->getApi();
 
+        $this->domain = $this->openProvider->domain($params['domain']);
         try
         {
-            $this->domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
-
-            $api                =   $this->API;
-            $api->setParams($params);
-            $values             =   $api->getDomainContactsRequest($this->domain);
+            $values = $api->getDomainContactsRequest($this->domain);
         }
         catch (\Exception $e)
         {
             $values["error"] = $e->getMessage();
         }
 
-        $domainTld = new Tld($params['tld']);
+        $domainTld = new Tld($this->domain->extension);
         array_walk($values, function (&$contact) use ($domainTld) {
             if (!$domainTld->isNeededShortState())
                 return;
@@ -101,8 +93,7 @@ class ContactController extends BaseController
      */
     public function saveDetails($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $api = $this->openProvider->getApi();
 
         $userTag = '';
         try {
@@ -124,13 +115,7 @@ class ContactController extends BaseController
 
         try
         {
-            $api                =   $this->API;
-            $api->setParams($params);
-
-            $this->domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
+            $this->domain = $this->openProvider->domain($params['domain']);
 
             $handle = $this->handle;
             $handle->setApi($api);

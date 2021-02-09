@@ -1,9 +1,6 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\src;
 
-use Exception;
-use OpenProvider\API\API;
-use WHMCS\Domains\DomainLookup\ResultsList;
 
 /**
  * Class TldPriceCache

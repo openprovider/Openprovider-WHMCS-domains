@@ -4,6 +4,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
 use OpenProvider\API\JsonAPI;
+use OpenProvider\OpenProvider;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
@@ -16,9 +17,9 @@ use OpenProvider\API\Domain;
 class EppController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
@@ -26,11 +27,11 @@ class EppController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, JsonAPI $API, Domain $domain)
+    public function __construct(Core $core, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->API = $API;
+        $this->openProvider = new OpenProvider();
         $this->domain = $domain;
     }
 
@@ -41,22 +42,16 @@ class EppController extends BaseController
      */
     public function get($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $api = $this->openProvider->getApi();
+
+        $this->domain = $this->openProvider->domain($params['domain']);
+
 
         $values = array();
 
         try
         {
-            $domain             =   $this->domain;
-            $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
-
-            $api                =   $this->API;
-            $api->setParams($params);
-            $eppCode = $api->getDomainAuthCodeRequest($domain);
+            $eppCode = $api->getDomainAuthCodeRequest($this->domain);
 
             if(!$eppCode)
             {

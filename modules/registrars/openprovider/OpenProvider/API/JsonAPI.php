@@ -3,6 +3,7 @@
 namespace OpenProvider\API;
 
 use OpenProvider\WhmcsRegistrar\src\Configuration;
+use WeDevelopCoffee\wPower\Models\Registrar;
 
 require_once (realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php'));
 
@@ -12,6 +13,9 @@ class JsonAPI
     const DEBUG_ENABLED = 1;
     const DEBUG_DISABLED = 0;
 
+    // Test mode
+    const TEST_MODE_ON = 1;
+    const TEST_MODE_OFF = 0;
 
     private $request;
 
@@ -25,44 +29,54 @@ class JsonAPI
 
     private $debug = null;
 
+    private $tokenSessionKey = null;
+
     /* ==================== MAIN LOGIC ==================== */
 
-
-    public function __construct()
-    {
-        $this->timeout = APIConfig::$curlTimeout;
-        $this->request = new RequestJSON();
-    }
-
     /**
-     * Set default params and get bearer token by credentials
+     * JsonAPI constructor.
      *
-     * @param $params [Username, Password, test_mode]
-     * @param int $debug
-     * @return JsonAPI
+     * @param null $params
+     * @throws \Exception
      */
-    public function setParams(array $params, int $debug = self::DEBUG_DISABLED): self
+    public function __construct($params = null)
     {
         session_start();
-        // Set URL depend of mode
+
+        $this->timeout = APIConfig::$curlTimeout;
+        $this->request = new RequestJSON();
+
+        if (is_null($params))
+            $params = (new Registrar())->getRegistrarData()['openprovider'];
+
         if (isset($params['test_mode']) && $params['test_mode'] == 'on')
-            $this->url = Configuration::get('api_url_cte_v1beta');
+            $this->setTestMode(self::TEST_MODE_ON);
         else
-            $this->url = Configuration::get('api_url_v1beta');
+            $this->setTestMode(self::TEST_MODE_OFF);
+
+        $isNotExistUsernameAndPassword = !isset($params['Username']) || empty($params['Username'])
+            || !isset($params['Password']) || empty($params['Password']);
+
+        if ($isNotExistUsernameAndPassword)
+            return $this;
 
         // if api object haven't token,
-        // we get it from openprovider by getToken method
+        // we get it from openprovider by authLoginRequest method
+        // And store token in php session
         $tokenNameHash = md5("{$this->url}-{$params['Username']}-{$params['Password']}");
         $sessionTokenVariable = "token-{$tokenNameHash}";
+
+        $this->tokenSessionKey = $sessionTokenVariable;
+
         if (isset($_SESSION[$sessionTokenVariable]) && !empty($_SESSION[$sessionTokenVariable]))
             $this->token = $_SESSION[$sessionTokenVariable];
         else {
-            $reply                           = $this->authLoginRequest($params['Username'], $params['Password']);
-            $this->token                     = $reply['token'];
-            $_SESSION[$sessionTokenVariable] = $reply['token'];
+            try {
+                $reply                           = $this->authLoginRequest($params['Username'], $params['Password']);
+                $this->token                     = $reply['token'];
+                $_SESSION[$sessionTokenVariable] = $reply['token'];
+            } catch (\Exception $ex) {}
         }
-
-        $this->debug = $debug;
 
         return $this;
     }
@@ -84,14 +98,13 @@ class JsonAPI
             'password' => $password,
             'ip'       => '0.0.0.0'
         ];
-        $response = $this->_sendRequest(
+
+        return $this->_sendRequest(
             APIEndpoints::AUTH_LOGIN,
             $args,
             [],
             APIMethods::POST
         );
-
-        return $response;
     }
 
     /**
@@ -99,7 +112,7 @@ class JsonAPI
      * @param array $args
      * @param array $substitutionArgs
      * @param string $method
-     * @return object
+     * @return array
      * @throws \Exception
      */
     private function _sendRequest(
@@ -955,11 +968,40 @@ class JsonAPI
      *
      * @return bool
      */
-    public function checkCredentials(): bool
+    public function checkToken(): bool
     {
         if ($this->token)
             return true;
         return false;
+    }
+
+    /**
+     * Set debug mode.
+     *
+     * @param bool|int $debug
+     * @return $this
+     */
+    public function setDebug(bool $debug = self::DEBUG_DISABLED)
+    {
+        $this->debug = $debug;
+        return $this;
+    }
+
+    public function clearToken()
+    {
+        unset($_SESSION[$this->tokenSessionKey]);
+
+        return $this;
+    }
+
+    public function setTestMode(bool $testMode = self::TEST_MODE_OFF)
+    {
+        if ($testMode == self::TEST_MODE_ON)
+            $this->url = Configuration::get('api_url_cte_v1beta');
+        else
+            $this->url = Configuration::get('api_url_v1beta');
+
+        return $this;
     }
 
     /* ==================== END HELPERS ==================== */

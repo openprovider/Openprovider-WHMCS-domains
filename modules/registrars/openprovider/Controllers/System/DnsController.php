@@ -1,4 +1,5 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 /**
@@ -7,18 +8,22 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
  *
  * @copyright Copyright (c) Openprovider 2019
  */
-use OpenProvider\API\API;
+
+use OpenProvider\API\APIConfig;
+use OpenProvider\API\DNSrecord;
 use OpenProvider\API\Domain;
-use OpenProvider\API\JsonAPI;
+
+use OpenProvider\OpenProvider;
+
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
 class DnsController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
@@ -27,12 +32,12 @@ class DnsController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, JsonAPI $API, Domain $domain)
+    public function __construct(Core $core, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->API = $API;
-        $this->domain = $domain;
+        $this->openProvider = new OpenProvider();
+        $this->domain       = $domain;
     }
 
     /**
@@ -42,61 +47,46 @@ class DnsController extends BaseController
      */
     public function get($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $api = $this->openProvider->getApi();
+
+        $this->domain = $this->openProvider->domain($params['domain']);
 
         $dnsRecordsArr = array();
-        try
-        {
-            $this->domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
+        try {
+            $dnsInfo = $api->getDNSZoneRecordsRequest($this->domain);
 
-            $api                =   $this->API;
-            $api->setParams($params);
-
-            $dnsInfo            =   $api->getDNSZoneRecordsRequest($this->domain);
-
-            if (is_null($dnsInfo))
-            {
+            if (is_null($dnsInfo)) {
                 return array();
             }
 
-            $supportedDnsTypes  =   \OpenProvider\API\APIConfig::$supportedDnsTypes;
-            $domainName         =   $params['sld'] . '.' . $params['tld'];
-            foreach ($dnsInfo['results'] as $dnsRecord)
-            {
-                if (!in_array($dnsRecord['type'], $supportedDnsTypes))
-                {
+            $supportedDnsTypes = APIConfig::$supportedDnsTypes;
+            $domainName        = $this->domain->getFullName();
+
+            foreach ($dnsInfo['results'] as $dnsRecord) {
+                if (!in_array($dnsRecord['type'], $supportedDnsTypes)) {
                     continue;
                 }
 
                 $hostname = $dnsRecord['name'];
-                if ($hostname == $domainName)
-                {
+                if ($hostname == $domainName) {
                     $hostname = '';
-                }
-                else
-                {
+                } else {
                     $pos = stripos($hostname, '.' . $domainName);
-                    if ($pos !== false)
-                    {
+                    if ($pos !== false) {
                         $hostname = substr($hostname, 0, $pos);
                     }
                 }
+
                 $prio = is_numeric($dnsRecord['prio']) ? $dnsRecord['prio'] : '';
+
                 $dnsRecordsArr[] = array(
                     'hostname' => $hostname,
-                    'type' => $dnsRecord['type'],
-                    'address' => $dnsRecord['value'],
+                    'type'     => $dnsRecord['type'],
+                    'address'  => $dnsRecord['value'],
                     'priority' => $prio
                 );
             }
-        }
-        catch (\Exception $e)
-        {
-        }
+        } catch (\Exception $e) {}
 
         return $dnsRecordsArr;
     }
@@ -109,70 +99,53 @@ class DnsController extends BaseController
      */
     public function save($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $api = $this->openProvider->getApi();
+
+        $this->domain = $this->openProvider->domain($params['domain']);
 
         $dnsRecordsArr = array();
-        $values = array();
-        foreach ($params['dnsrecords'] as $tmpDnsRecord)
-        {
-            if (!$tmpDnsRecord['hostname'] && !$tmpDnsRecord['address'])
-            {
+        $values        = array();
+
+        foreach ($params['dnsrecords'] as $tmpDnsRecord) {
+            if (!$tmpDnsRecord['hostname'] && !$tmpDnsRecord['address']) {
                 continue;
             }
 
-            $dnsRecord          =   new \OpenProvider\API\DNSrecord();
-            $dnsRecord->type    =   $tmpDnsRecord['type'];
-            $dnsRecord->name    =   $tmpDnsRecord['hostname'];
-            $dnsRecord->value   =   $tmpDnsRecord['address'];
-            $dnsRecord->ttl     =   \OpenProvider\API\APIConfig::$dnsRecordTtl;
+            $dnsRecord        = new DNSrecord();
+            $dnsRecord->type  = $tmpDnsRecord['type'];
+            $dnsRecord->name  = $tmpDnsRecord['hostname'];
+            $dnsRecord->value = $tmpDnsRecord['address'];
+            $dnsRecord->ttl   = APIConfig::$dnsRecordTtl;
 
             if ('MX' == $dnsRecord->type or 'SRV' == $dnsRecord->type) // priority - required for MX records and SRV records; ignored for all other record types
             {
-                if (is_numeric($tmpDnsRecord['priority']))
-                {
-                    $dnsRecord->prio    =   $tmpDnsRecord['priority'];
-                }
-                else
-                {
-                    $dnsRecord->prio    =   \OpenProvider\API\APIConfig::$dnsRecordPriority;
+                if (is_numeric($tmpDnsRecord['priority'])) {
+                    $dnsRecord->prio = $tmpDnsRecord['priority'];
+                } else {
+                    $dnsRecord->prio = APIConfig::$dnsRecordPriority;
                 }
             }
 
-            if (!$dnsRecord->value)
-            {
+            if (!$dnsRecord->value) {
                 continue;
             }
 
-            if (in_array($dnsRecord, $dnsRecordsArr))
-            {
+            if (in_array($dnsRecord, $dnsRecordsArr)) {
                 continue;
             }
 
             $dnsRecordsArr[] = $dnsRecord;
         }
 
-        $domain = $this->domain;
-        $domain->name = $params['sld'];
-        $domain->extension = $params['tld'];
-
-        try
-        {
-            $api                =   $this->API;
-            $api->setParams($params);
-            if (count($dnsRecordsArr))
-            {
-                $api->createOrUpdateDNSZoneRequest($domain, $dnsRecordsArr);
-            }
-            else
-            {
-                $api->deleteDNSZoneRequest($domain);
+        try {
+            if (count($dnsRecordsArr)) {
+                $api->createOrUpdateDNSZoneRequest($this->domain, $dnsRecordsArr);
+            } else {
+                $api->deleteDNSZoneRequest($this->domain);
             }
 
             return "success";
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
 

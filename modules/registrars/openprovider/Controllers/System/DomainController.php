@@ -1,16 +1,20 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use idna_convert;
-use OpenProvider\API\API;
+
 use OpenProvider\API\Domain;
 use OpenProvider\API\APITools;
 use OpenProvider\API\DomainTransfer;
 use OpenProvider\API\DomainRegistration;
-use OpenProvider\API\JsonAPI;
+
+use OpenProvider\OpenProvider;
+
 use OpenProvider\WhmcsRegistrar\src\PremiumDomain;
 use OpenProvider\WhmcsRegistrar\src\Handle;
 use OpenProvider\WhmcsRegistrar\src\AdditionalFields;
+
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -20,23 +24,22 @@ use WeDevelopCoffee\wPower\Core\Core;
  *
  * @copyright Copyright (c) Openprovider 2018
  */
-
 class DomainController extends BaseController
 {
-    /**
-     * @var API
-     */
-    private $API;
-    /**
-     * @var Domain
-     */
-    private $domain;
     /**
      * additionalFields class
      *
      * @var object \OpenProvider\WhmcsRegistrar\src\AdditionalFields
      */
     protected $additionalFields;
+    /**
+     * @var OpenProvider
+     */
+    private $openProvider;
+    /**
+     * @var Domain
+     */
+    private $domain;
     /**
      * @var Handle
      */
@@ -47,113 +50,103 @@ class DomainController extends BaseController
     private $premiumDomain;
 
     /**
-    * Constructor
-    * 
-    * @return void
-    */
-    public function __construct(Core $core, JsonAPI $API, Domain $domain, PremiumDomain $premiumDomain, AdditionalFields $additionalFields, Handle $handle)
+     * Constructor
+     *
+     * @return void
+     */
+    public function __construct(Core $core, Domain $domain, PremiumDomain $premiumDomain, AdditionalFields $additionalFields, Handle $handle)
     {
         parent::__construct($core);
 
-        $this->API = $API;
-        $this->domain = $domain;
+        $this->openProvider     = new OpenProvider();
+        $this->domain           = $domain;
         $this->additionalFields = $additionalFields;
-        $this->handle = $handle;
-        $this->premiumDomain = $premiumDomain;
+        $this->handle           = $handle;
+        $this->premiumDomain    = $premiumDomain;
     }
 
     /**
-    * Register a domain
-    * 
-    * @return array
-    */
-    public function register ($params)
+     * Register a domain
+     *
+     * @return array
+     */
+    public function register($params)
     {
-        $params['sld'] = $params['domainObj']->getSecondLevel();
-        $params['tld'] = $params['domainObj']->getTopLevel();
+        $api = $this->openProvider->getApi();
+
+        $this->domain = $this->openProvider->domain($params['domain']);
 
         $values = array();
 
-        try
-        {
-            $domain             =   $this->domain;
-            $domain->extension  =   $params['tld'];
-            $domain->name       =   $params['sld'];
-            
+        try {
             // Prepare the nameservers
-            $nameServers        =   APITools::createNameserversArray($params);
+            $nameServers = APITools::createNameserversArray($params);
 
-            $api                =   $this->API;
-            $api->setParams($params);
-            $handle         = $this->handle;
+            $handle = $this->handle;
             $handle->setApi($api);
             // Prepare the additional data
-            $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
-            if(isset($additionalFields['extensionCustomerAdditionalData']))
+            $additionalFields = $this->additionalFields->processAdditionalFields($params, $this->domain);
+            if (isset($additionalFields['extensionCustomerAdditionalData']))
                 $handle->setExtensionAdditionalData($additionalFields['extensionCustomerAdditionalData']);
 
-            if(isset($additionalFields['customerAdditionalData']))
+            if (isset($additionalFields['customerAdditionalData']))
                 $handle->setCustomerAdditionalData($additionalFields['customerAdditionalData']);
 
-            if(isset($additionalFields['customer']))
+            if (isset($additionalFields['customer']))
                 $handle->setCustomerData($additionalFields['customer']);
 
-            $ownerHandle    = $handle->findOrCreate($params);
-            $adminHandle    = $handle->findOrCreate($params, 'admin');
-            
-            $handles = array();
-            $handles['domainid']        = $params['domainid'];
-            $handles['ownerHandle']     = $ownerHandle;
-            $handles['adminHandle']     = $adminHandle;
-            $handles['techHandle']      = $adminHandle;
-            $handles['billingHandle']   = $adminHandle;
-            $handles['resellerHandle']  = '';
-            
-            // domain registration
-            $domainRegistration                 =   new DomainRegistration();
-            $domainRegistration->domain         =   $domain;
-            $domainRegistration->period         =   $params['regperiod'];
-            $domainRegistration->ownerHandle    =   $handles['ownerHandle'];
-            $domainRegistration->adminHandle    =   $handles['adminHandle'];
-            $domainRegistration->techHandle     =   $handles['techHandle'];
-            $domainRegistration->billingHandle  =   $handles['billingHandle'];
-            $domainRegistration->nameServers    =   $nameServers; 
-            $domainRegistration->dnsmanagement  =   $params['dnsmanagement'];
-            $domainRegistration->isDnssecEnabled =  false;
+            $ownerHandle = $handle->findOrCreate($params);
+            $adminHandle = $handle->findOrCreate($params, 'admin');
 
-            if(isset($additionalFields['domainAdditionalData']))
-                $domainRegistration->additionalData = json_decode(json_encode($additionalFields['domainAdditionalData']),1);
-            
+            $handles                   = array();
+            $handles['domainid']       = $params['domainid'];
+            $handles['ownerHandle']    = $ownerHandle;
+            $handles['adminHandle']    = $adminHandle;
+            $handles['techHandle']     = $adminHandle;
+            $handles['billingHandle']  = $adminHandle;
+            $handles['resellerHandle'] = '';
+
+            // domain registration
+            $domainRegistration                  = new DomainRegistration();
+            $domainRegistration->domain          = $this->domain;
+            $domainRegistration->period          = $params['regperiod'];
+            $domainRegistration->ownerHandle     = $handles['ownerHandle'];
+            $domainRegistration->adminHandle     = $handles['adminHandle'];
+            $domainRegistration->techHandle      = $handles['techHandle'];
+            $domainRegistration->billingHandle   = $handles['billingHandle'];
+            $domainRegistration->nameServers     = $nameServers;
+            $domainRegistration->dnsmanagement   = $params['dnsmanagement'];
+            $domainRegistration->isDnssecEnabled = false;
+
+            if (isset($additionalFields['domainAdditionalData']))
+                $domainRegistration->additionalData = json_decode(json_encode($additionalFields['domainAdditionalData']), 1);
+
             // Check if premium is enabled. If so, set the received premium cost.
-            if($params['premiumEnabled'] == true && $params['premiumCost'] != '')
+            if ($params['premiumEnabled'] == true && $params['premiumCost'] != '')
                 $domainRegistration->acceptPremiumFee = $this->premiumDomain->getRegistrarPriceWhenResellerPriceMatches('create', $params['sld'], $params['tld'], $params['premiumCost']);
 
-            
-            if($params['idprotection'] == 1)
+
+            if ($params['idprotection'] == 1)
                 $domainRegistration->isPrivateWhoisEnabled = true;
-            
+
             //use dns templates
-            if(isset($params['dnsTemplate']) && !empty($params['dnsTemplate']))
-            {
+            if (isset($params['dnsTemplate']) && !empty($params['dnsTemplate'])) {
                 $domainRegistration->nsTemplateName = $params['dnsTemplate'];
             }
-            
+
             $idn = new idna_convert();
-            if(
-                $params['sld'].'.'.$params['tld'] == $idn->encode($params['sld'].'.'.$params['tld']) 
-                && strpos($params['sld'].'.'.$params['tld'], 'xn--') === false
-                )
-                {
-                    unset($domainRegistration->additionalData->idnScript);
-                }
+            if (
+                $this->domain->getFullName() == $idn->encode($this->domain->getFullName())
+                && strpos($this->domain->getFullName(), 'xn--') === false
+            ) {
+                unset($domainRegistration->additionalData->idnScript);
+            }
 
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
 
             $api->registerDomainRequest($domainRegistration);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
         return $values;
@@ -167,70 +160,58 @@ class DomainController extends BaseController
      */
     public function transfer($params)
     {
-        $params['sld'] = $params['domainObj']->getSecondLevel();
-        $params['tld'] = $params['domainObj']->getTopLevel();
+        $api = $this->openProvider->getApi();
 
-        $values = array();
+        $this->domain = $this->openProvider->domain($params['domain']);
+        $values       = array();
 
-        try
-        {
-            $domain             =   new Domain();
-            $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
-            $api = $this->API;
-            $api->setParams($params);
-
+        try {
             $nameServers = APITools::createNameserversArray($params);
-            
-            $handle         = $this->handle;
+
+            $handle = $this->handle;
             $handle->setApi($api);
 
             // Prepare the additional data
-            $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
-            if(isset($additionalFields['extensionCustomerAdditionalData']))
+            $additionalFields = $this->additionalFields->processAdditionalFields($params, $this->domain);
+            if (isset($additionalFields['extensionCustomerAdditionalData']))
                 $handle->setExtensionAdditionalData($additionalFields['extensionCustomerAdditionalData']);
 
-            if(isset($additionalFields['customer']))
+            if (isset($additionalFields['customer']))
                 $handle->setCustomerAdditionalData($additionalFields['customer']);
 
-            $ownerHandle    = $handle->findOrCreate($params);
-            $adminHandle    = $handle->findOrCreate($params, 'admin');
+            $ownerHandle = $handle->findOrCreate($params);
+            $adminHandle = $handle->findOrCreate($params, 'admin');
 
-            $domainTransfer                 =   new DomainTransfer();
-            $domainTransfer->domain         =   $domain;
-            $domainTransfer->period         =   $params['regperiod'];
-            $domainTransfer->nameServers    =   $nameServers;
-            $domainTransfer->ownerHandle    =   $ownerHandle;
-            $domainTransfer->adminHandle    =   $adminHandle;
-            $domainTransfer->techHandle     =   $adminHandle;
-            $domainTransfer->billingHandle  =   $adminHandle;
-            $domainTransfer->authCode       =   $params['transfersecret'];
-            $domainTransfer->dnsmanagement  =   $params['dnsmanagement'];
-            $domainTransfer->isDnssecEnabled =  false;
+            $domainTransfer                  = new DomainTransfer();
+            $domainTransfer->domain          = $this->domain;
+            $domainTransfer->period          = $params['regperiod'];
+            $domainTransfer->nameServers     = $nameServers;
+            $domainTransfer->ownerHandle     = $ownerHandle;
+            $domainTransfer->adminHandle     = $adminHandle;
+            $domainTransfer->techHandle      = $adminHandle;
+            $domainTransfer->billingHandle   = $adminHandle;
+            $domainTransfer->authCode        = $params['transfersecret'];
+            $domainTransfer->dnsmanagement   = $params['dnsmanagement'];
+            $domainTransfer->isDnssecEnabled = false;
 
             // Check if premium is enabled. If so, set the received premium cost.
-            if($params['premiumEnabled'] == true && $params['premiumCost'] != '')
+            if ($params['premiumEnabled'] == true && $params['premiumCost'] != '')
                 $domainTransfer->acceptPremiumFee = $this->premiumDomain->getRegistrarPriceWhenResellerPriceMatches('transfer', $params['sld'], $params['tld'], $params['premiumCost']);
 
-            if($params['idprotection'] == 1)
+            if ($params['idprotection'] == 1)
                 $domainTransfer->isPrivateWhoisEnabled = true;
 
-            if(isset($params['dnsTemplate']) && !empty($params['dnsTemplate']))
-            {
+            if (isset($params['dnsTemplate']) && !empty($params['dnsTemplate'])) {
                 $domainTransfer->nsTemplateName = $params['dnsTemplate'];
             }
-            
-            if(isset($additionalFields['domainAdditionalData']))
-                $domainTransfer->additionalData = json_decode(json_encode($additionalFields['domainAdditionalData']),1);
+
+            if (isset($additionalFields['domainAdditionalData']))
+                $domainTransfer->additionalData = json_decode(json_encode($additionalFields['domainAdditionalData']), 1);
 
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
             $api->transferDomainRequest($domainTransfer);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
         return $values;

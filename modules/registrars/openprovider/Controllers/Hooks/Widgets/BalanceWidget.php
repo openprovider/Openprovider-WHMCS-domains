@@ -2,9 +2,8 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks\Widgets;
 
 use OpenProvider\WhmcsHelpers\Registrar;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
 use OpenProvider\API\API;
-use Punic\Exception;
+use OpenProvider\OpenProvider;
 
 /**
  * Show OP balance
@@ -23,9 +22,12 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 
     public function getData()
     {
+        $openprovider = new OpenProvider();
+
+        $api = $openprovider->getApi();
+
         try {
-            $openprovider = new OpenProvider();
-            $reseller = $openprovider->api->getResellersRequest();
+            $reseller = $api->getResellersRequest();
             $balance = $reseller['balance'];
 
             $statistics = $reseller['statistics'];

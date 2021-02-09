@@ -3,12 +3,13 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use Carbon\Carbon;
-use OpenProvider\API\JsonAPI;
+
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
-use WeDevelopCoffee\wPower\Models\Registrar;
+use OpenProvider\OpenProvider;
+
+
 use WHMCS\Database\Capsule;
 
 /**
@@ -28,14 +29,17 @@ class AdminClientProfileTabController
 
         // I dont know why, but if we use OpenProvider constructor
         // We have no more error with idna_converter class
-        $Openprovider = new OpenProvider();
+        $openProvider = new OpenProvider();
+
+        $api = $openProvider->getApi();
+
         try {
 
             $args = [
                 'key' => 'customer',
             ];
 
-            $tagsData = $Openprovider->api->listTagsRequest($args);
+            $tagsData = $api->listTagsRequest($args);
         } catch (\Exception $e) {}
 
         $tags = [];

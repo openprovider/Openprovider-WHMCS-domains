@@ -3,10 +3,10 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\JsonAPI;
+use OpenProvider\OpenProvider;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WHMCS\Carbon;
 use OpenProvider\WhmcsHelpers\Activity;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
 use OpenProvider\API\Domain as api_domain;
@@ -41,13 +41,12 @@ class DomainSyncController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, JsonAPI $API, api_domain $api_domain, Domain $domain, OpenProvider $openprovider)
+    public function __construct(Core $core, api_domain $api_domain, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->API          = $API;
         $this->api_domain   = $api_domain;
-        $this->openprovider = $openprovider;
+        $this->openprovider = new OpenProvider();
         $this->domain       = $domain;
     }
 
@@ -59,6 +58,8 @@ class DomainSyncController extends BaseController
      */
     public function sync($params)
     {
+        $api = $this->openprovider->getApi();
+
         // Check if the native synchronisation feature
         if (Configuration::getOrDefault('syncUseNativeWHMCS', false) == false) {
             $domain = Domain::find($params['domainid']);
@@ -79,7 +80,7 @@ class DomainSyncController extends BaseController
         try {
             // get data from op
             $this->api_domain = $this->openprovider->domain($this->domain->domain);
-            $op_domain_result = $this->openprovider->api->getDomainRequest($this->api_domain);
+            $op_domain_result = $api->getDomainRequest($this->api_domain);
             $expiration_date  = Carbon::createFromFormat('Y-m-d H:i:s', $op_domain_result['expirationDate'], 'Europe/Amsterdam');
 
             if ($op_domain_result['status'] == 'ACT') {
@@ -89,7 +90,7 @@ class DomainSyncController extends BaseController
 
                 // Identity protection or not? -> WHMCS is leading.
                 if ($setting['syncIdentityProtectionToggle'] == true)
-                    $this->process_identity_protection($op_domain_result);
+                    $this->process_identity_protection($op_domain_result, $params);
 
                 return array(
                     'expirydate'      => $this->domain->expirydate, // Format: YYYY-MM-DD
@@ -155,9 +156,11 @@ class DomainSyncController extends BaseController
     /**
      * Process the Domain identity protection setting
      *
+     * @param $op_domain_result
+     * @param $params
      * @return void
-     **/
-    private function process_identity_protection($op_domain_result)
+     */
+    private function process_identity_protection($op_domain_result, $params)
     {
         try {
             $result = $this->openprovider->toggle_whois_protection($this->domain, $op_domain_result);
@@ -165,7 +168,7 @@ class DomainSyncController extends BaseController
         } catch (\Exception $e) {
             \logModuleCall('OpenProvider', 'Save identity toggle', $this->domain->domain, [$this->domain->domain, @$op_domain_result], $e->getMessage(), [$params['Password']]);
 
-            $this->unsigned_wpp_contract_domains[] = $this->objectDomain->domain;
+            $this->unsigned_wpp_contract_domains[] = $this->domain->domain;
         }
 
         if ($result != 'correct') {
@@ -173,8 +176,8 @@ class DomainSyncController extends BaseController
              * Log the activity data
              */
             $activity_data = [
-                'id'          => $this->objectDomain->id,
-                'domain'      => $this->objectDomain->domain,
+                'id'          => $this->domain->id,
+                'domain'      => $this->domain->domain,
                 'old_setting' => $result['old_setting'],
                 'new_setting' => $result['new_setting'],
             ];

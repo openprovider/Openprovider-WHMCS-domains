@@ -2,6 +2,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\JsonAPI;
+use OpenProvider\OpenProvider;
 use WHMCS\Carbon;
 use WHMCS\Domain\Registrar\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -14,9 +15,9 @@ use OpenProvider\API\Domain as api_domain;
 class DomainInformationController extends BaseController
 {
     /**
-     * @var JsonAPI
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
@@ -25,11 +26,11 @@ class DomainInformationController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, JsonAPI $jsonAPI, api_domain $api_domain)
+    public function __construct(Core $core, api_domain $api_domain)
     {
         parent::__construct($core);
 
-        $this->API = $jsonAPI;
+        $this->openProvider = new OpenProvider();
         $this->api_domain = $api_domain;
     }
 
@@ -41,14 +42,9 @@ class DomainInformationController extends BaseController
      */
     function get($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $api = $this->openProvider->getApi();
 
-        // Launch API
-        $api    = $this->API;
         $domain = $this->api_domain;
-
-        $api->setParams($params);
 
         try {
             $domain->load(array (
@@ -122,9 +118,9 @@ class DomainInformationController extends BaseController
         return $result;
     }
 
+
     /**
-     * @param API $api
-     * @param Domain $domain
+     * @param $nameservers
      * @return array
      */
     private function getNameservers($nameservers): array

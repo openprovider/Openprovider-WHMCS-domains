@@ -1,11 +1,12 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+
 use OpenProvider\WhmcsRegistrar\src\TldPriceCache;
+
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
-use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
+
 use WHMCS\Domain\TopLevel\ImportItem;
 use WHMCS\Results\ResultsList;
 
@@ -16,23 +17,11 @@ use WHMCS\Results\ResultsList;
 class TldPricingController extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-    /**
-     * @var Domain
-     */
-    private $domain;
-
-    /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core)
     {
         parent::__construct($core);
-
-        $this->API = $API;
-        $this->domain = $domain;
     }
 
     /**

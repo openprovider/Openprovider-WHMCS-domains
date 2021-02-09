@@ -4,18 +4,18 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 
-use OpenProvider\API\API;
 use OpenProvider\API\Domain;
-use OpenProvider\API\JsonAPI;
+use OpenProvider\OpenProvider;
+
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
 class IRTPVerificationEmailController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
@@ -24,11 +24,11 @@ class IRTPVerificationEmailController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, JsonAPI $API, Domain $domain)
+    public function __construct(Core $core, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->API = $API;
+        $this->openProvider = new OpenProvider();
         $this->domain = $domain;
     }
 
@@ -43,14 +43,11 @@ class IRTPVerificationEmailController extends BaseController
         $errorMessage = '';
         $ownerEmail   = false;
 
-        $api = $this->API;
-        $api->setParams($params);
+        $api = $this->openProvider->getApi();
 
         // getting Email
         try {
-            $domain = new Domain();
-            $domain->name = $params['domainObj']->getSecondLevel();
-            $domain->extension = $params['domainObj']->getTopLevel();
+            $domain = $this->openProvider->domain($params['domain']);
             $ownerInfo = $api->getDomainContactsRequest($domain);
             $ownerEmail = $ownerInfo['Owner']['Email Address'];
         } catch (\Exception $e) {

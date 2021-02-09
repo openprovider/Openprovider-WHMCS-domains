@@ -1,11 +1,13 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+
+use OpenProvider\API\Domain;
 use OpenProvider\API\JsonAPI;
+use OpenProvider\OpenProvider;
+
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
-use OpenProvider\API\Domain;
 
 /**
  * Class RequestDelete
@@ -14,9 +16,9 @@ use OpenProvider\API\Domain;
 class RequestDeleteController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
@@ -24,30 +26,25 @@ class RequestDeleteController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, JsonAPI $API, Domain $domain)
+    public function __construct(Core $core, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->API = $API;
+        $this->openProvider = new OpenProvider();
         $this->domain = $domain;
     }
 
     public function request($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $api = $this->openProvider->getApi();
+
+        $this->domain = $this->openProvider->domain($params['domain']);
+
         $values = array();
 
         try
         {
-            $api                =   $this->API;
-            $api->setParams($params);
-            $domain             =   new \OpenProvider\API\Domain(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
-
-            $api->deleteDomainRequest($domain);
+            $api->deleteDomainRequest($this->domain);
         }
         catch (\Exception $e)
         {

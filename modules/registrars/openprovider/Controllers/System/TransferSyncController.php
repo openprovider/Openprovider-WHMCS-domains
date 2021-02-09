@@ -1,8 +1,9 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+
 use OpenProvider\API\JsonAPI;
-use OpenProvider\WhmcsRegistrar\src\Configuration;
+use OpenProvider\OpenProvider;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
 use OpenProvider\API\Domain;
@@ -16,22 +17,23 @@ use Carbon\Carbon;
 class TransferSyncController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
     private $domain;
+
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, JsonAPI $API, Domain $domain)
+    public function __construct(Core $core, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->API = $API;
-        $this->domain = $domain;
+        $this->openProvider = new OpenProvider();
+        $this->domain       = $domain;
     }
 
     /**
@@ -42,51 +44,40 @@ class TransferSyncController extends BaseController
      */
     public function sync($params)
     {
-        if(isset($param['domainObj']))
-        {
-            $params['sld'] = $params['domainObj']->getSecondLevel();
-            $params['tld'] = $params['domainObj']->getTopLevel();
-        }
+        $api = $this->openProvider->getApi();
+
+        $this->domain = $this->openProvider->domain($params['domain']);
 
         $domainModel = \OpenProvider\WhmcsRegistrar\Models\Domain::where('id', $params['domainid'])->first();
 
-        try
-        {
+        try {
             // get data from op
-            $api                = $this->API;
-            $api->setParams($params);
+            $opInfo = $api->getDomainRequest($this->domain);
 
-            $domain             =   new \OpenProvider\API\Domain(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
-
-            $opInfo             =   $api->getDomainRequest($domain);
-
-            if($opInfo['status'] == 'ACT')
-            {
-                if($domainModel->check_renew_domain_setting_upon_completed_transfer() == true)
-                {
-                    $api->renewDomainRequest($domain, $params['regperiod']);
+            if ($opInfo['status'] == 'ACT') {
+                if ($domainModel->check_renew_domain_setting_upon_completed_transfer() == true) {
+                    $api->renewDomainRequest($this->domain, $params['regperiod']);
 
                     // Fetch updated information
-                    $opInfo             =   $api->getDomainRequest($domain);
+                    $opInfo = $api->getDomainRequest($this->domain);
                 }
 
                 return array
                 (
-                    'completed'     =>  true,
-                    'expirydate'    =>  Carbon::createFromFormat('Y-m-d H:i:s',$opInfo['renewal_date'], 'Europe/Amsterdam')->toDateString()
+                    'completed'  => true,
+                    'expirydate' => Carbon::createFromFormat(
+                        'Y-m-d H:i:s',
+                        $opInfo['renewal_date'],
+                        'Europe/Amsterdam'
+                    )->toDateString()
                 );
             }
 
             return array();
-        }
-        catch (\Exception $ex)
-        {
+        } catch (\Exception $ex) {
             return array
             (
-                'error' =>  $ex->getMessage()
+                'error' => $ex->getMessage()
             );
         }
 
