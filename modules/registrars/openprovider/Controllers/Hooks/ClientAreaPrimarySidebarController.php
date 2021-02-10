@@ -61,6 +61,7 @@ jQuery( document ).ready(function() {
                 ->select('status', 'dnsmanagement', 'domain')
                 ->first();
 
+            // TODO: update this fragment when api change
             $api = new API();
             $params = (new Registrar())->getRegistrarData()['openprovider'];
             $api->setParams($params);
