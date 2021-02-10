@@ -110,8 +110,6 @@ class AdminClientProfileTabController
                     ['clientid' => $userId],
                     ['tag' => $tag, 'updated_at' => Carbon::now()]
                 );
-        } catch (\Exception $e) {
-            var_dump($e->getMessage());die;
-        }
+        } catch (\Exception $e) {}
     }
 }

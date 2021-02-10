@@ -48,7 +48,7 @@ try {
     $dnssecKeys = $domain['dnssecKeys'];
     $isDnssecEnabled = $domain['isDnssecEnabled'];
 } catch (\Exception $e) {
-    var_dump($e->getMessage());
+    header("Location: " . $_SERVER["HTTP_REFERER"]);
 }
 
 $ca->assign('dnssecKeys', $dnssecKeys);
