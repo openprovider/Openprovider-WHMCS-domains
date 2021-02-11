@@ -187,12 +187,12 @@ class API
             array(
                 'postValues' => $postValues,
             ),
-            null,
             array(
                 'curlResponse' => $ret,
                 'curlErrNo'    => $errno,
                 'errorMessage' => $this->error,
             ),
+            null,
             array(
                 $this->password,
                 htmlentities($this->password)
