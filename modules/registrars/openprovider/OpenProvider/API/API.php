@@ -182,21 +182,22 @@ class API
 
         // log message
         logModuleCall(
-                'OpenProvider NL',
-                $r->getCommand(),
-                array(
-                    'postValues' => $postValues,
-                ),
-                array(
-                    'curlResponse' => $ret,
-                    'curlErrNo'    => $errno,
-                    'errorMessage' => $this->error,
-                ),
-                null,
-                array(
-                    $this->password,
-                    htmlentities($this->password)
-                ));
+            'OpenProvider NL',
+            $r->getCommand(),
+            array(
+                'postValues' => $postValues,
+            ),
+            null,
+            array(
+                'curlResponse' => $ret,
+                'curlErrNo'    => $errno,
+                'errorMessage' => $this->error,
+            ),
+            array(
+                $this->password,
+                htmlentities($this->password)
+            )
+        );
 
         if (!$ret)
         {
