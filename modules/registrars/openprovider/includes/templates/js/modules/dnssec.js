@@ -179,7 +179,7 @@ $(document).on('ready', function () {
         return `<tr>
             <td>` + flags + `</td>
             <td>` + alg + `</td>
-            <td>` + pubKey + `</td>
+            <td class="break-word">` + pubKey + `</td>
             <td>
                 <input type="button" name="deleteDnsSecRecord" class="btn btn-danger" value="Delete" />
             </td>
