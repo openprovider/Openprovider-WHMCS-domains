@@ -1,6 +1,5 @@
 <?php
 
-use OpenProvider\WhmcsRegistrar\helpers\DB;
 use WHMCS\ClientArea;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider;
@@ -8,17 +7,15 @@ use OpenProvider\WhmcsRegistrar\helpers\Language;
 
 define('CLIENTAREA', true);
 
+const PAGE_TITLE  = 'DNSSEC Records';
+const PAGE_NAME   = 'DNSSEC Records';
 const MODULE_NAME = 'dnssec';
 
 require __DIR__ . '/init.php';
 
 $ca = new ClientArea();
 
-// Get system language and content
-Language::setLang(DB::getSystemLanguage());
-$lang = Language::getContent(Language::PAGE_DNSSEC);
-
-$ca->setPageTitle($lang['page_name']);
+$ca->setPageTitle(PAGE_NAME);
 
 $domainId = $_GET['domainid'];
 $domain = \WHMCS\Database\Capsule::table('tbldomains')
@@ -62,13 +59,12 @@ $ca->assign('apiUrlTurnOnOffDnssec', Configuration::getApiUrl('dnssec-enabled-up
 $ca->assign('domainId', $domainId);
 $ca->assign('jsModuleUrl', Configuration::getJsModuleUrl(MODULE_NAME));
 $ca->assign('cssModuleUrl', Configuration::getCssModuleUrl(MODULE_NAME));
-$ca->assign('lang', $lang);
 
 $ca->addToBreadCrumb('index.php', Lang::trans('globalsystemname'));
 $ca->addToBreadCrumb('clientarea.php', Lang::trans('clientareatitle'));
 $ca->addToBreadCrumb('clientarea.php?action=domains', Lang::trans('clientareanavdomains'));
 $ca->addToBreadCrumb('clientarea.php?action=domaindetails&id=' . $domainId, $domainName);
-$ca->addToBreadCrumb('dnssec.php', $lang['page_name']);
+$ca->addToBreadCrumb('dnssec.php', PAGE_NAME);
 
 $ca->initPage();
 

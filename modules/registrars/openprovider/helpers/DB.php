@@ -16,16 +16,4 @@ class DB
             return false;
         }
     }
-
-    public static function getSystemLanguage()
-    {
-        try {
-            return Capsule::table(DatabaseTable::Configuration)
-                ->where('setting', 'Language')
-                ->select('value')
-                ->first()->value;
-        } catch (\Exception $ex) {}
-
-        return 'english';
-    }
 }
