@@ -3,6 +3,7 @@
 
 namespace OpenProvider\WhmcsRegistrar\helpers;
 
+use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use WHMCS\Database\Capsule;
 
 class DB
@@ -14,5 +15,17 @@ class DB
         } catch(\Exception $e) {
             return false;
         }
+    }
+
+    public static function getSystemLanguage()
+    {
+        try {
+            return Capsule::table(DatabaseTable::Configuration)
+                ->where('setting', 'Language')
+                ->select('value')
+                ->first()->value;
+        } catch (\Exception $ex) {}
+
+        return 'english';
     }
 }

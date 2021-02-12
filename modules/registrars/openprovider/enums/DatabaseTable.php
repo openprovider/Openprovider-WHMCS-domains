@@ -27,4 +27,6 @@ class DatabaseTable
     const Products = 'tblproducts';
 
     const Currencies = 'tblcurrencies';
+
+    const Configuration = 'tblconfiguration';
 }

@@ -1,5 +1,7 @@
 /**
- * Vars domainId, apiUrlUpdateDnssecRecords, apiUrlTurnOnOffDnssec takes from template
+ * Vars domainId, apiUrlUpdateDnssecRecords,
+ * apiUrlTurnOnOffDnssec, buttonDeleteName,
+ * buttonSaveName takes from template
  */
 
 $(document).on('ready', function () {
@@ -46,7 +48,7 @@ $(document).on('ready', function () {
                     <textarea class="ta" placeholder="Your public key..." name="dnsSecRecordPublicKey"></textarea>
                 </td>
                 <td>
-                    <input type="button" name="saveDnsSecRecord" class="btn btn-primary" value="Save"/>
+                    <input type="button" name="saveDnsSecRecord" class="btn btn-primary" value=${buttonSaveName} />
                 </td>
             </tr>
         `;
@@ -181,7 +183,7 @@ $(document).on('ready', function () {
             <td>` + alg + `</td>
             <td class="break-word">` + pubKey + `</td>
             <td>
-                <input type="button" name="deleteDnsSecRecord" class="btn btn-danger" value="Delete" />
+                <input type="button" name="deleteDnsSecRecord" class="btn btn-danger" value=${buttonDeleteName} />
             </td>
         </tr>`;
     }
