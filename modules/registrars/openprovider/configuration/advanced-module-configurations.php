@@ -36,5 +36,5 @@ return [
     // Note that registering a domain with the trustee service may incur additional fees,
     // please check your Openprovider account for detailed pricing information
     // before activating automatic trustee activation.
-    'requestTrusteeService' => [".nl", "be"],
+    'requestTrusteeService' => [],
 ];
