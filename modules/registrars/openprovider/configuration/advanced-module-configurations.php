@@ -23,10 +23,18 @@ return [
     'syncUseNativeWHMCS'                => true,  //  Default: true,  Use the native WHMCS synchronisation
     'syncDomainStatus'                  => true,  //  Default: true,  Synchronize Domain status from Openprovider
     'syncExpiryDate'                    => true,  //  Default: true,  Synchronize Expiry date from Openprovider
-    'updateNextDueDate'                 => true, //  Default: true, Synchronize due-date with offset?
+    'updateNextDueDate'                 => true,  //  Default: true,  Synchronize due-date with offset?
     'nextDueDateOffset'                 => 14,    //  Default: 14,    Due-date offset
     'nextDueDateUpdateMaxDayDifference' => 100,   //  Default: 100,   Due-date max difference in days
     'updateInterval'                    => 2,     //  Default: 2,     The minimum number of hourse before a domain will be updated
     'domainProcessingLimit'             => 200,   //  Default: 200,   Domain process limit
     'sendEmptyActivityEmail'            => false, //  Default: false, Send empty activity reports?
+
+    // Trustee service
+    // any TLDs which are included in the array,
+    // for example [“ba”,”co.id”]  will automatically have the trustee option selected upon registration.
+    // Note that registering a domain with the trustee service may incur additional fees,
+    // please check your Openprovider account for detailed pricing information
+    // before activating automatic trustee activation.
+    'requestTrusteeService' => [".nl", "be"],
 ];
