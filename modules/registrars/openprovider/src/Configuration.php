@@ -59,22 +59,21 @@ class Configuration
 
     public static function getApiUrl($apiMethod)
     {
-        return self::_getServerUrl() . "/modules/registrars/openprovider/api/{$apiMethod}";
+        return self::_getServerUrl() . "modules/registrars/openprovider/api/{$apiMethod}";
     }
 
     public static function getJsModuleUrl($jsModuleName)
     {
-        return self::_getServerUrl() . "/modules/registrars/openprovider/includes/templates/js/modules/{$jsModuleName}.js";
+        return self::_getServerUrl() . "modules/registrars/openprovider/includes/templates/js/modules/{$jsModuleName}.js";
     }
 
     public static function getCssModuleUrl($cssModuleName)
     {
-        return self::_getServerUrl() . "/modules/registrars/openprovider/includes/templates/css/modules/{$cssModuleName}.css";
+        return self::_getServerUrl() . "modules/registrars/openprovider/includes/templates/css/modules/{$cssModuleName}.css";
     }
 
     private static function _getServerUrl()
     {
-        return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER[HTTP_HOST]}"
-            . "/whmcs";
+        return localAPI('GetConfigurationValue', ['setting' => 'SystemURL'])['value'];
     }
 }

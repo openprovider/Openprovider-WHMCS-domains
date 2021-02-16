@@ -1,6 +1,8 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
+use OpenProvider\OpenProvider;
 use OpenProvider\WhmcsRegistrar\helpers\DNS;
 use WHMCS\Database\Capsule;
 
@@ -10,32 +12,31 @@ use WHMCS\Database\Capsule;
  *
  * @copyright Copyright (c) Openprovider 2018
  */
+class ClientAreaPrimarySidebarController
+{
 
-class ClientAreaPrimarySidebarController{
-
-    public function show ($primarySidebar)
+    public function show($primarySidebar)
     {
-       $this->replaceDnsMenuItem($primarySidebar);
+        $this->replaceDnsMenuItem($primarySidebar);
 
-       $this->addDNSSECMenuItem($primarySidebar);
+        $this->addDNSSECMenuItem($primarySidebar);
     }
 
     private function replaceDnsMenuItem($primarySidebar)
     {
         // Filter to the Domain menu
-        if(!$domainDetailsManagement = $primarySidebar->getChild('Domain Details Management'))
+        if (!$domainDetailsManagement = $primarySidebar->getChild('Domain Details Management'))
             return;
 
-        if(!$dnsManagement = $domainDetailsManagement->getChild('Manage DNS Host Records'))
+        if (!$dnsManagement = $domainDetailsManagement->getChild('Manage DNS Host Records'))
             return;
 
-        if($url = DNS::getDnsUrlOrFail($_REQUEST['domainid']))
-        {
+        if ($url = DNS::getDnsUrlOrFail($_REQUEST['domainid'])) {
             // Update the URL.
             $dnsManagement->setUri($url);
 
             // WHMCS does not natively support target="_blank".
-            $id = $dnsManagement->getId();
+            $id    = $dnsManagement->getId();
             $label = $dnsManagement->getLabel() . '</a>
 <script >
 jQuery( document ).ready(function() {
@@ -51,11 +52,26 @@ jQuery( document ).ready(function() {
     {
         if (!is_null($primarySidebar->getChild('Domain Details Management'))) {
 
-            $domainId = isset($_REQUEST['domainid']) ? $_REQUEST['domainid'] : $_REQUEST['id'];
+            $domainId        = isset($_REQUEST['domainid']) ? $_REQUEST['domainid'] : $_REQUEST['id'];
             $isDomainEnabled = Capsule::table('tbldomains')
                 ->where('id', $domainId)
-                ->select('status', 'dnsmanagement')
+                ->select('status', 'dnsmanagement', 'domain')
                 ->first();
+
+            try {
+                $openProvider = new OpenProvider();
+
+                $domain = $openProvider->domain($isDomainEnabled->domain);
+
+                $api = $openProvider->getApi();
+
+                $op_domain = $api->getDomainRequest($domain);
+
+                if (!$op_domain)
+                    return;
+            } catch (\Exception $e) {
+                return;
+            }
 
             if (!$isDomainEnabled->dnsmanagement)
                 return;

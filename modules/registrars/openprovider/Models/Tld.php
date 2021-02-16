@@ -6,7 +6,10 @@ namespace OpenProvider\WhmcsRegistrar\Models;
 
 class Tld
 {
-    private string $tld;
+    /**
+     * @var string
+     */
+    private $tld;
 
     public function __construct(string $tld)
     {

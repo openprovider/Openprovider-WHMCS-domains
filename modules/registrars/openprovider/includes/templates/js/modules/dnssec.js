@@ -87,9 +87,9 @@ $(document).on('ready', function () {
     function handleDelete(e) {
         e.preventDefault();
         let row = $(this).parents('tr'),
-            dnsSecRecordFlag = $(row).find('td').get(0).textContent,
-            dnsSecRecordAlgorithm = $(row).find('td').get(1).textContent,
-            dnsSecRecordPublickKey = $(row).find('td').get(2).textContent;
+            dnsSecRecordFlag = parseInt($(row).find('td').get(0).textContent),
+            dnsSecRecordAlgorithm = parseInt($(row).find('td').get(1).textContent),
+            dnsSecRecordPublickKey = parseInt($(row).find('td').get(2).textContent);
 
         let data = {
             flags   : dnsSecRecordFlag,
@@ -179,7 +179,7 @@ $(document).on('ready', function () {
         return `<tr>
             <td>` + flags + `</td>
             <td>` + alg + `</td>
-            <td>` + pub_key + `</td>
+            <td class="break-word">` + pub_key + `</td>
             <td>
                 <input type="button" name="deleteDnsSecRecord" class="btn btn-danger" value="Delete" />
             </td>

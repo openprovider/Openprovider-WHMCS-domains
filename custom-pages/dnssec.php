@@ -2,7 +2,7 @@
 
 use WHMCS\ClientArea;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use OpenProvider\OpenProvider;
 
 define('CLIENTAREA', true);
 
@@ -31,24 +31,18 @@ elseif (!$domain->dnsmanagement) {
 $domainName = $domain->domain;
 
 $OpenProvider = new OpenProvider();
-$api = $OpenProvider->api;
+$api = $OpenProvider->getApi();
 
-$domainArray = explode('.', $domainName);
-$args = [
-    'domain' => [
-        'extension' => $domainArray[count($domainArray) - 1],
-        'name' => implode('.', array_slice($domainArray, 0, count($domainArray) - 1)),
-    ],
-];
+$domain = $OpenProvider->domain($domainName);
 
 $dnssecKeys = [];
 $isDnssecEnabled = false;
 try {
-    $domain = $api->getDomainRequest($args);
-    $dnssecKeys = $domain['dnssecKeys'];
-    $isDnssecEnabled = $domain['isDnssecEnabled'];
+    $domain_op = $api->getDomainRequest($domain);
+    $dnssecKeys = $domain_op['dnssec_keys'];
+    $isDnssecEnabled = $domain_op['is_dnssec_enabled'];
 } catch (\Exception $e) {
-    var_dump($e->getMessage());
+    header("Location: " . $_SERVER["HTTP_REFERER"]);
 }
 
 $ca->assign('dnssecKeys', $dnssecKeys);

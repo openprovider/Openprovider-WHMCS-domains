@@ -2,6 +2,8 @@
 
 namespace OpenProvider\API;
 
+use OpenProvider\OpenProvider;
+
 /**
  * Class APITools
  * OpenProvider Registrar module
@@ -36,8 +38,8 @@ class APITools
             $nsIp    = empty($nsParts[1]) ? null : trim($nsParts[1]);
 
             if (empty($nsIp)) {
-                $api = new \OpenProvider\API\JsonAPI();
-                $api->setParams($params);
+                $openProvider = new OpenProvider();
+                $api = $openProvider->getApi();
                 $searchResult = $api->listDnsNameserversRequest(['pattern' => $nsName]);
 
                 if ($searchResult['total'] > 0) {

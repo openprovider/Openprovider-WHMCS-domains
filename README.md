@@ -24,9 +24,12 @@ Features
 
 - Upload the contents of `/modules/registrars/openprovider` from this repository to  `<your WHMCS directory>/modules/registrars/openprovider`
 - Upload the contents of `/includes/hooks/` to `<your WHMCS directory>/includes/hooks`
-- If you do not have the file ` <your WHMCS directory>/resources/domains/additionalfields.php` then add the example version from `resources/domains/additionalfields.php` 
-  - Otherwise add the line `$additionaldomainfields = openprovider_additional_fields();` to the top of your `additionalfields.php` file.
-  - *The default field definitions can be found in `/resources/domains/dist.additionalfields.php`. This file should **not** be edited.* 
+- If you do not have the file ` <your WHMCS directory>/resources/domains/additionalfields.php` then add the example version from `resources/domains/additionalfields.php`
+  - Otherwise add the following lines to the top of your `additionalfields.php` file. : 
+```
+if (function_exists('openprovider_additional_fields'))
+    $additionaldomainfields = openprovider_additional_fields();
+``` 
 - [Optional] Upload `<Module directory>/modules/addons/openprovider` to `<WHMCS directory>/modules/addons`
 ## Basic Configurations
 

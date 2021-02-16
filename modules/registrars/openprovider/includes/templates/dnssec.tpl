@@ -52,7 +52,7 @@
             </tr>
                 <td>{$dnssecKey['flags']}</td>
                 <td>{$dnssecKey['alg']}</td>
-                <td>{$dnssecKey['pubKey']}</td>
+                <td class="break-word">{$dnssecKey['pubKey']}</td>
                 <td>
                     <input type="button" name="deleteDnsSecRecord" class="btn btn-danger" value="Delete" />
                 </td>
