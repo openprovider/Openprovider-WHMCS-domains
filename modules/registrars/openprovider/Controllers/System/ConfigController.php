@@ -3,7 +3,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\API;
 use OpenProvider\API\APIConfig;
-use WeDevelopCoffee\wPower\Models\Registrar;
+use OpenProvider\WhmcsRegistrar\enums\OpenproviderErrorType;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -160,9 +160,12 @@ class ConfigController extends BaseController
             $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
             return $configarray;
         } catch (\Exception $ex) {
-            if ($ex->getCode() == 10009 || $ex->getCode() == 10005) {
+            if (
+                $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthority
+                || $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthorityCTE
+            ) {
                 return $this->generateLoginError($configarray, self::ERROR_NOT_HAVE_AUTHORITY);
-            } elseif ($ex->getCode() == 197) {
+            } elseif ($ex->getCode() == OpenproviderErrorType::NonSignedAgreement) {
                 return $this->generateLoginError($configarray, self::ERROR_NOT_SIGNED_AGREEMENT);
             }
         }
@@ -177,7 +180,11 @@ class ConfigController extends BaseController
             // Incorrect mode
             $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
         } catch (\Exception $e) {
-            if ($ex->getCode() == 10009 || $ex->getCode() == 10005 || $ex->getCode() == 197) {
+            if (
+                $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthority
+                || $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthorityCTE
+                || $ex->getCode() == OpenproviderErrorType::NonSignedAgreement
+            ) {
                 $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
             } else {
                 $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_CREDENTIALS);
