@@ -6,6 +6,11 @@ use OpenProvider\API\JsonAPI;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
+use Openprovider\Api\Rest\Client\Auth\Model\AuthLoginRequest;
+use Openprovider\Api\Rest\Client\Base\Configuration;
+use Openprovider\Api\Rest\Client\Client;
+use GuzzleHttp6\Client as HttpClient;
+
 /**
  * Class ConfigController
  */

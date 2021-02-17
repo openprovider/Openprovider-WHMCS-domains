@@ -2,8 +2,14 @@
 
 namespace OpenProvider\API;
 
+use Openprovider\Api\Rest\Client\Person\Api\CustomerApi;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WeDevelopCoffee\wPower\Models\Registrar;
+
+use Openprovider\Api\Rest\Client\Auth\Model\AuthLoginRequest;
+use Openprovider\Api\Rest\Client\Base\Configuration as ConfigurationClient;
+use Openprovider\Api\Rest\Client\Client;
+use GuzzleHttp6\Client as HttpClient;
 
 require_once (realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php'));
 
@@ -31,6 +37,10 @@ class JsonAPI
 
     private $tokenSessionKey = null;
 
+    private $configuration;
+
+    private $httpClient;
+
     /* ==================== MAIN LOGIC ==================== */
 
     /**
@@ -44,15 +54,15 @@ class JsonAPI
         session_start();
 
         $this->timeout = APIConfig::$curlTimeout;
+
         $this->request = new RequestJSON();
+
+        $this->configuration = new ConfigurationClient();
+
+        $this->httpClient = new HttpClient();
 
         if (is_null($params))
             $params = (new Registrar())->getRegistrarData()['openprovider'];
-
-        if (isset($params['test_mode']) && $params['test_mode'] == 'on')
-            $this->setTestMode(self::TEST_MODE_ON);
-        else
-            $this->setTestMode(self::TEST_MODE_OFF);
 
         $isNotExistUsernameAndPassword = !isset($params['Username']) || empty($params['Username'])
             || !isset($params['Password']) || empty($params['Password']);
@@ -60,51 +70,47 @@ class JsonAPI
         if ($isNotExistUsernameAndPassword)
             return $this;
 
+        if (isset($params['test_mode']) && $params['test_mode'] == 'on') {
+            $this->url = Configuration::get('api_url_cte_v1beta');
+            $this->configuration->setHost(Configuration::get('api_url_cte_v1beta'));
+        } else {
+            $this->url = Configuration::get('api_url_v1beta');
+            $this->configuration->setHost(Configuration::get('api_url_v1beta'));
+        }
+
+        $this->url .= '/v1beta';
+
         // if api object haven't token,
         // we get it from openprovider by authLoginRequest method
         // And store token in php session
-        $tokenNameHash = md5("{$this->url}-{$params['Username']}-{$params['Password']}");
+        $tokenNameHash = md5("{$this->configuration->getHost()}-{$params['Username']}-{$params['Password']}");
         $sessionTokenVariable = "token-{$tokenNameHash}";
 
         $this->tokenSessionKey = $sessionTokenVariable;
 
-        if (isset($_SESSION[$sessionTokenVariable]) && !empty($_SESSION[$sessionTokenVariable]))
-            $this->token = $_SESSION[$sessionTokenVariable];
-        else {
+        if (isset($_SESSION[$sessionTokenVariable]) && !empty($_SESSION[$sessionTokenVariable])) {
+            $this->configuration->setAccessToken($_SESSION[$sessionTokenVariable]);
+        } else {
             try {
-                $reply                           = $this->authLoginRequest($params['Username'], $params['Password']);
-                $this->token                     = $reply['token'];
-                $_SESSION[$sessionTokenVariable] = $reply['token'];
+                $client = new Client($this->httpClient, $this->configuration);
+
+                $loginReply = $client->getAuthModule()->getAuthApi()->login(
+                    new AuthLoginRequest(
+                        [
+                            'username' => $params['Username'],
+                            'password' => $params['Password'],
+                        ]
+                    )
+                );
+
+                $loginData = $loginReply->getData();
+
+                $this->configuration->setAccessToken($loginData->getToken());
+                $_SESSION[$sessionTokenVariable] = $this->configuration->getAccessToken();
             } catch (\Exception $ex) {}
         }
 
         return $this;
-    }
-
-    /**
-     * Method return token from this class
-     * or send request to openprovider
-     *
-     * @param string $username
-     * @param string $password
-     * @return ReplyJSON
-     */
-    public function authLoginRequest(
-        string $username, string $password
-    ): array
-    {
-        $args     = [
-            'username' => $username,
-            'password' => $password,
-            'ip'       => '0.0.0.0'
-        ];
-
-        return $this->_sendRequest(
-            APIEndpoints::AUTH_LOGIN,
-            $args,
-            [],
-            APIMethods::POST
-        );
     }
 
     /**
@@ -211,8 +217,8 @@ class JsonAPI
             'Content-type: application/json',
         ];
 
-        if ($this->token)
-            $requestHeader[] = 'Authorization: Bearer ' . $this->token;
+        if ($this->configuration->getAccessToken())
+            $requestHeader[] = 'Authorization: Bearer ' . $this->configuration->getAccessToken();
 
 
         $ch = curl_init();
@@ -334,7 +340,27 @@ class JsonAPI
      */
     public function listCustomersRequest(array $args): array
     {
-        return $this->_sendRequest(APIEndpoints::CUSTOMERS, $args);
+        $customerClient = new CustomerApi($this->httpClient, $this->configuration);
+
+        $customersList = $customerClient->listCustomers(
+            $args['reseller_id'],
+            $args['limit'],
+            $args['offset'],
+            $args['order'],
+            $args['order_by'],
+            $args['email_pattern'],
+            $args['company_name_pattern'],
+            $args['last_name_pattern'],
+            $args['first_name_pattern'],
+            $args['comment_pattern'],
+            $args['handle_pattern'],
+            $args['pattern'],
+            $args['with_addeitional_data'],
+            $args['type'],
+            $args['columns']
+        );
+
+        return $customersList['results'];
     }
 
     /**
@@ -344,15 +370,11 @@ class JsonAPI
      */
     public function deleteCustomerRequest(string $handle)
     {
-        $substitutionArgs = [
-            'handle' => $handle,
-        ];
-        return $this->_sendRequest(
-            APIEndpoints::CUSTOMERS_HANDLE,
-            [],
-            $substitutionArgs,
-            APIMethods::DELETE
-        );
+        $customer = $this->getCustomerRequest($handle, true);
+
+        $customerClient = new CustomerApi($this->httpClient, $this->configuration);
+
+        return $customerClient->deleteCustomer($customer['id'])->getData();
     }
 
     /**
@@ -432,35 +454,43 @@ class JsonAPI
      */
     public function getCustomerRequest(string $handle, bool $row = false): array
     {
-        $substitutionArgs = [
-            'handle' => $handle,
-        ];
+        $customerClient = new CustomerApi($this->httpClient, $this->configuration);
 
-        $contact = $this->_sendRequest(
-            APIEndpoints::CUSTOMERS_HANDLE,
-            [],
-            $substitutionArgs
+        $customer = $customerClient->listCustomers(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            $handle
         );
 
+        $customer = $customer->getData()['results'][0];
+
         if ($row)
-            return $contact;
+            return $customer;
 
         $customerInfo = array();
 
-        $customerInfo['First Name']    = $contact['name']['first_name'];
-        $customerInfo['Last Name']     = $contact['name']['last_name'];
-        $customerInfo['Company Name']  = $contact['company_name'];
-        $customerInfo['Email Address'] = $contact['email'];
-        $customerInfo['Address']       = $contact['address']['street'] . ' ' .
-            $contact['address']['number'] . ' ' .
-            $contact['address']['suffix'];
-        $customerInfo['City']          = $contact['address']['city'];
-        $customerInfo['State']         = $contact['address']['state'];
-        $customerInfo['Zip Code']      = $contact['address']['zipcode'];
-        $customerInfo['Country']       = $contact['address']['country'];
-        $customerInfo['Phone Number']  = $contact['phone']['country_code'] . '.' .
-            $contact['phone']['area_code'] .
-            $contact['phone']['subscriber_number'];
+        $customerInfo['First Name']    = $customer['name']['first_name'];
+        $customerInfo['Last Name']     = $customer['name']['last_name'];
+        $customerInfo['Company Name']  = $customer['company_name'];
+        $customerInfo['Email Address'] = $customer['email'];
+        $customerInfo['Address']       = $customer['address']['street'] . ' ' .
+            $customer['address']['number'] . ' ' .
+            $customer['address']['suffix'];
+        $customerInfo['City']          = $customer['address']['city'];
+        $customerInfo['State']         = $customer['address']['state'];
+        $customerInfo['Zip Code']      = $customer['address']['zipcode'];
+        $customerInfo['Country']       = $customer['address']['country'];
+        $customerInfo['Phone Number']  = $customer['phone']['country_code'] . '.' .
+            $customer['phone']['area_code'] .
+            $customer['phone']['subscriber_number'];
 
         return $customerInfo;
     }
