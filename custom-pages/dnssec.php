@@ -3,6 +3,7 @@
 use WHMCS\ClientArea;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use OpenProvider\WhmcsRegistrar\helpers\Language;
 
 define('CLIENTAREA', true);
 

@@ -3,6 +3,7 @@
 
 namespace OpenProvider\WhmcsRegistrar\helpers;
 
+use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use WHMCS\Database\Capsule;
 
 class DB
