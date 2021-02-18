@@ -124,13 +124,13 @@ class JsonAPI
         string $method = APIMethods::GET
     ): array
     {
-        $this->url .= '/v1beta';
+        $url = $this->url.'/v1beta';
 
         // prepare request
         $this->request->setEndpoint($endpoint)
             ->setMethod($method)
             ->setArgs([])
-            ->processUrl($this->url, $substitutionArgs);
+            ->processUrl($url, $substitutionArgs);
 
         $args = json_decode(json_encode($args), true);
 
