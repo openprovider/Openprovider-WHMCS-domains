@@ -3,7 +3,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\API;
 use OpenProvider\API\APIConfig;
-use WeDevelopCoffee\wPower\Models\Registrar;
+use OpenProvider\WhmcsRegistrar\enums\OpenproviderErrorType;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -12,6 +12,11 @@ use WeDevelopCoffee\wPower\Core\Core;
  */
 class ConfigController extends BaseController
 {
+    const ERROR_INCORRECT_CREDENTIALS = 'Please ensure credentials are correct';
+    const ERROR_INCORRECT_INVIRONMENT = 'Please ensure environment is correct';
+    const ERROR_NOT_SIGNED_AGREEMENT  = 'Account is blocked because of non-signed agreement. Log in to the control panel for more information.';
+    const ERROR_NOT_HAVE_AUTHORITY    = 'This ip address does not have authority to make API calls with this account. Please check the white and black lables of your account.';
+
     /**
      * @var API
      */
@@ -121,20 +126,23 @@ class ConfigController extends BaseController
      * @param bool $wrongMode
      * @return mixed
      */
-    protected function generateLoginError(array $configarray, $wrongMode = false)
+    protected function generateLoginError(array $configarray, $error)
     {
         $loginFailed = [
             'FriendlyName' => '<b><strong style="color:Tomato;">Login Unsuccessful:</strong></b>',
         ];
-        if ($wrongMode) {
-            $loginFailed['Description'] = '<b><strong style="color:#ff6347;">Please ensure environment is correct</strong></b>';
-            $configarray['test_mode']['FriendlyName'] = '<b><strong style="color:Tomato;">*Openprovider Test mode</strong></b>';
-        } else {
-            $loginFailed['Description'] = '<b><strong style="color:Tomato;">Please ensure credentials are correct</strong></b>';
-            $configarray['Username']['FriendlyName'] = '<b><strong style="color:Tomato;">*Username</strong></b>';
-            $configarray['Password']['FriendlyName'] = '<b><strong style="color:Tomato;">*Password</strong></b>';
+        $loginFailed['Description'] = "<b><strong style='color:#ff6347;'>$error</strong></b>";
+        switch ($error) {
+            case self::ERROR_INCORRECT_CREDENTIALS:
+            case self::ERROR_NOT_SIGNED_AGREEMENT:
+            case self::ERROR_NOT_HAVE_AUTHORITY:
+                $configarray['Username']['FriendlyName'] = '<b><strong style="color:Tomato;">*Username</strong></b>';
+                $configarray['Password']['FriendlyName'] = '<b><strong style="color:Tomato;">*Password</strong></b>';
+                break;
+            case self::ERROR_INCORRECT_INVIRONMENT:
+                $configarray['test_mode']['FriendlyName'] = '<b><strong style="color:Tomato;">*Openprovider Test mode</strong></b>';
+                break;
         }
-
         // Create a separate array to put the warning at the top as well.
         $firstArray[] = $loginFailed;
 
@@ -151,32 +159,35 @@ class ConfigController extends BaseController
             // Try to login and fetch the DNS template data.
             $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
             return $configarray;
-        } catch (\Exception $ex) {}
-
-        // Failed to login. Generate a warning.
-        $isTestMode = $params['test_mode'] == 'on';
-
-        if ($isTestMode) {
-            $params['test_mode'] = '';
-            $this->API->setParams($params);
-            try {
-                $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
-                // Incorrect mode
-                $configarray = $this->generateLoginError($configarray, true);
-            } catch (\Exception $e) {
-                // Incorrect credentials
-                $configarray = $this->generateLoginError($configarray);
+        } catch (\Exception $ex) {
+            if (
+                $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthority
+                || $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthorityCTE
+            ) {
+                return $this->generateLoginError($configarray, self::ERROR_NOT_HAVE_AUTHORITY);
+            } elseif ($ex->getCode() == OpenproviderErrorType::NonSignedAgreement) {
+                return $this->generateLoginError($configarray, self::ERROR_NOT_SIGNED_AGREEMENT);
             }
-        } else {
-            $params['test_mode'] = 'on';
-            $this->API->setParams($params);
-            try {
-                $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
-                // Incorrect mode
-                $configarray = $this->generateLoginError($configarray, true);
-            } catch (\Exception $e) {
-                // Incorrect credentials
-                $configarray = $this->generateLoginError($configarray);
+        }
+
+        $params['test_mode'] = $params['test_mode'] == 'on'
+            ? ''
+            : 'on';
+
+        $this->API->setParams($params);
+        try {
+            $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
+            // Incorrect mode
+            $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
+        } catch (\Exception $e) {
+            if (
+                $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthority
+                || $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthorityCTE
+                || $ex->getCode() == OpenproviderErrorType::NonSignedAgreement
+            ) {
+                $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
+            } else {
+                $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_CREDENTIALS);
             }
         }
 
