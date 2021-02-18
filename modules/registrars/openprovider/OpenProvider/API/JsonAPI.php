@@ -3,8 +3,11 @@
 namespace OpenProvider\API;
 
 use Openprovider\Api\Rest\Client\Helpers\Api\TagServiceApi;
+
 use OpenProvider\WhmcsRegistrar\src\Configuration;
+
 use WeDevelopCoffee\wPower\Models\Registrar;
+
 use GuzzleHttp6\Client as HttpClient;
 
 require_once (realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php'));
@@ -33,6 +36,18 @@ class JsonAPI
 
     private $tokenSessionKey = null;
 
+    private $httpClient = null;
+
+    private $configuration = null;
+
+
+    /* ==================== CONTRACT SERVICES ==================== */
+
+    private $tagServiceApi = null;
+
+    /* ================== END CONTRACT SERVICES ================== */
+
+
     /* ==================== MAIN LOGIC ==================== */
 
     /**
@@ -47,6 +62,10 @@ class JsonAPI
 
         $this->timeout = APIConfig::$curlTimeout;
         $this->request = new RequestJSON();
+
+        $this->httpClient = new HttpClient();
+
+        $this->configuration = new \Openprovider\Api\Rest\Client\Base\Configuration();
 
         if (is_null($params))
             $params = (new Registrar())->getRegistrarData()['openprovider'];
@@ -70,17 +89,27 @@ class JsonAPI
 
         $this->tokenSessionKey = $sessionTokenVariable;
 
-        if (isset($_SESSION[$sessionTokenVariable]) && !empty($_SESSION[$sessionTokenVariable]))
+        if (isset($_SESSION[$sessionTokenVariable]) && !empty($_SESSION[$sessionTokenVariable])) {
             $this->token = $_SESSION[$sessionTokenVariable];
+            $this->configuration->setAccessToken($_SESSION[$sessionTokenVariable]);
+        }
         else {
             try {
                 $reply                           = $this->authLoginRequest($params['Username'], $params['Password']);
                 $this->token                     = $reply['token'];
                 $_SESSION[$sessionTokenVariable] = $reply['token'];
+                $this->configuration->setAccessToken($reply['token']);
             } catch (\Exception $ex) {}
         }
 
+        $this->initContractServices();
+
         return $this;
+    }
+
+    private function initContractServices()
+    {
+        $this->tagServiceApi = new TagServiceApi($this->httpClient, $this->configuration);
     }
 
     /**
@@ -933,13 +962,7 @@ class JsonAPI
      */
     public function listTagsRequest()
     {
-        $httpClient = new HttpClient();
-        $configuration = new \Openprovider\Api\Rest\Client\Base\Configuration();
-        $configuration->setAccessToken($this->token);
-        $configuration->setHost($this->url);
-
-        $tagClient = new TagServiceApi($httpClient, $configuration);
-        $tags = $tagClient->listTags();
+        $tags = $this->tagServiceApi->listTags();
 
         return $tags->getData()->getResults();
     }
@@ -1008,10 +1031,14 @@ class JsonAPI
 
     public function setTestMode(bool $testMode = self::TEST_MODE_OFF)
     {
-        if ($testMode == self::TEST_MODE_ON)
+        if ($testMode == self::TEST_MODE_ON) {
             $this->url = Configuration::get('api_url_cte_v1beta');
-        else
+            $this->configuration->setHost(Configuration::get('api_url_cte_v1beta'));
+        }
+        else {
             $this->url = Configuration::get('api_url_v1beta');
+            $this->configuration->setHost(Configuration::get('api_url_v1beta'));
+        }
 
         return $this;
     }
