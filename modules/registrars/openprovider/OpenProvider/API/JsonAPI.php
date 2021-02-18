@@ -2,8 +2,10 @@
 
 namespace OpenProvider\API;
 
+use Openprovider\Api\Rest\Client\Helpers\Api\TagServiceApi;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WeDevelopCoffee\wPower\Models\Registrar;
+use GuzzleHttp6\Client as HttpClient;
 
 require_once (realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php'));
 
@@ -122,6 +124,8 @@ class JsonAPI
         string $method = APIMethods::GET
     ): array
     {
+        $this->url .= '/v1beta';
+
         // prepare request
         $this->request->setEndpoint($endpoint)
             ->setMethod($method)
@@ -924,12 +928,20 @@ class JsonAPI
 
     // Tags
 
-    public function listTagsRequest($args)
+    /**
+     * @throws \Openprovider\Api\Rest\Client\Base\ApiException
+     */
+    public function listTagsRequest()
     {
-        return $this->_sendRequest(
-            APIEndpoints::TAGS,
-            $args
-        );
+        $httpClient = new HttpClient();
+        $configuration = new \Openprovider\Api\Rest\Client\Base\Configuration();
+        $configuration->setAccessToken($this->token);
+        $configuration->setHost($this->url);
+
+        $tagClient = new TagServiceApi($httpClient, $configuration);
+        $tags = $tagClient->listTags();
+
+        return $tags->getData()->getResults();
     }
 
 
