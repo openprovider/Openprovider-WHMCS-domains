@@ -2,9 +2,15 @@
 namespace OpenProvider\WhmcsRegistrar\src;
 
 use OpenProvider\API\Customer;
+
+use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
+use OpenProvider\WhmcsRegistrar\helpers\DB;
 use OpenProvider\WhmcsRegistrar\Models\Tld;
+
 use WeDevelopCoffee\wPower\Models\Domain;
 use WeDevelopCoffee\wPower\Handles\Models\Handle as ModelHandle;
+
+use WHMCS\Database\Capsule;
 
 /**
  * Handle
@@ -254,7 +260,7 @@ class Handle
     /**
      * Prepare the handle.
      *
-     * @return void
+     * @return Handle
      */
     protected function prepareHandle ($params, $type)
     {
@@ -266,6 +272,19 @@ class Handle
             $domainTld = new Tld($params['tld']);
             if ($domainTld->isNeededShortState()) {
                 $this->customer->setAddressStateShort();
+            }
+        }
+
+        // Get customer tag by userid
+        if (isset($params['userid'])) {
+            if (DB::checkTableExist(DatabaseTable::ClientTags)) {
+                $tags = Capsule::table(DatabaseTable::ClientTags)
+                    ->where('clientid', $params['userid'])
+                    ->select('tag')
+                    ->first();
+
+                if ($tags)
+                    $this->customer->setTags([$tags->tag]);
             }
         }
 
