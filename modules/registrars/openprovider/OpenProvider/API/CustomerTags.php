@@ -42,9 +42,8 @@ class CustomerTags extends \OpenProvider\API\AutoloadConstructor
 
     /**
      * Get tags
-     * 
-     * @licensed to Openprovider
-     * @return array|string
+     *
+     * @return array
      */
     public function getTags()
     {

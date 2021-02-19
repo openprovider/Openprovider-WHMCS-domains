@@ -214,4 +214,9 @@ class Customer
                 break;
         }
     }
+
+    public function setTags($tags)
+    {
+        $this->tags = (new CustomerTags($tags))->getTags();
+    }
 }
