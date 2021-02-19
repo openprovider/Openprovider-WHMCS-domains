@@ -26,14 +26,14 @@ class AdminClientProfileTabController
         $OpenProvider = new OpenProvider();
 
         try {
-            $tagsData = $OpenProvider->api->sendRequest('searchTagRequest');
+            $tagsData = $OpenProvider->api->listTagsRequest();
         } catch (\Exception $e) {}
 
         $tags = [];
-        if (isset($tagsData['results']) && count($tagsData['results']) > 0) {
+        if (isset($tagsData) && count($tagsData) > 0) {
             $tags = array_map(function ($item) {
                 return $item['value'];
-            }, $tagsData['results']);
+            }, $tagsData);
         }
 
         $selectedTag = '';

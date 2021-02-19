@@ -2,7 +2,12 @@
 
 namespace OpenProvider\API;
 
+use Openprovider\Api\Rest\Client\Auth\Model\AuthLoginRequest;
+use Openprovider\Api\Rest\Client\Client;
+use Openprovider\Api\Rest\Client\Helpers\Api\TagServiceApi;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
+
+use GuzzleHttp6\Client as HttpClient;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
 
@@ -25,6 +30,9 @@ class API
     protected $password         =   null;
     protected $cache; // Cache responses made in this request.
 
+    protected $httpClient;
+    protected $configuration;
+
     /**
      * API constructor.
      */
@@ -32,6 +40,9 @@ class API
     {
         $this->timeout = \OpenProvider\API\APIConfig::$curlTimeout;
         $this->request = new \OpenProvider\API\Request();
+
+        $this->httpClient = new HttpClient();
+        $this->configuration = new \Openprovider\Api\Rest\Client\Base\Configuration();
     }
 
     /**
@@ -40,10 +51,14 @@ class API
      */
     public function setParams($params, $debug = 0)
     {
+        session_start();
+
         if(isset($params['test_mode']) && $params['test_mode'] == 'on')
             $this->url = Configuration::get('api_url_cte');
         else
             $this->url = Configuration::get('api_url');
+
+        $this->configuration->setHost($this->url);
 
         $this->request->setAuth(array(
             'username' => $params["Username"],
@@ -54,6 +69,22 @@ class API
         $this->password     =   $params['Password'];
 
         $this->debug        =   $debug;
+
+        $tokenNameHash = md5("$this->url-{$params['Username']}-{$params['Password']}");
+        $sessionTokenVariable = "token-$tokenNameHash";
+        if (isset($_SESSION[$sessionTokenVariable]) && !empty($_SESSION[$sessionTokenVariable])) {
+            $this->configuration->setAccessToken($_SESSION[$sessionTokenVariable]);
+        } else {
+            $client = new Client($this->httpClient, $this->configuration);
+            $reply = $client->getAuthModule()->getAuthApi()->login(
+                new AuthLoginRequest([
+                    'username' => $this->username,
+                    'password' => $this->password
+                ])
+            );
+            $_SESSION[$sessionTokenVariable] = $reply->getData()->getToken();
+            $this->configuration->setAccessToken($_SESSION[$sessionTokenVariable]);
+        }
     }
 
     public function modifyCustomer(\OpenProvider\API\Customer $customer)
@@ -869,5 +900,12 @@ class API
     public function searchSSL()
     {
         return $this->sendRequest('searchOrderSslCertRequest');
+    }
+
+    public function listTagsRequest()
+    {
+        $tagsClient = new TagServiceApi($this->httpClient, $this->configuration);
+
+        return $tagsClient->listTags()->getData()->getResults();
     }
 }

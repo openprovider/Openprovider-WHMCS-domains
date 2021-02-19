@@ -2,8 +2,8 @@
 
 return [
     //Openprovider Production and CTE API endpoints
-    'api_url'                           => 'https://api.openprovider.eu/', 
-    'api_url_cte'                       => 'https://api.cte.openprovider.eu/', 
+    'api_url'                           => 'https://api.openprovider.eu',
+    'api_url_cte'                       => 'https://api.cte.openprovider.eu',
     
     //  Default: false, boolean - Set to true to allow support for premium domains
     'OpenproviderPremium'               => false, 
