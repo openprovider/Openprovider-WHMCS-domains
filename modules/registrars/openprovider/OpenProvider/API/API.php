@@ -5,6 +5,8 @@ namespace OpenProvider\API;
 use Openprovider\Api\Rest\Client\Auth\Model\AuthLoginRequest;
 use Openprovider\Api\Rest\Client\Client;
 use Openprovider\Api\Rest\Client\Helpers\Api\TagServiceApi;
+use Openprovider\Api\Rest\Client\Base\Configuration as RestConfiguration;
+
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 use GuzzleHttp6\Client as HttpClient;
@@ -33,21 +35,25 @@ class API
     protected $httpClient;
     protected $configuration;
 
+    // services
+    protected $tagService = null;
+
     /**
      * API constructor.
      */
     public function __construct()
     {
-        $this->timeout = \OpenProvider\API\APIConfig::$curlTimeout;
-        $this->request = new \OpenProvider\API\Request();
+        $this->timeout = APIConfig::$curlTimeout;
+        $this->request = new Request();
 
         $this->httpClient = new HttpClient();
-        $this->configuration = new \Openprovider\Api\Rest\Client\Base\Configuration();
+        $this->configuration = new RestConfiguration();
     }
 
     /**
      * @param $params
      * @param int $debug
+     * @throws \Openprovider\Api\Rest\Client\Base\ApiException
      */
     public function setParams($params, $debug = 0)
     {
@@ -72,33 +78,38 @@ class API
 
         $tokenNameHash = md5("$this->url-{$params['Username']}-{$params['Password']}");
         $sessionTokenVariable = "token-$tokenNameHash";
-        if (isset($_SESSION[$sessionTokenVariable]) && !empty($_SESSION[$sessionTokenVariable])) {
-            $this->configuration->setAccessToken($_SESSION[$sessionTokenVariable]);
-        } else {
+
+        if (!isset($_SESSION[$sessionTokenVariable]) || empty($_SESSION[$sessionTokenVariable])) {
             $client = new Client($this->httpClient, $this->configuration);
-            $reply = $client->getAuthModule()->getAuthApi()->login(
+            $reply  = $client->getAuthModule()->getAuthApi()->login(
                 new AuthLoginRequest([
                     'username' => $this->username,
                     'password' => $this->password
                 ])
             );
+
             $_SESSION[$sessionTokenVariable] = $reply->getData()->getToken();
-            $this->configuration->setAccessToken($_SESSION[$sessionTokenVariable]);
         }
+        $this->configuration->setAccessToken($_SESSION[$sessionTokenVariable]);
+
+        $this->initServices();
     }
 
-    public function modifyCustomer(\OpenProvider\API\Customer $customer)
+    private function initServices()
+    {
+        $this->tagService = new TagServiceApi($this->httpClient, $this->configuration);
+    }
+
+    public function modifyCustomer(Customer $customer)
     {
         $args = $customer;
         $this->sendRequest('modifyCustomerRequest', $args);
     }
 
-    public function createCustomerInOPdatabase(\OpenProvider\API\Customer $customer)
+    public function createCustomerInOPdatabase(Customer $customer)
     {
         $args = $customer;
-        $result = $this->sendRequest('createCustomerRequest', $args);
-
-        return $result;
+        return $this->sendRequest('createCustomerRequest', $args);
     }
 
     public function sendRequest($requestCommand, $args = null)
@@ -185,7 +196,7 @@ class API
         return $resultValue;
     }
 
-    protected function process(\OpenProvider\API\Request $r)
+    protected function process(Request $r)
     {
         if ($this->debug)
         {
@@ -247,13 +258,14 @@ class API
             echo $ret . "\n";
         }
 
-        return new \OpenProvider\API\Reply($ret);
+        return new Reply($ret);
     }
 
     /**
      *
      * @param array $createHandleArray
      * @return string Openprovider Customer Handle
+     * @throws \Exception
      */
     public function createCustomerRequest($createHandleArray)
     {
@@ -261,11 +273,11 @@ class API
         return $result['handle'];
     }
 
-    public function searchCustomerRequest($searchCustomerArray)
-    {
-        return $this->sendRequest('searchCustomerRequest', $searchCustomerArray);
-    }
-
+    /**
+     * Return reseller balance
+     * @return array
+     * @throws \Exception
+     */
     public function getResellerBalance()
     {
         return $this->sendRequest('retrieveResellerRequest');
@@ -303,7 +315,12 @@ class API
         return $this->sendRequest('searchExtensionRequest', $args);
     }
 
-    protected function searchZoneDnsRequest(\OpenProvider\API\Domain $domain)
+    /**
+     * @param Domain $domain
+     * @return array
+     * @throws \Exception
+     */
+    protected function searchZoneDnsRequest(Domain $domain)
     {
         $args = array(
             'namePattern' => $domain->getFullName(),
@@ -313,7 +330,12 @@ class API
         return $this->sendRequest('searchZoneDnsRequest', $args);
     }
 
-    public function registerDomain(\OpenProvider\API\DomainRegistration $domainRegistration)
+    /**
+     * @param DomainRegistration $domainRegistration
+     * @return array
+     * @throws \Exception
+     */
+    public function registerDomain(DomainRegistration $domainRegistration)
     {
         if($domainRegistration->dnsmanagement ==  1) {
             // check if zone exists
@@ -337,11 +359,12 @@ class API
 
     /**
      * Get domain name servers
-     * @param \OpenProvider\API\Domain $domain
+     * @param Domain $domain
      * @param bool $cache
      * @return array
+     * @throws \Exception
      */
-    public function getNameservers(\OpenProvider\API\Domain $domain, $cache = false)
+    public function getNameservers(Domain $domain, $cache = false)
     {
         $result = $this->retrieveDomainRequest($domain, $cache);
 
@@ -356,10 +379,11 @@ class API
 
     /**
      * Get registrar lock status
-     * @param \OpenProvider\API\Domain $domain
+     * @param Domain $domain
      * @return bool
+     * @throws \Exception
      */
-    public function getRegistrarLock(\OpenProvider\API\Domain $domain)
+    public function getRegistrarLock(Domain $domain)
     {
         $result         =   $this->retrieveDomainRequest($domain);
         $lockedStatus   =   $result['isLocked'] ? true : false;
@@ -369,10 +393,11 @@ class API
 
     /**
      * Get the soft renewal date
-     * @param \OpenProvider\API\Domain $domain
+     * @param Domain $domain
      * @return bool|string False if not date is provided.
+     * @throws \Exception
      */
-    public function getSoftRenewalExpiryDate(\OpenProvider\API\Domain $domain)
+    public function getSoftRenewalExpiryDate(Domain $domain)
     {
         $result         =   $this->retrieveDomainRequest($domain);
 
@@ -384,11 +409,12 @@ class API
 
     /**
      *
-     * @param \OpenProvider\API\Domain $domain
-     * @param type $nameServers
-     * @return type
+     * @param Domain $domain
+     * @param $nameServers
+     * @return array
+     * @throws \Exception
      */
-    public function saveNameservers(\OpenProvider\API\Domain $domain, $nameServers)
+    public function saveNameservers(Domain $domain, $nameServers)
     {
         $args = array
         (
@@ -401,11 +427,12 @@ class API
 
     /**
      * Save registrar lock
-     * @param \OpenProvider\API\Domain $domain
-     * @param type $lockStatus
-     * @return type
+     * @param Domain $domain
+     * @param $lockStatus
+     * @return array
+     * @throws \Exception
      */
-    public function saveRegistrarLock(\OpenProvider\API\Domain $domain, $lockStatus)
+    public function saveRegistrarLock(Domain $domain, $lockStatus)
     {
         $args = array
         (
@@ -418,10 +445,11 @@ class API
 
     /**
      * Save zone records
-     * @param \OpenProvider\API\Domain $domain
-     * @param type $dnsRecordsArr
+     * @param Domain $domain
+     * @param $dnsRecordsArr
+     * @throws \Exception
      */
-    public function saveDNS(\OpenProvider\API\Domain $domain, $dnsRecordsArr)
+    public function saveDNS(Domain $domain, $dnsRecordsArr)
     {
         $searchArgs = array
         (
@@ -459,9 +487,10 @@ class API
 
     /**
      * Delete zone records
-     * @param \OpenProvider\API\Domain $domain
+     * @param Domain $domain
+     * @return bool
      */
-    public function deleteDNS(\OpenProvider\API\Domain $domain)
+    public function deleteDNS(Domain $domain)
     {
         try
         {
@@ -480,10 +509,11 @@ class API
 
     /**
      * Get zone records
-     * @param \OpenProvider\API\Domain $domain
-     * @return type
+     * @param Domain $domain
+     * @return array
+     * @throws \Exception
      */
-    public function getDNS(\OpenProvider\API\Domain $domain)
+    public function getDNS(Domain $domain)
     {
         $searchArgs = array
         (
@@ -507,9 +537,10 @@ class API
 
     /**
      * Delete domain
-     * @param \OpenProvider\API\Domain $domain
+     * @param Domain $domain
+     * @throws \Exception
      */
-    public function requestDelete(\OpenProvider\API\Domain $domain)
+    public function requestDelete(Domain $domain)
     {
         $args = array
         (
@@ -522,15 +553,16 @@ class API
 
     /**
      * Get domain contact details
-     * @param \OpenProvider\API\Domain $domain
-     * @return type
+     * @param Domain $domain
+     * @return array
+     * @throws \Exception
      */
-    public function getContactDetails(\OpenProvider\API\Domain $domain)
+    public function getContactDetails(Domain $domain)
     {
         $domainInfo = $this->retrieveDomainRequest($domain);
 
         $contacts   =   array();
-        foreach(\OpenProvider\API\APIConfig::$handlesNames as $key => $name)
+        foreach(APIConfig::$handlesNames as $key => $name)
         {
             if(empty($domainInfo[$key]))
             {
@@ -552,6 +584,7 @@ class API
      * @param string $handle Customer handle
      * @param boolean $raw *optional* false If set to true, returns the raw output.
      * @return array
+     * @throws \Exception
      */
     public function retrieveCustomerRequest($handle, $raw = false)
     {
@@ -586,11 +619,12 @@ class API
     /**
      * Update the handle with the domain.
      *
-     * @param \OpenProvider\API\Domain $domain
+     * @param Domain $domain
      * @param array $handles
      * @return void
+     * @throws \Exception
      */
-    public function modifyDomainCustomers(\OpenProvider\API\Domain $domain, $handles)
+    public function modifyDomainCustomers(Domain $domain, array $handles)
     {
         $args = $handles;
         $args['domain'] = $domain;
@@ -601,6 +635,7 @@ class API
     /**
      * Search a domain in Openprovider.
      * @param array $filters
+     * @return array
      * @throws \Exception
      */
     public function searchDomain($filters = [])
@@ -615,9 +650,10 @@ class API
 
     /**
      * Transfer domain
-     * @param \OpenProvider\API\DomainTransfer $domainTransfer
+     * @param DomainTransfer $domainTransfer
+     * @throws \Exception
      */
-    public function transferDomain(\OpenProvider\API\DomainTransfer $domainTransfer)
+    public function transferDomain(DomainTransfer $domainTransfer)
     {
         if($domainTransfer->dnsmanagement ==  1) {
             // check if zone exists
@@ -641,11 +677,12 @@ class API
 
     /**
      *
-     * @param \OpenProvider\API\Domain $domain
+     * @param Domain $domain
      * @param \DateTime $scheduled_date
      * @return array
+     * @throws \Exception
      */
-    public function modifyScheduledTransferDate(\OpenProvider\API\Domain $domain, $scheduled_date)
+    public function modifyScheduledTransferDate(Domain $domain, $scheduled_date)
     {
         $args = array
         (
@@ -659,10 +696,11 @@ class API
 
     /**
      * Renew domain
-     * @param \OpenProvider\API\Domain $domain
-     * @param type $period
+     * @param Domain $domain
+     * @param $period
+     * @throws \Exception
      */
-    public function renewDomain(\OpenProvider\API\Domain $domain, $period)
+    public function renewDomain(Domain $domain, $period)
     {
         $args = array
         (
@@ -675,10 +713,10 @@ class API
 
     /**
      * Restore domain
-     * @param \OpenProvider\API\Domain $domain
-     * @param type $period
+     * @param Domain $domain
+     * @throws \Exception
      */
-    public function restoreDomain(\OpenProvider\API\Domain $domain)
+    public function restoreDomain(Domain $domain)
     {
         $args = array
         (
@@ -690,10 +728,11 @@ class API
 
     /**
      * Get domain epp code
-     * @param \OpenProvider\API\Domain $domain
-     * @return type
+     * @param Domain $domain
+     * @return string
+     * @throws \Exception
      */
-    public function getEPPCode(\OpenProvider\API\Domain $domain)
+    public function getEPPCode(Domain $domain)
     {
         $domainInfo = $this->retrieveDomainRequest($domain);
         return $domainInfo['authCode'];
@@ -701,18 +740,20 @@ class API
 
     /**
      * Creaat domain name server
-     * @param \OpenProvider\API\DomainNameServer $nameServer
+     * @param DomainNameServer $nameServer
+     * @throws \Exception
      */
-    public function registerNameserver(\OpenProvider\API\DomainNameServer $nameServer)
+    public function registerNameserver(DomainNameServer $nameServer)
     {
         $this->sendRequest('createNsRequest', $nameServer);
     }
 
     /**
      * Delete domain name server
-     * @param \OpenProvider\API\DomainNameServer $nameServer
+     * @param DomainNameServer $nameServer
+     * @throws \Exception
      */
-    public function deleteNameserver(\OpenProvider\API\DomainNameServer $nameServer)
+    public function deleteNameserver(DomainNameServer $nameServer)
     {
         $this->sendRequest('deleteNsRequest', $nameServer);
     }
@@ -721,11 +762,11 @@ class API
     /**
      *
      * @param string $request
-     * @param \OpenProvider\API\DomainNameServer $nameServer
+     * @param DomainNameServer $nameServer
      * @param string $currentIp
      * @throws \Exception
      */
-    public function nameserverRequest($request, \OpenProvider\API\DomainNameServer $nameServer, $currentIp = null)
+    public function nameserverRequest($request, DomainNameServer $nameServer, $currentIp = null)
     {
         if ('modify' == $request)
         {
@@ -742,12 +783,12 @@ class API
 
     /**
      * Get information about domain
-     * @param \OpenProvider\API\Domain $domain
+     * @param Domain $domain
      * @param bool $cache
      * @return array
      * @throws \Exception
      */
-    public function retrieveDomainRequest(\OpenProvider\API\Domain $domain, $cache = false)
+    public function retrieveDomainRequest(Domain $domain, $cache = false)
     {
         $domain_name = $domain->getFullName();
 
@@ -766,11 +807,12 @@ class API
 
     /**
      * Enable/Disable domain auto renew
-     * @param \OpenProvider\API\Domain $domain
-     * @param type $autoRenew
-     * @return type
+     * @param Domain $domain
+     * @param $autoRenew
+     * @return array
+     * @throws \Exception
      */
-    public function setAutoRenew(\OpenProvider\API\Domain $domain, $autoRenew)
+    public function setAutoRenew(Domain $domain, $autoRenew)
     {
         $args = array
         (
@@ -783,11 +825,12 @@ class API
 
     /**
      * Enable/Disable domain identity protection
-     * @param \OpenProvider\API\Domain $domain
-     * @param type $identityProtection
-     * @return type
+     * @param Domain $domain
+     * @param $identityProtection
+     * @return array
+     * @throws \Exception
      */
-    public function setPrivateWhoisEnabled (\OpenProvider\API\Domain $domain, $identityProtection)
+    public function setPrivateWhoisEnabled (Domain $domain, $identityProtection)
     {
         $args = array
         (
@@ -801,10 +844,11 @@ class API
 
     /**
      * Check domain availability
-     * @param \OpenProvider\API\Domain $domain
-     * @return type
+     * @param Domain $domain
+     * @return array
+     * @throws \Exception
      */
-    public function checkDomain(\OpenProvider\API\Domain $domain)
+    public function checkDomain(Domain $domain)
     {
         $args = array
         (
@@ -827,7 +871,8 @@ class API
      * If number of domains is over than 15 it will check only 15 first domains.
      *
      * @param array of \OpenProvider\API\Domain $domains
-     * @return type
+     * @return array
+     * @throws \Exception
      * @see https://doc.openprovider.eu/API_Module_Domain_checkDomainRequest
      */
     public function checkDomainArray($domains)
@@ -854,7 +899,8 @@ class API
 
     /**
      * Search for DNS template names
-     * @return type
+     * @return array
+     * @throws \Exception
      */
     public function searchTemplateDnsRequest()
     {
@@ -866,7 +912,7 @@ class API
      * @return array
      * @throws \Exception
      */
-    public function tryAgain(\OpenProvider\API\Domain $domain)
+    public function tryAgain(Domain $domain)
     {
         $args = array
         (
@@ -902,10 +948,14 @@ class API
         return $this->sendRequest('searchOrderSslCertRequest');
     }
 
+    /**
+     * Get tags list
+     *
+     * @return array
+     * @throws \Openprovider\Api\Rest\Client\Base\ApiException
+     */
     public function listTagsRequest()
     {
-        $tagsClient = new TagServiceApi($this->httpClient, $this->configuration);
-
-        return $tagsClient->listTags()->getData()->getResults();
+        return $this->tagService->listTags()->getData()->getResults();
     }
 }
