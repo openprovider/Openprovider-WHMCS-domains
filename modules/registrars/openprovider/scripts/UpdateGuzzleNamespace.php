@@ -30,13 +30,13 @@ class UpdateGuzzleNamespace
         $directory = opendir($pathDir);
         
         while ($element = readdir($directory)) {
-        
             if ($element == '.' || $element == '..') {
                 continue;
             }
             
             if (is_dir("{$pathDir}/{$element}")) {
                 self::replaceGuzzleInDirectory("{$pathDir}/{$element}");
+                
                 continue;
             }
             
