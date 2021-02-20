@@ -6,7 +6,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Openprovider\Api\Rest\Client\Auth\Model\AuthLoginRequest;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Client;
-use GuzzleHttp6\Client as HttpClient;
+use GuzzleHttp\Client as HttpClient;
 
 // Create new http client.
 $httpClient = new HttpClient();
