@@ -17,11 +17,11 @@ class UpdateGuzzleNamespace
         $vendorStaticDir = "{$vendorDir}/../vendor-static";
         
         self::takeoutGuzzleFromVendor($vendorDir, $vendorStaticDir);
-        self::replaceGuzzleInDirectory("{$vendorStaticDir}/guzzlehttp");
-        self::replaceGuzzleInDirectory("{$vendorStaticDir}/openprovider/rest-client-php/src");
+        self::replaceGuzzleNamespaceInDirectory("{$vendorStaticDir}/guzzlehttp");
+        self::replaceGuzzleNamespaceInDirectory("{$vendorStaticDir}/openprovider/rest-client-php/src");
     }
 
-    private static function replaceGuzzleInDirectory(string $pathDir)
+    private static function replaceGuzzleNamespaceInDirectory(string $pathDir)
     {
         if (!is_dir($pathDir)) {
             return;
@@ -35,7 +35,7 @@ class UpdateGuzzleNamespace
             }
 
             if (is_dir("{$pathDir}/{$element}")) {
-                self::replaceGuzzleInDirectory("{$pathDir}/{$element}");
+                self::replaceGuzzleNamespaceInDirectory("{$pathDir}/{$element}");
 
                 continue;
             }
