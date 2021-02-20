@@ -10,24 +10,17 @@ class UpdateGuzzleNamespace
     {
         $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
 
-        $guzzleRootPath = "{$vendorDir}/guzzlehttp";
-
-        $openproviderRestClientApiDir = "{$vendorDir}/openprovider";
-
-
-        if (is_dir($guzzleRootPath)){
-            self::replaceGuzzleInDirectory($guzzleRootPath);
+        $vendorStaticDir = "{$vendorDir}/../vendor-static";
+        
+        if (!is_dir("{$vendorDir}/guzzlehttp")) {
+            return;
         }
         
-        if (is_dir($openproviderRestClientApiDir)){
-            self::replaceGuzzleInDirectory($openproviderRestClientApiDir);
-        }
+        self::replaceGuzzleInDirectory("{$vendorDir}/guzzlehttp");
+        self::replaceGuzzleInDirectory("{$vendorDir}/openprovider");
 
-        $vendorStaticDir = "{$vendorDir}/../vendor-static";
-        $newGuzzleDir = "{$vendorStaticDir}/guzzlehttp";
-
-        self::removeDir($newGuzzleDir);
-        self::moveDir($guzzleRootPath, $vendorStaticDir);
+        self::removeDir("{$vendorStaticDir}/guzzlehttp");
+        self::moveDir("{$vendorDir}/guzzlehttp", $vendorStaticDir);
     }
 
     private static function replaceGuzzleInDirectory(string $pathDir)
