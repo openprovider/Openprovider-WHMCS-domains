@@ -2,18 +2,39 @@
     "autoload": {
         "psr-4": {
             "OpenProvider\\WhmcsRegistrar\\": "./",
-            "OpenProvider\\": "./OpenProvider"
+            "OpenProvider\\": "./OpenProvider",
+            "GuzzleHttp6\\": "vendor-static/guzzlehttp/guzzle/src",
+            "GuzzleHttp6\\Psr7\\": "vendor-static/guzzlehttp/psr7/src/",
+            "GuzzleHttp6\\Promise\\": "vendor-static/guzzlehttp/promises/src/"
         },
-        "files": ["helpers.php"]
+        "files":  [
+            "helpers.php",
+            "vendor-static/guzzlehttp/guzzle/src/functions_include.php",
+            "vendor-static/guzzlehttp/psr7/src/functions_include.php",
+            "vendor-static/guzzlehttp/promises/src/functions_include.php"
+        ]
     },
     "require": {
         "wedevelopcoffee/wpower": "2.2.*",
-        "viison/address-splitter": "^0.3.2"
+        "viison/address-splitter": "^0.3.2",
+        "openprovider/rest-client-php": "dev-v1beta"
     },
     "require-dev": {
         "phpunit/phpunit": "^7",
         "mockery/mockery": "^1.0",
         "php-mock/php-mock-mockery": "^1.2",
         "illuminate/database": "6.20.*"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://composer.openprovider.nl"
+        }
+    ],
+    "scripts": {
+        "post-update-cmd": [
+            "OpenProvider\\WhmcsRegistrar\\scripts\\UpdateGuzzleNamespace::postUpdate",
+            "composer dump-autoload"
+        ]
     }
 }
