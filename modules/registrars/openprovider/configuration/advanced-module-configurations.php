@@ -2,8 +2,8 @@
 
 return [
     //Openprovider Production and CTE API endpoints
-    'api_url'                           => 'https://api.openprovider.eu/', 
-    'api_url_cte'                       => 'https://api.cte.openprovider.eu/', 
+    'api_url'                           => 'https://api.openprovider.eu', 
+    'api_url_cte'                       => 'https://api.cte.openprovider.eu', 
     
     //  Default: false, boolean - Set to true to allow support for premium domains
     'OpenproviderPremium'               => false, 
@@ -37,4 +37,8 @@ return [
     // please check your Openprovider account for detailed pricing information
     // before activating automatic trustee activation.
     'requestTrusteeService' => [],
+    
+    // Temporary parameter
+    // If true, all requests send through contracts 
+    'contracts_api' => true,
 ];
