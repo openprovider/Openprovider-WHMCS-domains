@@ -2,7 +2,6 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
-use OpenProvider\API\API;
 use OpenProvider\API\Domain;
 use OpenProvider\OpenProvider;
 use OpenProvider\WhmcsRegistrar\helpers\DNS;
@@ -62,13 +61,10 @@ jQuery( document ).ready(function() {
                 ->first();
 
             // TODO: update this fragment when api change
-            $api = new API();
-            $params = (new Registrar())->getRegistrarData()['openprovider'];
-            $api->setParams($params);
             try {
                 $openProvider = new OpenProvider();
                 $domain = $openProvider->domain($isDomainEnabled->domain);
-                $op_domain = $api->retrieveDomainRequest($domain);
+                $op_domain = $openProvider->api->retrieveDomainRequest($domain);
                 if (!$op_domain)
                     return;
             } catch (\Exception $e) {

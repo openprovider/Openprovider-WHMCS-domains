@@ -1,11 +1,12 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use WHMCS\Carbon;
 use WHMCS\Domain\Registrar\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
+use OpenProvider\OpenProvider;
 use OpenProvider\API\Domain as api_domain;
 
 /**
@@ -14,9 +15,9 @@ use OpenProvider\API\Domain as api_domain;
 class DomainInformationController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
@@ -25,12 +26,12 @@ class DomainInformationController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, api_domain $api_domain)
+    public function __construct(Core $core, OpenProvider $openProvider, api_domain $api_domain)
     {
         parent::__construct($core);
 
-        $this->API = $API;
-        $this->api_domain = $api_domain;
+        $this->openProvider = $openProvider;
+        $this->api_domain   = $api_domain;
     }
 
     /**
@@ -45,14 +46,14 @@ class DomainInformationController extends BaseController
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
         // Launch API
-        $api    = $this->API;
+        $api    = $this->openProvider->api;
         $domain = $this->api_domain;
 
         $api->setParams($params);
 
         try {
-            $domain->load(array (
-                'name' => $params['sld'],
+            $domain->load(array(
+                'name'      => $params['sld'],
                 'extension' => $params['tld']
             ));
         } catch (\Exception $e) {
@@ -63,29 +64,30 @@ class DomainInformationController extends BaseController
         }
 
         // Get the data
-        $op_domain                  = $api->retrieveDomainRequest($domain, true);
-        $response = [];
-        $response['domain']         = $op_domain['domain']['name'] . '.' . $op_domain['domain']['extension'];
-        $response['tld']            = $op_domain['domain']['extension'];
-        $response['nameservers']    = $this->getNameservers($api, $domain);
-        $response['status']         = api_domain::convertOpStatusToWhmcs($op_domain['status']);
-        $response['transferlock']   = ($op_domain['isLocked'] == 0 ? false : true);
-        $response['expirydate']     = $op_domain['expirationDate'];
+        $op_domain                          = $api->retrieveDomainRequest($domain, true);
+        $response                           = [];
+        $response['domain']                 = $op_domain['domain']['name'] . '.' . $op_domain['domain']['extension'];
+        $response['tld']                    = $op_domain['domain']['extension'];
+        $response['nameservers']            = $this->getNameservers($api, $domain);
+        $response['status']                 = api_domain::convertOpStatusToWhmcs($op_domain['status']);
+        $response['transferlock']           = ($op_domain['isLocked'] == 0 ? false : true);
+        $response['expirydate']             = $op_domain['expirationDate'];
         $response['addons']['hasidprotect'] = ($op_domain['isPrivateWhoisEnabled'] == '1' ? true : false);
 
         // getting verification data
         $ownerEmail = '';
         try {
-            $domain            = new \OpenProvider\API\Domain();
+            $domain            = new api_domain();
             $domain->name      = $op_domain['domain']['name'];
             $domain->extension = $op_domain['domain']['extension'];
             $ownerInfo         = $api->getContactDetails($domain);
             $ownerEmail        = $ownerInfo['Owner']['Email Address'];
             $args              = [
-                'email'  => $ownerEmail,
+                'email' => $ownerEmail,
             ];
             $emailVerification = $api->sendRequest('searchEmailVerificationDomainRequest', $args);
-        } catch (Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         // check email verification status and choose options depend on it
         $firstVerification = isset($emailVerification['results'][0]) ? $emailVerification['results'][0] : false;
@@ -93,14 +95,15 @@ class DomainInformationController extends BaseController
         if (!$firstVerification) {
             try {
                 $args['email'] = $ownerEmail;
-                $reply = $api->sendRequest('startCustomerEmailVerificationRequest', $args);
+                $reply         = $api->sendRequest('startCustomerEmailVerificationRequest', $args);
                 if (isset($reply['id'])) {
                     $firstVerification['status']         = 'in progress';
                     $firstVerification['isSuspended']    = false;
                     $firstVerification['expirationDate'] = false;
                 }
 
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
 
         $verification = $this->getIrtpVerificationEmailOptions($firstVerification);
@@ -121,8 +124,9 @@ class DomainInformationController extends BaseController
             ->setPendingSuspension($verification['pending_suspension'])
             ->setIrtpVerificationTriggerFields($verification['irtp_verification_trigger_fields']);
 
-        if ($verification['domain_contact_change_expiry_date'])
+        if ($verification['domain_contact_change_expiry_date']) {
             $result->setDomainContactChangeExpiryDate(Carbon::createFromFormat('Y-m-d H:i:s', $verification['domain_contact_change_expiry_date']));
+        }
 
         return $result;
     }
@@ -132,11 +136,11 @@ class DomainInformationController extends BaseController
      * @param Domain $domain
      * @return array
      */
-    private function getNameservers(API $api, api_domain $domain): array
+    private function getNameservers($api, api_domain $domain): array
     {
         $nameservers = $api->getNameservers($domain, true);
-        $return = array ();
-        $i = 1;
+        $return      = array();
+        $i           = 1;
 
         foreach ($nameservers as $ns) {
             $return['ns' . $i] = $ns;
@@ -174,17 +178,19 @@ class DomainInformationController extends BaseController
         ];
 
         if ($verification) {
-            $result['domain_contact_change_pending']     = in_array($verification['status'], $allowedStatusesForPending);
-            $result['pending_suspension']                = !!$verification['isSuspended'];
+            $result['domain_contact_change_pending'] = in_array($verification['status'], $allowedStatusesForPending);
+            $result['pending_suspension']            = !!$verification['isSuspended'];
             try {
                 $result['domain_contact_change_expiry_date'] = (
                 isset($verification['expirationDate']) && !empty($verification['expirationDate'])
                     ? Carbon::createFromFormat('Y-m-d H:i:s', $verification['expirationDate'])
                     : false
                 );
-                if ($result['domain_contact_change_expiry_date'] && $result['domain_contact_change_expiry_date']->year < 1)
+                if ($result['domain_contact_change_expiry_date'] && $result['domain_contact_change_expiry_date']->year < 1) {
                     $result['domain_contact_change_expiry_date'] = false;
-            } catch (\Exception $e) {}
+                }
+            } catch (\Exception $e) {
+            }
         }
 
         return $result;

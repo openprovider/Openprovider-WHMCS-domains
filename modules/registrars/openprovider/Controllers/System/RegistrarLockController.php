@@ -1,9 +1,10 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
+use OpenProvider\OpenProvider;
 use OpenProvider\API\Domain;
 
 /**
@@ -13,22 +14,23 @@ use OpenProvider\API\Domain;
 class RegistrarLockController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
     private $domain;
+
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, OpenProvider $openProvider, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->API = $API;
-        $this->domain = $domain;
+        $this->openProvider = $openProvider;
+        $this->domain       = $domain;
     }
 
     /**
@@ -42,20 +44,16 @@ class RegistrarLockController extends BaseController
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
-        try
-        {
-            $api                =   $this->API;
-            $api->setParams($params);
-            $domain             =   $this->domain;
+        try {
+            $api = $this->openProvider->api;
+            $domain = $this->domain;
             $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
+                'name'      => $params['sld'],
+                'extension' => $params['tld']
             ));
 
-            $lockStatus         =   $api->getRegistrarLock($domain);
-        }
-        catch (\Exception $e)
-        {
+            $lockStatus = $api->getRegistrarLock($domain);
+        } catch (\Exception $e) {
             //Nothing...
         }
 
@@ -75,21 +73,17 @@ class RegistrarLockController extends BaseController
 
         $values = array();
 
-        try
-        {
-            $api                =   $this->API;
-            $api->setParams($params);
-            $domain             =   $this->domain;
+        try {
+            $api = $this->openProvider->api;
+            $domain = $this->domain;
             $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
+                'name'      => $params['sld'],
+                'extension' => $params['tld']
             ));
-            $lockStatus         =   $params["lockenabled"] == "locked" ? 1 : 0;
+            $lockStatus = $params["lockenabled"] == "locked" ? 1 : 0;
 
             $api->saveRegistrarLock($domain, $lockStatus);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
         return $values;

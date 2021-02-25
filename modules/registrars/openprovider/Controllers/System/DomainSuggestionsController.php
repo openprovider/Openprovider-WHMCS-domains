@@ -5,7 +5,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use \Exception;
 
-use OpenProvider\API\API;
+use OpenProvider\OpenProvider;
 use OpenProvider\API\Domain;
 
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -21,9 +21,9 @@ use WHMCS\Domains\DomainLookup\SearchResult;
 class DomainSuggestionsController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
@@ -36,12 +36,12 @@ class DomainSuggestionsController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, Api $API, Domain $domain)
+    public function __construct(Core $core, OpenProvider $openProvider, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->domain = $domain;
-        $this->API = $API;
+        $this->domain       = $domain;
+        $this->openProvider = $openProvider;
 
         $this->resultsList = new ResultsList();
     }
@@ -53,24 +53,26 @@ class DomainSuggestionsController extends BaseController
      */
     public function get($params)
     {
-        $api = $this->API;
-        $api->setParams($params);
+        $api  = $this->openProvider->api;
         $args = [
-            'name' => $params['searchTerm'],
+            'name'  => $params['searchTerm'],
             'limit' => 10,
         ];
 
         $suggestionSettings = $params['suggestionSettings'];
-        if (isset($suggestionSettings['preferredLanguage']) && !empty($suggestionSettings['preferredLanguage']))
+        if (isset($suggestionSettings['preferredLanguage']) && !empty($suggestionSettings['preferredLanguage'])) {
             $args['language'] = $suggestionSettings['preferredLanguage'];
+        }
 
-        if (isset($suggestionSettings['sensitive']) && $suggestionSettings['sensitive'] == 'on')
+        if (isset($suggestionSettings['sensitive']) && $suggestionSettings['sensitive'] == 'on') {
             $args['sensitive'] = 1;
+        }
 
-        if (isset($suggestionSettings['suggestTlds']) && count($suggestionSettings['suggestTlds']) > 0)
+        if (isset($suggestionSettings['suggestTlds']) && count($suggestionSettings['suggestTlds']) > 0) {
             $args['tlds'] = array_map(function ($tld) {
                 return mb_substr($tld, 1);
             }, explode(',', $suggestionSettings['suggestTlds']));
+        }
 
         //get suggested domains
         try {
@@ -81,10 +83,10 @@ class DomainSuggestionsController extends BaseController
 
         $domains = [];
         foreach ($suggestedDomains as $item) {
-            $domain = new Domain();
-            $domain->extension  = $item['tld'];
-            $domain->name       = $item['domain'];
-            $domains[]          = $domain;
+            $domain            = new Domain();
+            $domain->extension = $item['tld'];
+            $domain->name      = $item['domain'];
+            $domains[]         = $domain;
         }
 
         // check domains availability and append to this->resultsList
@@ -101,19 +103,17 @@ class DomainSuggestionsController extends BaseController
      */
     private function checkDomains($domains, $params)
     {
-        $api = $this->API;
+        $api = $this->openProvider->api;
 
         try {
             $checkedDomains = $api->checkDomainArray($domains);
         } catch (Exception $e) {
-            if($e->getcode() == 307)
-            {
+            if ($e->getcode() == 307) {
                 // OP response: "Your domain request contains an invalid extension!""
                 // Meaning: the id is not supported.
-                foreach($params['tldsToInclude'] as $tld)
-                {
-                    $domain_tld  = $tld;
-                    $domain_sld  = $params['isIdnDomain'] ? $params['punyCodeSearchTerm'] : $params['searchTerm'];
+                foreach ($params['tldsToInclude'] as $tld) {
+                    $domain_tld   = $tld;
+                    $domain_sld   = $params['isIdnDomain'] ? $params['punyCodeSearchTerm'] : $params['searchTerm'];
                     $searchResult = new SearchResult($domain_sld, $domain_tld);
                     $searchResult->setStatus(SearchResult::STATUS_TLD_NOT_SUPPORTED);
                     $this->resultsList->append($searchResult);
@@ -124,14 +124,12 @@ class DomainSuggestionsController extends BaseController
             return;
         }
 
-        foreach($checkedDomains as $domain_status)
-        {
+        foreach ($checkedDomains as $domain_status) {
             $domain_sld = explode('.', $domain_status['domain'])[0];
             $domain_tld = str_replace($domain_sld . '.', '', $domain_status['domain']);
 
             $searchResult = new SearchResult($domain_sld, $domain_tld);
-            if($params['OpenproviderPremium'] == 'on' && isset($domain_status['premium']) && $domain_status['status'] == 'free')
-            {
+            if ($params['OpenproviderPremium'] == 'on' && isset($domain_status['premium']) && $domain_status['status'] == 'free') {
                 $status = SearchResult::STATUS_NOT_REGISTERED;
                 $searchResult->setPremiumDomain(true);
 
@@ -139,14 +137,14 @@ class DomainSuggestionsController extends BaseController
                 $args['domain']['extension'] = $domain_tld;
                 $args['operation']           = 'create';
                 try {
-                    $create_pricing              = $api->sendRequest('retrievePriceDomainRequest', $args);
+                    $create_pricing = $api->sendRequest('retrievePriceDomainRequest', $args);
                 } catch (Exception $e) {
                     continue;
                 }
 
                 $args['operation'] = 'transfer';
                 try {
-                    $transfer_pricing  = $api->sendRequest('retrievePriceDomainRequest', $args);
+                    $transfer_pricing = $api->sendRequest('retrievePriceDomainRequest', $args);
                 } catch (Exception $e) {
                     continue;
                 }
@@ -154,16 +152,16 @@ class DomainSuggestionsController extends BaseController
                 // Retrieve the pricing
                 $searchResult->setPremiumCostPricing(
                     array(
-                        'register'  => $create_pricing['price']['reseller']['price'],
-                        'renew'     =>  $transfer_pricing['price']['reseller']['price'],
+                        'register'     => $create_pricing['price']['reseller']['price'],
+                        'renew'        => $transfer_pricing['price']['reseller']['price'],
                         'CurrencyCode' => $create_pricing['price']['reseller']['currency'],
                     )
                 );
-            }
-            elseif($domain_status['status'] == 'free')
+            } elseif ($domain_status['status'] == 'free') {
                 $status = SearchResult::STATUS_NOT_REGISTERED;
-            else
+            } else {
                 $status = SearchResult::STATUS_REGISTERED;
+            }
 
             $searchResult->setStatus($status);
 

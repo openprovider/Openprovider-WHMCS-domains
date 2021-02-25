@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Exception;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
+use OpenProvider\OpenProvider;
 use OpenProvider\API\Domain;
 
 /**
@@ -16,9 +16,9 @@ use OpenProvider\API\Domain;
 class RenewDomainController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
@@ -26,18 +26,18 @@ class RenewDomainController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, OpenProvider $openProvider, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->API = $API;
+        $this->openProvider = $openProvider;
         $this->domain = $domain;
     }
 
     public function renew($params)
     {
         // Prepare the renewal
-        $domain = new \OpenProvider\API\Domain(array(
+        $domain = new Domain(array(
             'name' => $params['original']['domainObj']->getSecondLevel(),
             'extension' => $params['original']['domainObj']->getTopLevel()
         ));
@@ -45,8 +45,7 @@ class RenewDomainController extends BaseController
 
         $period = $params['regperiod'];
 
-        $api = new \OpenProvider\API\API();
-        $api->setParams($params);
+        $api = $this->openProvider->api;
 
         // If isInGracePeriod is true, renew the domain.
         if(isset($params['isInGracePeriod']) && $params['isInGracePeriod'] == true)

@@ -7,7 +7,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\ApiResponse;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use OpenProvider\OpenProvider;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use WHMCS\Database\Capsule;
@@ -37,10 +37,10 @@ class ApiController extends BaseController
     public function updateContactsTag($params)
     {
         $userId = (
-                isset($params['userid'])
-                && !empty($params['userid'])
-                && is_int(intval($params['userid']))
-            )
+            isset($params['userid'])
+            && !empty($params['userid'])
+            && is_int(intval($params['userid']))
+        )
             ? intval($params['userid'])
             : false;
 
@@ -53,7 +53,7 @@ class ApiController extends BaseController
         $tags = $tag && $tag->tag
             ? [
                 [
-                    'key' => 'customer',
+                    'key'   => 'customer',
                     'value' => $tag->tag,
                 ]
             ]
@@ -93,33 +93,35 @@ class ApiController extends BaseController
             return;
         }
 
-        $action = $params['action'];
+        $action    = $params['action'];
         $dnssecKey = [
             'flags'    => $params['flags'],
             'alg'      => $params['alg'],
             'protocol' => 3,
             'pubKey'   => $params['pubKey'],
         ];
+
         $api = $this->openProvider->api;
 
         $domainArray = $this->_getDomainNameExtension($domain->domain);
         // checking for duplicate dnssecKeys
-        $dnssecKeys = [];
+        $dnssecKeys       = [];
         $dnssecKeysHashes = [];
         try {
             $domain = $api->sendRequest('retrieveDomainRequest', [
                 'domain' => $domainArray,
             ]);
-            foreach($domain['dnssecKeys'] as $dnssec) {
+            foreach ($domain['dnssecKeys'] as $dnssec) {
                 $dnssecKeysHashes[] = md5($dnssec['flags'] . $dnssec['alg'] . $dnssec['protocol'] . trim($dnssec['pubKey']));
-                $dnssecKeys[] = [
+                $dnssecKeys[]       = [
                     'flags'    => $dnssec['flags'],
                     'alg'      => $dnssec['alg'],
                     'protocol' => 3,
                     'pubKey'   => $dnssec['pubKey'],
                 ];
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         $modifiedDnsSecKeys = [];
         switch ($action) {
@@ -133,8 +135,8 @@ class ApiController extends BaseController
 
         // update dnssecKeys with new record,
         $args = [
-            'dnssecKeys'      => $modifiedDnsSecKeys,
-            'domain'          => $domainArray,
+            'dnssecKeys' => $modifiedDnsSecKeys,
+            'domain'     => $domainArray,
         ];
 
         if (count($modifiedDnsSecKeys) > 0)
@@ -200,8 +202,9 @@ class ApiController extends BaseController
      */
     private function _createDnsSecRecord($dnssecKeys, $dnssecKeysHashes, $dnssecKey)
     {
-        if (in_array(md5($dnssecKey['flags'] . $dnssecKey['alg'] . strval(3) . trim($dnssecKey['pubKey'])), $dnssecKeysHashes))
+        if (in_array(md5($dnssecKey['flags'] . $dnssecKey['alg'] . strval(3) . trim($dnssecKey['pubKey'])), $dnssecKeysHashes)) {
             return $dnssecKeys;
+        }
 
         $dnssecKeys[] = $dnssecKey;
         return $dnssecKeys;
@@ -218,8 +221,9 @@ class ApiController extends BaseController
     private function _deleteDnsSecRecord($dnssecKeys, $dnssecKeysHashes, $dnssecKey)
     {
         $recordIndex = array_search(md5($dnssecKey['flags'] . $dnssecKey['alg'] . strval(3) . trim($dnssecKey['pubKey'])), $dnssecKeysHashes);
-        if ($recordIndex === false)
+        if ($recordIndex === false) {
             return $dnssecKeys;
+        }
 
         unset($dnssecKeys[$recordIndex]);
         return array_values($dnssecKeys);
@@ -239,7 +243,7 @@ class ApiController extends BaseController
             try {
                 $params = [
                     'handle' => $contactHandle,
-                    'tags' => $tags,
+                    'tags'   => $tags,
                 ];
 
                 $api->sendRequest('modifyCustomerRequest', $params);
@@ -261,8 +265,9 @@ class ApiController extends BaseController
             ->where('id', $domainId)
             ->first();
 
-        if ($domain)
+        if ($domain) {
             return $domain;
+        }
 
         return false;
     }
@@ -277,8 +282,8 @@ class ApiController extends BaseController
     {
         $domainArray = explode('.', $domain);
         return [
-            'extension' => $domainArray[count($domainArray)-1],
-            'name' => implode('.', array_slice($domainArray, 0, count($domainArray)-1)),
+            'extension' => $domainArray[count($domainArray) - 1],
+            'name'      => implode('.', array_slice($domainArray, 0, count($domainArray) - 1)),
         ];
     }
 }

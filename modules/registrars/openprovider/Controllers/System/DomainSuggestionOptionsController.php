@@ -1,4 +1,5 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -31,18 +32,18 @@ class DomainSuggestionOptionsController extends BaseController
         (
             "preferredLanguage" => array
             (
-                "FriendlyName"  => "Preferred language",
-                "Type"          => "dropdown",
-                "Options"       => $this->getLanguageOptions(),
-                "Description"   => "Choose the language for which suggestions will be provided",
-                "Default"       => "eng",
+                "FriendlyName" => "Preferred language",
+                "Type"         => "dropdown",
+                "Options"      => $this->getLanguageOptions(),
+                "Description"  => "Choose the language for which suggestions will be provided",
+                "Default"      => "eng",
             ),
-            "sensitive" => array
+            "sensitive"         => array
             (
-                "FriendlyName"  => "Block explicit language",
-                "Type"          => "yesno",
-                "Description"   => "Return only suggestions which do not contain explicit language",
-                "Default"       => "yes",
+                "FriendlyName" => "Block explicit language",
+                "Type"         => "yesno",
+                "Description"  => "Return only suggestions which do not contain explicit language",
+                "Default"      => "yes",
             ),
         );
     }

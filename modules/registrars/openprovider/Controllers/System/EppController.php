@@ -5,7 +5,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 use Exception;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
+use OpenProvider\OpenProvider;
 use OpenProvider\API\Domain;
 
 /**
@@ -15,22 +15,23 @@ use OpenProvider\API\Domain;
 class EppController extends BaseController
 {
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
     private $domain;
+
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, OpenProvider $openProvider, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->API = $API;
-        $this->domain = $domain;
+        $this->openProvider = $openProvider;
+        $this->domain       = $domain;
     }
 
     /**
@@ -45,26 +46,21 @@ class EppController extends BaseController
 
         $values = array();
 
-        try
-        {
-            $domain             =   $this->domain;
+        try {
+            $domain = $this->domain;
             $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
+                'name'      => $params['sld'],
+                'extension' => $params['tld']
             ));
 
-            $api                =   $this->API;
-            $api->setParams($params);
+            $api = $this->openProvider->api;
             $eppCode = $api->getEPPCode($domain);
 
-            if(!$eppCode)
-            {
+            if (!$eppCode) {
                 throw new Exception('EPP code is not set');
             }
             $values["eppcode"] = $eppCode ? $eppCode : '';
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
 

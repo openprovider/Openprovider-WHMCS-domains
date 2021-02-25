@@ -1,7 +1,8 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-use OpenProvider\API\API;
+use OpenProvider\OpenProvider;
 use OpenProvider\API\APIConfig;
 use OpenProvider\WhmcsRegistrar\enums\OpenproviderErrorType;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -20,16 +21,16 @@ class ConfigController extends BaseController
     /**
      * @var API
      */
-    private $API;
+    private $openProvider;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API)
+    public function __construct(Core $core, OpenProvider $openProvider)
     {
         parent::__construct($core);
 
-        $this->API = $API;
+        $this->openprovider = $openProvider;
     }
 
     /**
@@ -48,36 +49,10 @@ class ConfigController extends BaseController
         // If we have some login data, let's try to login.
         $areCredentialsExist = isset($params['Password']) && isset($params['Username'])
             && (!empty($params['Password']) || !empty($params['Username']));
-        if($areCredentialsExist)
-        {
+        if ($areCredentialsExist) {
             $configarray = $this->checkCredentials($configarray, $params);
         }
         return $configarray;
-    }
-
-    /**
-     * Process the latest post information as WHMCS does not provide the latest information by default.
-     *
-     * @param $params
-     * @param array $configarray
-     * @return array
-     */
-    protected function parsePostInput($params, array $configarray)
-    {
-        $x = explode(DIRECTORY_SEPARATOR, $_SERVER['SCRIPT_FILENAME']);
-        $filename = end($x);
-        if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'save' && $filename == 'configregistrars.php') {
-            foreach ($_REQUEST as $key => $val) {
-                if (isset($configarray[$key])) {
-                    // Prevent that we will overwrite the actual password with the stars.
-                    if (substr($val, 0, 3) != '***') {
-                        $params[$key] = $val;
-                    }
-                }
-            }
-        }
-
-        return array ($configarray, $params);
     }
 
     /**
@@ -91,32 +66,57 @@ class ConfigController extends BaseController
         (
             "version"   => array
             (
-                "FriendlyName"  => "Module Version",
-                "Type"          => "text",
-                "Description"   => APIConfig::getModuleVersion() . "<style>input[name='version']{display: none;}</style>",
+                "FriendlyName" => "Module Version",
+                "Type"         => "text",
+                "Description"  => APIConfig::getModuleVersion() . "<style>input[name='version']{display: none;}</style>",
             ),
-            "Username"          => array
+            "Username"  => array
             (
-                "FriendlyName"  => "Username",
-                "Type"          => "text",
-                "Size"          => "20",
-                "Description"   => "Openprovider login",
+                "FriendlyName" => "Username",
+                "Type"         => "text",
+                "Size"         => "20",
+                "Description"  => "Openprovider login",
             ),
-            "Password"          => array
+            "Password"  => array
             (
-                "FriendlyName"  => "Password",
-                "Type"          => "password",
-                "Size"          => "20",
-                "Description"   => "Openprovider password",
+                "FriendlyName" => "Password",
+                "Type"         => "password",
+                "Size"         => "20",
+                "Description"  => "Openprovider password",
             ),
-            "test_mode"   => array
+            "test_mode" => array
             (
-                "FriendlyName"  => "Enable Openprovider Test mode",
-                "Type"          => "yesno",
-                "Description"   => "Choose this option if you are using CTE credentials and want to connect to the test API.",
-                "Default"       => "no"
+                "FriendlyName" => "Enable Openprovider Test mode",
+                "Type"         => "yesno",
+                "Description"  => "Choose this option if you are using CTE credentials and want to connect to the test API.",
+                "Default"      => "no"
             ),
         );
+    }
+
+    /**
+     * Process the latest post information as WHMCS does not provide the latest information by default.
+     *
+     * @param $params
+     * @param array $configarray
+     * @return array
+     */
+    protected function parsePostInput($params, array $configarray)
+    {
+        $x        = explode(DIRECTORY_SEPARATOR, $_SERVER['SCRIPT_FILENAME']);
+        $filename = end($x);
+        if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'save' && $filename == 'configregistrars.php') {
+            foreach ($_REQUEST as $key => $val) {
+                if (isset($configarray[$key])) {
+                    // Prevent that we will overwrite the actual password with the stars.
+                    if (substr($val, 0, 3) != '***') {
+                        $params[$key] = $val;
+                    }
+                }
+            }
+        }
+
+        return array($configarray, $params);
     }
 
     /**
@@ -128,7 +128,7 @@ class ConfigController extends BaseController
      */
     protected function generateLoginError(array $configarray, $error)
     {
-        $loginFailed = [
+        $loginFailed                = [
             'FriendlyName' => '<b><strong style="color:Tomato;">Login Unsuccessful:</strong></b>',
         ];
         $loginFailed['Description'] = "<b><strong style='color:#ff6347;'>$error</strong></b>";
@@ -154,10 +154,10 @@ class ConfigController extends BaseController
 
     protected function checkCredentials($configarray, $params)
     {
+        $api = $this->openprovider->api;
         try {
-            $this->API->setParams($params);
             // Try to login and fetch the DNS template data.
-            $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
+            $uselessApiCall = $api->sendRequest('retrieveUpdateMessageRequest');
             return $configarray;
         } catch (\Exception $ex) {
             if (
@@ -174,9 +174,9 @@ class ConfigController extends BaseController
             ? ''
             : 'on';
 
-        $this->API->setParams($params);
+        $api->setParams($params);
         try {
-            $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
+            $uselessApiCall = $api->sendRequest('retrieveUpdateMessageRequest');
             // Incorrect mode
             $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
         } catch (\Exception $e) {

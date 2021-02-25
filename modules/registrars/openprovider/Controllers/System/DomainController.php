@@ -3,7 +3,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use idna_convert;
-use OpenProvider\API\API;
+use OpenProvider\OpenProvider;
 use OpenProvider\API\Domain;
 use OpenProvider\API\APITools;
 use OpenProvider\API\DomainTransfer;
@@ -29,9 +29,9 @@ class DomainController extends BaseController
      */
     protected $additionalFields;
     /**
-     * @var API
+     * @var OpenProvider
      */
-    private $API;
+    private $openProvider;
     /**
      * @var Domain
      */
@@ -50,11 +50,11 @@ class DomainController extends BaseController
      *
      * @return void
      */
-    public function __construct(Core $core, API $API, Domain $domain, PremiumDomain $premiumDomain, AdditionalFields $additionalFields, Handle $handle)
+    public function __construct(Core $core, OpenProvider $openProvider, Domain $domain, PremiumDomain $premiumDomain, AdditionalFields $additionalFields, Handle $handle)
     {
         parent::__construct($core);
 
-        $this->API              = $API;
+        $this->openProvider     = $openProvider;
         $this->domain           = $domain;
         $this->additionalFields = $additionalFields;
         $this->handle           = $handle;
@@ -81,21 +81,23 @@ class DomainController extends BaseController
             // Prepare the nameservers
             $nameServers = APITools::createNameserversArray($params);
 
-            $api = $this->API;
-            $api->setParams($params);
+            $api = $this->openProvider->api;
             $handle = $this->handle;
             $handle->setApi($api);
 
             // Prepare the additional data
             $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
-            if (isset($additionalFields['extensionCustomerAdditionalData']))
+            if (isset($additionalFields['extensionCustomerAdditionalData'])) {
                 $handle->setExtensionAdditionalData($additionalFields['extensionCustomerAdditionalData']);
+            }
 
-            if (isset($additionalFields['customerAdditionalData']))
+            if (isset($additionalFields['customerAdditionalData'])) {
                 $handle->setCustomerAdditionalData($additionalFields['customerAdditionalData']);
+            }
 
-            if (isset($additionalFields['customer']))
+            if (isset($additionalFields['customer'])) {
                 $handle->setCustomerData($additionalFields['customer']);
+            }
 
             $ownerHandle = $handle->findOrCreate($params);
             $adminHandle = $handle->findOrCreate($params, 'admin');
@@ -137,8 +139,9 @@ class DomainController extends BaseController
                 );
             }
 
-            if ($params['idprotection'] == 1)
+            if ($params['idprotection'] == 1) {
                 $domainRegistration->isPrivateWhoisEnabled = 1;
+            }
 
             //use dns templates
             if (isset($params['dnsTemplate']) && !empty($params['dnsTemplate'])) {
@@ -147,12 +150,14 @@ class DomainController extends BaseController
 
             if (isset($params['requestTrusteeService']) && !empty($params['requestTrusteeService'])) {
                 $trusteeServiceTds = array_map(function ($tld) {
-                    if (!empty($tld) && $tld[0] == '.')
+                    if (!empty($tld) && $tld[0] == '.') {
                         return mb_strcut($tld, 1);
+                    }
                     return $tld;
                 }, $params['requestTrusteeService']);
-                if (in_array($domainRegistration->domain->extension, $trusteeServiceTds))
+                if (in_array($domainRegistration->domain->extension, $trusteeServiceTds)) {
                     $domainRegistration->useDomicile = 1;
+                }
             }
 
             $idn = new idna_convert();
@@ -192,8 +197,7 @@ class DomainController extends BaseController
                 'name'      => $params['sld'],
                 'extension' => $params['tld']
             ));
-            $api = new API();
-            $api->setParams($params);
+            $api = $this->openProvider->api;
 
             $nameServers = APITools::createNameserversArray($params);
 
@@ -202,11 +206,13 @@ class DomainController extends BaseController
 
             // Prepare the additional data
             $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
-            if (isset($additionalFields['extensionCustomerAdditionalData']))
+            if (isset($additionalFields['extensionCustomerAdditionalData'])) {
                 $handle->setExtensionAdditionalData($additionalFields['extensionCustomerAdditionalData']);
+            }
 
-            if (isset($additionalFields['customer']))
+            if (isset($additionalFields['customer'])) {
                 $handle->setCustomerAdditionalData($additionalFields['customer']);
+            }
 
             $ownerHandle = $handle->findOrCreate($params);
             $adminHandle = $handle->findOrCreate($params, 'admin');
@@ -224,26 +230,29 @@ class DomainController extends BaseController
             $domainTransfer->isDnssecEnabled = 0;
 
             // Check if premium is enabled. If so, set the received premium cost.
-            if ($params['premiumEnabled'] == true && $params['premiumCost'] != '')
+            if ($params['premiumEnabled'] == true && $params['premiumCost'] != '') {
                 $domainTransfer->acceptPremiumFee = $this->premiumDomain->getRegistrarPriceWhenResellerPriceMatches(
                     'transfer',
                     $params['sld'],
                     $params['tld'],
                     $params['premiumCost']
                 );
+            }
 
-            if ($params['idprotection'] == 1)
+            if ($params['idprotection'] == 1) {
                 $domainTransfer->isPrivateWhoisEnabled = 1;
+            }
 
             if (isset($params['dnsTemplate']) && !empty($params['dnsTemplate'])) {
                 $domainTransfer->nsTemplateName = $params['dnsTemplate'];
             }
 
-            if (isset($additionalFields['domainAdditionalData']))
+            if (isset($additionalFields['domainAdditionalData'])) {
                 $domainTransfer->additionalData = json_decode(
                     json_encode($additionalFields['domainAdditionalData']),
                     1
                 );
+            }
 
             if (isset($params['requestTrusteeService']) && !empty($params['requestTrusteeService'])) {
                 $trusteeServiceTds = array_map(function ($tld) {

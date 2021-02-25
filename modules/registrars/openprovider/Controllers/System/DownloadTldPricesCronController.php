@@ -1,10 +1,9 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
 use OpenProvider\WhmcsRegistrar\src\TldPriceCache;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
+use OpenProvider\OpenProvider;
 use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WHMCS\Domain\TopLevel\ImportItem;
@@ -16,10 +15,6 @@ use WHMCS\Results\ResultsList;
  */
 class DownloadTldPricesCronController extends BaseController
 {
-    /**
-     * @var API
-     */
-    private $API;
     /**
      * @var Domain
      */
