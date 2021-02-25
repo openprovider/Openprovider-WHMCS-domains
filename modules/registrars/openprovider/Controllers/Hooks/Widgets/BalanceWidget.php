@@ -1,7 +1,7 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks\Widgets;
 
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use OpenProvider\OpenProvider;
 use Punic\Exception;
 
 /**

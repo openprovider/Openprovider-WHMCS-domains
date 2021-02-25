@@ -3,7 +3,7 @@
 namespace OpenProvider\WhmcsRegistrar\helpers;
 
 use OpenProvider\WhmcsRegistrar\src\Configuration;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use OpenProvider\OpenProvider;
 use WHMCS\Database\Capsule;
 
 class DNS

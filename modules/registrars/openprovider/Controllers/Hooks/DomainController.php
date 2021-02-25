@@ -2,8 +2,8 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
-use WHMCS\Database\Capsule,
-    OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use WHMCS\Database\Capsule;
+use OpenProvider\OpenProvider;
 
 /**
  * Class DomainController

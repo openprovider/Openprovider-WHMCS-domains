@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use OpenProvider\OpenProvider;
 use WHMCS\Database\Capsule;
 
 /**
