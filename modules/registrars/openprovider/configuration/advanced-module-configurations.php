@@ -37,8 +37,4 @@ return [
     // please check your Openprovider account for detailed pricing information
     // before activating automatic trustee activation.
     'requestTrusteeService' => [],
-    
-    // Temporary parameter
-    // If true, all requests send through contracts 
-    'contracts_api' => true,
 ];

@@ -19,7 +19,7 @@ class ConfigController extends BaseController
     const ERROR_NOT_HAVE_AUTHORITY    = 'This ip address does not have authority to make API calls with this account. Please check the IP whitelist and blacklist of your account.';
 
     /**
-     * @var API
+     * @var OpenProvider
      */
     private $openProvider;
 
@@ -30,7 +30,7 @@ class ConfigController extends BaseController
     {
         parent::__construct($core);
 
-        $this->openprovider = $openProvider;
+        $this->openProvider = $openProvider;
     }
 
     /**
@@ -154,10 +154,10 @@ class ConfigController extends BaseController
 
     protected function checkCredentials($configarray, $params)
     {
-        $api = $this->openprovider->api;
+        $api = $this->openProvider->api;
         try {
             // Try to login and fetch the DNS template data.
-            $uselessApiCall = $api->sendRequest('retrieveUpdateMessageRequest');
+            $uselessApiCall = $api->getUpdateMessage();
             return $configarray;
         } catch (\Exception $ex) {
             if (
@@ -176,7 +176,7 @@ class ConfigController extends BaseController
 
         $api->setParams($params);
         try {
-            $uselessApiCall = $api->sendRequest('retrieveUpdateMessageRequest');
+            $uselessApiCall = $api->getUpdateMessage();
             // Incorrect mode
             $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
         } catch (\Exception $e) {
