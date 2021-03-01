@@ -4,6 +4,7 @@ namespace OpenProvider\API;
 
 use Openprovider\Api\Rest\Client\Base\Configuration as BaseConfiguration;
 use Openprovider\Api\Rest\Client\Client as ClientService;
+use Openprovider\Api\Rest\Client\Domain\Api\DomainServiceApi as DomainService;
 use Openprovider\Api\Rest\Client\Auth\Model\AuthLoginRequest;
 use GuzzleHttp6\Client as HttpClient;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
@@ -16,7 +17,9 @@ class APIV1 implements APIInterface
     private $token;
     private $httpClient;
     private $configuration;
+
     private $clientService;
+    private $domainService;
 
     public function __construct()
     {
@@ -90,6 +93,11 @@ class APIV1 implements APIInterface
             $this->httpClient,
             $this->configuration
         );
+
+        $this->domainService = new DomainService(
+            $this->httpClient,
+            $this->configuration
+        );
     }
 
     private function loginRequest()
@@ -102,5 +110,35 @@ class APIV1 implements APIInterface
         );
 
         return $reply->getData();
+    }
+
+    /**
+     * Get Domain by name and extension
+     *
+     * @param Domain $domain
+     * @return array
+     */
+    public function retrieveDomainRequest(Domain $domain)
+    {
+        $reply = $this->domainService->listDomains(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            $domain->extension,
+            null,
+            null,
+            $domain->name
+        );
+
+        return (array) json_decode($reply->getData()->getResults()[0], true);
     }
 }

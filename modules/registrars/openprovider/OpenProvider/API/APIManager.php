@@ -29,7 +29,10 @@ class APIManager
         }
 
         $this->api->setParams($this->params);
-        return call_user_func_array([$this->api, $methodName], $args);
+
+        $reply = call_user_func_array([$this->api, $methodName], $args);
+
+        return CamelCaseUnderscoreConverter::convertToCamelCase($reply);
     }
 
     public function setParams($params)

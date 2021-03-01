@@ -34,20 +34,14 @@ $domainName = $domain->domain;
 $OpenProvider = new OpenProvider();
 $api = $OpenProvider->api;
 
-$domainArray = explode('.', $domainName);
-$args = [
-    'domain' => [
-        'extension' => $domainArray[count($domainArray) - 1],
-        'name' => implode('.', array_slice($domainArray, 0, count($domainArray) - 1)),
-    ],
-];
+$domainArg = $OpenProvider->domain($domainName);
 
 $dnssecKeys = [];
 $isDnssecEnabled = false;
 try {
-    $domain = $api->sendRequest('retrieveDomainRequest', $args);
-    $dnssecKeys = $domain['dnssecKeys'];
-    $isDnssecEnabled = $domain['isDnssecEnabled'];
+    $domain_op = $api->retrieveDomainRequest($domainArg);
+    $dnssecKeys = $domain_op['dnssecKeys'];
+    $isDnssecEnabled = $domain_op['isDnssecEnabled'];
 } catch (\Exception $e) {
     header("Location: " . $_SERVER["HTTP_REFERER"]);
 }

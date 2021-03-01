@@ -103,14 +103,12 @@ class ApiController extends BaseController
 
         $api = $this->openProvider->api;
 
-        $domainArray = $this->_getDomainNameExtension($domain->domain);
+        $domainArgs = $this->openProvider->domain($domain->domain);
         // checking for duplicate dnssecKeys
         $dnssecKeys       = [];
         $dnssecKeysHashes = [];
         try {
-            $domain = $api->sendRequest('retrieveDomainRequest', [
-                'domain' => $domainArray,
-            ]);
+            $domain = $api->retrieveDomainRequest($domainArgs);
             foreach ($domain['dnssecKeys'] as $dnssec) {
                 $dnssecKeysHashes[] = md5($dnssec['flags'] . $dnssec['alg'] . $dnssec['protocol'] . trim($dnssec['pubKey']));
                 $dnssecKeys[]       = [
