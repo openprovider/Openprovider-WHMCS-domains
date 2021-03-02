@@ -13,7 +13,7 @@ use WeDevelopCoffee\wPower\Core\Core;
 class ConfigController extends BaseController
 {
     const ERROR_INCORRECT_CREDENTIALS = 'Please ensure credentials are correct';
-    const ERROR_INCORRECT_INVIRONMENT = 'Please ensure environment is correct';
+    const ERROR_INCORRECT_INVIRONMENT = 'The credentials do not appear to match the environment you have selected. You have provided live credentials and selected test mode, or vice-versa';
     const ERROR_NOT_SIGNED_AGREEMENT  = 'Account is blocked because of non-signed agreement. Log in to the control panel for more information.';
     const ERROR_NOT_HAVE_AUTHORITY    = 'This ip address does not have authority to make API calls with this account. Please check the IP whitelist and blacklist of your account.';
 
