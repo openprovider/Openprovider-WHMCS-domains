@@ -96,7 +96,7 @@ class DomainSuggestionsController extends BaseController
         $placementLogin = Configuration::get('placementPlusAccount');
         $placementPassword = Configuration::get('placementPlusPassword');
 
-        if ($placementLogin && $placementPassword) {
+        if ($placementLogin && $placementPassword && $params['test_mode'] != 'on') {
             $firstRankedDomain = 
                 $this->getSuggestedDomainFromPlacementPlus(
                     $params['searchTerm'], 
