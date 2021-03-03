@@ -8,6 +8,8 @@ use \Exception;
 use OpenProvider\API\API;
 use OpenProvider\API\Domain;
 
+use OpenProvider\PlacementPlus;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -88,7 +90,30 @@ class DomainSuggestionsController extends BaseController
         }
 
         // check domains availability and append to this->resultsList
-        $this->checkDomains($domains, $params);
+        $resultsList = $this->checkDomains($domains, $params);
+
+        // Get placement domain suggestion
+        $placementLogin = Configuration::get('placementPlusAccount');
+        $placementPassword = Configuration::get('placementPlusPassword');
+
+        if ($placementLogin && $placementPassword) {
+            $firstRankedDomain = 
+                $this->getSuggestedDomainFromPlacementPlus(
+                    $params['searchTerm'], 
+                    $placementLogin, 
+                    $placementPassword
+                );
+
+            if ($firstRankedDomain) {
+                $result = new SearchResult($firstRankedDomain['domain'], $firstRankedDomain['tld']); 
+                // put it on top
+                array_unshift($resultsList, $result);
+            }
+        }
+
+        foreach ($resultsList as $domain) {
+            $this->resultsList->append($domain);
+        }
         return $this->resultsList;
     }
 
@@ -97,12 +122,12 @@ class DomainSuggestionsController extends BaseController
      *
      * @param $domains
      * @param $params
-     * @return void
+     * @return array
      */
     private function checkDomains($domains, $params)
     {
         $api = $this->API;
-
+        $result = [];
         try {
             $checkedDomains = $api->checkDomainArray($domains);
         } catch (Exception $e) {
@@ -116,7 +141,7 @@ class DomainSuggestionsController extends BaseController
                     $domain_sld  = $params['isIdnDomain'] ? $params['punyCodeSearchTerm'] : $params['searchTerm'];
                     $searchResult = new SearchResult($domain_sld, $domain_tld);
                     $searchResult->setStatus(SearchResult::STATUS_TLD_NOT_SUPPORTED);
-                    $this->resultsList->append($searchResult);
+                    $result[] = $searchResult;
                 }
                 return;
             }
@@ -167,7 +192,26 @@ class DomainSuggestionsController extends BaseController
 
             $searchResult->setStatus($status);
 
-            $this->resultsList->append($searchResult);
+            $result[] = $searchResult;
         }
+
+        return $result;
+    }
+
+    private function getSuggestedDomainFromPlacementPlus($domain, $login, $password)
+    {
+        $reply = PlacementPlus::getSuggestionDomain($domain, $login, $password);
+        $data = json_decode($reply, true);
+        if (isset($data['output']['domains'][0])) {
+            $domain = $data['output']['domains'][0];
+            $result = [
+                'name'   => $domain['domain'],
+                'domain' => $domain['sld'],
+                'tld'    => $domain['tld'],
+            ];
+            return $result;
+        }
+
+        return false;
     }
 }
