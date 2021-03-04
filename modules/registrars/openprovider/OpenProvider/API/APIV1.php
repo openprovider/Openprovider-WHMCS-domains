@@ -24,20 +24,4 @@ class APIV1 implements APIInterface
     {
 
     }
-
-    /**
-     * @param $httpClient
-     */
-    public function setHttpClient($httpClient)
-    {
-        $this->httpClient = $httpClient;
-    }
-
-    /**
-     * @param $configuration
-     */
-    public function setConfiguration($configuration)
-    {
-        $this->configuration = $configuration;
-    }
 }
