@@ -55,21 +55,17 @@ class Request
         $credentialsElement->appendChild($clientElement);
 
         if ($this->placementplus) {
-            $placementplusNode = $dom->createElement('placementplus');
-
-            $placementplusInputElement = $dom->createElement('input');
+            $placementplusInputElement = $dom->createElement('placementplusinput');
             $placementplusInputElement->appendChild(
                 $dom->createTextNode(mb_convert_encoding($this->placementplus->input, \OpenProvider\API\APIConfig::$encoding))
             );
-            $placementplusNode->appendChild($placementplusInputElement);
+            $credentialsElement->appendChild($placementplusInputElement);
 
-            $placementplusOutputElement = $dom->createElement('output');
+            $placementplusOutputElement = $dom->createElement('placementplusoutput');
             $placementplusOutputElement->appendChild(
                 $dom->createTextNode(mb_convert_encoding($this->placementplus->output, \OpenProvider\API\APIConfig::$encoding))
             );
-            $placementplusNode->appendChild($placementplusOutputElement);
-
-            $credentialsElement->appendChild($placementplusNode);
+            $credentialsElement->appendChild($placementplusOutputElement);
 
             $this->clearPlacementPlus();
         }
