@@ -24,6 +24,7 @@ class API
     protected $username         =   null;
     protected $password         =   null;
     protected $cache; // Cache responses made in this request.
+    protected $placementplus    =   null;
 
     /**
      * API constructor.
@@ -56,6 +57,16 @@ class API
         $this->debug        =   $debug;
     }
 
+    public function setPlacementPlus($placementplus)
+    {
+        $this->placementplus = $placementplus;
+    }
+
+    public function clearPlacementPlus()
+    {
+        $this->placementplus = null;
+    }
+
     public function modifyCustomer(\OpenProvider\API\Customer $customer)
     {
         $args = $customer;
@@ -76,6 +87,10 @@ class API
         $this->request->setCommand($requestCommand);
 
         $this->request->setArgs(null);
+
+        if ($this->placementplus) {
+            $this->request->setPlacementPlus($this->placementplus);
+        }
 
         // prepare args
         if (isset($args) && !is_null($args))

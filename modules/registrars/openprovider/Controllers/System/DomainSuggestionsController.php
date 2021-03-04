@@ -59,7 +59,7 @@ class DomainSuggestionsController extends BaseController
         $api->setParams($params);
         $args = [
             'name' => $params['searchTerm'],
-            'limit' => 10,
+            'limit' => 9,
         ];
 
         $suggestionSettings = $params['suggestionSettings'];
@@ -74,9 +74,41 @@ class DomainSuggestionsController extends BaseController
                 return mb_substr($tld, 1);
             }, explode(',', $suggestionSettings['suggestTlds']));
 
+        $placementLogin = Configuration::get('placementPlusAccount');
+        $placementPassword = Configuration::get('placementPlusPassword');
+        $isTestMode = $params['test_mode'] != 'on';
+        $usePlacementPlus = $placementLogin && $placementPassword && $isTestMode;
+
+
+        // Get placement domain suggestion
+        if ($usePlacementPlus) {
+            $encodedDomain = urlencode($params['searchTerm']);
+
+            $firstRankedDomain =
+                $this->getSuggestedDomainFromPlacementPlus(
+                    $encodedDomain,
+                    $placementLogin,
+                    $placementPassword
+                );
+
+            if ($firstRankedDomain) {
+                $placementplus = new PlacementPlus([
+                    'input' => $encodedDomain,
+                    'output' => $firstRankedDomain['name']
+                ]);
+
+                $api->setPlacementPlus($placementplus);
+
+                $result = new SearchResult($firstRankedDomain['domain'], $firstRankedDomain['tld']);
+                // put it on top
+                $this->resultsList->append($result);
+            }
+        }
+
         //get suggested domains
         try {
             $suggestedDomains = $api->sendRequest('suggestNameDomainRequest', $args);
+            $api->clearPlacementPlus();
         } catch (Exception $e) {
             return $this->resultsList;
         }
@@ -91,25 +123,6 @@ class DomainSuggestionsController extends BaseController
 
         // check domains availability and append to this->resultsList
         $resultsList = $this->checkDomains($domains, $params);
-
-        // Get placement domain suggestion
-        $placementLogin = Configuration::get('placementPlusAccount');
-        $placementPassword = Configuration::get('placementPlusPassword');
-
-        if ($placementLogin && $placementPassword && $params['test_mode'] != 'on') {
-            $firstRankedDomain = 
-                $this->getSuggestedDomainFromPlacementPlus(
-                    $params['searchTerm'], 
-                    $placementLogin, 
-                    $placementPassword
-                );
-
-            if ($firstRankedDomain) {
-                $result = new SearchResult($firstRankedDomain['domain'], $firstRankedDomain['tld']); 
-                // put it on top
-                array_unshift($resultsList, $result);
-            }
-        }
 
         foreach ($resultsList as $domain) {
             $this->resultsList->append($domain);

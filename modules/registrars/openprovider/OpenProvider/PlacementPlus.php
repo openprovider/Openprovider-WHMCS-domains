@@ -5,10 +5,14 @@ namespace OpenProvider;
 
 
 use OpenProvider\API\APIConfig;
+use OpenProvider\API\AutoloadConstructor;
 
-class PlacementPlus
+class PlacementPlus extends AutoloadConstructor
 {
     const PLACEMENT_PLUS_URL = 'https://api.rns.domains/recommend-domains';
+
+    public $input;
+    public $output;
 
     public static function getSuggestionDomain($domainName, $login, $password)
     {

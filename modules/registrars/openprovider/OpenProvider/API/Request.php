@@ -17,6 +17,7 @@ class Request
     protected $username;
     protected $password;
     protected $client;
+    protected $placementplus = null;
 
     public function __construct()
     {
@@ -53,6 +54,26 @@ class Request
         );
         $credentialsElement->appendChild($clientElement);
 
+        if ($this->placementplus) {
+            $placementplusNode = $dom->createElement('placementplus');
+
+            $placementplusInputElement = $dom->createElement('input');
+            $placementplusInputElement->appendChild(
+                $dom->createTextNode(mb_convert_encoding($this->placementplus->input, \OpenProvider\API\APIConfig::$encoding))
+            );
+            $placementplusNode->appendChild($placementplusInputElement);
+
+            $placementplusOutputElement = $dom->createElement('output');
+            $placementplusOutputElement->appendChild(
+                $dom->createTextNode(mb_convert_encoding($this->placementplus->output, \OpenProvider\API\APIConfig::$encoding))
+            );
+            $placementplusNode->appendChild($placementplusOutputElement);
+
+            $credentialsElement->appendChild($placementplusNode);
+
+            $this->clearPlacementPlus();
+        }
+
         $rootElement = $dom->createElement('openXML');
         $rootElement->appendChild($credentialsElement);
 
@@ -60,7 +81,7 @@ class Request
         $cmdNode = $rootNode->appendChild(
                 $dom->createElement($this->getCommand())
         );
-        
+
         \OpenProvider\API\APITools::convertPhpObjToDom($this->args, $cmdNode, $dom);
 
         return $dom->saveXML();
@@ -91,4 +112,13 @@ class Request
         return $this;
     }
 
+    public function setPlacementPlus($placementplus)
+    {
+        $this->placementplus = $placementplus;
+    }
+
+    public function clearPlacementPlus()
+    {
+        $this->placementplus = null;
+    }
 }
