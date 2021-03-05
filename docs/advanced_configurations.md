@@ -21,7 +21,7 @@ Advanced configurations can be found in the file `/modules/registrars/openprovid
 ###  Sync settings for WHMCS native sync and Openprovider cron sync
 
 |Parameter Name|Value type and default|Purpose|
-|:-----|-----|     |
+| :------------------------------ | :----------------------------------------- | :----------------------------------------------------------- |
 |syncAutoRenewSetting| boolean: true | Whatever auto-renew status your client has set for the domain in WHMCS will be passed to Openprovider. if the domain has "auto-renew" status in WHMCS the domain will be set as "default" auto-renew in Openprovider. |
 |syncIdentityProtectionToggle| boolean: true | Whatever identity protection status you or your client has set for the domain in WHMCS will be passed to Openprovider. Note that activating identity protection has a yearly cost in Openprovider. |
 
@@ -30,7 +30,7 @@ Advanced configurations can be found in the file `/modules/registrars/openprovid
 ### sync settings which only apply to Openprovider cron sync
 
 |Parameter Name|Value type and default value|Purpose|
-|:-----|-----|     |
+| :------------------------------ | :----------------------------------------- | :----------------------------------------------------------- |
 |syncUseNativeWHMCS| boolean: true | Select false to use the Openprovider domain sync, which offers you more granular control over the way domain are synchronized with Openprovider |
 |syncDomainStatus| boolean: true | Select true to set the WHMCS domain status to reflect the Openprovider domain status |
 |syncExpiryDate| boolean: true | Select true to set the WHMCS domain expiration date equal to the Openprovider expiration date |
