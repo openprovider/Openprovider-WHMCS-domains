@@ -22,6 +22,8 @@ use WHMCS\Domains\DomainLookup\SearchResult;
  */
 class DomainSuggestionsController extends BaseController
 {
+    private const SUGGESTION_DOMAIN_NAME_COUNT = 9;
+
     /**
      * @var API
      */
@@ -59,7 +61,7 @@ class DomainSuggestionsController extends BaseController
         $api->setParams($params);
         $args = [
             'name' => $params['searchTerm'],
-            'limit' => 9,
+            'limit' => self::SUGGESTION_DOMAIN_NAME_COUNT,
         ];
 
         $suggestionSettings = $params['suggestionSettings'];
@@ -76,20 +78,18 @@ class DomainSuggestionsController extends BaseController
 
         $placementLogin = Configuration::get('placementPlusAccount');
         $placementPassword = Configuration::get('placementPlusPassword');
-        $isTestMode = $params['test_mode'] != 'on';
-        $usePlacementPlus = $placementLogin && $placementPassword && $isTestMode;
-
+        $isTestModeEnabled = $params['test_mode'] != 'on';
+        $usePlacementPlus = $placementLogin && $placementPassword && $isTestModeEnabled;
 
         // Get placement domain suggestion
         if ($usePlacementPlus) {
             $encodedDomain = urlencode($params['searchTerm']);
 
-            $firstRankedDomain =
-                $this->getSuggestedDomainFromPlacementPlus(
-                    $encodedDomain,
-                    $placementLogin,
-                    $placementPassword
-                );
+            $firstRankedDomain = $this->getSuggestedDomainFromPlacementPlus(
+                $encodedDomain,
+                $placementLogin,
+                $placementPassword
+            );
 
             if ($firstRankedDomain) {
                 $placementplus = new PlacementPlus([
@@ -100,7 +100,6 @@ class DomainSuggestionsController extends BaseController
                 $api->setPlacementPlus($placementplus);
 
                 $result = new SearchResult($firstRankedDomain['domain'], $firstRankedDomain['tld']);
-                // put it on top
                 $this->resultsList->append($result);
             }
         }
@@ -127,6 +126,7 @@ class DomainSuggestionsController extends BaseController
         foreach ($resultsList as $domain) {
             $this->resultsList->append($domain);
         }
+
         return $this->resultsList;
     }
 
@@ -214,7 +214,8 @@ class DomainSuggestionsController extends BaseController
     private function getSuggestedDomainFromPlacementPlus($domain, $login, $password)
     {
         $reply = PlacementPlus::getSuggestionDomain($domain, $login, $password);
-        $data = json_decode($reply, true);
+        $data  = json_decode($reply, true);
+
         if (isset($data['output']['domains'][0])) {
             $domain = $data['output']['domains'][0];
             $result = [
@@ -222,6 +223,7 @@ class DomainSuggestionsController extends BaseController
                 'domain' => $domain['sld'],
                 'tld'    => $domain['tld'],
             ];
+
             return $result;
         }
 
