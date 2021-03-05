@@ -17,16 +17,16 @@ class PlacementPlus extends AutoloadConstructor
     public static function getSuggestionDomain($domainName, $login, $password)
     {
         $data = [
-            'password' => "{$password}",
-            "account"=>"{$login}",
-            "input"=>"{$domainName}",
-            "allowplatinum"=>"0",
-            "hints"=>"placementplus",
-            "version"=>"3",
-            "verbose"=>"1",
+            'password'      => "{$password}",
+            'account'       => "{$login}",
+            'input'         => "{$domainName}",
+            'allowplatinum' => '0',
+            'hints'         => 'placementplus',
+            'version'       => '3',
+            'verbose'       => '1',
         ];
 
-        $url = self::PLACEMENT_PLUS_URL . "?" . http_build_query($data);
+        $url = self::PLACEMENT_PLUS_URL . '?' . http_build_query($data);
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
