@@ -4,5 +4,5 @@ namespace OpenProvider\API;
 
 interface APIInterface
 {
-    public function sendRequest(string $method, array|null $args = null);
+    public function call(string $method, array $args = []);
 }
