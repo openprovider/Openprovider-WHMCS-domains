@@ -1,8 +1,6 @@
 <?php
 
-
 namespace OpenProvider\API;
-
 
 class Response implements ResponseInterface
 {
@@ -87,4 +85,3 @@ class Response implements ResponseInterface
         $this->message = $message;
     }
 }
-
