@@ -24,7 +24,6 @@ class XmlApiAdapter implements ApiInterface
      * @param string $cmd
      * @param array $args
      * @return Response
-     * @throws Exception
      */
     public function call(string $cmd, array $args = []): Response
     {
