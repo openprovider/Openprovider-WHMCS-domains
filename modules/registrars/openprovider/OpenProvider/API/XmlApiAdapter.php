@@ -3,6 +3,8 @@
 
 namespace OpenProvider\API;
 
+use Exception;
+
 class XmlApiAdapter implements ApiInterface
 {
     /**
@@ -20,13 +22,23 @@ class XmlApiAdapter implements ApiInterface
     }
 
     /**
-     * @param string $cmo
+     * @param string $cmd
      * @param array $args
-     * @return array
-     * @throws \Exception
+     * @return Response
+     * @throws Exception
      */
-    public function call(string $cmo, array $args = [])
+    public function call(string $cmd, array $args = []): Response
     {
-        return $this->xmlApi->sendRequest($cmo, $args);
+        $apiResponse = new Response();
+        try {
+            $reply = $this->xmlApi->sendRequest($cmd, $args);
+            $apiResponse->setData($reply['data']);
+            $apiResponse->setTotal($reply['total']);
+        } catch (Exception $ex) {
+            $apiResponse->setCode($ex->getCode());
+            $apiResponse->setMessage($ex->getMessage());
+        }
+
+        return $apiResponse;
     }
 }

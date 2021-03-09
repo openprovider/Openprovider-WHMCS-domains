@@ -5,9 +5,9 @@ namespace OpenProvider\API;
 interface ApiInterface
 {
     /**
-     * @param string $cmo
+     * @param string $cmd
      * @param array $args
-     * @return mixed
+     * @return ResponseInterface
      */
-    public function call(string $cmo, array $args = []);
+    public function call(string $cmd, array $args = []): Response;
 }
