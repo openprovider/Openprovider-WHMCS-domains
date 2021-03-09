@@ -9,5 +9,5 @@ interface ApiInterface
      * @param array $args
      * @return ResponseInterface
      */
-    public function call(string $cmd, array $args = []): Response;
+    public function call(string $cmd, array $args = []): ResponseInterface;
 }

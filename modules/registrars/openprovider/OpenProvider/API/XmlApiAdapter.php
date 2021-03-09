@@ -1,6 +1,5 @@
 <?php
 
-
 namespace OpenProvider\API;
 
 use Exception;
@@ -29,16 +28,46 @@ class XmlApiAdapter implements ApiInterface
      */
     public function call(string $cmd, array $args = []): Response
     {
-        $apiResponse = new Response();
+        $response = new Response();
         try {
             $reply = $this->xmlApi->sendRequest($cmd, $args);
-            $apiResponse->setData($reply['data']);
-            $apiResponse->setTotal($reply['total']);
-        } catch (Exception $ex) {
-            $apiResponse->setCode($ex->getCode());
-            $apiResponse->setMessage($ex->getMessage());
+            $sortedResponseData = $this->sortResponseData($reply);
+            $response->setData($sortedResponseData['data']);
+            $response->setTotal($sortedResponseData['total']);
+        } catch (Exception $e) {
+            $response->setCode($e->getCode());
+            $response->setMessage($e->getMessage());
         }
 
-        return $apiResponse;
+        return $response;
+    }
+
+    /**
+     * @param array $reply
+     * @return array
+     */
+    private function sortResponseData(array $reply): array
+    {
+        $data = [
+            'data' => [],
+            'total' => 0,
+        ];
+
+        if (count($reply) == 0) {
+            return $data;
+        }
+
+        foreach ($reply as $key => $value) {
+            switch ($key) {
+                case 'total':
+                    $data['total'] = $value;
+                    break;
+                default:
+                    $data['data'][$key] = $value;
+                    break;
+            }
+        }
+
+        return $data;
     }
 }
