@@ -31,43 +31,14 @@ class XmlApiAdapter implements ApiInterface
         $response = new Response();
         try {
             $reply = $this->xmlApi->sendRequest($cmd, $args);
-            $sortedResponseData = $this->sortResponseData($reply);
-            $response->setData($sortedResponseData['data']);
-            $response->setTotal($sortedResponseData['total']);
+            $response->setTotal($reply['total'] ?? 0);
+            unset($reply['total']);
+            $response->setData($reply);
         } catch (Exception $e) {
             $response->setCode($e->getCode());
             $response->setMessage($e->getMessage());
         }
 
         return $response;
-    }
-
-    /**
-     * @param array $reply
-     * @return array
-     */
-    private function sortResponseData(array $reply): array
-    {
-        $data = [
-            'data' => [],
-            'total' => 0,
-        ];
-
-        if (count($reply) == 0) {
-            return $data;
-        }
-
-        foreach ($reply as $key => $value) {
-            switch ($key) {
-                case 'total':
-                    $data['total'] = $value;
-                    break;
-                default:
-                    $data['data'][$key] = $value;
-                    break;
-            }
-        }
-
-        return $data;
     }
 }
