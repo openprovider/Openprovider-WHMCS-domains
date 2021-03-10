@@ -2,7 +2,6 @@
 
 namespace OpenProvider\API;
 
-use Exception;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 class XmlApiAdapter implements ApiCallerConfigurationAwareInterface
@@ -42,7 +41,7 @@ class XmlApiAdapter implements ApiCallerConfigurationAwareInterface
             $response->setTotal($reply['total'] ?? 0);
             unset($reply['total']);
             $response->setData($reply);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $response->setCode($e->getCode());
             $response->setMessage($e->getMessage());
         }
