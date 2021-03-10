@@ -3,21 +3,29 @@
 namespace OpenProvider\API;
 
 use Exception;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 
-class XmlApiAdapter implements ApiInterface
+class XmlApiAdapter implements ApiCallerConfigurationAwareInterface
 {
     /**
      * @var API
      */
-    private $xmlApi;
+    private API $xmlApi;
+
+    /**
+     * @var ApiConfiguration
+     */
+    private ApiConfiguration $config;
 
     /**
      * XmlApiAdapter constructor.
      * @param API $xmlApi
+     * @param ApiConfiguration $config
      */
-    public function __construct(API $xmlApi)
+    public function __construct(API $xmlApi, ApiConfiguration $config)
     {
         $this->xmlApi = $xmlApi;
+        $this->config = $config;
     }
 
     /**
@@ -28,6 +36,7 @@ class XmlApiAdapter implements ApiInterface
     public function call(string $cmd, array $args = []): Response
     {
         $response = new Response();
+        $this->setXmlApiConfig();
         try {
             $reply = $this->xmlApi->sendRequest($cmd, $args);
             $response->setTotal($reply['total'] ?? 0);
@@ -39,5 +48,29 @@ class XmlApiAdapter implements ApiInterface
         }
 
         return $response;
+    }
+
+    /**
+     * @return ConfigurationInterface
+     */
+    public function getConfig(): ConfigurationInterface
+    {
+        return $this->config;
+    }
+
+    /**
+     *
+     */
+    private function setXmlApiConfig(): void
+    {
+        $params = [
+            'username' => $this->config->getUserName(),
+            'password' => $this->config->getPassword(),
+            'debug'    => $this->config->getDebug(),
+            'test_mode' => $this->config->getHost() == Configuration::get('api_url_cte')
+                ? 'on'
+                : 'false',
+        ];
+        $this->xmlApi->setParams($params);
     }
 }

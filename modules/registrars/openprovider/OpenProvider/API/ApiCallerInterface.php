@@ -2,7 +2,7 @@
 
 namespace OpenProvider\API;
 
-interface ApiInterface
+interface ApiCallerInterface
 {
     /**
      * @param string $cmd
