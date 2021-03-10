@@ -78,7 +78,7 @@ class DomainSuggestionsController extends BaseController
 
         $placementLogin = Configuration::get('placementPlusAccount');
         $placementPassword = Configuration::get('placementPlusPassword');
-        $isTestModeEnabled = $params['test_mode'] != 'on';
+        $isTestModeEnabled = $params['test_mode'] == 'on';
         $usePlacementPlus = $placementLogin && $placementPassword;
 
         // Get placement domain suggestion
