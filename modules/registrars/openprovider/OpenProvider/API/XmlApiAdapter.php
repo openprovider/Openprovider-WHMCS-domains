@@ -66,11 +66,12 @@ class XmlApiAdapter implements ApiCallerConfigurationAwareInterface
         $params = [
             'username' => $this->config->getUserName(),
             'password' => $this->config->getPassword(),
-            'debug'    => $this->config->getDebug(),
             'test_mode' => $this->config->getHost() == Configuration::get('api_url_cte')
                 ? 'on'
-                : 'false',
+                : 'off',
         ];
-        $this->xmlApi->setParams($params);
+
+        $debug = $this->config->getDebug() ? 1 : 0;
+        $this->xmlApi->setParams($params, $debug);
     }
 }
