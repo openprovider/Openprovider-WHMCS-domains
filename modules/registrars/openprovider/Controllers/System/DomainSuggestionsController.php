@@ -79,7 +79,7 @@ class DomainSuggestionsController extends BaseController
         $placementLogin = Configuration::get('placementPlusAccount');
         $placementPassword = Configuration::get('placementPlusPassword');
         $isTestModeEnabled = $params['test_mode'] != 'on';
-        $usePlacementPlus = $placementLogin && $placementPassword && $isTestModeEnabled;
+        $usePlacementPlus = $placementLogin && $placementPassword;
 
         // Get placement domain suggestion
         if ($usePlacementPlus) {
@@ -102,6 +102,10 @@ class DomainSuggestionsController extends BaseController
                 $result = new SearchResult($firstRankedDomain['domain'], $firstRankedDomain['tld']);
                 $this->resultsList->append($result);
             }
+        }
+
+        if ($isTestModeEnabled) {
+            return $this->resultsList;
         }
 
         //get suggested domains
