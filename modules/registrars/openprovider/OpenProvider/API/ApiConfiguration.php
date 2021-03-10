@@ -1,8 +1,6 @@
 <?php
 
-
 namespace OpenProvider\API;
-
 
 class ApiConfiguration implements ConfigurationInterface
 {

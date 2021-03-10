@@ -4,7 +4,7 @@ namespace OpenProvider\API;
 
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 
-class XmlApiAdapter implements ApiCallerConfigurationAwareInterface
+class XmlApiAdapter implements ApiInterface
 {
     /**
      * @var API
@@ -14,17 +14,17 @@ class XmlApiAdapter implements ApiCallerConfigurationAwareInterface
     /**
      * @var ApiConfiguration
      */
-    private ApiConfiguration $config;
+    private ApiConfiguration $configuration;
 
     /**
      * XmlApiAdapter constructor.
      * @param API $xmlApi
-     * @param ApiConfiguration $config
+     * @param ApiConfiguration $configuration
      */
-    public function __construct(API $xmlApi, ApiConfiguration $config)
+    public function __construct(API $xmlApi, ApiConfiguration $configuration)
     {
         $this->xmlApi = $xmlApi;
-        $this->config = $config;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -50,27 +50,25 @@ class XmlApiAdapter implements ApiCallerConfigurationAwareInterface
     }
 
     /**
-     * @return ConfigurationInterface
+     * @return ApiConfiguration
      */
-    public function getConfig(): ConfigurationInterface
+    public function getConfiguration(): ApiConfiguration
     {
-        return $this->config;
+        return $this->configuration;
     }
 
     /**
-     *
+     * @return void
      */
     private function setXmlApiConfig(): void
     {
         $params = [
-            'username' => $this->config->getUserName(),
-            'password' => $this->config->getPassword(),
-            'test_mode' => $this->config->getHost() == Configuration::get('api_url_cte')
-                ? 'on'
-                : 'off',
+            'Username' => $this->configuration->getUserName(),
+            'Password' => $this->configuration->getPassword(),
+            'test_mode' => $this->configuration->getHost() == Configuration::get('api_url_cte') ? 'on' : 'off',
         ];
 
-        $debug = $this->config->getDebug() ? 1 : 0;
+        $debug = $this->configuration->getDebug() ? 1 : 0;
         $this->xmlApi->setParams($params, $debug);
     }
 }

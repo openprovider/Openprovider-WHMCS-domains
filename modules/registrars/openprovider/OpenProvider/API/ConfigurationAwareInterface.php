@@ -7,5 +7,5 @@ interface ConfigurationAwareInterface
     /**
      * @return ConfigurationInterface
      */
-    public function getConfig(): ConfigurationInterface;
+    public function getConfiguration(): ConfigurationInterface;
 }
