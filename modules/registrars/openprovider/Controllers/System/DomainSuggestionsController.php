@@ -24,6 +24,10 @@ class DomainSuggestionsController extends BaseController
 {
     private const SUGGESTION_DOMAIN_NAME_COUNT = 9;
 
+    private const SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_LIVE = 1;
+    private const SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_CTE = 10;
+
+
     /**
      * @var API
      */
@@ -71,41 +75,61 @@ class DomainSuggestionsController extends BaseController
         if (isset($suggestionSettings['sensitive']) && $suggestionSettings['sensitive'] == 'on')
             $args['sensitive'] = 1;
 
-        if (isset($suggestionSettings['suggestTlds']) && count($suggestionSettings['suggestTlds']) > 0)
+        if (isset($suggestionSettings['suggestTlds']) && count($suggestionSettings['suggestTlds']) > 0) {
             $args['tlds'] = array_map(function ($tld) {
                 return mb_substr($tld, 1);
             }, explode(',', $suggestionSettings['suggestTlds']));
+            shuffle($args['tlds']);
+            $randomTenTlds = [];
+            $counter = 0;
+            foreach ($args['tlds'] as $tld) {
+                $randomTenTlds[] = $tld;
+                $counter++;
+                if ($counter > 10) {
+                    break;
+                }
+            }
+            $args['tlds'] = $randomTenTlds;
+        }
 
         $placementLogin = Configuration::get('placementPlusAccount');
         $placementPassword = Configuration::get('placementPlusPassword');
         $isTestModeEnabled = $params['test_mode'] == 'on';
-        $usePlacementPlus = $placementLogin && $placementPassword;
 
-        // Get placement domain suggestion
-        if ($usePlacementPlus) {
+        if ($placementLogin && $placementPassword) {
             $encodedDomain = urlencode($params['searchTerm']);
 
-            $firstRankedDomain = $this->getSuggestedDomainFromPlacementPlus(
+            $countSuggestedDomainsFromPlacementPlus = $isTestModeEnabled ?
+                self::SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_CTE :
+                self::SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_LIVE;
+
+            $placementPlusSuggestionDomains = $this->getPlacementPlusSuggestedDomains(
                 $encodedDomain,
                 $placementLogin,
-                $placementPassword
+                $placementPassword,
+                $countSuggestedDomainsFromPlacementPlus
             );
 
-            if ($firstRankedDomain) {
-                $placementplus = new PlacementPlus([
-                    'input' => $encodedDomain,
-                    'output' => $firstRankedDomain['name']
-                ]);
-
-                $api->setPlacementPlus($placementplus);
-
-                $result = new SearchResult($firstRankedDomain['domain'], $firstRankedDomain['tld']);
-                $this->resultsList->append($result);
+            foreach ($placementPlusSuggestionDomains as $domain) {
+                if (isset($domain['sld']) && isset($domain['tld'])) {
+                    $searchResult = new SearchResult($domain['sld'], $domain['tld']);
+                    $this->resultsList->append($searchResult);
+                    continue;
+                }
+                break;
             }
-        }
 
-        if ($isTestModeEnabled) {
-            return $this->resultsList;
+            if (!$isTestModeEnabled) {
+                $firstRankedDomain = $placementPlusSuggestionDomains[0];
+
+                if (isset($firstRankedDomain['domain'])) {
+                    $placementPlus = new PlacementPlus([
+                        'input' => $encodedDomain,
+                        'output' => $firstRankedDomain['domain']
+                    ]);
+                    $api->setPlacementPlus($placementPlus);
+                }
+            }
         }
 
         //get suggested domains
@@ -215,22 +239,42 @@ class DomainSuggestionsController extends BaseController
         return $result;
     }
 
-    private function getSuggestedDomainFromPlacementPlus($domain, $login, $password)
+    /**
+     * @param string $domain
+     * @param string $login
+     * @param string $password
+     * @param int $number
+     * @return array
+     */
+    private function getPlacementPlusSuggestedDomains(
+        string $domain,
+        string $login,
+        string $password,
+        int $number=10
+    ): array
     {
-        $reply = PlacementPlus::getSuggestionDomain($domain, $login, $password);
-        $data  = json_decode($reply, true);
+        $reply = PlacementPlus::getSuggestionDomain(
+            $domain,
+            $login,
+            $password
+        );
 
-        if (isset($data['output']['domains'][0])) {
-            $domain = $data['output']['domains'][0];
-            $result = [
-                'name'   => $domain['domain'],
-                'domain' => $domain['sld'],
-                'tld'    => $domain['tld'],
-            ];
+        $result = [];
 
+        if (!isset($reply['output']['domains'])) {
             return $result;
         }
 
-        return false;
+        $domains = $reply['output']['domains'];
+        for ($i = 0; $i < $number; $i++) {
+            if (isset($domains[$i])) {
+                $result[] = $domains[$i];
+                continue;
+            }
+
+            break;
+        }
+
+        return $result;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace OpenProvider\API;
 
+use OpenProvider\PlacementPlus;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
@@ -57,7 +58,7 @@ class API
         $this->debug        =   $debug;
     }
 
-    public function setPlacementPlus($placementplus)
+    public function setPlacementPlus(PlacementPlus $placementplus)
     {
         $this->placementplus = $placementplus;
     }

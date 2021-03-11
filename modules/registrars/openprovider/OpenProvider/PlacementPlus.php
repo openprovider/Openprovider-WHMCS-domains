@@ -26,7 +26,9 @@ class PlacementPlus extends AutoloadConstructor
             'verbose'       => '1',
         ];
 
-        $url = self::PLACEMENT_PLUS_URL . '?' . http_build_query($data);
+        $httpBuildQueryData = http_build_query($data);
+
+        $url = self::PLACEMENT_PLUS_URL . '?' . $httpBuildQueryData;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -39,8 +41,30 @@ class PlacementPlus extends AutoloadConstructor
 
         $ret = curl_exec($ch);
 
+        $errNumber = curl_errno($ch);
+        $errMessage = curl_error($ch);
+
         curl_close($ch);
 
-        return $ret;
+        // log message
+        logModuleCall(
+            'OpenProvider NL',
+            self::PLACEMENT_PLUS_URL,
+            array(
+                'requestBody' => $data,
+            ),
+            array(
+                'curlResponse' => $ret,
+                'curlErrNo'    => $errNumber,
+                'errorMessage' => $errMessage,
+            ),
+            null,
+            array(
+                $password,
+                htmlentities($password)
+            )
+        );
+
+        return json_decode($ret, true);
     }
 }
