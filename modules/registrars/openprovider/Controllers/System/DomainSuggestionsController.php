@@ -1,15 +1,14 @@
 <?php
 
-
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use \Exception;
 
 use OpenProvider\API\API;
 use OpenProvider\API\Domain;
-
 use OpenProvider\PlacementPlus;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
+
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 

@@ -2,6 +2,8 @@
 
 namespace OpenProvider\API;
 
+use OpenProvider\PlacementPlus;
+
 /**
  * Class Request
  * OpenProvider Registrar module
@@ -11,13 +13,16 @@ namespace OpenProvider\API;
 
 class Request
 {
-
     protected $cmd;
     protected $args;
     protected $username;
     protected $password;
     protected $client;
-    protected $placementplus = null;
+
+    /**
+     * @var PlacementPlus
+     */
+    protected $placementplus;
 
     public function __construct()
     {
@@ -108,7 +113,7 @@ class Request
         return $this;
     }
 
-    public function setPlacementPlus($placementplus)
+    public function setPlacementPlus(PlacementPlus $placementplus)
     {
         $this->placementplus = $placementplus;
     }

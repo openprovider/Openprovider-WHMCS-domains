@@ -25,7 +25,11 @@ class API
     protected $username         =   null;
     protected $password         =   null;
     protected $cache; // Cache responses made in this request.
-    protected $placementplus    =   null;
+
+    /**
+     * @var PlacementPlus
+     */
+    protected $placementplus;
 
     /**
      * API constructor.

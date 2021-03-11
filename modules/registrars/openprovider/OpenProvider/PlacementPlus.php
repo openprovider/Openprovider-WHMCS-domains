@@ -1,8 +1,6 @@
 <?php
 
-
 namespace OpenProvider;
-
 
 use OpenProvider\API\APIConfig;
 use OpenProvider\API\AutoloadConstructor;
@@ -11,10 +9,22 @@ class PlacementPlus extends AutoloadConstructor
 {
     const PLACEMENT_PLUS_URL = 'https://api.rns.domains/recommend-domains';
 
-    public $input;
-    public $output;
+    /**
+     * @var string
+     */
+    public string $input;
+    /**
+     * @var string
+     */
+    public string $output;
 
-    public static function getSuggestionDomain($domainName, $login, $password)
+    /**
+     * @param $domainName
+     * @param $login
+     * @param $password
+     * @return array
+     */
+    public static function getSuggestionDomain($domainName, $login, $password): array
     {
         $data = [
             'password'      => "{$password}",
@@ -46,7 +56,6 @@ class PlacementPlus extends AutoloadConstructor
 
         curl_close($ch);
 
-        // log message
         logModuleCall(
             'OpenProvider NL',
             self::PLACEMENT_PLUS_URL,
