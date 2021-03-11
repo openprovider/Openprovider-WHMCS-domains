@@ -4,10 +4,15 @@ namespace OpenProvider;
 
 use OpenProvider\API\APIConfig;
 use OpenProvider\API\AutoloadConstructor;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 class PlacementPlus extends AutoloadConstructor
 {
     const PLACEMENT_PLUS_URL = 'https://api.rns.domains/recommend-domains';
+    const ALLOW_PLATINUM = '0';
+    const HINTS = 'placementplus';
+    const VERSION = '3';
+    const VERBOSE = '1';
 
     /**
      * @var string
@@ -20,20 +25,18 @@ class PlacementPlus extends AutoloadConstructor
 
     /**
      * @param $domainName
-     * @param $login
-     * @param $password
      * @return array
      */
-    public static function getSuggestionDomain($domainName, $login, $password): array
+    public static function getSuggestionDomain($domainName): array
     {
         $data = [
-            'password'      => "{$password}",
-            'account'       => "{$login}",
+            'password'      => Configuration::get('placementPlusPassword'),
+            'account'       => Configuration::get('placementPlusAccount'),
             'input'         => "{$domainName}",
-            'allowplatinum' => '0',
-            'hints'         => 'placementplus',
-            'version'       => '3',
-            'verbose'       => '1',
+            'allowplatinum' => self::ALLOW_PLATINUM,
+            'hints'         => self::HINTS,
+            'version'       => self::VERSION,
+            'verbose'       => self::VERBOSE,
         ];
 
         $httpBuildQueryData = http_build_query($data);
@@ -59,21 +62,29 @@ class PlacementPlus extends AutoloadConstructor
         logModuleCall(
             'OpenProvider NL',
             self::PLACEMENT_PLUS_URL,
-            array(
+            [
                 'requestBody' => $data,
-            ),
-            array(
+            ],
+            [
                 'curlResponse' => $ret,
                 'curlErrNo'    => $errNumber,
                 'errorMessage' => $errMessage,
-            ),
+            ],
             null,
-            array(
-                $password,
-                htmlentities($password)
-            )
+            [
+                Configuration::get('placementPlusPassword'),
+                htmlentities(Configuration::get('placementPlusPassword'))
+            ]
         );
 
         return json_decode($ret, true);
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isCredentialExist(): bool
+    {
+        return Configuration::get('placementPlusAccount') && Configuration::get('placementPlusPassword');
     }
 }

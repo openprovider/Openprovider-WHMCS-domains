@@ -80,11 +80,9 @@ class DomainSuggestionsController extends BaseController
             }, explode(',', $suggestionSettings['suggestTlds']));
         }
 
-        $placementLogin = Configuration::get('placementPlusAccount');
-        $placementPassword = Configuration::get('placementPlusPassword');
         $isTestModeEnabled = $params['test_mode'] == 'on';
 
-        if ($placementLogin && $placementPassword) {
+        if (PlacementPlus::isCredentialExist()) {
             $encodedDomain = urlencode($params['searchTerm']);
 
             $countSuggestedDomainsFromPlacementPlus = $isTestModeEnabled ?
@@ -93,8 +91,6 @@ class DomainSuggestionsController extends BaseController
 
             $placementPlusSuggestionDomains = $this->getPlacementPlusSuggestedDomains(
                 $encodedDomain,
-                $placementLogin,
-                $placementPassword,
                 $countSuggestedDomainsFromPlacementPlus
             );
 
@@ -229,23 +225,15 @@ class DomainSuggestionsController extends BaseController
 
     /**
      * @param string $domain
-     * @param string $login
-     * @param string $password
      * @param int $number
      * @return array
      */
     private function getPlacementPlusSuggestedDomains(
         string $domain,
-        string $login,
-        string $password,
-        int $number=10
+        int $number = 10
     ): array
     {
-        $reply = PlacementPlus::getSuggestionDomain(
-            $domain,
-            $login,
-            $password
-        );
+        $reply = PlacementPlus::getSuggestionDomain($domain);
 
         $result = [];
 
