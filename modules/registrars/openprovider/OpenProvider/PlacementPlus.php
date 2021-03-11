@@ -17,11 +17,11 @@ class PlacementPlus extends AutoloadConstructor
     /**
      * @var string
      */
-    public string $input;
+    public $input;
     /**
      * @var string
      */
-    public string $output;
+    public $output;
 
     /**
      * @param $domainName
