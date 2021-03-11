@@ -79,17 +79,6 @@ class DomainSuggestionsController extends BaseController
             $args['tlds'] = array_map(function ($tld) {
                 return mb_substr($tld, 1);
             }, explode(',', $suggestionSettings['suggestTlds']));
-            shuffle($args['tlds']);
-            $randomTenTlds = [];
-            $counter = 0;
-            foreach ($args['tlds'] as $tld) {
-                $randomTenTlds[] = $tld;
-                $counter++;
-                if ($counter > 10) {
-                    break;
-                }
-            }
-            $args['tlds'] = $randomTenTlds;
         }
 
         $placementLogin = Configuration::get('placementPlusAccount');
