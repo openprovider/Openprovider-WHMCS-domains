@@ -1,12 +1,13 @@
 <?php
 
-
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use \Exception;
 
 use OpenProvider\API\API;
 use OpenProvider\API\Domain;
+use OpenProvider\PlacementPlus;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
@@ -20,6 +21,12 @@ use WHMCS\Domains\DomainLookup\SearchResult;
  */
 class DomainSuggestionsController extends BaseController
 {
+    private const SUGGESTION_DOMAIN_NAME_COUNT = 9;
+
+    private const SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_LIVE = 1;
+    private const SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_CTE = 10;
+
+
     /**
      * @var API
      */
@@ -57,7 +64,7 @@ class DomainSuggestionsController extends BaseController
         $api->setParams($params);
         $args = [
             'name' => $params['searchTerm'],
-            'limit' => 10,
+            'limit' => self::SUGGESTION_DOMAIN_NAME_COUNT,
         ];
 
         $suggestionSettings = $params['suggestionSettings'];
@@ -67,14 +74,52 @@ class DomainSuggestionsController extends BaseController
         if (isset($suggestionSettings['sensitive']) && $suggestionSettings['sensitive'] == 'on')
             $args['sensitive'] = 1;
 
-        if (isset($suggestionSettings['suggestTlds']) && count($suggestionSettings['suggestTlds']) > 0)
+        if (isset($suggestionSettings['suggestTlds']) && count($suggestionSettings['suggestTlds']) > 0) {
             $args['tlds'] = array_map(function ($tld) {
                 return mb_substr($tld, 1);
             }, explode(',', $suggestionSettings['suggestTlds']));
+        }
+
+        $isTestModeEnabled = $params['test_mode'] == 'on';
+
+        if (PlacementPlus::isCredentialExist()) {
+            $encodedDomain = urlencode($params['searchTerm']);
+
+            $countSuggestedDomainsFromPlacementPlus = $isTestModeEnabled ?
+                self::SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_CTE :
+                self::SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_LIVE;
+
+            $placementPlusSuggestionDomains = $this->getPlacementPlusSuggestedDomains(
+                $encodedDomain,
+                $countSuggestedDomainsFromPlacementPlus
+            );
+
+            foreach ($placementPlusSuggestionDomains as $domain) {
+                if (isset($domain['sld']) && isset($domain['tld'])) {
+                    $searchResult = new SearchResult($domain['sld'], $domain['tld']);
+                    $this->resultsList->append($searchResult);
+                    continue;
+                }
+                break;
+            }
+
+            if (!$isTestModeEnabled) {
+                $firstRankedDomain = $placementPlusSuggestionDomains[0];
+
+                if (isset($firstRankedDomain['domain'])) {
+                    $placementPlus = new PlacementPlus([
+                        'input' => $encodedDomain,
+                        'output' => $firstRankedDomain['domain']
+                    ]);
+                    $api->setPlacementPlus($placementPlus);
+                }
+            }
+        }
 
         //get suggested domains
         try {
             $suggestedDomains = $api->sendRequest('suggestNameDomainRequest', $args);
+            $api->clearPlacementPlus();
         } catch (Exception $e) {
             return $this->resultsList;
         }
@@ -88,7 +133,12 @@ class DomainSuggestionsController extends BaseController
         }
 
         // check domains availability and append to this->resultsList
-        $this->checkDomains($domains, $params);
+        $resultsList = $this->checkDomains($domains, $params);
+
+        foreach ($resultsList as $domain) {
+            $this->resultsList->append($domain);
+        }
+
         return $this->resultsList;
     }
 
@@ -97,12 +147,12 @@ class DomainSuggestionsController extends BaseController
      *
      * @param $domains
      * @param $params
-     * @return void
+     * @return array
      */
     private function checkDomains($domains, $params)
     {
         $api = $this->API;
-
+        $result = [];
         try {
             $checkedDomains = $api->checkDomainArray($domains);
         } catch (Exception $e) {
@@ -116,7 +166,7 @@ class DomainSuggestionsController extends BaseController
                     $domain_sld  = $params['isIdnDomain'] ? $params['punyCodeSearchTerm'] : $params['searchTerm'];
                     $searchResult = new SearchResult($domain_sld, $domain_tld);
                     $searchResult->setStatus(SearchResult::STATUS_TLD_NOT_SUPPORTED);
-                    $this->resultsList->append($searchResult);
+                    $result[] = $searchResult;
                 }
                 return;
             }
@@ -167,7 +217,40 @@ class DomainSuggestionsController extends BaseController
 
             $searchResult->setStatus($status);
 
-            $this->resultsList->append($searchResult);
+            $result[] = $searchResult;
         }
+
+        return $result;
+    }
+
+    /**
+     * @param string $domain
+     * @param int $number
+     * @return array
+     */
+    private function getPlacementPlusSuggestedDomains(
+        string $domain,
+        int $number = 10
+    ): array
+    {
+        $reply = PlacementPlus::getSuggestionDomain($domain);
+
+        $result = [];
+
+        if (!isset($reply['output']['domains'])) {
+            return $result;
+        }
+
+        $domains = $reply['output']['domains'];
+        for ($i = 0; $i < $number; $i++) {
+            if (isset($domains[$i])) {
+                $result[] = $domains[$i];
+                continue;
+            }
+
+            break;
+        }
+
+        return $result;
     }
 }
