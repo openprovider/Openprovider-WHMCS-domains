@@ -43,4 +43,14 @@ interface ConfigurationInterface
      * @return bool
      */
     public function getDebug(): bool;
+
+    /**
+     * @param string $token
+     */
+    public function setToken(string $token): void;
+
+    /**
+     * @return string
+     */
+    public function getToken(): string;
 }

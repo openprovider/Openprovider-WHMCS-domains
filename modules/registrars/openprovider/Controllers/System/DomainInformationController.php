@@ -1,6 +1,7 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
+use OpenProvider\API\ApiInterface;
 use WHMCS\Carbon;
 use WHMCS\Domain\Registrar\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -21,14 +22,19 @@ class DomainInformationController extends BaseController
      * @var Domain
      */
     private $api_domain;
+    /**
+     * @var ApiInterface
+     */
+    private $api_client;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, api_domain $api_domain)
+    public function __construct(Core $core, API $API, api_domain $api_domain, ApiInterface $api_client)
     {
         parent::__construct($core);
 
+        $this->api_client = $api_client;
         $this->API = $API;
         $this->api_domain = $api_domain;
     }
@@ -62,16 +68,21 @@ class DomainInformationController extends BaseController
             );
         }
 
+        $requestArgs = [
+            'domain_name_pattern' => $domain->name,
+            'extension' => $domain->extension,
+        ];
         // Get the data
-        $op_domain                  = $api->retrieveDomainRequest($domain, true);
-        $response = [];
-        $response['domain']         = $op_domain['domain']['name'] . '.' . $op_domain['domain']['extension'];
-        $response['tld']            = $op_domain['domain']['extension'];
-        $response['nameservers']    = $this->getNameservers($api, $domain);
-        $response['status']         = api_domain::convertOpStatusToWhmcs($op_domain['status']);
-        $response['transferlock']   = ($op_domain['isLocked'] == 0 ? false : true);
-        $response['expirydate']     = $op_domain['expirationDate'];
-        $response['addons']['hasidprotect'] = ($op_domain['isPrivateWhoisEnabled'] == '1' ? true : false);
+        $op_domain = $this->api_client->call('searchDomainRequest', $requestArgs)->getData()['results'][0];
+
+        $response                           = [];
+        $response['domain']                 = $op_domain['domain']['name'] . '.' . $op_domain['domain']['extension'];
+        $response['tld']                    = $op_domain['domain']['extension'];
+        $response['nameservers']            = $this->getNameservers($api, $domain);
+        $response['status']                 = api_domain::convertOpStatusToWhmcs($op_domain['status']);
+        $response['transferlock']           = $op_domain['isLocked'];
+        $response['expirydate']             = $op_domain['expirationDate'];
+        $response['addons']['hasidprotect'] = $op_domain['isPrivateWhoisEnabled'];
 
         // getting verification data
         $ownerEmail = '';

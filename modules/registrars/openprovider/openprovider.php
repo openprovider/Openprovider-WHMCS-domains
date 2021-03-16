@@ -5,7 +5,11 @@
  * @copyright Copyright (c) Openprovider 2018
  */
 
-use WeDevelopCoffee\wPower\Models\Domain;
+use OpenProvider\API\AccessToken;
+use OpenProvider\API\ApiInterface;
+use OpenProvider\API\ApiV1;
+use OpenProvider\API\XmlApiAdapter;
+use Psr\Container\ContainerInterface;
 use \OpenProvider\WhmcsRegistrar\src\Configuration;
 
 if (!defined("WHMCS"))
@@ -330,6 +334,39 @@ function openprovider_registrar_launch_decorator($route, $params = [], $level = 
 {
     $modifiedParams = array_merge($params, Configuration::getParams());
     $modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
-    return openprovider_registrar_launch($level)
-        ->output($modifiedParams, $route);
+
+    $core = openprovider_registrar_core($level);
+    $launch = $core->launch();
+
+    $useApiV1 = true;
+
+    $core->launcher->set(ApiInterface::class, function (ContainerInterface $c) use ($params, $useApiV1) {
+        $host = $params['test_mode'] == 'on' ?
+            Configuration::get('api_url_cte') :
+            Configuration::get('api_url');
+
+        if ($useApiV1) {
+            $client = $c->get(ApiV1::class);
+            $client->getConfiguration()->setHost($host);
+
+            if (!AccessToken::isExist()) {
+                $token = $client->call('generateAuthTokenRequest', [
+                    'username' => $params['Username'],
+                    'password' => $params['Password']
+                ])->getData()['token'];
+                AccessToken::setToken($token);
+            }
+            $client->getConfiguration()->setToken(AccessToken::getToken());
+
+            return $client;
+        }
+
+        $client = $c->get(XmlApiAdapter::class);
+        $client->getConfiguration()->setUserName($params['Username']);
+        $client->getConfiguration()->setPassword($params['Password']);
+
+        return $client;
+    });
+
+    return $launch->output($modifiedParams, $route);
 }
