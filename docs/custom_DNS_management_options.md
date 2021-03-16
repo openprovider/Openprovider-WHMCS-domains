@@ -7,13 +7,13 @@ Current as of WHMCS version 8.1
 
 Open `whmcs/templates/CURRENT_THEME_TEMPLATE/clientareadomaindns.tpl`  
 
-### Add any additional record types which you would like to display.  
+### Add any additional record types which you would like to display to end users.  
 
 Search for the version with the options like the one below. Note that it includes the "selected" substring:
 
 `<option value="A"{if $dnsrecord.type eq "A"} selected="selected"{/if}>{lang key="domainDns.a"}</option>`
 
-To include an SPF and SRV records, see examples below:
+To include an SPF and SRV records, you could add the examples shown below:
 
 ```
 <option value="SPF"{if $dnsrecord.type eq "SPF"} selected="selected"{/if}>SPF</option>
@@ -26,15 +26,15 @@ Search for the second `<select name="dnsrecordtype[]" class="form-control">`. Se
 
 `<option value="A">{lang key="domainDns.a"}</option>`
 
-Replace the options with the following:
+Add the below options to allow end users to create SPF and SRV records. 
 ```
 <option value="SPF">SPF</option>
 <option value="SRV">SRV</option>
 ```
 
-### Add priority field if necessary (for example SRV)
+### Add priority field if necessary (for example for SRV records)
 
-find the block similar to the below, where the priority field is added. 
+Find the block similar to the below, where the priority field is added. 
 
 ```
 {if $dnsrecord.type eq "MX"}
