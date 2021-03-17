@@ -10,7 +10,6 @@ use OpenProvider\API\API;
 use OpenProvider\API\Domain as api_domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Models\Domain;
-use WeDevelopCoffee\wPower\Models\Registrar;
 
 /**
  * Class TransferSyncController
@@ -18,6 +17,10 @@ use WeDevelopCoffee\wPower\Models\Registrar;
  */
 class DomainSyncController extends BaseController
 {
+    const DOMAIN_STATUSES_ACTIVE = ['ACT'];
+    const DOMAIN_STATUSES_INACTIVE = ['REQ', 'PEN', 'SCH'];
+    const DOMAIN_STATUSES_CANELLED = ['FAI', 'DEL'];
+
     /**
      * @var API
      */
@@ -57,32 +60,31 @@ class DomainSyncController extends BaseController
      */
     public function sync($params)
     {
+        $this->domain = $this->domain->find($params['domainid']);
         // Check if the native synchronisation feature
         if(Configuration::getOrDefault('syncUseNativeWHMCS', false) == false) {
-            $domain = Domain::find($params['domainid']);
             return array (
-                'expirydate' => $domain->expirydate, // Format: YYYY-MM-DD
+                'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
                 'active' => true, // Return true if the domain is active
-                'expired' => false, // Return true if the domain has expired
+                'cancelled' => false, // Return true if the domain has expired
                 'transferredAway' => false, // Return true if the domain is transferred out
             );
         }
 
-
-
-        $this->domain = $this->domain->find($params['domainid']);
         $setting['syncAutoRenewSetting'] = Configuration::getOrDefault('syncAutoRenewSetting', true);
         $setting['syncIdentityProtectionToggle'] = Configuration::getOrDefault('syncIdentityProtectionToggle', true);
 
-        try
-        {
+        try {
             // get data from op
-            $this->api_domain   = $this->openprovider->domain($this->domain->domain);
-            $op_domain_result   = $this->openprovider->api->retrieveDomainRequest($this->api_domain, true);
-            $expiration_date    = Carbon::createFromFormat('Y-m-d H:i:s', $op_domain_result['expirationDate'], 'Europe/Amsterdam');
+            $this->api_domain = $this->openprovider->domain($this->domain->domain);
+            $op_domain_result = $this->openprovider->api->retrieveDomainRequest($this->api_domain, true);
+            $expiration_date  = Carbon::createFromFormat(
+                'Y-m-d H:i:s',
+                $op_domain_result['expirationDate'],
+                'Europe/Amsterdam'
+            )->format('Y-m-d');
 
-            if($op_domain_result['status'] == 'ACT')
-            {
+            if(in_array($op_domain_result['status'], self::DOMAIN_STATUSES_ACTIVE)) {
                 // auto renew on or not? -> WHMCS is leading.
                 if($setting['syncAutoRenewSetting'] == true)
                     $this->process_auto_renew($op_domain_result);
@@ -91,43 +93,42 @@ class DomainSyncController extends BaseController
                 if($setting['syncIdentityProtectionToggle'] == true)
                     $this->process_identity_protection($op_domain_result);
 
-                return array(
-                    'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
+                return [
+                    'expirydate' => $expiration_date, // Format: YYYY-MM-DD
                     'active' => true, // Return true if the domain is active
-                    'expired' => false, // Return true if the domain has expired
+                    'cancelled' => false, // Return true if the domain has expired
                     'transferredAway' => false, // Return true if the domain is transferred out
-                );
-            }
-
-            return array();
-        }
-        catch (\Exception $ex)
-        {
-            if($ex->getMessage() == 'This action is prohibitted for current domain status.') {
-                // Set the status to expired.
-                return array(
+                ];
+            } else if (in_array($op_domain_result['status'], self::DOMAIN_STATUSES_INACTIVE)) {
+                return [
                     'expirydate' => $expiration_date, // Format: YYYY-MM-DD
                     'active' => false, // Return true if the domain is active
-                    'expired' => true, // Return true if the domain has expired
+                    'cancelled' => false, // Return true if the domain has expired
                     'transferredAway' => false, // Return true if the domain is transferred out
-                );
+                ];
             }
-            else if($ex->getMessage() == 'The domain is not in your account; please transfer it to your account first.') {
+        } catch (\Exception $ex) {
+            if($ex->getMessage() == 'This action is prohibitted for current domain status.') {
                 // Set the status to expired.
-                return array(
+                return [
                     'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
                     'active' => false, // Return true if the domain is active
-                    'expired' => false, // Return true if the domain has expired
+                    'cancelled' => true, // Return true if the domain has expired
+                    'transferredAway' => false, // Return true if the domain is transferred out
+                ];
+            } else if($ex->getMessage() == 'The domain is not in your account; please transfer it to your account first.') {
+                // Set the status to expired.
+                return [
+                    'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
+                    'active' => false, // Return true if the domain is active
+                    'cancelled' => false, // Return true if the domain has expired
                     'transferredAway' => true, // Return true if the domain is transferred out
-                );
+                ];
             }
-            else
-            {
-                return array
-                (
-                    'error' =>  $ex->getMessage()
-                );
-            }
+            
+            return [
+                'error' =>  $ex->getMessage()
+            ];
         }
 
         return [];
