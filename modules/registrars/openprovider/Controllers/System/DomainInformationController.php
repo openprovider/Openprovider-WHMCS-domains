@@ -1,6 +1,8 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
+use OpenProvider\WhmcsRegistrar\helpers\ArrayFromFileExtractor;
+use WeDevelopCoffee\wPower\Core\Path;
 use WHMCS\Carbon;
 use WHMCS\Domain\Registrar\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -13,6 +15,8 @@ use OpenProvider\API\Domain as api_domain;
  */
 class DomainInformationController extends BaseController
 {
+    const CC_TLD_LENGTH = 2;
+    
     /**
      * @var API
      */
@@ -21,16 +25,21 @@ class DomainInformationController extends BaseController
      * @var Domain
      */
     private $api_domain;
+    /**
+     * @var Path
+     */
+    private $path;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, api_domain $api_domain)
+    public function __construct(Core $core, API $API, api_domain $api_domain, Path $path)
     {
         parent::__construct($core);
 
         $this->API = $API;
         $this->api_domain = $api_domain;
+        $this->path = $path;
     }
 
     /**
@@ -73,6 +82,21 @@ class DomainInformationController extends BaseController
         $response['expirydate']     = $op_domain['expirationDate'];
         $response['addons']['hasidprotect'] = ($op_domain['isPrivateWhoisEnabled'] == '1' ? true : false);
 
+        $isCcTld = $this->isCcTld($response['tld']);
+
+        $result = (new Domain)
+            // domain part
+            ->setDomain($domain)
+            ->setNameservers($response['nameservers'])
+            ->setRegistrationStatus($response['status'])
+            ->setTransferLock($response['transferlock'])
+            ->setExpiryDate(Carbon::createFromFormat('Y-m-d H:i:s', $response['expirydate']), 'Europe/Amsterdam') // $response['expirydate'] = YYYY-MM-DD
+            ->setIdProtectionStatus($response['addons']['hasidprotect']);
+
+        if ($isCcTld) {
+            return $result;
+        }
+
         // getting verification data
         $ownerEmail = '';
         try {
@@ -83,6 +107,7 @@ class DomainInformationController extends BaseController
             $ownerEmail        = $ownerInfo['Owner']['Email Address'];
             $args              = [
                 'email'  => $ownerEmail,
+                'domain' => $domain->getFullName(),
             ];
             $emailVerification = $api->sendRequest('searchEmailVerificationDomainRequest', $args);
         } catch (Exception $e) {}
@@ -99,22 +124,12 @@ class DomainInformationController extends BaseController
                     $firstVerification['isSuspended']    = false;
                     $firstVerification['expirationDate'] = false;
                 }
-
             } catch (\Exception $e) {}
         }
 
         $verification = $this->getIrtpVerificationEmailOptions($firstVerification);
 
-        $result = (new Domain)
-            // domain part
-            ->setDomain($domain)
-            ->setNameservers($response['nameservers'])
-            ->setRegistrationStatus($response['status'])
-            ->setTransferLock($response['transferlock'])
-            ->setExpiryDate(Carbon::createFromFormat('Y-m-d H:i:s', $response['expirydate']), 'Europe/Amsterdam') // $response['expirydate'] = YYYY-MM-DD
-            ->setIdProtectionStatus($response['addons']['hasidprotect'])
-            // irtp part
-            ->setIsIrtpEnabled($verification['is_irtp_enabled'])
+        $result->setIsIrtpEnabled($verification['is_irtp_enabled'])
             ->setIrtpOptOutStatus($verification['irtp_opt_status'])
             ->setIrtpTransferLock($verification['irtp_transfer_lock'])
             ->setDomainContactChangePending($verification['domain_contact_change_pending'])
@@ -188,5 +203,22 @@ class DomainInformationController extends BaseController
         }
 
         return $result;
+    }
+
+    private function isCcTld($tld): bool
+    {
+        $tldArray = explode('.', $tld);
+        $lastTld = end($tldArray);
+
+        return strlen($lastTld) == self::CC_TLD_LENGTH || in_array($lastTld, $this->getPunyCodesCcTlds());
+    }
+
+    /**
+     * @return array
+     */
+    private function getPunyCodesCcTlds(): array
+    {
+        $arrayFromFileExtractor = new ArrayFromFileExtractor($this->path->getModulePath());
+        return $arrayFromFileExtractor->extract(ArrayFromFileExtractor::PUNY_CODE_CC_TLDS_PATH);
     }
 }
