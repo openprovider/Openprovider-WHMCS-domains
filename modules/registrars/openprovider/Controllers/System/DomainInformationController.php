@@ -1,6 +1,8 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
+use OpenProvider\WhmcsRegistrar\helpers\ArrayFromFileExtractor;
+use WeDevelopCoffee\wPower\Core\Path;
 use WHMCS\Carbon;
 use WHMCS\Domain\Registrar\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -23,16 +25,21 @@ class DomainInformationController extends BaseController
      * @var Domain
      */
     private $api_domain;
+    /**
+     * @var Path
+     */
+    private $path;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, api_domain $api_domain)
+    public function __construct(Core $core, API $API, api_domain $api_domain, Path $path)
     {
         parent::__construct($core);
 
         $this->API = $API;
         $this->api_domain = $api_domain;
+        $this->path = $path;
     }
 
     /**
@@ -203,6 +210,15 @@ class DomainInformationController extends BaseController
         $tldArray = explode('.', $tld);
         $lastTld = end($tldArray);
 
-        return strlen($lastTld) == self::CC_TLD_LENGTH;
+        return strlen($lastTld) == self::CC_TLD_LENGTH || in_array($lastTld, $this->getPunyCodesCcTlds());
+    }
+
+    /**
+     * @return array
+     */
+    private function getPunyCodesCcTlds(): array
+    {
+        $arrayFromFileExtractor = new ArrayFromFileExtractor($this->path->getModulePath());
+        return $arrayFromFileExtractor->extract(ArrayFromFileExtractor::PUNY_CODE_CC_TLDS_PATH);
     }
 }
