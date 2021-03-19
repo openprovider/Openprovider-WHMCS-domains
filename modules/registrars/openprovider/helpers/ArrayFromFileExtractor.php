@@ -27,7 +27,7 @@ class ArrayFromFileExtractor
      */
     public function extract(string $path): array
     {
-        $filePath = $this->modulePath . $path;
+        $filePath = realpath($this->modulePath . $path);
         if (!file_exists($filePath)) {
             return [];
         }
