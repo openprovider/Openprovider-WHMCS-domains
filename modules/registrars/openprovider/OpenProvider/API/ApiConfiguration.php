@@ -78,7 +78,7 @@ class ApiConfiguration implements ConfigurationInterface
      */
     public function getDebug(): bool
     {
-        return $this->debug;
+        return $this->debug ?? false;
     }
 
     /**

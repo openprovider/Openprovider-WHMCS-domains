@@ -25,17 +25,17 @@ class DomainInformationController extends BaseController
     /**
      * @var ApiInterface
      */
-    private $api_client;
+    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, api_domain $api_domain, ApiInterface $api_client)
+    public function __construct(Core $core, API $API, api_domain $api_domain, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
-        $this->api_client = $api_client;
-        $this->API = $API;
+        $this->apiClient  = $apiClient;
+        $this->API        = $API;
         $this->api_domain = $api_domain;
     }
 
@@ -70,11 +70,11 @@ class DomainInformationController extends BaseController
 
         $requestArgs = [
             'domainNamePattern' => $domain->name,
-            'withVerificationEmail' => true,
             'extension' => $domain->extension,
         ];
+
         // Get the data
-        $op_domain = $this->api_client->call('searchDomainRequest', $requestArgs)->getData()['results'][0];
+        $op_domain = $this->apiClient->call('searchDomainRequest', $requestArgs)->getData()['results'][0];
 
         if (!$op_domain) {
             return (new Domain)
@@ -97,7 +97,7 @@ class DomainInformationController extends BaseController
                 'email'  => $op_domain['verificationEmailName'] ?? '',
                 'domain' => $response['domain']
             ];
-            $emailVerification = $api->sendRequest('searchEmailVerificationDomainRequest', $args);
+            $emailVerification = $this->apiClient->call('searchEmailVerificationDomainRequest', $args);
         } catch (Exception $e) {}
 
         // check email verification status and choose options depend on it

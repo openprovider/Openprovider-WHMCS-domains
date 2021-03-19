@@ -367,6 +367,7 @@ function openprovider_registrar_launch_decorator(string $route, $params = [], $l
         $client = $c->get(XmlApiAdapter::class);
         $client->getConfiguration()->setUserName($params['Username']);
         $client->getConfiguration()->setPassword($params['Password']);
+        $client->getConfiguration()->setHost($host);
 
         return $client;
     });
