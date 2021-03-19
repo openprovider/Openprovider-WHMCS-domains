@@ -5,12 +5,12 @@
  * @copyright Copyright (c) Openprovider 2018
  */
 
-use OpenProvider\API\AccessToken;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\ApiV1;
 use OpenProvider\API\XmlApiAdapter;
 use Psr\Container\ContainerInterface;
 use \OpenProvider\WhmcsRegistrar\src\Configuration;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 if (!defined("WHMCS"))
 {
@@ -20,6 +20,8 @@ if (!defined("WHMCS"))
 require_once( __DIR__ . '/init.php');
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
+
+const SESSION_ACCESS_TOKEN_NAME = 'ACCESS_TOKEN';
 
 /**
  * Autoload
@@ -330,7 +332,7 @@ function openprovider_ResendIRTPVerificationEmail(array $params)
  * @param string $level
  * @return mixed
  */
-function openprovider_registrar_launch_decorator($route, $params = [], $level = 'system')
+function openprovider_registrar_launch_decorator(string $route, $params = [], $level = 'system')
 {
     $modifiedParams = array_merge($params, Configuration::getParams());
     $modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
@@ -346,17 +348,18 @@ function openprovider_registrar_launch_decorator($route, $params = [], $level = 
             Configuration::get('api_url');
 
         if ($useApiV1) {
+            $session = new Session();
             $client = $c->get(ApiV1::class);
             $client->getConfiguration()->setHost($host);
 
-            if (!AccessToken::isExist()) {
+            if (!$session->has(SESSION_ACCESS_TOKEN_NAME)) {
                 $token = $client->call('generateAuthTokenRequest', [
                     'username' => $params['Username'],
                     'password' => $params['Password']
                 ])->getData()['token'];
-                AccessToken::setToken($token);
+                $session->set(SESSION_ACCESS_TOKEN_NAME, $token);
             }
-            $client->getConfiguration()->setToken(AccessToken::getToken());
+            $client->getConfiguration()->setToken($session->get(SESSION_ACCESS_TOKEN_NAME));
 
             return $client;
         }

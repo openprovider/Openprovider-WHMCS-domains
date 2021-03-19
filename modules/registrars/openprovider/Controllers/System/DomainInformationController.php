@@ -19,7 +19,7 @@ class DomainInformationController extends BaseController
      */
     private $API;
     /**
-     * @var Domain
+     * @var api_domain
      */
     private $api_domain;
     /**
@@ -69,16 +69,22 @@ class DomainInformationController extends BaseController
         }
 
         $requestArgs = [
-            'domain_name_pattern' => $domain->name,
+            'domainNamePattern' => $domain->name,
+            'withVerificationEmail' => true,
             'extension' => $domain->extension,
         ];
         // Get the data
         $op_domain = $this->api_client->call('searchDomainRequest', $requestArgs)->getData()['results'][0];
 
+        if (!$op_domain) {
+            return (new Domain)
+                ->setDomain($domain);
+        }
+
         $response                           = [];
         $response['domain']                 = $op_domain['domain']['name'] . '.' . $op_domain['domain']['extension'];
         $response['tld']                    = $op_domain['domain']['extension'];
-        $response['nameservers']            = $this->getNameservers($api, $domain);
+        $response['nameservers']            = $this->getNameservers($op_domain['nameServers']);
         $response['status']                 = api_domain::convertOpStatusToWhmcs($op_domain['status']);
         $response['transferlock']           = $op_domain['isLocked'];
         $response['expirydate']             = $op_domain['expirationDate'];
@@ -87,19 +93,15 @@ class DomainInformationController extends BaseController
         // getting verification data
         $ownerEmail = '';
         try {
-            $domain            = new \OpenProvider\API\Domain();
-            $domain->name      = $op_domain['domain']['name'];
-            $domain->extension = $op_domain['domain']['extension'];
-            $ownerInfo         = $api->getContactDetails($domain);
-            $ownerEmail        = $ownerInfo['Owner']['Email Address'];
-            $args              = [
-                'email'  => $ownerEmail,
+            $args = [
+                'email'  => $op_domain['verificationEmailName'] ?? '',
+                'domain' => $response['domain']
             ];
             $emailVerification = $api->sendRequest('searchEmailVerificationDomainRequest', $args);
         } catch (Exception $e) {}
 
         // check email verification status and choose options depend on it
-        $firstVerification = isset($emailVerification['results'][0]) ? $emailVerification['results'][0] : false;
+        $firstVerification = $emailVerification['results'][0] ?? false;
 
         if (!$firstVerification) {
             try {
@@ -139,20 +141,19 @@ class DomainInformationController extends BaseController
     }
 
     /**
-     * @param API $api
-     * @param Domain $domain
+     * @param array $nameservers
      * @return array
      */
-    private function getNameservers(API $api, api_domain $domain): array
+    private function getNameservers(array $nameservers): array
     {
-        $nameservers = $api->getNameservers($domain, true);
         $return = array ();
         $i = 1;
 
         foreach ($nameservers as $ns) {
-            $return['ns' . $i] = $ns;
+            $return['ns' . $i] = $ns['ip'] ?? $ns['name'];
             $i++;
         }
+
         return $return;
     }
 

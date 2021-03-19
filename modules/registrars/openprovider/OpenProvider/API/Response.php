@@ -7,26 +7,26 @@ class Response implements ResponseInterface
     /**
      * @var array
      */
-    private array $data = [];
+    private array $data;
     /**
      * @var int
      */
-    private int $total = 0;
+    private int $total;
     /**
      * @var int
      */
-    private int $code = 0;
+    private int $code;
     /**
      * @var string
      */
-    private string $message = '';
+    private string $message;
 
     /**
      * @return array
      */
     public function getData(): array
     {
-        return $this->data;
+        return $this->data ?? [];
     }
 
     /**
@@ -34,7 +34,7 @@ class Response implements ResponseInterface
      */
     public function getTotal(): int
     {
-        return $this->total;
+        return $this->total ?? 0;
     }
 
     /**
@@ -42,7 +42,7 @@ class Response implements ResponseInterface
      */
     public function getCode(): int
     {
-        return $this->code;
+        return $this->code ?? 0;
     }
 
     /**
@@ -50,7 +50,7 @@ class Response implements ResponseInterface
      */
     public function getMessage(): string
     {
-        return $this->message;
+        return $this->message ?? '';
     }
 
     /**
