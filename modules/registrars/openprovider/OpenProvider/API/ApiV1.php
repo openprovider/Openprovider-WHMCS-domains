@@ -28,6 +28,10 @@ class ApiV1 implements ApiInterface
      * @var CamelCaseToSnakeCaseNameConverter
      */
     private CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter;
+    /**
+     * @var Logger
+     */
+    private Logger $logger;
 
     /**
      * ApiV1 constructor.
@@ -39,6 +43,7 @@ class ApiV1 implements ApiInterface
         $this->commandMapping = new CommandMapping();
         $this->httpClient = new HttpClient();
         $this->camelCaseToSnakeCaseNameConverter = new CamelCaseToSnakeCaseNameConverter();
+        $this->logger = new Logger();
     }
 
     /**
@@ -75,7 +80,7 @@ class ApiV1 implements ApiInterface
             $response->setCode($e->getCode());
             $response->setMessage($e->getMessage());
 
-            $this->logRequestResponse($cmd, $args, $response);
+            $this->logger->log($cmd, $args, $response);
 
             return $response;
         }
@@ -91,7 +96,7 @@ class ApiV1 implements ApiInterface
         $response->setData($data);
         $response->setCode($reply->getCode());
 
-        $this->logRequestResponse($cmd, $args, $response);
+        $this->logger->log($cmd, $args, $response);
 
         return $response;
     }
@@ -171,27 +176,5 @@ class ApiV1 implements ApiInterface
         }
 
         return $result;
-    }
-
-    /**
-     * @param string $cmd
-     * @param array $request
-     * @param Response $response
-     */
-    private function logRequestResponse(string $cmd, array $request, Response $response): void
-    {
-        logModuleCall(
-            'openprovider nl',
-            $cmd,
-            [
-                'request_body' => json_encode($request),
-            ],
-            [
-                'response_data' => json_encode($response->getData()),
-                'response_code' => $response->getCode(),
-                'response_total' => $response->getTotal(),
-                'response_message' => $response->getMessage(),
-            ]
-        );
     }
 }
