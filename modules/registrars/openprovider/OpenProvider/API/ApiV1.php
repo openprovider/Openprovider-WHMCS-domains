@@ -4,7 +4,7 @@ namespace OpenProvider\API;
 
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use GuzzleHttp6\Client as HttpClient;
-use OpenProvider\WhmcsRegistrar\helpers\SnakeCaseUnderscore;
+use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
 class ApiV1 implements ApiInterface
 {
@@ -24,6 +24,10 @@ class ApiV1 implements ApiInterface
      * @var HttpClient
      */
     private HttpClient $httpClient;
+    /**
+     * @var CamelCaseToSnakeCaseNameConverter
+     */
+    private CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter;
 
     /**
      * ApiV1 constructor.
@@ -34,6 +38,7 @@ class ApiV1 implements ApiInterface
         $this->configuration = new Configuration();
         $this->commandMapping = new CommandMapping();
         $this->httpClient = new HttpClient();
+        $this->camelCaseToSnakeCaseNameConverter = new CamelCaseToSnakeCaseNameConverter();
     }
 
     /**
@@ -51,6 +56,8 @@ class ApiV1 implements ApiInterface
         $service = new $apiClass($this->httpClient, $this->configuration);
         $this->setupConfiguration();
 
+        $requestParameters = $this->convertRequestKeysToSnakeCase($args);
+
         try {
             if ($requestParametersType == CommandMapping::PARAMS_TYPE_VIA_COMMA) {
                 $reflectionMethod = new \ReflectionMethod($service, $apiMethod);
@@ -59,26 +66,32 @@ class ApiV1 implements ApiInterface
                 foreach ($neededArgumentsToMethod as $element) {
                     $requestedArguments[] = $element['name'];
                 }
-                $filledArguments = $this->fillEmptyArguments($args, $requestedArguments);
+                $filledArguments = $this->fillEmptyArguments($requestParameters, $requestedArguments);
                 $reply = $service->$apiMethod(...$filledArguments);
             } else if ($requestParametersType == CommandMapping::PARAMS_TYPE_BODY) {
-                $reply = $service->$apiMethod($args);
+                $reply = $service->$apiMethod($requestParameters);
             }
         } catch (\Exception $e) {
             $response->setCode($e->getCode());
             $response->setMessage($e->getMessage());
 
+            $this->logRequestResponse($cmd, $args, $response);
+
             return $response;
         }
 
         $data = $this->convertReplyFromObjectToArray($reply->getData());
-        $data = $this->convertReplyKeysToSnakeKeys($data);
+        $data = $this->convertReplyKeysToCamelCase($data);
+
+        if (isset($data['total'])) {
+            $response->setTotal($data['total']);
+            unset($data['total']);
+        }
+
         $response->setData($data);
         $response->setCode($reply->getCode());
 
-        if (method_exists(get_class($reply), 'getTotal')) {
-            $response->setTotal($reply->getTotal());
-        }
+        $this->logRequestResponse($cmd, $args, $response);
 
         return $response;
     }
@@ -130,21 +143,55 @@ class ApiV1 implements ApiInterface
      * @param array $data
      * @return array
      */
-    private function convertReplyKeysToSnakeKeys(array $data): array
+    private function convertReplyKeysToCamelCase(array $data): array
     {
-        if (!is_array($data))
-        {
-            return [];
-        }
-
         $result = [];
 
         foreach ($data as $key => $value) {
-            $result[SnakeCaseUnderscore::underscoreToSnakeCase($key)] = is_array($value) ?
-                $this->convertReplyKeysToSnakeKeys($value) :
+            $result[$this->camelCaseToSnakeCaseNameConverter->denormalize($key)] = is_array($value) ?
+                $this->convertReplyKeysToCamelCase($value) :
                 $value;
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    private function convertRequestKeysToSnakeCase(array $data): array
+    {
+        $result = [];
+
+        foreach ($data as $key => $value) {
+            $result[$this->camelCaseToSnakeCaseNameConverter->normalize($key)] = is_array($value) ?
+                $this->convertRequestKeysToSnakeCase($value) :
+                $value;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $cmd
+     * @param array $request
+     * @param Response $response
+     */
+    private function logRequestResponse(string $cmd, array $request, Response $response): void
+    {
+        logModuleCall(
+            'openprovider nl',
+            $cmd,
+            [
+                'request_body' => json_encode($request),
+            ],
+            [
+                'response_data' => json_encode($response->getData()),
+                'response_code' => $response->getCode(),
+                'response_total' => $response->getTotal(),
+                'response_message' => $response->getMessage(),
+            ]
+        );
     }
 }
