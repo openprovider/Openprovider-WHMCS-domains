@@ -21,10 +21,10 @@ class XmlApiAdapter implements ApiInterface
      * @param API $xmlApi
      * @param ApiConfiguration $configuration
      */
-    public function __construct(API $xmlApi, ApiConfiguration $configuration)
+    public function __construct(API $xmlApi = null, ApiConfiguration $configuration = null)
     {
-        $this->xmlApi = $xmlApi;
-        $this->configuration = $configuration;
+        $this->xmlApi = $xmlApi ?? new API();
+        $this->configuration = $configuration ?? new ApiConfiguration();
     }
 
     /**

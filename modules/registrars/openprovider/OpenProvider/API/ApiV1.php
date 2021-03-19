@@ -80,7 +80,7 @@ class ApiV1 implements ApiInterface
             return $response;
         }
 
-        $data = $this->convertReplyFromObjectToArray($reply->getData());
+        $data = json_decode($reply->getData(), true);
         $data = $this->convertReplyKeysToCamelCase($data);
 
         if (isset($data['total'])) {

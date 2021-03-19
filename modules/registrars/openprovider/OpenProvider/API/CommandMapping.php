@@ -30,7 +30,12 @@ class CommandMapping
             self::COMMAND_MAP_METHOD => 'listDomainEmailVerifications',
             self::COMMAND_MAP_CLASS => EmailVerificationApi::class,
             self::COMMAND_MAP_PARAMETERS_TYPE => self::PARAMS_TYPE_VIA_COMMA,
-        ]
+        ],
+        'startCustomerEmailVerificationRequest' => [
+            self::COMMAND_MAP_METHOD => 'startEmailVerification',
+            self::COMMAND_MAP_CLASS => EmailVerificationApi::class,
+            self::COMMAND_MAP_PARAMETERS_TYPE => self::PARAMS_TYPE_BODY,
+        ],
     ];
 
     /**

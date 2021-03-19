@@ -2,11 +2,11 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\ApiInterface;
+use OpenProvider\API\XmlApiAdapter;
 use WHMCS\Carbon;
 use WHMCS\Domain\Registrar\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
 use OpenProvider\API\Domain as api_domain;
 
 /**
@@ -14,10 +14,6 @@ use OpenProvider\API\Domain as api_domain;
  */
 class DomainInformationController extends BaseController
 {
-    /**
-     * @var API
-     */
-    private $API;
     /**
      * @var api_domain
      */
@@ -30,12 +26,11 @@ class DomainInformationController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, api_domain $api_domain, ApiInterface $apiClient)
+    public function __construct(Core $core, api_domain $api_domain, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
         $this->apiClient  = $apiClient;
-        $this->API        = $API;
         $this->api_domain = $api_domain;
     }
 
@@ -51,10 +46,7 @@ class DomainInformationController extends BaseController
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
         // Launch API
-        $api    = $this->API;
         $domain = $this->api_domain;
-
-        $api->setParams($params);
 
         try {
             $domain->load(array (
@@ -97,26 +89,24 @@ class DomainInformationController extends BaseController
                 'email'  => $op_domain['verificationEmailName'] ?? '',
                 'domain' => $response['domain']
             ];
-            $emailVerification = $this->apiClient->call('searchEmailVerificationDomainRequest', $args);
+            $emailVerification = $this->apiClient->call('searchEmailVerificationDomainRequest', $args)->getData()['results'][0] ?? false;
         } catch (Exception $e) {}
 
-        // check email verification status and choose options depend on it
-        $firstVerification = $emailVerification['results'][0] ?? false;
-
-        if (!$firstVerification) {
+        $verification = [];
+        if (!$emailVerification) {
             try {
                 $args['email'] = $ownerEmail;
-                $reply = $api->sendRequest('startCustomerEmailVerificationRequest', $args);
+                $reply = $this->apiClient->call('startCustomerEmailVerificationRequest', $args)->getData();
                 if (isset($reply['id'])) {
-                    $firstVerification['status']         = 'in progress';
-                    $firstVerification['isSuspended']    = false;
-                    $firstVerification['expirationDate'] = false;
+                    $verification['status']         = 'in progress';
+                    $verification['isSuspended']    = false;
+                    $verification['expirationDate'] = false;
                 }
 
             } catch (\Exception $e) {}
         }
 
-        $verification = $this->getIrtpVerificationEmailOptions($firstVerification);
+        $verification = $this->getIrtpVerificationEmailOptions($verification);
 
         $result = (new Domain)
             // domain part

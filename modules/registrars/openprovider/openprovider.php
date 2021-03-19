@@ -337,39 +337,47 @@ function openprovider_registrar_launch_decorator(string $route, $params = [], $l
     $modifiedParams = array_merge($params, Configuration::getParams());
     $modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
 
+    $host = $params['test_mode'] == 'on' ?
+        Configuration::get('api_url_cte') :
+        Configuration::get('api_url');
+
     $core = openprovider_registrar_core($level);
     $launch = $core->launch();
 
     $useApiV1 = true;
 
-    $core->launcher->set(ApiInterface::class, function (ContainerInterface $c) use ($params, $useApiV1) {
-        $host = $params['test_mode'] == 'on' ?
-            Configuration::get('api_url_cte') :
-            Configuration::get('api_url');
+    $core->launcher->set(ApiV1::class, function (ContainerInterface $c) use ($params, $host) {
+        $session = new Session();
+        $client = new ApiV1();
+        $client->getConfiguration()->setHost($host);
 
-        if ($useApiV1) {
-            $session = new Session();
-            $client = $c->get(ApiV1::class);
-            $client->getConfiguration()->setHost($host);
-
-            if (!$session->has(SESSION_ACCESS_TOKEN_NAME)) {
-                $token = $client->call('generateAuthTokenRequest', [
-                    'username' => $params['Username'],
-                    'password' => $params['Password']
-                ])->getData()['token'];
-                $session->set(SESSION_ACCESS_TOKEN_NAME, $token);
-            }
-            $client->getConfiguration()->setToken($session->get(SESSION_ACCESS_TOKEN_NAME));
-
-            return $client;
+        if (!$session->has(SESSION_ACCESS_TOKEN_NAME)) {
+            $token = $client->call('generateAuthTokenRequest', [
+                'username' => $params['Username'],
+                'password' => $params['Password']
+            ])->getData()['token'];
+            $session->set(SESSION_ACCESS_TOKEN_NAME, $token);
         }
+        $client->getConfiguration()->setToken($session->get(SESSION_ACCESS_TOKEN_NAME));
 
-        $client = $c->get(XmlApiAdapter::class);
+        return $client;
+    });
+
+    $core->launcher->set(XmlApiAdapter::class, function (ContainerInterface $c) use ($params, $host) {
+        $client = new XmlApiAdapter();
         $client->getConfiguration()->setUserName($params['Username']);
         $client->getConfiguration()->setPassword($params['Password']);
         $client->getConfiguration()->setHost($host);
 
         return $client;
+    });
+
+    $core->launcher->set(ApiInterface::class, function (ContainerInterface $c) use ($params, $useApiV1, $host) {
+        if ($useApiV1) {
+            return $c->get(ApiV1::class);
+        }
+
+        return $c->get(XmlApiAdapter::class);
     });
 
     return $launch->output($modifiedParams, $route);
