@@ -4,6 +4,8 @@ namespace OpenProvider\API;
 
 class Logger
 {
+    private const MODULE_NAME = 'openprovider nl';
+
     /**
      * @param $cmd
      * @param array $requestData
@@ -12,7 +14,7 @@ class Logger
     public function log($cmd, array $requestData, Response $response): void
     {
         logModuleCall(
-            'openprovider nl',
+            self::MODULE_NAME,
             $cmd,
             [
                 'request_body' => json_encode($requestData),
