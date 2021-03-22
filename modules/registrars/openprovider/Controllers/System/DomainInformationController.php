@@ -218,7 +218,8 @@ class DomainInformationController extends BaseController
      */
     private function getPunyCodesCcTlds(): array
     {
-        $arrayFromFileExtractor = new ArrayFromFileExtractor($this->path->getModulePath());
+        $modulePath = $this->path->getModulePath() ?? __DIR__ . '/../../';
+        $arrayFromFileExtractor = new ArrayFromFileExtractor($modulePath);
         return $arrayFromFileExtractor->extract(ArrayFromFileExtractor::PUNY_CODE_CC_TLDS_PATH);
     }
 }
