@@ -10,7 +10,7 @@ class ArrayFromFileExtractor
     /**
      * @var string
      */
-    private string $modulePath;
+    private $modulePath;
 
     /**
      * ArrayFromFileExtractor constructor.
