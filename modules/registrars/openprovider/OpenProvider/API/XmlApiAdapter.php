@@ -9,17 +9,17 @@ class XmlApiAdapter implements ApiInterface
     /**
      * @var API
      */
-    private API $xmlApi;
+    private $xmlApi;
 
     /**
      * @var ApiConfiguration
      */
-    private ApiConfiguration $configuration;
+    private $configuration;
 
     /**
      * XmlApiAdapter constructor.
-     * @param API $xmlApi
-     * @param ApiConfiguration $configuration
+     * @param API|null $xmlApi
+     * @param ApiConfiguration|null $configuration
      */
     public function __construct(API $xmlApi = null, ApiConfiguration $configuration = null)
     {
@@ -32,7 +32,7 @@ class XmlApiAdapter implements ApiInterface
      * @param array $args
      * @return Response
      */
-    public function call(string $cmd, array $args = []): Response
+    public function call(string $cmd, array $args = []): ResponseInterface
     {
         $response = new Response();
         $this->setXmlApiConfig();
@@ -52,7 +52,7 @@ class XmlApiAdapter implements ApiInterface
     /**
      * @return ApiConfiguration
      */
-    public function getConfiguration(): ApiConfiguration
+    public function getConfiguration(): ConfigurationInterface
     {
         return $this->configuration;
     }

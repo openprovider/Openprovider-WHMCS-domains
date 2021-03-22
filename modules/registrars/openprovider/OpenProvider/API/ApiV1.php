@@ -11,27 +11,27 @@ class ApiV1 implements ApiInterface
     /**
      * @var ApiConfiguration
      */
-    private ApiConfiguration $apiConfiguration;
+    private $apiConfiguration;
     /**
      * @var Configuration
      */
-    private Configuration $configuration;
+    private $configuration;
     /**
      * @var CommandMapping
      */
-    private CommandMapping $commandMapping;
+    private $commandMapping;
     /**
      * @var HttpClient
      */
-    private HttpClient $httpClient;
+    private $httpClient;
     /**
      * @var CamelCaseToSnakeCaseNameConverter
      */
-    private CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter;
+    private $camelCaseToSnakeCaseNameConverter;
     /**
      * @var Logger
      */
-    private Logger $logger;
+    private $logger;
 
     /**
      * ApiV1 constructor.

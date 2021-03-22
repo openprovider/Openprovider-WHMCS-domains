@@ -7,23 +7,23 @@ class ApiConfiguration implements ConfigurationInterface
     /**
      * @var string
      */
-    private string $host;
+    private $host;
     /**
      * @var string
      */
-    private string $userName;
+    private $userName;
     /**
      * @var string
      */
-    private string $password;
+    private $password;
     /**
      * @var bool
      */
-    private bool $debug;
+    private $debug;
     /**
      * @var string
      */
-    private string $token;
+    private $token;
 
     /**
      * @return string
