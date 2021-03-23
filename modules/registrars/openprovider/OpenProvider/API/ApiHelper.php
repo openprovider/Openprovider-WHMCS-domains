@@ -28,10 +28,7 @@ class ApiHelper
             'domainNamePattern' => $domain->name,
             'extension' => $domain->extension,
         ];
-        try {
-            return $this->apiClient->call('searchDomainRequest', $args)->getData()['results'][0];
-        } catch (\Exception $e) {
-            return [];
-        }
+
+        return $this->apiClient->call('searchDomainRequest', $args)->getData()['results'][0] ?? [];
     }
 }
