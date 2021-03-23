@@ -22,15 +22,20 @@ class DomainInformationController extends BaseController
      * @var ApiInterface
      */
     private $apiClient;
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, api_domain $api_domain, ApiInterface $apiClient)
+    public function __construct(Core $core, api_domain $api_domain, ApiInterface $apiClient, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
         $this->apiClient  = $apiClient;
+        $this->apiHelper = $apiHelper;
         $this->api_domain = $api_domain;
     }
 
@@ -44,7 +49,6 @@ class DomainInformationController extends BaseController
     {
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
-        $apiHelper = new ApiHelper($this->apiClient);
 
         $domain = $this->api_domain;
         try {
@@ -60,7 +64,7 @@ class DomainInformationController extends BaseController
         }
 
         // Get the data
-        $op_domain = $apiHelper->getDomain($domain);
+        $op_domain = $this->apiHelper->getDomain($domain);
 
         if (!$op_domain) {
             return (new Domain)
