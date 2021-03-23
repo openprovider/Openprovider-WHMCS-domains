@@ -2,7 +2,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\ApiInterface;
-use OpenProvider\API\XmlApiAdapter;
+use OpenProvider\API\ApiManager;
 use WHMCS\Carbon;
 use WHMCS\Domain\Registrar\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -44,7 +44,7 @@ class DomainInformationController extends BaseController
     {
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
-
+        $apiManager = new ApiManager($this->apiClient);
         // Launch API
         $domain = $this->api_domain;
 
@@ -60,13 +60,8 @@ class DomainInformationController extends BaseController
             );
         }
 
-        $requestArgs = [
-            'domainNamePattern' => $domain->name,
-            'extension' => $domain->extension,
-        ];
-
         // Get the data
-        $op_domain = $this->apiClient->call('searchDomainRequest', $requestArgs)->getData()['results'][0];
+        $op_domain = $apiManager->getDomain($domain);
 
         if (!$op_domain) {
             return (new Domain)
