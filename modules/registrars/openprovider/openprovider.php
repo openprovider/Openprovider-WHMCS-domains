@@ -5,13 +5,16 @@
  * @copyright Copyright (c) Openprovider 2018
  */
 
+use OpenProvider\API\API;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\ApiV1;
 use OpenProvider\API\XmlApiAdapter;
+use OpenProvider\WhmcsRegistrar\helpers\Logger;
 use Psr\Container\ContainerInterface;
 use \OpenProvider\WhmcsRegistrar\src\Configuration;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
 if (!defined("WHMCS"))
 {
@@ -349,7 +352,9 @@ function openprovider_registrar_launch_decorator(string $route, $params = [], $l
 
     $core->launcher->set(ApiV1::class, function (ContainerInterface $c) use ($params, $host) {
         $session = new Session();
-        $client = new ApiV1();
+        $logger = new Logger();
+        $camelCaseToSnakeCaseNameConverter = new CamelCaseToSnakeCaseNameConverter();
+        $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter);
         $client->getConfiguration()->setHost($host);
 
         if (!$session->has(SESSION_ACCESS_TOKEN_NAME)) {
@@ -365,7 +370,9 @@ function openprovider_registrar_launch_decorator(string $route, $params = [], $l
     });
 
     $core->launcher->set(XmlApiAdapter::class, function (ContainerInterface $c) use ($params, $host) {
-        $client = new XmlApiAdapter();
+        $xmlApi = new API();
+
+        $client = new XmlApiAdapter($xmlApi);
         $client->getConfiguration()->setUserName($params['Username']);
         $client->getConfiguration()->setPassword($params['Password']);
         $client->getConfiguration()->setHost($host);

@@ -4,6 +4,7 @@ namespace OpenProvider\API;
 
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use GuzzleHttp6\Client as HttpClient;
+use OpenProvider\WhmcsRegistrar\helpers\Logger;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
 class ApiV1 implements ApiInterface
@@ -36,14 +37,15 @@ class ApiV1 implements ApiInterface
     /**
      * ApiV1 constructor.
      */
-    public function __construct()
+    public function __construct(Logger $logger, CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter)
     {
+        $this->camelCaseToSnakeCaseNameConverter = $camelCaseToSnakeCaseNameConverter;
+        $this->logger = $logger;
+
         $this->apiConfiguration = new ApiConfiguration();
         $this->configuration = new Configuration();
         $this->commandMapping = new CommandMapping();
         $this->httpClient = new HttpClient();
-        $this->camelCaseToSnakeCaseNameConverter = new CamelCaseToSnakeCaseNameConverter();
-        $this->logger = new Logger();
     }
 
     /**
@@ -59,7 +61,9 @@ class ApiV1 implements ApiInterface
         $apiMethod = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_METHOD);
         $requestParametersType = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_PARAMETERS_TYPE);
         $service = new $apiClass($this->httpClient, $this->configuration);
-        $this->setupConfiguration();
+
+        $this->configuration->setHost($this->apiConfiguration->getHost());
+        $this->configuration->setAccessToken($this->apiConfiguration->getToken());
 
         $requestParameters = $this->convertRequestKeysToSnakeCase($args);
 
@@ -80,7 +84,7 @@ class ApiV1 implements ApiInterface
             $response->setCode($e->getCode());
             $response->setMessage($e->getMessage());
 
-            $this->logger->log($cmd, $args, $response);
+            $this->log($cmd, $args, $response);
 
             return $response;
         }
@@ -96,7 +100,7 @@ class ApiV1 implements ApiInterface
         $response->setData($data);
         $response->setCode($reply->getCode());
 
-        $this->logger->log($cmd, $args, $response);
+        $this->log($cmd, $args, $response);
 
         return $response;
     }
@@ -107,17 +111,6 @@ class ApiV1 implements ApiInterface
     public function getConfiguration(): ConfigurationInterface
     {
         return $this->apiConfiguration;
-    }
-
-    /**
-     * @return void
-     */
-    private function setupConfiguration(): void
-    {
-        $this->configuration->setHost($this->apiConfiguration->getHost());
-        if ($this->apiConfiguration->getToken()) {
-            $this->configuration->setAccessToken($this->apiConfiguration->getToken());
-        }
     }
 
     /**
@@ -167,5 +160,24 @@ class ApiV1 implements ApiInterface
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $cmd
+     * @param array $request
+     * @param Response $response
+     */
+    private function log(string $cmd, array $request, Response $response): void
+    {
+        $logInfo = [
+            'request' => $request,
+            'response' => [
+                'code' => $response->getCode(),
+                'message' => $response->getMessage(),
+                'total' => $response->getTotal(),
+                'data' => $response->getData(),
+            ],
+        ];
+        $this->logger->info($cmd, $logInfo);
     }
 }

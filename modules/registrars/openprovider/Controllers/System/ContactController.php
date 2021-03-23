@@ -62,19 +62,12 @@ class ContactController extends BaseController
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
-        try
-        {
-            $this->domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
+        $this->domain->load(array(
+            'name'          =>  $params['sld'],
+            'extension'     =>  $params['tld']
+        ));
 
-            $values = $this->getContactDetails($this->domain);
-        }
-        catch (\Exception $e)
-        {
-            $values["error"] = $e->getMessage();
-        }
+        $values = $this->getContactDetails($this->domain);
 
         $domainTld = new Tld($params['tld']);
         array_walk($values, function (&$contact) use ($domainTld) {
@@ -170,12 +163,12 @@ class ContactController extends BaseController
 
     private function getContactDetails($domain): array
     {
-        try {
-            $domainOp = $this->apiClient->call('searchDomainRequest', [
-                'domainNamePattern' => $domain->name,
-                'extension'         => $domain->extension,
-            ])->getData()['results'][0];
-        } catch (\Exception $e) {
+        $domainOp = $this->apiClient->call('searchDomainRequest', [
+            'domainNamePattern' => $domain->name,
+            'extension'         => $domain->extension,
+        ])->getData()['results'][0] ?? [];
+
+        if (empty($domainOp)) {
             return [];
         }
 
@@ -185,31 +178,31 @@ class ContactController extends BaseController
                 continue;
             }
 
-            try {
-                $customerOp = $this->apiClient->call('retrieveCustomerRequest', [
-                    'handle' => $domainOp[$key]
-                ])->getData();
+            $customerOp = $this->apiClient->call('retrieveCustomerRequest', [
+                'handle' => $domainOp[$key]
+            ])->getData() ?? false;
 
-                $customerInfo = [];
-                $customerInfo['First Name'] = $customerOp['name']['firstName'];
-                $customerInfo['Last Name'] = $customerOp['name']['lastName'];
-                $customerInfo['Company Name'] = $customerOp['companyName'];
-                $customerInfo['Email Address'] = $customerOp['email'];
-                $customerInfo['Address'] = $customerOp['address']['street'] . ' ' .
-                    $customerOp['address']['number'] . ' ' .
-                    $customerOp['address']['suffix'];
-                $customerInfo['City'] = $customerOp['address']['city'];
-                $customerInfo['State'] = $customerOp['address']['state'];
-                $customerInfo['Zip Code'] = $customerOp['address']['zipcode'];
-                $customerInfo['Country'] = $customerOp['address']['country'];
-                $customerInfo['Phone Number'] = $customerOp['phone']['countryCode'] . '.' .
-                    $customerOp['phone']['areaCode'] .
-                    $customerOp['phone']['subscriberNumber'];
-
-                $contacts[$name] = $customerInfo;
-            } catch (\Exception $e) {
+            if (!$customerOp) {
                 continue;
             }
+
+            $customerInfo = [];
+            $customerInfo['First Name'] = $customerOp['name']['firstName'];
+            $customerInfo['Last Name'] = $customerOp['name']['lastName'];
+            $customerInfo['Company Name'] = $customerOp['companyName'];
+            $customerInfo['Email Address'] = $customerOp['email'];
+            $customerInfo['Address'] = $customerOp['address']['street'] . ' ' .
+                $customerOp['address']['number'] . ' ' .
+                $customerOp['address']['suffix'];
+            $customerInfo['City'] = $customerOp['address']['city'];
+            $customerInfo['State'] = $customerOp['address']['state'];
+            $customerInfo['Zip Code'] = $customerOp['address']['zipcode'];
+            $customerInfo['Country'] = $customerOp['address']['country'];
+            $customerInfo['Phone Number'] = $customerOp['phone']['countryCode'] . '.' .
+                $customerOp['phone']['areaCode'] .
+                $customerOp['phone']['subscriberNumber'];
+
+            $contacts[$name] = $customerInfo;
         }
 
         unset($contacts['Reseller']);

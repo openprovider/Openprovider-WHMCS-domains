@@ -73,7 +73,7 @@ class CommandMapping
     public function getCommandMapping(string $command, string $field): string
     {
         if (!isset(self::COMMAND_MAP[$command][$field])) {
-            return false;
+            return '';
         }
 
         return self::COMMAND_MAP[$command][$field];

@@ -82,26 +82,21 @@ class DomainInformationController extends BaseController
 
         // getting verification data
         $ownerEmail = '';
-        try {
-            $args = [
-                'email'  => $op_domain['verificationEmailName'] ?? '',
-                'domain' => $response['domain']
-            ];
-            $emailVerification = $this->apiClient->call('searchEmailVerificationDomainRequest', $args)->getData()['results'][0] ?? false;
-        } catch (Exception $e) {}
+        $args = [
+            'email'  => $op_domain['verificationEmailName'] ?? '',
+            'domain' => $response['domain']
+        ];
+        $emailVerification = $this->apiClient->call('searchEmailVerificationDomainRequest', $args)->getData()['results'][0] ?? false;
 
         $verification = [];
         if (!$emailVerification) {
-            try {
-                $args['email'] = $ownerEmail;
-                $reply = $this->apiClient->call('startCustomerEmailVerificationRequest', $args)->getData();
-                if (isset($reply['id'])) {
-                    $verification['status']         = 'in progress';
-                    $verification['isSuspended']    = false;
-                    $verification['expirationDate'] = false;
-                }
-
-            } catch (\Exception $e) {}
+            $args['email'] = $ownerEmail;
+            $reply = $this->apiClient->call('startCustomerEmailVerificationRequest', $args)->getData();
+            if (isset($reply['id'])) {
+                $verification['status']         = 'in progress';
+                $verification['isSuspended']    = false;
+                $verification['expirationDate'] = false;
+            }
         }
 
         $verification = $this->getIrtpVerificationEmailOptions($verification);
