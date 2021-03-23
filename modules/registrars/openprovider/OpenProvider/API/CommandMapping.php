@@ -2,8 +2,10 @@
 
 namespace OpenProvider\API;
 
+use Openprovider\Api\Rest\Client\Domain\Api\DomainPriceServiceApi;
 use Openprovider\Api\Rest\Client\Domain\Api\DomainServiceApi;
 use Openprovider\Api\Rest\Client\Auth\Api\AuthApi;
+use Openprovider\Api\Rest\Client\Person\Api\CustomerApi;
 use Openprovider\Api\Rest\Client\Person\Api\EmailVerificationApi;
 
 class CommandMapping
@@ -16,15 +18,18 @@ class CommandMapping
     const PARAMS_TYPE_VIA_COMMA = 'comma';
 
     const COMMAND_MAP = [
-        'searchDomainRequest' => [
-            self::COMMAND_MAP_METHOD => 'listDomains',
-            self::COMMAND_MAP_CLASS => DomainServiceApi::class,
-            self::COMMAND_MAP_PARAMETERS_TYPE => self::PARAMS_TYPE_VIA_COMMA
-        ],
+        // LOGIN
         'generateAuthTokenRequest' => [
             self::COMMAND_MAP_METHOD => 'login',
             self::COMMAND_MAP_CLASS => AuthApi::class,
             self::COMMAND_MAP_PARAMETERS_TYPE => self::PARAMS_TYPE_BODY
+        ],
+
+        // CUSTOMER
+        'retrieveCustomerRequest' => [
+            self::COMMAND_MAP_METHOD => 'getCustomer',
+            self::COMMAND_MAP_CLASS => CustomerApi::class,
+            self::COMMAND_MAP_PARAMETERS_TYPE => self::PARAMS_TYPE_VIA_COMMA,
         ],
         'searchEmailVerificationDomainRequest' => [
             self::COMMAND_MAP_METHOD => 'listDomainEmailVerifications',
@@ -35,6 +40,28 @@ class CommandMapping
             self::COMMAND_MAP_METHOD => 'startEmailVerification',
             self::COMMAND_MAP_CLASS => EmailVerificationApi::class,
             self::COMMAND_MAP_PARAMETERS_TYPE => self::PARAMS_TYPE_BODY,
+        ],
+
+        // DOMAINS
+        'searchDomainRequest' => [
+            self::COMMAND_MAP_METHOD => 'listDomains',
+            self::COMMAND_MAP_CLASS => DomainServiceApi::class,
+            self::COMMAND_MAP_PARAMETERS_TYPE => self::PARAMS_TYPE_VIA_COMMA
+        ],
+        'modifyDomainRequest' => [
+            self::COMMAND_MAP_METHOD => 'updateDomain',
+            self::COMMAND_MAP_CLASS => DomainServiceApi::class,
+            self::COMMAND_MAP_PARAMETERS_TYPE => self::PARAMS_TYPE_VIA_COMMA,
+        ],
+        'checkDomainRequest' => [
+            self::COMMAND_MAP_METHOD => 'checkDomain',
+            self::COMMAND_MAP_CLASS => DomainServiceApi::class,
+            self::COMMAND_MAP_PARAMETERS_TYPE => self::PARAMS_TYPE_BODY,
+        ],
+        'retrievePriceDomainRequest' => [
+            self::COMMAND_MAP_METHOD => 'getPrice',
+            self::COMMAND_MAP_CLASS => DomainPriceServiceApi::class,
+            self::COMMAND_MAP_PARAMETERS_TYPE => self::PARAMS_TYPE_VIA_COMMA,
         ],
     ];
 

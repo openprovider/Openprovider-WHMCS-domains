@@ -3,6 +3,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
 use OpenProvider\API\API;
+use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
@@ -16,10 +17,6 @@ use WHMCS\Domains\DomainLookup\SearchResult;
 class CheckAvailabilityController  extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-    /**
      * @var ResultsList
      */
     private $resultsList;
@@ -27,15 +24,19 @@ class CheckAvailabilityController  extends BaseController
      * @var Domain
      */
     private $domain;
+    /**
+     * @var ApiInterface
+     */
+    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, $resultsList = '')
+    public function __construct(Core $core, Domain $domain, $resultsList = '', ApiInterface $apiClient)
     {
         parent::__construct($core);
 
-        $this->API = $API;
+        $this->apiClient = $apiClient;
         $this->domain = $domain;
 
         /**
@@ -53,23 +54,19 @@ class CheckAvailabilityController  extends BaseController
     public function check($params)
     {
         // Safety feature: Make premium opt-in with warning only. See https://requests.whmcs.com/topic/major-bug-premium-domains-billed-incorrectly.
-        if(isset($params['OpenproviderPremium']) && $params['OpenproviderPremium'] === true)
-        {
+        if(isset($params['OpenproviderPremium']) && $params['OpenproviderPremium'] === true) {
             $premiumEnabled = (bool) $params['premiumEnabled'];
-        }
-        else
+        } else {
             $premiumEnabled = false;
+        }
 
         $results = $this->resultsList;
-        if(empty($params['tldsToInclude']))
+        if(empty($params['tldsToInclude'])) {
             return $results;
-
-        $api = $this->API;
-        $api->setParams($params);
+        }
 
         $domains = [];
-        foreach($params['tldsToInclude'] as $tld)
-        {
+        foreach($params['tldsToInclude'] as $tld) {
             $domain             = clone $this->domain;
             $domain->extension  = substr($tld, 1);
             $domain->name       = $params['isIdnDomain'] ? $params['punyCodeSearchTerm'] : $params['searchTerm'];
@@ -77,15 +74,15 @@ class CheckAvailabilityController  extends BaseController
         }
 
         try {
-            $status =  $api->checkDomainArray($domains);
+            $status =  $this->apiClient->call('checkDomainRequest', [
+                "domains" => $domains
+            ])->getData()['results'];
         } catch (Exception $e) {
-            if($e->getcode() == 307)
-            {
+            if($e->getcode() == 307) {
                 // OP response: "Your domain request contains an invalid extension!""
                 // Meaning: the id is not supported.
 
-                foreach($params['tldsToInclude'] as $tld)
-                {
+                foreach($params['tldsToInclude'] as $tld) {
                     $domain_tld  = substr($tld, 1);
                     $domain_sld  = $params['isIdnDomain'] ? $params['punyCodeSearchTerm'] : $params['searchTerm'];
                     $searchResult = new SearchResult($domain_sld, $domain_tld);
@@ -93,38 +90,32 @@ class CheckAvailabilityController  extends BaseController
                     $results->append($searchResult);
                 }
                 return $results;
-            }
-            else
-            {
+            } else {
                 \logModuleCall('openprovider', 'whois', $domains, $e->getMessage(), null, [$params['Password']]);
                 return $results;
             }
         }
 
-        foreach($status as $domain_status)
-        {
+        foreach($status as $domain_status) {
             $domain_sld = explode('.', $domain_status['domain'])[0];
             $domain_tld = str_replace($domain_sld . '.', '', $domain_status['domain']);
 
             $searchResult = new SearchResult($domain_sld, $domain_tld);
 
-            if(isset($domain_status['premium']) && $domain_status['status'] == 'free')
-            {
-                if($premiumEnabled == false)
+            if(isset($domain_status['premium']) && $domain_status['status'] == 'free') {
+                if($premiumEnabled == false) {
                     $status = SearchResult::STATUS_RESERVED;
-                else
-                {
+                } else {
                     $status = SearchResult::STATUS_NOT_REGISTERED;
                     $searchResult->setPremiumDomain(true);
 
-                    $args['domain']['name']         = $domain_sld;
-                    $args['domain']['extension']    = $domain_tld;
-                    $args['operation']    = 'create';
-                    $create_pricing = $api->sendRequest('retrievePriceDomainRequest', $args);
-
+                    $args['domainName']      = $domain_sld;
+                    $args['domainExtension'] = $domain_tld;
+                    $args['operation'] = 'create';
+                    $create_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args);
 
                     $args['operation']    = 'transfer';
-                    $transfer_pricing = $api->sendRequest('retrievePriceDomainRequest', $args);
+                    $transfer_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args);
 
                     // Retrieve the pricing
                     $searchResult->setPremiumCostPricing(
@@ -136,11 +127,11 @@ class CheckAvailabilityController  extends BaseController
                     );
 
                 }
-            }
-            elseif($domain_status['status'] == 'free')
+            } elseif($domain_status['status'] == 'free') {
                 $status = SearchResult::STATUS_NOT_REGISTERED;
-            else
+            } else {
                 $status = SearchResult::STATUS_REGISTERED;
+            }
 
             $searchResult->setStatus($status);
             $results->append($searchResult);

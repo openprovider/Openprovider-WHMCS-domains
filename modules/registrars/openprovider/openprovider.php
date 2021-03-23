@@ -358,7 +358,7 @@ function openprovider_registrar_launch_decorator(string $route, $params = [], $l
             ])->getData()['token'];
             $session->set(SESSION_ACCESS_TOKEN_NAME, $token);
         }
-        $client->getConfiguration()->setToken($session->get(SESSION_ACCESS_TOKEN_NAME));
+        $client->getConfiguration()->setToken($session->get(SESSION_ACCESS_TOKEN_NAME) ?? '');
 
         return $client;
     });
