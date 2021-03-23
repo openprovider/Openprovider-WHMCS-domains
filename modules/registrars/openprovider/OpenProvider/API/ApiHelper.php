@@ -2,7 +2,7 @@
 
 namespace OpenProvider\API;
 
-class ApiManager
+class ApiHelper
 {
     /**
      * @var ApiInterface

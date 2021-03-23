@@ -2,7 +2,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\ApiInterface;
-use OpenProvider\API\ApiManager;
+use OpenProvider\API\ApiHelper;
 use WHMCS\Carbon;
 use WHMCS\Domain\Registrar\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -44,10 +44,9 @@ class DomainInformationController extends BaseController
     {
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
-        $apiManager = new ApiManager($this->apiClient);
-        // Launch API
-        $domain = $this->api_domain;
+        $apiHelper = new ApiHelper($this->apiClient);
 
+        $domain = $this->api_domain;
         try {
             $domain->load(array (
                 'name' => $params['sld'],
@@ -61,7 +60,7 @@ class DomainInformationController extends BaseController
         }
 
         // Get the data
-        $op_domain = $apiManager->getDomain($domain);
+        $op_domain = $apiHelper->getDomain($domain);
 
         if (!$op_domain) {
             return (new Domain)
