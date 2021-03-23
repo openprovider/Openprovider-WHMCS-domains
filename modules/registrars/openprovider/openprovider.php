@@ -5,6 +5,7 @@
  * @copyright Copyright (c) Openprovider 2018
  */
 
+use OpenProvider\API\ApiHelper;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\ApiV1;
 use OpenProvider\API\XmlApiAdapter;
@@ -378,6 +379,11 @@ function openprovider_registrar_launch_decorator(string $route, $params = [], $l
         }
 
         return $c->get(XmlApiAdapter::class);
+    });
+
+    $core->launcher->set(ApiHelper::class, function(ContainerInterface $c) {
+        $apiClient = $c->get(ApiInterface::class);
+        return new ApiHelper($apiClient);
     });
 
     return $launch->output($modifiedParams, $route);
