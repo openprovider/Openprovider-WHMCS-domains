@@ -3,6 +3,8 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\API;
+use OpenProvider\API\APIConfig;
+use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
@@ -32,15 +34,20 @@ class ContactController extends BaseController
      * @var Handle
      */
     private $handle;
+    /**
+     * @var ApiInterface
+     */
+    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, Handle $handle)
+    public function __construct(Core $core, API $API, Domain $domain, Handle $handle, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
         $this->API = $API;
+        $this->apiClient = $apiClient;
         $this->domain = $domain;
         $this->handle = $handle;
     }
@@ -48,7 +55,7 @@ class ContactController extends BaseController
     /**
      * Get the contact details.
      * @param $params
-     * @return \OpenProvider\API\type
+     * @return array
      */
     public function getDetails($params)
     {
@@ -62,9 +69,7 @@ class ContactController extends BaseController
                 'extension'     =>  $params['tld']
             ));
 
-            $api                =   $this->API;
-            $api->setParams($params);
-            $values             =   $api->getContactDetails($this->domain);
+            $values = $this->getContactDetails($this->domain);
         }
         catch (\Exception $e)
         {
@@ -125,7 +130,7 @@ class ContactController extends BaseController
         {
             $api                =   $this->API;
             $api->setParams($params);
-            $handles            =   array_flip(\OpenProvider\API\APIConfig::$handlesNames);
+            $handles            =   array_flip(APIConfig::$handlesNames);
             $this->domain->load(array(
                 'name'          =>  $params['sld'],
                 'extension'     =>  $params['tld']
@@ -161,5 +166,55 @@ class ContactController extends BaseController
             $values["error"] = $e->getMessage();
         }
         return $values;
+    }
+
+    private function getContactDetails($domain): array
+    {
+        try {
+            $domainOp = $this->apiClient->call('searchDomainRequest', [
+                'domainNamePattern' => $domain->name,
+                'extension'         => $domain->extension,
+            ])->getData()['results'][0];
+        } catch (\Exception $e) {
+            return [];
+        }
+
+        $contacts = [];
+        foreach (APIConfig::$handlesNames as $key => $name) {
+            if (empty($domainOp[$key])) {
+                continue;
+            }
+
+            try {
+                $customerOp = $this->apiClient->call('retrieveCustomerRequest', [
+                    'handle' => $domainOp[$key]
+                ])->getData();
+
+                $customerInfo = [];
+                $customerInfo['First Name'] = $customerOp['name']['firstName'];
+                $customerInfo['Last Name'] = $customerOp['name']['lastName'];
+                $customerInfo['Company Name'] = $customerOp['companyName'];
+                $customerInfo['Email Address'] = $customerOp['email'];
+                $customerInfo['Address'] = $customerOp['address']['street'] . ' ' .
+                    $customerOp['address']['number'] . ' ' .
+                    $customerOp['address']['suffix'];
+                $customerInfo['City'] = $customerOp['address']['city'];
+                $customerInfo['State'] = $customerOp['address']['state'];
+                $customerInfo['Zip Code'] = $customerOp['address']['zipcode'];
+                $customerInfo['Country'] = $customerOp['address']['country'];
+                $customerInfo['Phone Number'] = $customerOp['phone']['countryCode'] . '.' .
+                    $customerOp['phone']['areaCode'] .
+                    $customerOp['phone']['subscriberNumber'];
+
+                $contacts[$name] = $customerInfo;
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        unset($contacts['Reseller']);
+        unset($contacts['reseller']);
+
+        return $contacts;
     }
 }
