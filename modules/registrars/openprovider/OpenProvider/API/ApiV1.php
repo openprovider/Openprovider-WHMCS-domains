@@ -121,15 +121,6 @@ class ApiV1 implements ApiInterface
     }
 
     /**
-     * @param $response
-     * @return array
-     */
-    private function convertReplyFromObjectToArray($response): array
-    {
-        return json_decode($response, true);
-    }
-
-    /**
      * @param array $givenArgs
      * @param array $neededArgs
      * @return array

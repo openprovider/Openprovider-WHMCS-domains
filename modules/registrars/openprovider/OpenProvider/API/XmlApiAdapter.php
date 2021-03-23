@@ -23,14 +23,14 @@ class XmlApiAdapter implements ApiInterface
      */
     public function __construct(API $xmlApi = null, ApiConfiguration $configuration = null)
     {
-        $this->xmlApi = $xmlApi ?? new API();
-        $this->configuration = $configuration ?? new ApiConfiguration();
+        $this->xmlApi = $xmlApi;
+        $this->configuration = $configuration;
     }
 
     /**
      * @param string $cmd
      * @param array $args
-     * @return Response
+     * @return ResponseInterface
      */
     public function call(string $cmd, array $args = []): ResponseInterface
     {
