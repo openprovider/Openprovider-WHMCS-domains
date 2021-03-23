@@ -4,7 +4,7 @@ namespace OpenProvider\API;
 
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use GuzzleHttp6\Client as HttpClient;
-use OpenProvider\WhmcsRegistrar\helpers\Logger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
 class ApiV1 implements ApiInterface
@@ -30,14 +30,16 @@ class ApiV1 implements ApiInterface
      */
     private $camelCaseToSnakeCaseNameConverter;
     /**
-     * @var Logger
+     * @var LoggerInterface
      */
     private $logger;
 
     /**
      * ApiV1 constructor.
+     * @param LoggerInterface $logger
+     * @param CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter
      */
-    public function __construct(Logger $logger, CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter)
+    public function __construct(LoggerInterface $logger, CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter)
     {
         $this->camelCaseToSnakeCaseNameConverter = $camelCaseToSnakeCaseNameConverter;
         $this->logger = $logger;

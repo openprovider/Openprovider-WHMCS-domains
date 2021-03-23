@@ -13,6 +13,7 @@ use OpenProvider\API\XmlApiAdapter;
 use OpenProvider\WhmcsRegistrar\helpers\Logger;
 use Psr\Container\ContainerInterface;
 use \OpenProvider\WhmcsRegistrar\src\Configuration;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
@@ -348,12 +349,16 @@ function openprovider_registrar_launch_decorator(string $route, $params = [], $l
     $core = openprovider_registrar_core($level);
     $launch = $core->launch();
 
+    $core->launcher->set(LoggerInterface::class, function (ContainerInterface $c) {
+        return new \OpenProvider\Logger();
+    });
+
     $useApiV1 = true;
 
     $core->launcher->set(ApiV1::class, function (ContainerInterface $c) use ($params, $host) {
         $session = new Session();
-        $logger = new Logger();
         $camelCaseToSnakeCaseNameConverter = new CamelCaseToSnakeCaseNameConverter();
+        $logger = $c->get(LoggerInterface::class);
         $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter);
         $client->getConfiguration()->setHost($host);
 
