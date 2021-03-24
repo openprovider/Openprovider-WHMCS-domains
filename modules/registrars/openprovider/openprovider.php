@@ -357,11 +357,15 @@ function openprovider_registrar_launch_decorator(string $route, $params = [], $l
         return new Session();
     });
 
+    $core->launcher->set(CamelCaseToSnakeCaseNameConverter::class, function (ContainerInterface $e) {
+        return new CamelCaseToSnakeCaseNameConverter();
+    });
+
     $useApiV1 = true;
 
     $core->launcher->set(ApiV1::class, function (ContainerInterface $c) use ($params, $host) {
         $session = $c->get(Session::class);
-        $camelCaseToSnakeCaseNameConverter = new CamelCaseToSnakeCaseNameConverter();
+        $camelCaseToSnakeCaseNameConverter = $c->get(CamelCaseToSnakeCaseNameConverter::class);
         $logger = $c->get(LoggerInterface::class);
         $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter);
         $client->getConfiguration()->setHost($host);

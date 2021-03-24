@@ -68,7 +68,7 @@ class ApiV1 implements ApiInterface
             $apiClass = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_CLASS);
             $apiMethod = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_METHOD);
         } catch (\Exception $e) {
-            $response = $this->failedResponse($response, $e);
+            $response = $this->failedResponse($response, $e->getMessage(), $e->getCode());
             $this->log($cmd, $args, $response);
 
             return $response;
@@ -86,7 +86,7 @@ class ApiV1 implements ApiInterface
             $requestParameters = $this->paramsCreator->createParameters($args, $service, $apiMethod);
             $reply = $service->$apiMethod(...$requestParameters);
         } catch (\Exception $e) {
-            $response = $this->failedResponse($response, $e);
+            $response = $this->failedResponse($response, $e->getMessage(), $e->getCode());
             $this->log($cmd, $args, $response);
 
             return $response;
@@ -147,20 +147,14 @@ class ApiV1 implements ApiInterface
 
     /**
      * @param ResponseInterface $response
-     * @param \Exception $e
+     * @param string $message
+     * @param int $code
      * @return ResponseInterface
      */
-    private function failedResponse(ResponseInterface $response, \Exception $e): ResponseInterface
+    private function failedResponse(ResponseInterface $response, string $message, int $code): ResponseInterface
     {
-        $message = json_decode($e->getMessage()) ?? $e->getMessage();
-
-        if (is_array($message)) {
-            $response->setMessage($message['desc'] ?? $message);
-            $response->setCode($message['code'] ?? 0);
-        } else {
-            $response->setMessage($message);
-            $response->setCode($e->getCode());
-        }
+        $response->setMessage($message);
+        $response->setCode($code);
 
         return $response;
     }
