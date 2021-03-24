@@ -362,7 +362,7 @@ function openprovider_registrar_launch_decorator(string $route, $params = [], $l
         $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter);
         $client->getConfiguration()->setHost($host);
 
-        if (!$session->has(SESSION_ACCESS_TOKEN_NAME)) {
+        if (!$session->get(SESSION_ACCESS_TOKEN_NAME)) {
             $token = $client->call('generateAuthTokenRequest', [
                 'username' => $params['Username'],
                 'password' => $params['Password']

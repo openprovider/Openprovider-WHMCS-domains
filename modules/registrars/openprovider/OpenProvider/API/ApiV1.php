@@ -33,6 +33,10 @@ class ApiV1 implements ApiInterface
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var ParamsCreator 
+     */
+    private $paramsCreator;
 
     /**
      * ApiV1 constructor.
@@ -48,6 +52,7 @@ class ApiV1 implements ApiInterface
         $this->configuration = new Configuration();
         $this->commandMapping = new CommandMapping();
         $this->httpClient = new HttpClient();
+        $this->paramsCreator = new ParamsCreator();
     }
 
     /**
@@ -61,30 +66,21 @@ class ApiV1 implements ApiInterface
 
         $apiClass = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_CLASS);
         $apiMethod = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_METHOD);
-        $requestParametersType = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_PARAMETERS_TYPE);
         $service = new $apiClass($this->httpClient, $this->configuration);
 
-        $this->configuration->setHost($this->apiConfiguration->getHost());
-        $this->configuration->setAccessToken($this->apiConfiguration->getToken());
+        $service->getConfig()->setHost($this->apiConfiguration->getHost());
 
-        $requestParameters = $this->convertRequestKeysToSnakeCase($args);
+        if ($this->apiConfiguration->getToken()) {
+            $service->getConfig()->setAccessToken($this->apiConfiguration->getToken());
+        }
 
         try {
-            if ($requestParametersType == CommandMapping::PARAMS_TYPE_VIA_COMMA) {
-                $reflectionMethod = new \ReflectionMethod($service, $apiMethod);
-                $neededArgumentsToMethod = array_values(json_decode(json_encode($reflectionMethod->getParameters()), true));
-                $requestedArguments = [];
-                foreach ($neededArgumentsToMethod as $element) {
-                    $requestedArguments[] = $element['name'];
-                }
-                $filledArguments = $this->fillEmptyArguments($requestParameters, $requestedArguments);
-                $reply = $service->$apiMethod(...$filledArguments);
-            } else if ($requestParametersType == CommandMapping::PARAMS_TYPE_BODY) {
-                $reply = $service->$apiMethod($requestParameters);
-            }
+            $requestParameters = $this->paramsCreator->createParameters($args, $service, $apiMethod);
+
+            $reply = $service->$apiMethod(...$requestParameters);
         } catch (\Exception $e) {
-            $response->setCode($e->getCode());
             $response->setMessage($e->getMessage());
+            $response->setCode($e->getCode());
 
             $this->log($cmd, $args, $response);
 
@@ -147,22 +143,7 @@ class ApiV1 implements ApiInterface
         return $result;
     }
 
-    /**
-     * @param array $data
-     * @return array
-     */
-    private function convertRequestKeysToSnakeCase(array $data): array
-    {
-        $result = [];
 
-        foreach ($data as $key => $value) {
-            $result[$this->camelCaseToSnakeCaseNameConverter->normalize($key)] = is_array($value) ?
-                $this->convertRequestKeysToSnakeCase($value) :
-                $value;
-        }
-
-        return $result;
-    }
 
     /**
      * @param string $cmd
