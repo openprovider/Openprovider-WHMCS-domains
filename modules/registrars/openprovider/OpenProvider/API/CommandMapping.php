@@ -57,11 +57,12 @@ class CommandMapping
      * @param string $command
      * @param string $field
      * @return string
+     * @throws \Exception
      */
     public function getCommandMapping(string $command, string $field): string
     {
         if (!isset(self::COMMAND_MAP[$command][$field])) {
-            return '';
+            throw new \Exception("Field {$field} not found into command mapping!");
         }
 
         return self::COMMAND_MAP[$command][$field];

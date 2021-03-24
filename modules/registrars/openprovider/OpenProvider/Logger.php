@@ -3,7 +3,6 @@
 namespace OpenProvider;
 
 use Psr\Log\AbstractLogger;
-use Psr\Log\LogLevel;
 
 class Logger extends AbstractLogger
 {
@@ -19,15 +18,8 @@ class Logger extends AbstractLogger
         logModuleCall(
             self::MODULE_NAME,
             $message,
-            [
-                'request_body' => json_encode($context['request']),
-            ],
-            [
-                'response_data' => json_encode($context['response']['data']),
-                'response_code' => $context['response']['code'],
-                'response_total' => $context['response']['total'],
-                'response_message' => $context['response']['message'],
-            ]
+            json_encode($context['request']),
+            json_encode($context['response'])
         );
     }
 }

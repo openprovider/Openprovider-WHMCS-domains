@@ -64,8 +64,16 @@ class ApiV1 implements ApiInterface
     {
         $response = new Response();
 
-        $apiClass = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_CLASS);
-        $apiMethod = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_METHOD);
+        try {
+            $apiClass = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_CLASS);
+            $apiMethod = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_METHOD);
+        } catch (\Exception $e) {
+            $response = $this->failedResponse($response, $e);
+            $this->log($cmd, $args, $response);
+
+            return $response;
+        }
+
         $service = new $apiClass($this->httpClient, $this->configuration);
 
         $service->getConfig()->setHost($this->apiConfiguration->getHost());
@@ -76,27 +84,16 @@ class ApiV1 implements ApiInterface
 
         try {
             $requestParameters = $this->paramsCreator->createParameters($args, $service, $apiMethod);
-
             $reply = $service->$apiMethod(...$requestParameters);
         } catch (\Exception $e) {
-            $response->setMessage($e->getMessage());
-            $response->setCode($e->getCode());
-
+            $response = $this->failedResponse($response, $e);
             $this->log($cmd, $args, $response);
 
             return $response;
         }
 
         $data = json_decode($reply->getData(), true);
-        $data = $this->convertReplyKeysToCamelCase($data);
-
-        if (isset($data['total'])) {
-            $response->setTotal($data['total']);
-            unset($data['total']);
-        }
-
-        $response->setData($data);
-        $response->setCode($reply->getCode());
+        $response = $this->successResponse($response, $data);
 
         $this->log($cmd, $args, $response);
 
@@ -109,21 +106,6 @@ class ApiV1 implements ApiInterface
     public function getConfiguration(): ConfigurationInterface
     {
         return $this->apiConfiguration;
-    }
-
-    /**
-     * @param array $givenArgs
-     * @param array $neededArgs
-     * @return array
-     */
-    private function fillEmptyArguments(array $givenArgs, array $neededArgs): array
-    {
-        $result = [];
-        foreach ($neededArgs as $argument) {
-            $result[] = $givenArgs[$argument] ?? null;
-        }
-
-        return $result;
     }
 
     /**
@@ -143,8 +125,6 @@ class ApiV1 implements ApiInterface
         return $result;
     }
 
-
-
     /**
      * @param string $cmd
      * @param array $request
@@ -161,6 +141,47 @@ class ApiV1 implements ApiInterface
                 'data' => $response->getData(),
             ],
         ];
+
         $this->logger->info($cmd, $logInfo);
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param \Exception $e
+     * @return ResponseInterface
+     */
+    private function failedResponse(ResponseInterface $response, \Exception $e): ResponseInterface
+    {
+        $message = json_decode($e->getMessage()) ?? $e->getMessage();
+
+        if (is_array($message)) {
+            $response->setMessage($message['desc'] ?? $message);
+            $response->setCode($message['code'] ?? 0);
+        } else {
+            $response->setMessage($message);
+            $response->setCode($e->getCode());
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param array $data
+     * @return ResponseInterface
+     */
+    private function successResponse(ResponseInterface $response, array $data): ResponseInterface
+    {
+        $data = $this->convertReplyKeysToCamelCase($data);
+
+        $response->setTotal($data['total'] ?? 0);
+        unset($data['total']);
+
+        $response->setCode($data['code'] ?? 0);
+        unset($data['code']);
+
+        $response->setData($data);
+
+        return $response;
     }
 }
