@@ -7,19 +7,19 @@ class Response implements ResponseInterface
     /**
      * @var array
      */
-    private array $data = [];
+    private $data = [];
     /**
      * @var int
      */
-    private int $total = 0;
+    private $total = 0;
     /**
      * @var int
      */
-    private int $code = 0;
+    private $code = 0;
     /**
      * @var string
      */
-    private string $message = '';
+    private $message = '';
 
     /**
      * @return array

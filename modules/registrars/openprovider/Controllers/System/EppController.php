@@ -3,6 +3,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
+use OpenProvider\API\ApiInterface;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
@@ -19,17 +20,21 @@ class EppController extends BaseController
      */
     private $API;
     /**
+     * @var ApiInterface
+     */
+    private $apiClient;
+    /**
      * @var Domain
      */
     private $domain;
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, Domain $domain, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
-        $this->API = $API;
+        $this->apiClient = $apiClient;
         $this->domain = $domain;
     }
 
@@ -53,15 +58,18 @@ class EppController extends BaseController
                 'extension'     =>  $params['tld']
             ));
 
-            $api                =   $this->API;
-            $api->setParams($params);
-            $eppCode = $api->getEPPCode($domain);
+            $args = [
+                'domainNamePattern' => $domain->name,
+                'extension' => $domain->extension
+            ];
+            $domainOp = $this->apiClient->call('searchDomainRequest', $args)->getData()['results'][0];
+            $eppCode = $domainOp['authCode'];
+            $values["eppcode"] = $eppCode ?? '';
 
             if(!$eppCode)
             {
                 throw new Exception('EPP code is not set');
             }
-            $values["eppcode"] = $eppCode ? $eppCode : '';
         }
         catch (\Exception $e)
         {

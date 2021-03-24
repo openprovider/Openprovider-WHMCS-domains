@@ -1,6 +1,7 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+use OpenProvider\API\ApiInterface;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WHMCS\Carbon;
 use OpenProvider\WhmcsHelpers\Activity;
@@ -19,11 +20,6 @@ use WeDevelopCoffee\wPower\Models\Registrar;
 class DomainSyncController extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-
-    /**
      * @var api_domain
      */
     private $api_domain;
@@ -35,18 +31,22 @@ class DomainSyncController extends BaseController
      * @var Domain
      */
     private $domain;
+    /**
+     * @var ApiInterface
+     */
+    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, api_domain $api_domain, Domain $domain, OpenProvider $openprovider)
+    public function __construct(Core $core, api_domain $api_domain, Domain $domain, OpenProvider $openprovider, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
-        $this->API = $API;
         $this->api_domain = $api_domain;
         $this->openprovider = $openprovider;
         $this->domain = $domain;
+        $this->apiClient = $apiClient;
     }
 
     /**
@@ -68,8 +68,6 @@ class DomainSyncController extends BaseController
             );
         }
 
-
-
         $this->domain = $this->domain->find($params['domainid']);
         $setting['syncAutoRenewSetting'] = Configuration::getOrDefault('syncAutoRenewSetting', true);
         $setting['syncIdentityProtectionToggle'] = Configuration::getOrDefault('syncIdentityProtectionToggle', true);
@@ -78,9 +76,12 @@ class DomainSyncController extends BaseController
         {
             // get data from op
             $this->api_domain   = $this->openprovider->domain($this->domain->domain);
-            $op_domain_result   = $this->openprovider->api->retrieveDomainRequest($this->api_domain, true);
+            $args = [
+                'domainNamePattern' => $this->api_domain->name,
+                'extension' => $this->api_domain->extension,
+            ];
+            $op_domain_result   = $this->apiClient->call('searchDomainRequest', $args)->getData()['results'][0];
             $expiration_date    = Carbon::createFromFormat('Y-m-d H:i:s', $op_domain_result['expirationDate'], 'Europe/Amsterdam');
-
             if($op_domain_result['status'] == 'ACT')
             {
                 // auto renew on or not? -> WHMCS is leading.

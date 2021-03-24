@@ -7,19 +7,23 @@ class ApiConfiguration implements ConfigurationInterface
     /**
      * @var string
      */
-    private string $host;
+    private $host = '';
     /**
      * @var string
      */
-    private string $userName;
+    private $userName = '';
     /**
      * @var string
      */
-    private string $password;
+    private $password = '';
     /**
      * @var bool
      */
-    private bool $debug;
+    private $debug = false;
+    /**
+     * @var string
+     */
+    private $token = '';
 
     /**
      * @return string
@@ -83,5 +87,22 @@ class ApiConfiguration implements ConfigurationInterface
     public function setDebug(bool $debug): void
     {
         $this->debug = $debug;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken(): string
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     * @return void
+     */
+    public function setToken(string $token): void
+    {
+        $this->token = $token;
     }
 }

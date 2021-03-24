@@ -3,6 +3,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
+use OpenProvider\API\ApiInterface;
 use OpenProvider\WhmcsRegistrar\src\Notification;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider as OP;
 use WHMCS\Database\Capsule;
@@ -25,14 +26,19 @@ class IdProtectController extends BaseController
      * @var Domain
      */
     private $domain;
+    /**
+     * @var ApiInterface
+     */
+    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, API $API, Domain $domain, ApiInterface $apiCient)
     {
         parent::__construct($core);
 
+        $this->apiClient = $apiCient;
         $this->API = $API;
         $this->domain = $domain;
     }
@@ -60,8 +66,11 @@ class IdProtectController extends BaseController
         try {
             $OpenProvider       = new OP();
             $op_domain_obj      = $OpenProvider->domain($domain->domain);
-
-            $op_domain          = $OpenProvider->api->retrieveDomainRequest($op_domain_obj);
+            $args = [
+                'domainNamePattern' => $op_domain_obj->name,
+                'extension' => $op_domain_obj->extension,
+            ];
+            $op_domain = $this->apiClient->call('searchDomainRequest', $args)->getData()['results'][0];
             $OpenProvider->toggle_whois_protection($domain, $op_domain);
 
             return array(
@@ -75,7 +84,6 @@ class IdProtectController extends BaseController
                 $notification = new Notification();
                 $notification->WPP_contract_unsigned_one_domain($params['domainname'])
                     ->send_to_admins();
-
             }
 
             return array(
