@@ -2,6 +2,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
+use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
@@ -20,16 +21,21 @@ class NameserverController extends BaseController
      * @var Domain
      */
     private $domain;
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, API $API, Domain $domain, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
         $this->API = $API;
         $this->domain = $domain;
+        $this->apiHelper = $apiHelper;
     }
 
     /**
@@ -44,14 +50,12 @@ class NameserverController extends BaseController
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
         try {
-            $api                =   $this->API;
-            $api->setParams($params);
             $domain             =   $this->domain;
             $domain->load(array (
                 'name' => $params['sld'],
                 'extension' => $params['tld']
             ));
-            $nameservers = $api->getNameservers($domain);
+            $nameservers = $this->apiHelper->getNameservers($domain);
             $return = array ();
             $i = 1;
 
@@ -77,28 +81,13 @@ class NameserverController extends BaseController
      */
     public function save($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
-
-        try
-        {
-            $api                =   $this->API;
-            $api->setParams($params);
-            $domain             =   $this->domain;
-            $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
-            $nameServers        =   \OpenProvider\API\APITools::createNameserversArray($params);
-
-            $api->saveNameservers($domain, $nameServers);
-        }
-        catch (\Exception $e)
-        {
-            return array(
-                'error' => $e->getMessage(),
-            );
-        }
+        $domain = $this->domain;
+        $domain->load(array(
+            'name'      => $params['original']['domainObj']->getSecondLevel(),
+            'extension' => $params['original']['domainObj']->getTopLevel(),
+        ));
+        $nameServers = \OpenProvider\API\APITools::createNameserversArray($params);
+        $this->apiHelper->saveNameservers($domain, $nameServers);
 
         return 'success';
     }

@@ -2,6 +2,8 @@
 
 namespace OpenProvider\API;
 
+use Openprovider\Api\Rest\Client\Dns\Api\NameserverServiceApi;
+use Openprovider\Api\Rest\Client\Dns\Api\ZoneServiceApi;
 use Openprovider\Api\Rest\Client\Domain\Api\DomainPriceServiceApi;
 use Openprovider\Api\Rest\Client\Domain\Api\DomainServiceApi;
 use Openprovider\Api\Rest\Client\Auth\Api\AuthApi;
@@ -50,6 +52,24 @@ class CommandMapping
         'retrievePriceDomainRequest' => [
             self::COMMAND_MAP_METHOD => 'getPrice',
             self::COMMAND_MAP_CLASS => DomainPriceServiceApi::class,
+        ],
+
+        // DNS
+        'retrieveZoneDnsRequest' => [
+            self::COMMAND_MAP_METHOD => 'getZone',
+            self::COMMAND_MAP_CLASS => ZoneServiceApi::class,
+        ],
+        'modifyZoneDnsRequest' => [
+            self::COMMAND_MAP_METHOD => 'updateZone',
+            self::COMMAND_MAP_CLASS => ZoneServiceApi::class,
+        ],
+        'createZoneDnsRequest' => [
+            self::COMMAND_MAP_METHOD => 'createZone',
+            self::COMMAND_MAP_CLASS => ZoneServiceApi::class,
+        ],
+        'deleteZoneDnsRequest' => [
+            self::COMMAND_MAP_METHOD => 'createZone',
+            self::COMMAND_MAP_CLASS => ZoneServiceApi::class,
         ],
     ];
 
