@@ -26,22 +26,17 @@ class NameserverController extends BaseController
      * @var ApiHelper
      */
     private $apiHelper;
-    /**
-     * @var ApiInterface
-     */
-    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, ApiHelper $apiHelper, ApiInterface $apiClient)
+    public function __construct(Core $core, API $API, Domain $domain, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
         $this->API = $API;
         $this->domain = $domain;
         $this->apiHelper = $apiHelper;
-        $this->apiClient = $apiClient;
     }
 
     /**

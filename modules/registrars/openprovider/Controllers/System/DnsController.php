@@ -17,10 +17,6 @@ use WeDevelopCoffee\wPower\Core\Core;
 class DnsController extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-    /**
      * @var Domain
      */
     private $domain;
@@ -32,11 +28,10 @@ class DnsController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, ApiHelper $apiHelper)
+    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
-        $this->API = $API;
         $this->domain = $domain;
         $this->apiHelper = $apiHelper;
     }
