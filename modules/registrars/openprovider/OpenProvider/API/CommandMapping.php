@@ -36,6 +36,10 @@ class CommandMapping
             self::COMMAND_MAP_METHOD => 'startEmailVerification',
             self::COMMAND_MAP_CLASS => EmailVerificationApi::class,
         ],
+        'restartCustomerEmailVerificationRequest' => [
+            self::COMMAND_MAP_METHOD => 'restartEmailVerification',
+            self::COMMAND_MAP_CLASS => EmailVerificationApi::class,
+        ],
 
         // DOMAINS
         'searchDomainRequest' => [

@@ -94,6 +94,29 @@ class ApiHelper
     }
 
     /**
+     * @param Domain $domain
+     * @return array
+     */
+    public function getDomainContacts(Domain $domain): array
+    {
+        $domainOp = $this->getDomain($domain);
+
+        $contacts = [];
+        foreach (APIConfig::$handlesNames as $key => $name) {
+            if (empty($domainOp[$key])) {
+                continue;
+            }
+
+            $contacts[$name] = $this->getCustomer($domainOp[$key]);
+        }
+
+        unset($contacts['Reseller']);
+        unset($contacts['reseller']);
+
+        return $contacts;
+    }
+
+    /**
      * @param DomainNameServer $nameServer
      * @return array
      */
@@ -132,6 +155,10 @@ class ApiHelper
         return $this->apiClient->call('modifyNsRequest', $args)->getData();
     }
 
+    /**
+     * @param string $nameServerName
+     * @return array
+     */
     public function deleteNameserver(string $nameServerName): array
     {
         $args = [
@@ -204,7 +231,12 @@ class ApiHelper
         return $this->apiClient->call('deleteZoneDnsRequest', $args)->getData();
     }
 
-    public function getCustomer($handle, bool $formattedForWhmcs = true): array
+    /**
+     * @param string $handle
+     * @param bool $formattedForWhmcs
+     * @return array
+     */
+    public function getCustomer(string $handle, bool $formattedForWhmcs = true): array
     {
         $args = [
             'handle' => $handle,
