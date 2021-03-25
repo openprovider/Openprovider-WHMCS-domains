@@ -7,11 +7,9 @@ use WHMCS\Carbon;
 use OpenProvider\WhmcsHelpers\Activity;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
 use OpenProvider\API\Domain as api_domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Models\Domain;
-use WeDevelopCoffee\wPower\Models\Registrar;
 
 /**
  * Class TransferSyncController

@@ -112,7 +112,7 @@ class DomainSuggestionsController extends BaseController
         try {
             $checkedDomains = $this->apiClient->call('checkDomainRequest', [
                 'domains' => $domains
-            ]);
+            ])->getData();
         } catch (Exception $e) {
             if($e->getcode() == 307)
             {
@@ -147,14 +147,14 @@ class DomainSuggestionsController extends BaseController
                 $args['domain']['extension'] = $domain_tld;
                 $args['operation']           = 'create';
                 try {
-                    $create_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args);
+                    $create_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args)->getData();
                 } catch (Exception $e) {
                     continue;
                 }
 
                 $args['operation'] = 'transfer';
                 try {
-                    $transfer_pricing  = $this->apiClient->call('retrievePriceDomainRequest', $args);
+                    $transfer_pricing  = $this->apiClient->call('retrievePriceDomainRequest', $args)->getData();
                 } catch (Exception $e) {
                     continue;
                 }
