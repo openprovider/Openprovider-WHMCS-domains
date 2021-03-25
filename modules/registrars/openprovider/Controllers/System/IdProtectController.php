@@ -3,7 +3,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
-use OpenProvider\API\ApiInterface;
+use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\src\Notification;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider as OP;
 use WHMCS\Database\Capsule;
@@ -19,28 +19,24 @@ use OpenProvider\API\Domain;
 class IdProtectController extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-    /**
      * @var Domain
      */
     private $domain;
     /**
-     * @var ApiInterface
+     * @var ApiHelper
      */
-    private $apiClient;
+    private $apiHelper;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, ApiInterface $apiCient)
+    public function __construct(Core $core, API $API, Domain $domain, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
-        $this->apiClient = $apiCient;
-        $this->API = $API;
-        $this->domain = $domain;
+        $this->apiHelper = $apiHelper;
+        $this->API       = $API;
+        $this->domain    = $domain;
     }
 
     /**
@@ -66,11 +62,7 @@ class IdProtectController extends BaseController
         try {
             $OpenProvider       = new OP();
             $op_domain_obj      = $OpenProvider->domain($domain->domain);
-            $args = [
-                'domainNamePattern' => $op_domain_obj->name,
-                'extension' => $op_domain_obj->extension,
-            ];
-            $op_domain = $this->apiClient->call('searchDomainRequest', $args)->getData()['results'][0];
+            $op_domain = $this->apiHelper->getDomain($op_domain_obj);
             $OpenProvider->toggle_whois_protection($domain, $op_domain);
 
             return array(
