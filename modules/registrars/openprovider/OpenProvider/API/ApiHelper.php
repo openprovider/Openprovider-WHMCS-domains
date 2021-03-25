@@ -81,6 +81,19 @@ class ApiHelper
     }
 
     /**
+     * @param array $domains
+     * @return array
+     */
+    public function checkDomains(array $domains): array
+    {
+        $args = [
+            'domains' => $domains,
+        ];
+
+        return $this->apiClient->call('checkDomainRequest', $args)->getData();
+    }
+
+    /**
      * @param DomainNameServer $nameServer
      * @return array
      */
