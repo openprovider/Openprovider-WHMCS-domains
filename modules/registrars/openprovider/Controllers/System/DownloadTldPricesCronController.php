@@ -1,11 +1,10 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+
+use OpenProvider\API\ApiInterface;
 use OpenProvider\WhmcsRegistrar\src\TldPriceCache;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
-use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WHMCS\Domain\TopLevel\ImportItem;
 use WHMCS\Results\ResultsList;
@@ -17,25 +16,17 @@ use WHMCS\Results\ResultsList;
 class DownloadTldPricesCronController extends BaseController
 {
     /**
-     * @var API
+     * @var ApiInterface
      */
-    private $API;
-    /**
-     * @var Domain
-     */
-    private $domain;
-    /**
-     * @var OpenProvider
-     */
-    private $openProvider;
+    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, OpenProvider $openProvider)
+    public function __construct(Core $core, ApiInterface $apiClient)
     {
         parent::__construct($core);
-        $this->openProvider = $openProvider;
+        $this->apiClient = $apiClient;
     }
 
     /**
@@ -49,7 +40,7 @@ class DownloadTldPricesCronController extends BaseController
         // return ['error' => 'This error occurred',];
 
         try {
-            $extensionData = $this->openProvider->api->getTldsAndPricing();
+            $extensionData = $this->apiClient->call('searchExtensionRequest')->getData();
         } catch ( \Exception $e)
         {
             return ['error' => 'This error occurred: ' . $e->getMessage()];

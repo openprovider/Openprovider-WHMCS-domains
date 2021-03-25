@@ -9,6 +9,7 @@ use Openprovider\Api\Rest\Client\Domain\Api\DomainServiceApi;
 use Openprovider\Api\Rest\Client\Auth\Api\AuthApi;
 use Openprovider\Api\Rest\Client\Person\Api\CustomerApi;
 use Openprovider\Api\Rest\Client\Person\Api\EmailVerificationApi;
+use Openprovider\Api\Rest\Client\Tld\Api\TldServiceApi;
 
 class CommandMapping
 {
@@ -52,6 +53,12 @@ class CommandMapping
         'retrievePriceDomainRequest' => [
             self::COMMAND_MAP_METHOD => 'getPrice',
             self::COMMAND_MAP_CLASS => DomainPriceServiceApi::class,
+        ],
+
+        // TLDS
+        'searchExtensionRequest' => [
+            self::COMMAND_MAP_METHOD => 'listTlds',
+            self::COMMAND_MAP_CLASS => TldServiceApi::class,
         ],
 
         // DNS
