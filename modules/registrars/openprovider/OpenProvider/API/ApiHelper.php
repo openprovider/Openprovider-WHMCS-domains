@@ -51,7 +51,7 @@ class ApiHelper
      * @param Domain $domain
      * @return array
      */
-    public function getNameservers(Domain $domain): array
+    public function getDomainNameservers(Domain $domain): array
     {
         $domainOp = $this->getDomain($domain);
         $nameServers = [];
@@ -68,7 +68,7 @@ class ApiHelper
      * @param array $nameServers
      * @return array
      */
-    public function saveNameservers(Domain $domain, array $nameServers): array
+    public function saveDomainNameservers(Domain $domain, array $nameServers): array
     {
         $domainOpId = $this->getDomain($domain)['id'];
 
@@ -78,6 +78,54 @@ class ApiHelper
         ];
 
         return $this->apiClient->call('modifyDomainRequest', $args)->getData();
+    }
+
+    /**
+     * @param DomainNameServer $nameServer
+     * @return array
+     */
+    public function createNameserver(DomainNameServer $nameServer): array
+    {
+        $args = [
+            'name' => $nameServer->name,
+            'ip' => $nameServer->ip,
+        ];
+
+        return $this->apiClient->call('createNsRequest', $args)->getData();
+    }
+
+    /**
+     * @param DomainNameServer $nameServer
+     * @param string $currentIp
+     * @return array
+     * @throws \Exception
+     */
+    public function updateNameserver(DomainNameServer $nameServer, string $currentIp): array
+    {
+        $args = [
+            'name' => $nameServer->name,
+        ];
+        $nameServerOp = $this->apiClient->call('retrieveNsRequest', $args)->getData();
+
+        if ($nameServerOp['ip'] != $currentIp) {
+            throw new \Exception('Current IP Address is incorrect');
+        }
+
+        $args = [
+            'name' => $nameServer->name,
+            'ip' => $nameServer->ip,
+        ];
+
+        return $this->apiClient->call('modifyNsRequest', $args)->getData();
+    }
+
+    public function deleteNameserver(string $nameServerName): array
+    {
+        $args = [
+            'name' => $nameServerName,
+        ];
+
+        return $this->apiClient->call('deleteNsRequest', $args)->getData();
     }
 
     /**
