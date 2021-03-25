@@ -15,10 +15,6 @@ use OpenProvider\API\Domain;
 class NameserverController extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-    /**
      * @var Domain
      */
     private $domain;
@@ -30,11 +26,10 @@ class NameserverController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, ApiHelper $apiHelper)
+    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
-        $this->API = $API;
         $this->domain = $domain;
         $this->apiHelper = $apiHelper;
     }
@@ -105,8 +100,6 @@ class NameserverController extends BaseController
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
         // get data from op
-        $api                =   $this->API;
-        $api->setParams($params);
         $domain             =   $this->domain;
         $domain->load(array(
             'name'          =>  $params['sld'],
