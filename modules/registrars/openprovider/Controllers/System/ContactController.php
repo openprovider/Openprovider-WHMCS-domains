@@ -4,6 +4,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\API;
 use OpenProvider\API\APIConfig;
+use OpenProvider\API\ApiHelper;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
@@ -35,21 +36,21 @@ class ContactController extends BaseController
      */
     private $handle;
     /**
-     * @var ApiInterface
+     * @var ApiHelper
      */
-    private $apiClient;
+    private $apiHelper;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, Handle $handle, ApiInterface $apiClient)
+    public function __construct(Core $core, API $API, Domain $domain, Handle $handle, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
         $this->API = $API;
-        $this->apiClient = $apiClient;
         $this->domain = $domain;
         $this->handle = $handle;
+        $this->apiHelper = $apiHelper;
     }
 
     /**
@@ -123,7 +124,6 @@ class ContactController extends BaseController
         {
             $api                =   $this->API;
             $api->setParams($params);
-            $handles            =   array_flip(APIConfig::$handlesNames);
             $this->domain->load(array(
                 'name'          =>  $params['sld'],
                 'extension'     =>  $params['tld']
@@ -149,8 +149,10 @@ class ContactController extends BaseController
                     $finalCustomers[$key] = $handle;
             });
 
-            if(!empty($finalCustomers))
-                $api->modifyDomainCustomers($this->domain, $finalCustomers);
+            if(!empty($finalCustomers)) {
+                $domainOp = $this->apiHelper->getDomain($this->domain);
+                $this->apiHelper->updateDomain($domainOp['id'], $finalCustomers);
+            }
 
             return ['success' => true];
         }
@@ -163,10 +165,7 @@ class ContactController extends BaseController
 
     private function getContactDetails($domain): array
     {
-        $domainOp = $this->apiClient->call('searchDomainRequest', [
-            'domainNamePattern' => $domain->name,
-            'extension'         => $domain->extension,
-        ])->getData()['results'][0] ?? [];
+        $domainOp = $this->apiHelper->getDomain($domain);
 
         if (empty($domainOp)) {
             return [];
@@ -178,31 +177,13 @@ class ContactController extends BaseController
                 continue;
             }
 
-            $customerOp = $this->apiClient->call('retrieveCustomerRequest', [
-                'handle' => $domainOp[$key]
-            ])->getData() ?? false;
+            $customerOp = $this->apiHelper->getCustomer($domainOp[$key]) ?? false;
 
             if (!$customerOp) {
                 continue;
             }
 
-            $customerInfo = [];
-            $customerInfo['First Name'] = $customerOp['name']['firstName'];
-            $customerInfo['Last Name'] = $customerOp['name']['lastName'];
-            $customerInfo['Company Name'] = $customerOp['companyName'];
-            $customerInfo['Email Address'] = $customerOp['email'];
-            $customerInfo['Address'] = $customerOp['address']['street'] . ' ' .
-                $customerOp['address']['number'] . ' ' .
-                $customerOp['address']['suffix'];
-            $customerInfo['City'] = $customerOp['address']['city'];
-            $customerInfo['State'] = $customerOp['address']['state'];
-            $customerInfo['Zip Code'] = $customerOp['address']['zipcode'];
-            $customerInfo['Country'] = $customerOp['address']['country'];
-            $customerInfo['Phone Number'] = $customerOp['phone']['countryCode'] . '.' .
-                $customerOp['phone']['areaCode'] .
-                $customerOp['phone']['subscriberNumber'];
-
-            $contacts[$name] = $customerInfo;
+            $contacts[$name] = $customerOp;
         }
 
         unset($contacts['Reseller']);

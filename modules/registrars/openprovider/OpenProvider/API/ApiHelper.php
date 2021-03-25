@@ -190,4 +190,35 @@ class ApiHelper
 
         return $this->apiClient->call('deleteZoneDnsRequest', $args)->getData();
     }
+
+    public function getCustomer($handle, bool $formattedForWhmcs = true): array
+    {
+        $args = [
+            'handle' => $handle,
+        ];
+
+        $customerOp = $this->apiClient->call('retrieveCustomerRequest', $args)->getData();
+
+        if (!$formattedForWhmcs) {
+            return $customerOp;
+        }
+
+        $customerInfo = [];
+        $customerInfo['First Name'] = $customerOp['name']['firstName'];
+        $customerInfo['Last Name'] = $customerOp['name']['lastName'];
+        $customerInfo['Company Name'] = $customerOp['companyName'];
+        $customerInfo['Email Address'] = $customerOp['email'];
+        $customerInfo['Address'] = $customerOp['address']['street'] . ' ' .
+            $customerOp['address']['number'] . ' ' .
+            $customerOp['address']['suffix'];
+        $customerInfo['City'] = $customerOp['address']['city'];
+        $customerInfo['State'] = $customerOp['address']['state'];
+        $customerInfo['Zip Code'] = $customerOp['address']['zipcode'];
+        $customerInfo['Country'] = $customerOp['address']['country'];
+        $customerInfo['Phone Number'] = $customerOp['phone']['countryCode'] . '.' .
+            $customerOp['phone']['areaCode'] .
+            $customerOp['phone']['subscriberNumber'];
+
+        return $customerInfo;
+    }
 }
