@@ -53,6 +53,19 @@ class ApiHelper
      * @param int $id
      * @return array
      */
+    public function deleteDomain(int $id): array
+    {
+        $args = [
+            'id' => $id,
+        ];
+
+        return $this->apiClient->call('deleteDomainRequest', $args)->getData();
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
     public function restoreDomain(int $id): array
     {
         $args = [
@@ -62,6 +75,11 @@ class ApiHelper
         return $this->apiClient->call('restoreDomainRequest', $args)->getData();
     }
 
+    /**
+     * @param int $id
+     * @param int $period
+     * @return array
+     */
     public function renewDomain(int $id, int $period): array
     {
         $args = [
