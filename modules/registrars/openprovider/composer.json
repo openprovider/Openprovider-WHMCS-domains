@@ -29,8 +29,8 @@
     },
     "repositories": [
         {
-            "type": "composer",
-            "url": "https://composer.openprovider.nl"
+            "type": "vcs",
+            "url": "https://github.com/openprovider/rest-client-php"
         }
     ],
     "scripts": {
