@@ -1,6 +1,7 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
@@ -13,9 +14,9 @@ use OpenProvider\API\Domain;
 class RegistrarLockController extends BaseController
 {
     /**
-     * @var API
+     * @var ApiHelper
      */
-    private $API;
+    private $apiHelper;
     /**
      * @var Domain
      */
@@ -23,12 +24,12 @@ class RegistrarLockController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, ApiHelper $apiHelper, Domain $domain)
     {
         parent::__construct($core);
 
-        $this->API = $API;
-        $this->domain = $domain;
+        $this->apiHelper = $apiHelper;
+        $this->domain    = $domain;
     }
 
     /**
@@ -42,20 +43,15 @@ class RegistrarLockController extends BaseController
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
-        try
-        {
-            $api                =   $this->API;
-            $api->setParams($params);
-            $domain             =   $this->domain;
+        try {
+            $domain = $this->domain;
             $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
+                'name'      => $params['sld'],
+                'extension' => $params['tld']
             ));
 
-            $lockStatus         =   $api->getRegistrarLock($domain);
-        }
-        catch (\Exception $e)
-        {
+            $lockStatus = $this->apiHelper->getDomain($domain)['isLocked'];
+        } catch (\Exception $e) {
             //Nothing...
         }
 
@@ -77,7 +73,7 @@ class RegistrarLockController extends BaseController
 
         try
         {
-            $api                =   $this->API;
+            $api                =   $this->apiHelper;
             $api->setParams($params);
             $domain             =   $this->domain;
             $domain->load(array(
