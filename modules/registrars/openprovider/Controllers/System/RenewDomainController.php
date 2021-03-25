@@ -4,9 +4,9 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Carbon\Carbon;
 use Exception;
+use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
 use OpenProvider\API\Domain;
 
 /**
@@ -16,44 +16,43 @@ use OpenProvider\API\Domain;
 class RenewDomainController extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-    /**
      * @var Domain
      */
     private $domain;
     /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
+
+    /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
-        $this->API = $API;
+        $this->apiHelper = $apiHelper;
         $this->domain = $domain;
     }
 
     public function renew($params)
     {
         // Prepare the renewal
-        $domain = new \OpenProvider\API\Domain(array(
+        $this->domain->load(array(
             'name' => $params['original']['domainObj']->getSecondLevel(),
             'extension' => $params['original']['domainObj']->getTopLevel()
         ));
-
+        $domain = $this->domain;
 
         $period = $params['regperiod'];
-
-        $api = new \OpenProvider\API\API();
-        $api->setParams($params);
+        $domainOp = $this->apiHelper->getDomain($domain);
 
         // If isInGracePeriod is true, renew the domain.
         if(isset($params['isInGracePeriod']) && $params['isInGracePeriod'] == true)
         {
             try
             {
-                $api->restoreDomain($domain, $period);
+                $this->apiHelper->renewDomain($domainOp['id'], $period);
             } catch (\Exception $e) {
                 return ['error' => $e->getMessage()];
             }
@@ -66,7 +65,7 @@ class RenewDomainController extends BaseController
         {
             try
             {
-                $api->restoreDomain($domain, $period);
+                $this->apiHelper->restoreDomain($domainOp['id']);
             } catch (\Exception $e) {
                 return ['error' => $e->getMessage()];
             }
@@ -79,10 +78,10 @@ class RenewDomainController extends BaseController
 
         try
         {
-            if(!$api->getSoftRenewalExpiryDate($domain)) {
-                $api->renewDomain($domain, $period);
-            } elseif ((new Carbon($api->getSoftRenewalExpiryDate($domain), 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
-                $api->restoreDomain($domain, $period);
+            if(!$domainOp['softQuarantineExpiryDate']) {
+                $this->apiHelper->renewDomain($domainOp['id'], $period);
+            } elseif ((new Carbon($domainOp['softQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
+                $this->apiHelper->restoreDomain($domainOp['id']);
             } else {
                 // This only happens when the isInRedemptionGracePeriod was not true.
                 throw new Exception("Domain has expired and additional costs may be applied. Please check the domain in your reseller control panel", 1);

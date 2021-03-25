@@ -2,6 +2,8 @@
 
 namespace OpenProvider\API;
 
+use function DI\get;
+
 class ApiHelper
 {
     /**
@@ -45,6 +47,29 @@ class ApiHelper
         $args = array_merge($args, $data);
 
         return $this->apiClient->call('modifyDomainRequest', $args)->getData();
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function restoreDomain(int $id): array
+    {
+        $args = [
+            'id' => $id,
+        ];
+
+        return $this->apiClient->call('restoreDomainRequest', $args)->getData();
+    }
+
+    public function renewDomain(int $id, int $period): array
+    {
+        $args = [
+            'id' => $id,
+            'period' => $period,
+        ];
+
+        return $this->apiClient->call('renewDomainRequest', $args)->getData();
     }
 
     /**

@@ -54,6 +54,10 @@ class CommandMapping
             self::COMMAND_MAP_METHOD => 'checkDomain',
             self::COMMAND_MAP_CLASS => DomainServiceApi::class,
         ],
+        'restoreDomainRequest' => [
+            self::COMMAND_MAP_METHOD => 'restoreDomain',
+            self::COMMAND_MAP_CLASS => DomainServiceApi::class,
+        ],
         'retrievePriceDomainRequest' => [
             self::COMMAND_MAP_METHOD => 'getPrice',
             self::COMMAND_MAP_CLASS => DomainPriceServiceApi::class,
