@@ -1,7 +1,7 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
-use OpenProvider\API\ApiInterface;
+use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WHMCS\Carbon;
 use OpenProvider\WhmcsHelpers\Activity;
@@ -30,21 +30,21 @@ class DomainSyncController extends BaseController
      */
     private $domain;
     /**
-     * @var ApiInterface
+     * @var ApiHelper
      */
-    private $apiClient;
+    private $apiHelper;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, api_domain $api_domain, Domain $domain, OpenProvider $openprovider, ApiInterface $apiClient)
+    public function __construct(Core $core, api_domain $api_domain, Domain $domain, OpenProvider $openprovider, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
         $this->api_domain = $api_domain;
         $this->openprovider = $openprovider;
         $this->domain = $domain;
-        $this->apiClient = $apiClient;
+        $this->apiHelper = $apiHelper;
     }
 
     /**
@@ -74,11 +74,8 @@ class DomainSyncController extends BaseController
         {
             // get data from op
             $this->api_domain   = $this->openprovider->domain($this->domain->domain);
-            $args = [
-                'domainNamePattern' => $this->api_domain->name,
-                'extension' => $this->api_domain->extension,
-            ];
-            $op_domain_result   = $this->apiClient->call('searchDomainRequest', $args)->getData()['results'][0];
+
+            $op_domain_result   = $this->apiHelper->getDomain($this->api_domain);
             $expiration_date    = Carbon::createFromFormat('Y-m-d H:i:s', $op_domain_result['expirationDate'], 'Europe/Amsterdam');
             if($op_domain_result['status'] == 'ACT')
             {
