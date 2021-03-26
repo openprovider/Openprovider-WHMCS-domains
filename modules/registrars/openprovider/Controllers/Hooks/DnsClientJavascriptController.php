@@ -1,10 +1,8 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
-use OpenProvider\OpenProvider;
-use WeDevelopCoffee\wPower\Models\Registrar;
+use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
 use OpenProvider\API\Domain as api_domain;
 use WeDevelopCoffee\wPower\Models\Domain;
 
@@ -16,14 +14,20 @@ use WeDevelopCoffee\wPower\Models\Domain;
  * @copyright Copyright (c) Openprovider 2018
  */
 
-class DnsClientJavascriptController{
-
-    protected $API;
+class DnsClientJavascriptController
+{
+    /**
+     * @var api_domain
+     */
     protected $api_domain;
     /**
      * @var Domain
      */
     private $domain;
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
 
     protected $op_nameservers = [
         'ns1.openprovider.nl',
@@ -34,35 +38,32 @@ class DnsClientJavascriptController{
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, api_domain $api_domain, Domain $domain)
+    public function __construct(api_domain $api_domain, Domain $domain, ApiHelper $apiHelper)
     {
-        $this->API = $API;
         $this->api_domain = $api_domain;
         $this->domain = $domain;
+        $this->apiHelper = $apiHelper;
     }
 
     /**
-    * 
-    * 
-    * @return 
-    */
+     * @param $params
+     * @return string|void
+     */
     public function run ($params)
     {
         $domain = $this->domain->find($_REQUEST['domainid']);
         if($domain->registrar != 'openprovider')
             return;
 
-        $openprovider = new OpenProvider();
-
         try {
 
-            $op_api_domain             =   $this->api_domain;
-            $op_api_domain->load(array (
-                'name' => str_replace('.'.$domain->getTldAttribute(), '', $domain->domain),
+            $op_api_domain = $this->api_domain;
+            $op_api_domain->load(array(
+                'name'      => str_replace('.' . $domain->getTldAttribute(), '', $domain->domain),
                 'extension' => $domain->getTldAttribute()
             ));
 
-            $op_domain                  = $openprovider->api->retrieveDomainRequest($op_api_domain, true);
+            $op_domain = $this->apiHelper->getDomain($op_api_domain);
 
             foreach($op_domain['nameServers'] as $nameserver)
             {

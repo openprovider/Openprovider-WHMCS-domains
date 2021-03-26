@@ -1,11 +1,8 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
-use OpenProvider\OpenProvider;
+use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
-use WeDevelopCoffee\wPower\Models\Registrar;
-use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
 use OpenProvider\API\Domain as api_domain;
 use WeDevelopCoffee\wPower\Models\Domain;
 
@@ -17,9 +14,8 @@ use WeDevelopCoffee\wPower\Models\Domain;
  * @copyright Copyright (c) Openprovider 2018
  */
 
-class DnsNotificationController{
-
-    protected $API;
+class DnsNotificationController
+{
     protected $api_domain;
     /**
      * @var Domain
@@ -35,25 +31,22 @@ class DnsNotificationController{
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, api_domain $api_domain, Domain $domain)
+    public function __construct(api_domain $api_domain, Domain $domain, ApiHelper $apiHelper)
     {
-        $this->API = $API;
         $this->api_domain = $api_domain;
         $this->domain = $domain;
+        $this->apiHelper = $apiHelper;
     }
 
     /**
-    * 
-    * 
-    * @return 
-    */
+     * @param $params
+     * @return string[]|void
+     */
     public function notify ($params)
     {
         $domain = $this->domain->find($params['domainid']);
         if($domain->registrar != 'openprovider' || Configuration::getOrDefault('require_op_dns_servers', true) != true)
             return;
-
-        $openprovider = new OpenProvider();
 
         try {
 
@@ -63,7 +56,7 @@ class DnsNotificationController{
                 'extension' => $domain->getTldAttribute()
             ));
 
-            $op_domain                  = $openprovider->api->retrieveDomainRequest($op_api_domain, true);
+            $op_domain                  = $this->apiHelper->getDomain($op_api_domain);
 
             $notOpenproviderNameservers = [];
             foreach($op_domain['nameServers'] as $nameserver)
@@ -90,10 +83,6 @@ class DnsNotificationController{
                     'errorshtml' => $error_message,
                 ];
             }
-
-            return;
-        } catch (\Exception $e) {
-            return;
-        }
+        } catch (\Exception $e) {}
     }
 }
