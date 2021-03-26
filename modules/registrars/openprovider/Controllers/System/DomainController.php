@@ -4,6 +4,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use idna_convert;
 use OpenProvider\API\API;
+use OpenProvider\API\ApiHelper;
 use OpenProvider\API\Domain;
 use OpenProvider\API\APITools;
 use OpenProvider\API\DomainTransfer;
@@ -44,13 +45,25 @@ class DomainController extends BaseController
      * @var PremiumDomain
      */
     private $premiumDomain;
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
 
     /**
      * Constructor
      *
      * @return void
      */
-    public function __construct(Core $core, API $API, Domain $domain, PremiumDomain $premiumDomain, AdditionalFields $additionalFields, Handle $handle)
+    public function __construct(
+        Core $core,
+        API $API,
+        Domain $domain,
+        PremiumDomain $premiumDomain,
+        AdditionalFields $additionalFields,
+        Handle $handle,
+        ApiHelper $apiHelper
+    )
     {
         parent::__construct($core);
 
@@ -59,11 +72,13 @@ class DomainController extends BaseController
         $this->additionalFields = $additionalFields;
         $this->handle           = $handle;
         $this->premiumDomain    = $premiumDomain;
+        $this->apiHelper        = $apiHelper;
     }
 
     /**
      * Register a domain
      *
+     * @param $params
      * @return array
      */
     public function register($params)
@@ -166,7 +181,7 @@ class DomainController extends BaseController
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
 
-            $api->registerDomain($domainRegistration);
+            $this->apiHelper->createDomain($domainRegistration);
         } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
@@ -176,7 +191,7 @@ class DomainController extends BaseController
     /**
      * Transfer the domain.
      *
-     * @param [type] $params
+     * @param array $params
      * @return array
      */
     public function transfer($params)
@@ -258,7 +273,7 @@ class DomainController extends BaseController
 
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
-            $api->transferDomain($domainTransfer);
+            $this->apiHelper->transferDomain($domainTransfer);
         } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }

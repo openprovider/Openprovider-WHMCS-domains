@@ -50,6 +50,14 @@ class CommandMapping
             self::COMMAND_MAP_METHOD => 'updateDomain',
             self::COMMAND_MAP_CLASS => DomainServiceApi::class,
         ],
+        'createDomainRequest' => [
+            self::COMMAND_MAP_METHOD => 'createDomain',
+            self::COMMAND_MAP_CLASS => DomainServiceApi::class,
+        ],
+        'transferDomainRequest' => [
+            self::COMMAND_MAP_METHOD => 'transferDomain',
+            self::COMMAND_MAP_CLASS => DomainServiceApi::class,
+        ],
         'checkDomainRequest' => [
             self::COMMAND_MAP_METHOD => 'checkDomain',
             self::COMMAND_MAP_CLASS => DomainServiceApi::class,

@@ -50,6 +50,46 @@ class ApiHelper
     }
 
     /**
+     * @param DomainRegistration $domainRegistration
+     * @return array
+     */
+    public function createDomain(DomainRegistration $domainRegistration): array
+    {
+        if($domainRegistration->dnsmanagement == 1) {
+            // check if zone exists
+            $zoneResult = $this->getDns($domainRegistration->domain);
+
+            if (empty($zoneResult)) {
+                $this->createDnsRecords($domainRegistration->domain, []);
+            }
+        }
+
+        $args = json_decode(json_encode($domainRegistration), true);
+
+        return $this->apiClient->call('createDomainRequest', $args)->getData();
+    }
+
+    /**
+     * @param DomainTransfer $domainTransfer
+     * @return array
+     */
+    public function transferDomain(DomainTransfer $domainTransfer): array
+    {
+        if($domainTransfer->dnsmanagement == 1) {
+            // check if zone exists
+            $zoneResult = $this->getDns($domainTransfer->domain);
+
+            if (empty($zoneResult)) {
+                $this->createDnsRecords($domainTransfer->domain, []);
+            }
+        }
+
+        $args = json_decode(json_encode($domainTransfer), true);
+
+        return $this->apiClient->call('transferDomainRequest', $args)->getData();
+    }
+
+    /**
      * @param int $id
      * @return array
      */
