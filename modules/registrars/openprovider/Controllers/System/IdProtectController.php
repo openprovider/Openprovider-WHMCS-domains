@@ -4,12 +4,12 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
 use OpenProvider\API\ApiHelper;
+use OpenProvider\API\ApiInterface;
 use OpenProvider\WhmcsRegistrar\src\Notification;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider as OP;
+use OpenProvider\OpenProvider as OP;
 use WHMCS\Database\Capsule;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
 use OpenProvider\API\Domain;
 
 /**
@@ -23,19 +23,18 @@ class IdProtectController extends BaseController
      */
     private $domain;
     /**
-     * @var ApiHelper
+     * @var ApiInterface
      */
-    private $apiHelper;
+    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, ApiHelper $apiHelper)
+    public function __construct(Core $core, Domain $domain, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
-        $this->apiHelper = $apiHelper;
-        $this->API       = $API;
+        $this->apiClient = $apiClient;
         $this->domain    = $domain;
     }
 
@@ -60,10 +59,13 @@ class IdProtectController extends BaseController
             $domain->idprotection = $params['protectenable'];
 
         try {
-            $OpenProvider       = new OP();
+            $OpenProvider       = new OP($params, $this->apiClient);
             $op_domain_obj      = $OpenProvider->domain($domain->domain);
-            $op_domain = $this->apiHelper->getDomain($op_domain_obj);
-            $OpenProvider->toggle_whois_protection($domain, $op_domain);
+            $op_domain = $this->apiClient->call('searchDomainRequest', [
+                'domainNamePattern' => $op_domain_obj->name,
+                'extension' => $op_domain_obj->extension,
+            ])->getData()['results'][0];
+            $OpenProvider->toggle_whois_protection($domain, $op_domain_obj, $op_domain);
 
             return array(
                 'success' => 'success',

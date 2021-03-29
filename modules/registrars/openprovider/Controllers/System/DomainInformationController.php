@@ -81,7 +81,6 @@ class DomainInformationController extends BaseController
         $response['addons']['hasidprotect'] = $op_domain['isPrivateWhoisEnabled'];
 
         // getting verification data
-        $ownerEmail = '';
         $args = [
             'email'  => $op_domain['verificationEmailName'] ?? '',
             'domain' => $response['domain']
@@ -90,7 +89,6 @@ class DomainInformationController extends BaseController
 
         $verification = [];
         if (!$emailVerification) {
-            $args['email'] = $ownerEmail;
             $reply = $this->apiClient->call('startCustomerEmailVerificationRequest', $args)->getData();
             if (isset($reply['id'])) {
                 $verification['status']         = 'in progress';

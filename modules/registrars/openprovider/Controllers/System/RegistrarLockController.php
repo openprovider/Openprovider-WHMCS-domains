@@ -70,23 +70,20 @@ class RegistrarLockController extends BaseController
 
         $values = array();
 
-        try
-        {
-            $api                =   $this->apiHelper;
-            $api->setParams($params);
-            $domain             =   $this->domain;
+        try {
+            $domain = $this->domain;
             $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
+                'name'      => $params['sld'],
+                'extension' => $params['tld']
             ));
-            $lockStatus         =   $params["lockenabled"] == "locked" ? 1 : 0;
-
-            $api->saveRegistrarLock($domain, $lockStatus);
-        }
-        catch (\Exception $e)
-        {
+            $domainOp = $this->apiHelper->getDomain($domain);
+            $this->apiHelper->updateDomain($domainOp['id'], [
+                'isLocked' => $params["lockenabled"] == "locked",
+            ]);
+        } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
+
         return $values;
     }
 }

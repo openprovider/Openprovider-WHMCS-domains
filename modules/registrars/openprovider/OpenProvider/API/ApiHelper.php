@@ -29,6 +29,7 @@ class ApiHelper
         $args = [
             'domainNamePattern' => $domain->name,
             'extension' => $domain->extension,
+            'withVerificationEmail' => true,
         ];
 
         return $this->apiClient->call('searchDomainRequest', $args)->getData()['results'][0] ?? [];
@@ -55,7 +56,7 @@ class ApiHelper
      */
     public function createDomain(DomainRegistration $domainRegistration): array
     {
-        if($domainRegistration->dnsmanagement == 1) {
+        if($domainRegistration->dnsmanagement) {
             // check if zone exists
             $zoneResult = $this->getDns($domainRegistration->domain);
 
@@ -293,7 +294,10 @@ class ApiHelper
     public function createDnsRecords(Domain $domain, $records): array
     {
         $args = [
-            'name' => $domain->getFullName(),
+            'domain' => [
+                'name' => $domain->name,
+                'extension' => $domain->extension,
+            ],
             'type' => 'master',
             'records' => $records,
         ];
