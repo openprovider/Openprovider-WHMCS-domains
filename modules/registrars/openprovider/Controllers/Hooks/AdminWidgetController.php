@@ -2,8 +2,6 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use OpenProvider\WhmcsRegistrar\Controllers\Hooks\Widgets\BalanceWidget;
-use WHMCS\Database\Capsule,
-    OpenProvider\WhmcsRegistrar\src\OpenProvider;
 
 /**
  * Class AdminWidgetController
@@ -14,11 +12,6 @@ use WHMCS\Database\Capsule,
 
 class AdminWidgetController
 {
-    /**
-    *
-    *
-    * @return
-    */
     public function showBalance ($vars)
     {
         return new BalanceWidget();

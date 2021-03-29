@@ -1,6 +1,7 @@
 <?php
 namespace OpenProvider;
 
+use OpenProvider\API\ApiInterface;
 use WeDevelopCoffee\wPower\Models\Registrar;
 
 /**
@@ -17,7 +18,10 @@ class OpenProvider
 	 * @var object
 	 **/
 	public $api;
-
+    /**
+     * @var ApiInterface
+     */
+	private $apiClient;
 	/**
 	 * The openprovider domain object
 	 *
@@ -31,14 +35,16 @@ class OpenProvider
 	 * @param  string $params *optional*. The registrar data.
 	 * @return void
 	 **/
-	public function __construct($params = null)
+	public function __construct($params = null, ApiInterface $apiClient = null)
 	{
 		// Get the registrar setting
     	if($params == null)
             $params = (new Registrar())->getRegistrarData()['openprovider'];
 
-		$this->api      =   new \OpenProvider\API\API();
+		$this->api = new \OpenProvider\API\API();
 		$this->api->setParams($params);
+
+		$this->apiClient = $apiClient;
 	}
 
 	/**
@@ -52,9 +58,9 @@ class OpenProvider
 		$domain_sld = explode('.', $domain)[0];
         $domain_tld = substr(str_replace($domain_sld, '', $domain), 1);
 
-		$this->domain             =   new \OpenProvider\API\Domain(array(
-            'name'          =>  $domain_sld,
-            'extension'     =>  $domain_tld
+		$this->domain = new \OpenProvider\API\Domain(array(
+            'name'      => $domain_sld,
+            'extension' => $domain_tld
         ));
 
         return $this->domain;
@@ -68,19 +74,29 @@ class OpenProvider
 	public function toggle_autorenew($domain, $opInfo)
 	{
 		// Check if we should auto renew or use the default settings
-	    if($domain->donotrenew == 0)
-	        $auto_renew = 'default';
-	    else
-	        $auto_renew = 'off';
+	    if($domain->donotrenew == 0) {
+            $auto_renew = 'default';
+        } else {
+            $auto_renew = 'off';
+        }
 
 	    // Check if openprovider has the same data
 	    if($opInfo['autorenew'] != $auto_renew)
 	    {
-	    	$this->api->setAutoRenew($this->domain, $auto_renew);
+	        if (!is_null($this->apiClient)) {
+                $this->apiClient->call('modifyDomainRequest', [
+                    'id' => $opInfo['id'],
+                    'autorenew' => $auto_renew,
+                ]);
+            } else {
+                $this->api->setAutoRenew($this->domain, $auto_renew);
+            }
 
-	    	return [ 'status'       => 'changed',
-                    'old_setting'   => $opInfo['autorenew'],
-                    'new_setting'   => $auto_renew];
+            return [
+                'status'      => 'changed',
+                'old_setting' => $opInfo['autorenew'],
+                'new_setting' => $auto_renew
+            ];
 	    }
 
 	    return 'correct';
@@ -100,30 +116,30 @@ class OpenProvider
     {
         // Check if we should auto renew or use the default settings
         // Note: the settings are in reverse since WHMCS updates the table after this operation.
-        if($w_domain->idprotection == 1)
-            $idprotection = 1; // OP sends the null value when no protection is set.
-        else
-            $idprotection = '0';
+        $idprotection = $w_domain->idprotection == 1;
 
         // Check if openprovider has the same data
-        if($opInfo['isPrivateWhoisEnabled'] != $idprotection)
-        {
-            if($idprotection == '0')
-            {
-                $opInfo['isPrivateWhoisEnabled'] = 1;
-                $idprotection = '0';
+        if ($opInfo['isPrivateWhoisEnabled'] != $idprotection) {
+            if ($idprotection == false) {
+                $opInfo['isPrivateWhoisEnabled'] = true;
             }
 
-            $this->api->setPrivateWhoisEnabled($domain, $idprotection);
+            if (!is_null($this->apiClient)) {
+                $this->apiClient->call('modifyDomainRequest', [
+                    'id' => $opInfo['id'],
+                    'isPrivateWhoisEnabled' => $idprotection,
+                ]);
+            } else {
+                $this->api->setPrivateWhoisEnabled($domain, $idprotection ? 1 : '0');
+            }
 
-            return [ 'status'       => 'changed',
-                'old_setting'   => $opInfo['isPrivateWhoisEnabled'],
-                'new_setting'   => $idprotection];
+            return [
+                'status'      => 'changed',
+                'old_setting' => $opInfo['isPrivateWhoisEnabled'],
+                'new_setting' => $idprotection
+            ];
         }
 
         return 'correct';
     }
-
-
-
-} // END class OpenProvider
+}

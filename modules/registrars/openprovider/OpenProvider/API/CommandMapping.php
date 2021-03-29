@@ -7,6 +7,7 @@ use Openprovider\Api\Rest\Client\Dns\Api\ZoneServiceApi;
 use Openprovider\Api\Rest\Client\Domain\Api\DomainPriceServiceApi;
 use Openprovider\Api\Rest\Client\Domain\Api\DomainServiceApi;
 use Openprovider\Api\Rest\Client\Auth\Api\AuthApi;
+use Openprovider\Api\Rest\Client\Helpers\Api\TagServiceApi;
 use Openprovider\Api\Rest\Client\Person\Api\CustomerApi;
 use Openprovider\Api\Rest\Client\Person\Api\EmailVerificationApi;
 use Openprovider\Api\Rest\Client\Tld\Api\TldServiceApi;
@@ -111,6 +112,12 @@ class CommandMapping
         'deleteNsRequest' => [
             self::COMMAND_MAP_METHOD => 'deleteNameserver',
             self::COMMAND_MAP_CLASS => NameserverServiceApi::class,
+        ],
+
+        // Helpers
+        'searchTagRequest' => [
+            self::COMMAND_MAP_METHOD => 'listTags',
+            self::COMMAND_MAP_CLASS => TagServiceApi::class,
         ],
     ];
 

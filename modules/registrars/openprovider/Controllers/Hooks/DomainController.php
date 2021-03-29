@@ -1,9 +1,9 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
-use OpenProvider\API\ApiHelper;
+use OpenProvider\API\ApiInterface;
 use WHMCS\Database\Capsule,
-    OpenProvider\WhmcsRegistrar\src\OpenProvider;
+    OpenProvider\OpenProvider;
 
 /**
  * Class DomainController
@@ -15,17 +15,17 @@ use WHMCS\Database\Capsule,
 class DomainController
 {
     /**
-     * @var ApiHelper
+     * @var ApiInterface
      */
-    private $apiHelper;
+    private $apiClient;
 
     /**
      * DomainController constructor.
-     * @param ApiHelper $apiHelper
+     * @param ApiInterface $apiClient
      */
-    public function __construct(ApiHelper $apiHelper)
+    public function __construct(ApiInterface $apiClient)
     {
-        $this->apiHelper = $apiHelper;
+        $this->apiClient = $apiClient;
     }
 
     /**
@@ -47,9 +47,12 @@ class DomainController
             return false;
 
         try {
-            $OpenProvider       = new OpenProvider();
+            $OpenProvider       = new OpenProvider(null, $this->apiClient);
             $op_domain_obj      = $OpenProvider->domain($domain->domain);
-            $op_domain          = $this->apiHelper->getDomain($op_domain_obj);
+            $op_domain          = $this->apiClient->call('searchDomainRequest', [
+                'domainNamePattern' => $op_domain_obj->name,
+                'extension' => $op_domain_obj->extension,
+            ])->getData()['results'][0];
             $OpenProvider->toggle_autorenew($domain, $op_domain);
         } catch (\Exception $e) {
                 \logModuleCall('OpenProvider', 'Update auto renew', $domain->domain, @$op_domain, $e->getMessage(), [$vars['Password']]);
