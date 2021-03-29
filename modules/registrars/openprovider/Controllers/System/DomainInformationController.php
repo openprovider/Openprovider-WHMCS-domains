@@ -133,7 +133,7 @@ class DomainInformationController extends BaseController
         $i = 1;
 
         foreach ($nameservers as $ns) {
-            $return['ns' . $i] = $ns['ip'] ?? $ns['name'];
+            $return['ns' . $i] = $ns['name'] ?? $ns['ip'];
             $i++;
         }
 
