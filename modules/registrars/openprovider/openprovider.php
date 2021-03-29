@@ -16,8 +16,6 @@ require_once( __DIR__ . '/init.php');
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
 
-const SESSION_ACCESS_TOKEN_NAME = 'ACCESS_TOKEN';
-
 /**
  * Autoload
  * @param type $class_name
