@@ -130,7 +130,7 @@ class ContactController extends BaseController
             ));
 
             $handle = $this->handle;
-            $handle->setApi($api);
+            $handle->setApiHelper($this->apiHelper);
 
             $customers['ownerHandle']   = $handle->updateOrCreate($params, 'registrant');
             $customers['adminHandle']   = $handle->updateOrCreate($params, 'admin');

@@ -29,6 +29,14 @@ class CommandMapping
             self::COMMAND_MAP_METHOD => 'getCustomer',
             self::COMMAND_MAP_CLASS => CustomerApi::class,
         ],
+        'createCustomerRequest' => [
+            self::COMMAND_MAP_METHOD => 'createCustomer',
+            self::COMMAND_MAP_CLASS => CustomerApi::class,
+        ],
+        'modifyCustomerRequest' => [
+            self::COMMAND_MAP_METHOD => 'updateCustomer',
+            self::COMMAND_MAP_CLASS => CustomerApi::class,
+        ],
         'searchEmailVerificationDomainRequest' => [
             self::COMMAND_MAP_METHOD => 'listDomainEmailVerifications',
             self::COMMAND_MAP_CLASS => EmailVerificationApi::class,

@@ -2,6 +2,8 @@
 
 namespace OpenProvider\API;
 
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use function DI\get;
 
 class ApiHelper
@@ -10,6 +12,10 @@ class ApiHelper
      * @var ApiInterface
      */
     private $apiClient;
+    /**
+     * @var Serializer
+     */
+    private $serializer;
 
     /**
      * ApiManager constructor.
@@ -18,6 +24,7 @@ class ApiHelper
     public function __construct(ApiInterface $apiClient)
     {
         $this->apiClient = $apiClient;
+        $this->serializer = new Serializer([new ObjectNormalizer()]);
     }
 
     /**
@@ -206,10 +213,7 @@ class ApiHelper
      */
     public function createNameserver(DomainNameServer $nameServer): array
     {
-        $args = [
-            'name' => $nameServer->name,
-            'ip' => $nameServer->ip,
-        ];
+        $args = $this->serializer->normalize($nameServer);
 
         return $this->apiClient->call('createNsRequest', $args)->getData();
     }
@@ -231,10 +235,7 @@ class ApiHelper
             throw new \Exception('Current IP Address is incorrect');
         }
 
-        $args = [
-            'name' => $nameServer->name,
-            'ip' => $nameServer->ip,
-        ];
+        $args = $this->serializer->normalize($nameServer);
 
         return $this->apiClient->call('modifyNsRequest', $args)->getData();
     }
@@ -294,10 +295,7 @@ class ApiHelper
     public function createDnsRecords(Domain $domain, $records): array
     {
         $args = [
-            'domain' => [
-                'name' => $domain->name,
-                'extension' => $domain->extension,
-            ],
+            'domain' => $this->serializer->normalize($domain),
             'type' => 'master',
             'records' => $records,
         ];
@@ -352,5 +350,29 @@ class ApiHelper
             $customerOp['phone']['subscriberNumber'];
 
         return $customerInfo;
+    }
+
+    /**
+     * @param Customer $customer
+     * @return array
+     */
+    public function createCustomer(Customer $customer): array
+    {
+        $args = $this->serializer->normalize($customer);
+
+        return $this->apiClient->call('createCustomerRequest', $args)->getData();
+    }
+
+    /**
+     * @param string $handle
+     * @param Customer $customer
+     * @return array
+     */
+    public function updateCustomer(string $handle, Customer $customer): array
+    {
+        $args = $this->serializer->normalize($customer);
+        $args['handle'] = $handle;
+
+        return $this->apiClient->call('modifyCustomerRequest', $args)->getData();
     }
 }

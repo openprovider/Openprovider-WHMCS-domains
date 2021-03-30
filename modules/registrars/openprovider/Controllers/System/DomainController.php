@@ -5,6 +5,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 use idna_convert;
 use OpenProvider\API\API;
 use OpenProvider\API\ApiHelper;
+use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
 use OpenProvider\API\APITools;
 use OpenProvider\API\DomainTransfer;
@@ -12,6 +13,8 @@ use OpenProvider\API\DomainRegistration;
 use OpenProvider\WhmcsRegistrar\src\PremiumDomain;
 use OpenProvider\WhmcsRegistrar\src\Handle;
 use OpenProvider\WhmcsRegistrar\src\AdditionalFields;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -49,6 +52,14 @@ class DomainController extends BaseController
      * @var ApiHelper
      */
     private $apiHelper;
+    /**
+     * @var ApiInterface
+     */
+    private $apiClient;
+    /**
+     * @var Serializer
+     */
+    private $serializer;
 
     /**
      * Constructor
@@ -62,7 +73,8 @@ class DomainController extends BaseController
         PremiumDomain $premiumDomain,
         AdditionalFields $additionalFields,
         Handle $handle,
-        ApiHelper $apiHelper
+        ApiHelper $apiHelper,
+        ApiInterface $apiClient
     )
     {
         parent::__construct($core);
@@ -73,6 +85,8 @@ class DomainController extends BaseController
         $this->handle           = $handle;
         $this->premiumDomain    = $premiumDomain;
         $this->apiHelper        = $apiHelper;
+        $this->apiClient        = $apiClient;
+        $this->serializer       = new Serializer([new ObjectNormalizer()]);
     }
 
     /**
@@ -96,10 +110,9 @@ class DomainController extends BaseController
             // Prepare the nameservers
             $nameServers = APITools::createNameserversArray($params);
 
-            $api = $this->API;
-            $api->setParams($params);
             $handle = $this->handle;
-            $handle->setApi($api);
+            $handle->setApiHelper($this->apiHelper);
+            $this->premiumDomain->setApiClient($this->apiClient);
 
             // Prepare the additional data
             $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
@@ -133,13 +146,10 @@ class DomainController extends BaseController
             $domainRegistration->billingHandle   = $handles['billingHandle'];
             $domainRegistration->nameServers     = $nameServers;
             $domainRegistration->dnsmanagement   = $params['dnsmanagement'];
-            $domainRegistration->isDnssecEnabled = 0;
+            $domainRegistration->isDnssecEnabled = false;
 
             if (isset($additionalFields['domainAdditionalData'])) {
-                $domainRegistration->additionalData = json_decode(
-                    json_encode($additionalFields['domainAdditionalData']),
-                    1
-                );
+                $domainRegistration->additionalData = $this->serializer->normalize($additionalFields['domainAdditionalData']);
             }
 
             // Check if premium is enabled. If so, set the received premium cost.
@@ -153,7 +163,7 @@ class DomainController extends BaseController
             }
 
             if ($params['idprotection'] == 1)
-                $domainRegistration->isPrivateWhoisEnabled = 1;
+                $domainRegistration->isPrivateWhoisEnabled = true;
 
             //use dns templates
             if (isset($params['dnsTemplate']) && !empty($params['dnsTemplate'])) {
@@ -167,7 +177,7 @@ class DomainController extends BaseController
                     return $tld;
                 }, $params['requestTrusteeService']);
                 if (in_array($domainRegistration->domain->extension, $trusteeServiceTds))
-                    $domainRegistration->useDomicile = 1;
+                    $domainRegistration->useDomicile = true;
             }
 
             $idn = new idna_convert();
@@ -207,13 +217,12 @@ class DomainController extends BaseController
                 'name'      => $params['sld'],
                 'extension' => $params['tld']
             ));
-            $api = new API();
-            $api->setParams($params);
 
             $nameServers = APITools::createNameserversArray($params);
 
             $handle = $this->handle;
-            $handle->setApi($api);
+            $handle->setApiHelper($this->apiHelper);
+            $this->premiumDomain->setApiClient($this->apiClient);
 
             // Prepare the additional data
             $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
@@ -236,7 +245,7 @@ class DomainController extends BaseController
             $domainTransfer->billingHandle   = $adminHandle;
             $domainTransfer->authCode        = $params['transfersecret'];
             $domainTransfer->dnsmanagement   = $params['dnsmanagement'];
-            $domainTransfer->isDnssecEnabled = 0;
+            $domainTransfer->isDnssecEnabled = false;
 
             // Check if premium is enabled. If so, set the received premium cost.
             if ($params['premiumEnabled'] == true && $params['premiumCost'] != '')
@@ -248,17 +257,14 @@ class DomainController extends BaseController
                 );
 
             if ($params['idprotection'] == 1)
-                $domainTransfer->isPrivateWhoisEnabled = 1;
+                $domainTransfer->isPrivateWhoisEnabled = true;
 
             if (isset($params['dnsTemplate']) && !empty($params['dnsTemplate'])) {
                 $domainTransfer->nsTemplateName = $params['dnsTemplate'];
             }
 
             if (isset($additionalFields['domainAdditionalData']))
-                $domainTransfer->additionalData = json_decode(
-                    json_encode($additionalFields['domainAdditionalData']),
-                    1
-                );
+                $domainTransfer->additionalData = $this->serializer->normalize($additionalFields['domainAdditionalData']);
 
             if (isset($params['requestTrusteeService']) && !empty($params['requestTrusteeService'])) {
                 $trusteeServiceTds = array_map(function ($tld) {
@@ -268,11 +274,12 @@ class DomainController extends BaseController
                 }, $params['requestTrusteeService']);
 
                 if (in_array($domainTransfer->domain->extension, $trusteeServiceTds))
-                    $domainTransfer->useDomicile = 1;
+                    $domainTransfer->useDomicile = true;
             }
 
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
+
             $this->apiHelper->transferDomain($domainTransfer);
         } catch (\Exception $e) {
             $values["error"] = $e->getMessage();

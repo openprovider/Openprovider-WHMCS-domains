@@ -1,10 +1,9 @@
 <?php
 
-
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-
 use OpenProvider\API\ApiHelper;
+use OpenProvider\API\Customer;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\ApiResponse;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
@@ -136,8 +135,6 @@ class ApiController extends BaseController
                 break;
         }
 
-        // update dnssecKeys with new record,
-
         $args = [
             'dnssecKeys'      => $modifiedDnsSecKeys,
             'isDnssecEnabled' => count($modifiedDnsSecKeys) > 0,
@@ -157,7 +154,7 @@ class ApiController extends BaseController
      *
      * @param array $params [domainId, isDnssecEnabled(1|0), ]
      */
-    public function updateDnsSecEnabled($params)
+    public function updateDnsSecEnabled(array $params)
     {
         if (!isset($params['domainId']) || empty($params['domainId'])) {
             ApiResponse::error(400, 'domain id is required!');
@@ -170,18 +167,15 @@ class ApiController extends BaseController
             return;
         }
 
-        $api = $this->openProvider->api;
-
-        $isDnssecEnabled = $params['isDnssecEnabled'];
-
         $domain = $this->openProvider->domain($domainDB->domain);
         $args = [
-            'isDnssecEnabled' => $isDnssecEnabled,
-            'domain'          => $domainArray,
+            'isDnssecEnabled' => $params['isDnssecEnabled'],
+            'domain'          => $domain,
         ];
 
         try {
-            $api->sendRequest('modifyDomainRequest', $args);
+            $domainOp = $this->apiHelper->getDomain($domain);
+            $this->apiHelper->updateDomain($domainOp['id'], $args);
         } catch (\Exception $e) {
             ApiResponse::error(400, $e->getMessage());
             return;
@@ -196,9 +190,9 @@ class ApiController extends BaseController
      * @param array $dnssecKeys already existed keys
      * @param array $dnssecKeysHashes hashes of already existed keys
      * @param array $dnssecKey new key to add
-     * @return mixed
+     * @return array
      */
-    private function _createDnsSecRecord($dnssecKeys, $dnssecKeysHashes, $dnssecKey)
+    private function _createDnsSecRecord(array $dnssecKeys, array $dnssecKeysHashes, array $dnssecKey)
     {
         if (in_array(md5($dnssecKey['flags'] . $dnssecKey['alg'] . strval(3) . trim($dnssecKey['pubKey'])), $dnssecKeysHashes))
             return $dnssecKeys;
@@ -213,9 +207,9 @@ class ApiController extends BaseController
      * @param array $dnssecKeys already existed keys
      * @param array $dnssecKeysHashes hashes of already existed keys
      * @param array $dnssecKey key to remove from existed keys array
-     * @return mixed
+     * @return array
      */
-    private function _deleteDnsSecRecord($dnssecKeys, $dnssecKeysHashes, $dnssecKey)
+    private function _deleteDnsSecRecord(array $dnssecKeys, array $dnssecKeysHashes, array $dnssecKey)
     {
         $recordIndex = array_search(md5($dnssecKey['flags'] . $dnssecKey['alg'] . strval(3) . trim($dnssecKey['pubKey'])), $dnssecKeysHashes);
         if ($recordIndex === false)
@@ -233,16 +227,12 @@ class ApiController extends BaseController
      */
     private function _modifyContactsTag($contactsHandles, $tags = '')
     {
-        $api = $this->openProvider->api;
-
         foreach ($contactsHandles as $contactHandle) {
             try {
-                $params = [
-                    'handle' => $contactHandle,
-                    'tags' => $tags,
-                ];
+                $customer = new Customer(['tags' => $tags, 'handle' => $contactHandle]);
 
-                $api->sendRequest('modifyCustomerRequest', $params);
+
+                $this->apiHelper->updateCustomer($contactHandle, $customer);
             } catch (\Exception $e) {
                 continue;
             }
@@ -253,9 +243,9 @@ class ApiController extends BaseController
      * Return domain by domain's Id from database or false
      *
      * @param int $domainId Domain id from database
-     * @return (false|databaseRow)
+     * @return false|object
      */
-    private function _checkDomainExistInDatabase($domainId)
+    private function _checkDomainExistInDatabase(int $domainId)
     {
         $domain = Capsule::table('tbldomains')
             ->where('id', $domainId)
@@ -265,20 +255,5 @@ class ApiController extends BaseController
             return $domain;
 
         return false;
-    }
-
-    /**
-     * return Domain format ['name' => '*', 'extension' => '.*']
-     *
-     * @param string $domain
-     * @return array
-     */
-    private function _getDomainNameExtension($domain)
-    {
-        $domainArray = explode('.', $domain);
-        return [
-            'extension' => $domainArray[count($domainArray)-1],
-            'name' => implode('.', array_slice($domainArray, 0, count($domainArray)-1)),
-        ];
     }
 }

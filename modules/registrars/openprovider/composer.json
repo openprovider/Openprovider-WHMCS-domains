@@ -19,7 +19,8 @@
         "viison/address-splitter": "^0.3.2",
         "openprovider/rest-client-php": "dev-v1beta",
         "symfony/serializer": "^5.2",
-        "psr/log": "^1.1"
+        "psr/log": "^1.1",
+        "symfony/property-access": "^5.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^7",

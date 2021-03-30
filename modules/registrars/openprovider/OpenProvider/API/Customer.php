@@ -80,7 +80,7 @@ class Customer
 
     /**
      *
-     * @param type $params
+     * @param array $params
      * @param string $prefix
      */
     public function __construct($params, $prefix = '')
