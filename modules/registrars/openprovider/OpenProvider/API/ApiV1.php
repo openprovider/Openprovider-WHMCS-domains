@@ -95,7 +95,7 @@ class ApiV1 implements ApiInterface
         $data = json_decode($reply->getData(), true);
         $response = $this->successResponse($response, $data);
 
-        $this->log($cmd, $args, $response);
+        $this->log($cmd, $requestParameters, $response);
 
         return $response;
     }

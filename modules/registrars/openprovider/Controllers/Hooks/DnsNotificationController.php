@@ -6,7 +6,6 @@ use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\API\Domain as api_domain;
 use WeDevelopCoffee\wPower\Models\Domain;
 
-
 /**
  * Class DnsNotificationController
  * OpenProvider Registrar module
@@ -21,6 +20,10 @@ class DnsNotificationController
      * @var Domain
      */
     private $domain;
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
 
     protected $op_nameservers = [
         'ns1.openprovider.nl',
@@ -50,25 +53,24 @@ class DnsNotificationController
 
         try {
 
-            $op_api_domain             =   $this->api_domain;
-            $op_api_domain->load(array (
-                'name' => str_replace('.'.$domain->getTldAttribute(), '', $domain->domain),
+            $op_api_domain = $this->api_domain;
+            $op_api_domain->load(array(
+                'name'      => str_replace('.' . $domain->getTldAttribute(), '', $domain->domain),
                 'extension' => $domain->getTldAttribute()
             ));
 
-            $op_domain                  = $this->apiHelper->getDomain($op_api_domain);
+            $op_domain = $this->apiHelper->getDomain($op_api_domain);
 
             $notOpenproviderNameservers = [];
-            foreach($op_domain['nameServers'] as $nameserver)
-            {
-                if(!in_array($nameserver['name'], $this->op_nameservers))
-                {
+            foreach ($op_domain['nameServers'] as $nameserver) {
+                if (!in_array($nameserver['name'], $this->op_nameservers)) {
                     $notOpenproviderNameservers[] = $nameserver['name'];
                 }
             }
 
             $conditionDisplayAlert = (count($op_domain['nameServers'])
-                - count($notOpenproviderNameservers)) < 2;
+                    - count($notOpenproviderNameservers)) < 2;
+
             if ($conditionDisplayAlert) {
                 $notOpenproviderNameserversString = implode(', ', $notOpenproviderNameservers);
                 $error_message = "

@@ -47,6 +47,10 @@ class RenewDomainController extends BaseController
         $period = $params['regperiod'];
         $domainOp = $this->apiHelper->getDomain($domain);
 
+        if (empty($domainOp)) {
+            throw new \Exception("Domain not found in openprovider.", 1);
+        }
+
         // If isInGracePeriod is true, renew the domain.
         if(isset($params['isInGracePeriod']) && $params['isInGracePeriod'] == true)
         {
@@ -84,7 +88,7 @@ class RenewDomainController extends BaseController
                 $this->apiHelper->restoreDomain($domainOp['id']);
             } else {
                 // This only happens when the isInRedemptionGracePeriod was not true.
-                throw new Exception("Domain has expired and additional costs may be applied. Please check the domain in your reseller control panel", 1);
+                throw new Exception("Domacin has expired and additional costs may be applied. Please check the domain in your reseller control panel", 1);
             }
 
         } catch (\Exception $e) {

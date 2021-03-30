@@ -4,6 +4,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 
+use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\ApiResponse;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
@@ -18,14 +19,19 @@ class ApiController extends BaseController
      * @var OpenProvider
      */
     private $openProvider;
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
 
     /**
      * ApiController constructor.
      */
-    public function __construct(Core $core, OpenProvider $openProvider)
+    public function __construct(Core $core, OpenProvider $openProvider, ApiHelper $apiHelper)
     {
         parent::__construct($core);
         $this->openProvider = $openProvider;
+        $this->apiHelper = $apiHelper;
     }
 
     /**
@@ -87,8 +93,8 @@ class ApiController extends BaseController
             return;
         }
 
-        $domain = $this->_checkDomainExistInDatabase($params['domainId']);
-        if (!$domain) {
+        $domainDB = $this->_checkDomainExistInDatabase($params['domainId']);
+        if (!$domainDB) {
             ApiResponse::error('Domain not found!');
             return;
         }
@@ -100,26 +106,25 @@ class ApiController extends BaseController
             'protocol' => 3,
             'pubKey'   => $params['pubKey'],
         ];
-        $api = $this->openProvider->api;
+        $domain = $this->openProvider->domain($domainDB->domain);
+        $domainOP = $this->apiHelper->getDomain($domain);
 
-        $domainArray = $this->_getDomainNameExtension($domain->domain);
+        if (empty($domainOP)) {
+            throw new \Exception('Domain not exist in openprovider!');
+        }
+
         // checking for duplicate dnssecKeys
         $dnssecKeys = [];
         $dnssecKeysHashes = [];
-        try {
-            $domain = $api->sendRequest('retrieveDomainRequest', [
-                'domain' => $domainArray,
-            ]);
-            foreach($domain['dnssecKeys'] as $dnssec) {
-                $dnssecKeysHashes[] = md5($dnssec['flags'] . $dnssec['alg'] . $dnssec['protocol'] . trim($dnssec['pubKey']));
-                $dnssecKeys[] = [
-                    'flags'    => $dnssec['flags'],
-                    'alg'      => $dnssec['alg'],
-                    'protocol' => 3,
-                    'pubKey'   => $dnssec['pubKey'],
-                ];
-            }
-        } catch (\Exception $e) {}
+        foreach($domainOP['dnssecKeys'] as $dnssec) {
+            $dnssecKeysHashes[] = md5($dnssec['flags'] . $dnssec['alg'] . $dnssec['protocol'] . trim($dnssec['pubKey']));
+            $dnssecKeys[] = [
+                'flags'    => $dnssec['flags'],
+                'alg'      => $dnssec['alg'],
+                'protocol' => 3,
+                'pubKey'   => $dnssec['pubKey'],
+            ];
+        }
 
         $modifiedDnsSecKeys = [];
         switch ($action) {
@@ -132,18 +137,14 @@ class ApiController extends BaseController
         }
 
         // update dnssecKeys with new record,
+
         $args = [
             'dnssecKeys'      => $modifiedDnsSecKeys,
-            'domain'          => $domainArray,
+            'isDnssecEnabled' => count($modifiedDnsSecKeys) > 0,
         ];
 
-        if (count($modifiedDnsSecKeys) > 0)
-            $args['isDnssecEnabled'] = 1;
-        else
-            $args['isDnssecEnabled'] = 0;
-
         try {
-            $api->sendRequest('modifyDomainRequest', $args);
+            $this->apiHelper->updateDomain($domainOP['id'], $args);
         } catch (\Exception $e) {
             ApiResponse::error(400, $e->getMessage());
             return;
@@ -163,8 +164,8 @@ class ApiController extends BaseController
             return;
         }
 
-        $domain = $this->_checkDomainExistInDatabase($params['domainId']);
-        if (!$domain) {
+        $domainDB = $this->_checkDomainExistInDatabase($params['domainId']);
+        if (!$domainDB) {
             ApiResponse::error('Domain not found!');
             return;
         }
@@ -173,8 +174,7 @@ class ApiController extends BaseController
 
         $isDnssecEnabled = $params['isDnssecEnabled'];
 
-        $domainArray = $this->_getDomainNameExtension($domain->domain);
-
+        $domain = $this->openProvider->domain($domainDB->domain);
         $args = [
             'isDnssecEnabled' => $isDnssecEnabled,
             'domain'          => $domainArray,
@@ -282,4 +282,3 @@ class ApiController extends BaseController
         ];
     }
 }
-

@@ -1,6 +1,7 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+
 use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WHMCS\Carbon;

@@ -107,8 +107,6 @@ class DomainSuggestionsController extends BaseController
      */
     private function checkDomains($domains, $params)
     {
-        $api = $this->API;
-
         try {
             $checkedDomains = $this->apiClient->call('checkDomainRequest', [
                 'domains' => $domains

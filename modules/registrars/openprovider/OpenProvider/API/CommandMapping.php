@@ -67,6 +67,10 @@ class CommandMapping
             self::COMMAND_MAP_METHOD => 'restoreDomain',
             self::COMMAND_MAP_CLASS => DomainServiceApi::class,
         ],
+        'renewDomainRequest' => [
+            self::COMMAND_MAP_METHOD => 'renewDomain',
+            self::COMMAND_MAP_CLASS => DomainServiceApi::class,
+        ],
         'deleteDomainRequest' => [
             self::COMMAND_MAP_METHOD => 'deleteDomain',
             self::COMMAND_MAP_CLASS => DomainServiceApi::class,

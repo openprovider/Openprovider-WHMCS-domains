@@ -213,7 +213,7 @@ function openprovider_GetEPPCode($params)
  * @param type $params
  * @return array|string
  */
-function openprovider_RegisterNameserver($params)
+    function openprovider_RegisterNameserver($params)
 {
     return openprovider_registrar_launch_decorator('registerNameserver', $params);
 }

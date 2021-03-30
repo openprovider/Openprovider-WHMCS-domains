@@ -13,7 +13,7 @@ if (!defined("WHMCS")) {
 
 require_once(__DIR__ .'/init.php');
 
-$core = openprovider_registrar_core('admin');
+$core = openprovider_registrar_core();
 
 $core->launch()
     ->hooks();

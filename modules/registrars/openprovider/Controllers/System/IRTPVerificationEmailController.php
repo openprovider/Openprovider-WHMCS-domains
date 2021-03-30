@@ -8,7 +8,6 @@ use OpenProvider\API\API;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
-use Punic\Exception;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -30,7 +29,7 @@ class IRTPVerificationEmailController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, ApiHelper $apiHelper, ApiInterface $apiClient)
+    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper, ApiInterface $apiClient)
     {
         parent::__construct($core);
 

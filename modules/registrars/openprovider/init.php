@@ -17,6 +17,8 @@ use WeDevelopCoffee\wPower\Models\Registrar;
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/helpers.php';
 
+const SESSION_EXPIRATION_LIFE_TIME = 300;
+
 /**
  * Configure and launch the system
  */
@@ -77,6 +79,7 @@ function openprovider_bind_required_classes($launcher)
                 'password' => $params['Password']
             ])->getData()['token'];
             $session->set($tokenName, $token);
+            $session->getMetadataBag()->stampNew(SESSION_EXPIRATION_LIFE_TIME);
         }
         $client->getConfiguration()->setToken($session->get($tokenName) ?? '');
 
