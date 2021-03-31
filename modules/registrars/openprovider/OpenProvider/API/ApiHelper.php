@@ -72,7 +72,7 @@ class ApiHelper
             }
         }
 
-        $args = json_decode(json_encode($domainRegistration), true);
+        $args = $this->serializer->normalize($domainRegistration);
 
         return $this->apiClient->call('createDomainRequest', $args)->getData();
     }
@@ -92,7 +92,7 @@ class ApiHelper
             }
         }
 
-        $args = json_decode(json_encode($domainTransfer), true);
+        $args = $this->serializer->normalize($domainTransfer);
 
         return $this->apiClient->call('transferDomainRequest', $args)->getData();
     }
@@ -359,7 +359,6 @@ class ApiHelper
     public function createCustomer(Customer $customer): array
     {
         $args = $this->serializer->normalize($customer);
-
         return $this->apiClient->call('createCustomerRequest', $args)->getData();
     }
 
