@@ -3,7 +3,12 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\API;
 use OpenProvider\API\APIConfig;
+use OpenProvider\API\ApiInterface;
+use OpenProvider\API\ResponseInterface;
+use OpenProvider\API\SessionNameForToken;
 use OpenProvider\WhmcsRegistrar\enums\OpenproviderErrorType;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
+use Symfony\Component\HttpFoundation\Session\Session;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -21,15 +26,25 @@ class ConfigController extends BaseController
      * @var API
      */
     private $API;
+    /**
+     * @var Session
+     */
+    private $session;
+    /**
+     * @var ApiInterface
+     */
+    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API)
+    public function __construct(Core $core, API $API, Session $session, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
         $this->API = $API;
+        $this->apiClient = $apiClient;
+        $this->session = $session;
     }
 
     /**
@@ -154,43 +169,73 @@ class ConfigController extends BaseController
 
     protected function checkCredentials($configarray, $params)
     {
-        try {
-            $this->API->setParams($params);
-            // Try to login and fetch the DNS template data.
-            $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
-            return $configarray;
-        } catch (\Exception $ex) {
-            if (
-                $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthority
-                || $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthorityCTE
+        $choosenHost = $params['test_mode'] == 'on' ?
+            Configuration::get('api_url_cte') :
+            Configuration::get('api_url');
+        $differentHost = $params['test_mode'] == 'on' ?
+            Configuration::get('api_url') :
+            Configuration::get('api_url_cte');
+
+        $tokenIsExist = !!$this->session->get(
+            SessionNameForToken::encode(
+                $params['Username'],
+                $params['Password'],
+                $choosenHost
+            )
+        );
+
+        if ($tokenIsExist) {
+            $checkingTokenRequest = $this->checkRequest();
+            if ($checkingTokenRequest->getCode() == 0) {
+                return $configarray;
+            } else if (
+                $checkingTokenRequest->getCode() == OpenproviderErrorType::ResellerNotHaveAuthority ||
+                $checkingTokenRequest->getCode() == OpenproviderErrorType::ResellerNotHaveAuthorityCTE
             ) {
                 return $this->generateLoginError($configarray, self::ERROR_NOT_HAVE_AUTHORITY);
-            } elseif ($ex->getCode() == OpenproviderErrorType::NonSignedAgreement) {
+            } else if ($checkingTokenRequest->getCode() == OpenproviderErrorType::NonSignedAgreement) {
                 return $this->generateLoginError($configarray, self::ERROR_NOT_SIGNED_AGREEMENT);
             }
         }
 
-        $params['test_mode'] = $params['test_mode'] == 'on'
-            ? ''
-            : 'on';
-
-        $this->API->setParams($params);
-        try {
-            $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
-            // Incorrect mode
-            $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
-        } catch (\Exception $e) {
-            if (
-                $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthority
-                || $ex->getCode() == OpenproviderErrorType::ResellerNotHaveAuthorityCTE
-                || $ex->getCode() == OpenproviderErrorType::NonSignedAgreement
-            ) {
-                $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
-            } else {
-                $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_CREDENTIALS);
-            }
+        // Check in session first
+        if ($this->session->get(
+            SessionNameForToken::encode(
+                $params['Username'],
+                $params['Password'],
+                $differentHost
+            )
+        )) {
+            return $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
         }
 
-        return $configarray;
+        // if token doesn't exist we try to get it from openprovider
+        $this->apiClient->getConfiguration()->setHost($differentHost);
+
+        $reply = $this->apiClient->call('generateAuthTokenRequest', [
+            'Username' => $params['Username'],
+            'Password' => $params['Password']
+        ]);
+
+        $replyData = $reply->getData();
+
+        if (isset($replyData['token']) && $replyData['token']) {
+            $this->session->set(SessionNameForToken::encode(
+                $params['Username'],
+                $params['Password'],
+                $differentHost
+            ), $replyData['token']);
+            return $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
+        }
+
+        return $this->generateLoginError($configarray, self::ERROR_INCORRECT_CREDENTIALS);
+    }
+
+    /**
+     * @return ResponseInterface
+     */
+    private function checkRequest(): ResponseInterface
+    {
+        return $this->apiClient->call('retrieveExtensionRequest', ['name' => 'com']);
     }
 }

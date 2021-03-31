@@ -8,6 +8,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use function GuzzleHttp\json_decode;
 
 class ApiV1 implements ApiInterface
 {
@@ -96,7 +97,12 @@ class ApiV1 implements ApiInterface
             $requestParameters = $this->paramsCreator->createParameters($args, $service, $apiMethod);
             $reply = $service->$apiMethod(...$requestParameters);
         } catch (\Exception $e) {
-            $response = $this->failedResponse($response, $e->getMessage(), $e->getCode());
+            $responseData = $this->serializer->normalize(json_decode(substr($e->getMessage(), strpos($e->getMessage(), 'response:') + strlen('response:'))));
+            $response = $this->failedResponse(
+                $response,
+                $responseData['desc'] ?? $e->getMessage(),
+                $responseData['code'] ?? $e->getCode()
+            );
             $this->log($cmd, $args, $response);
 
             return $response;

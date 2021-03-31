@@ -3,6 +3,7 @@
 use OpenProvider\API\API;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\ApiInterface;
+use OpenProvider\API\SessionNameForToken;
 use OpenProvider\API\XmlApiAdapter;
 use OpenProvider\Logger;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
@@ -71,7 +72,7 @@ function openprovider_bind_required_classes($launcher)
         $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter);
         $client->getConfiguration()->setHost($host);
 
-        $tokenName = substr(md5($params['Username'].$params['Password'].$host), 0, -3);
+        $tokenName = SessionNameForToken::encode($params['Username'], $params['Password'], $host);
 
         if (!$session->get($tokenName)) {
             $token = $client->call('generateAuthTokenRequest', [

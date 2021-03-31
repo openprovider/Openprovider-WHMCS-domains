@@ -93,6 +93,11 @@ class CommandMapping
             self::COMMAND_MAP_METHOD => 'listTlds',
             self::COMMAND_MAP_CLASS => TldServiceApi::class,
         ],
+        'retrieveExtensionRequest' => [
+            self::COMMAND_MAP_METHOD => 'getTld',
+            self::COMMAND_MAP_CLASS => TldServiceApi::class,
+        ],
+
 
         // DNS
         'retrieveZoneDnsRequest' => [
