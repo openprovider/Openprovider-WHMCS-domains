@@ -122,8 +122,6 @@ class ContactController extends BaseController
 
         try
         {
-            $api                =   $this->API;
-            $api->setParams($params);
             $this->domain->load(array(
                 'name'          =>  $params['sld'],
                 'extension'     =>  $params['tld']

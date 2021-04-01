@@ -74,7 +74,7 @@ class DomainInformationController extends BaseController
         $response                           = [];
         $response['domain']                 = $op_domain['domain']['name'] . '.' . $op_domain['domain']['extension'];
         $response['tld']                    = $op_domain['domain']['extension'];
-        $response['nameservers']            = $this->getNameservers($op_domain['nameServers']);
+        $response['nameservers']            = $this->getNameservers($op_domain['nameServers'] ?: []);
         $response['status']                 = api_domain::convertOpStatusToWhmcs($op_domain['status']);
         $response['transferlock']           = $op_domain['isLocked'];
         $response['expirydate']             = $op_domain['expirationDate'];
@@ -89,7 +89,10 @@ class DomainInformationController extends BaseController
 
         $verification = [];
         if (!$emailVerification) {
-            $reply = $this->apiClient->call('startCustomerEmailVerificationRequest', $args)->getData();
+            $reply = $this->apiClient->call('startCustomerEmailVerificationRequest', $args);
+            if (!$reply->isSuccess()) {
+                throw new \Exception('Start customer email verification failed: ' . $reply->getMessage());
+            }
             if (isset($reply['id'])) {
                 $verification['status']         = 'in progress';
                 $verification['isSuspended']    = false;

@@ -186,7 +186,7 @@ class ConfigController extends BaseController
 
         if ($tokenIsExist) {
             $checkingTokenRequest = $this->checkRequest();
-            if ($checkingTokenRequest->getCode() == 0) {
+            if ($checkingTokenRequest->isSuccess()) {
                 return $configarray;
             } else if (
                 $checkingTokenRequest->getCode() == OpenproviderErrorType::ResellerNotHaveAuthority ||

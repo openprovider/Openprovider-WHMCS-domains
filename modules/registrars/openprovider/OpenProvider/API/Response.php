@@ -84,4 +84,12 @@ class Response implements ResponseInterface
     {
         $this->message = $message;
     }
+
+    /**
+     * @return bool
+     */
+    public function isSuccess(): bool
+    {
+        return $this->code == 0;
+    }
 }

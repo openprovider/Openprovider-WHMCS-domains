@@ -31,23 +31,22 @@ class DownloadTldPricesCronController extends BaseController
 
     /**
      * @param $params
-     * @return array|ResultsList
+     * @return array|void
      */
     public function Download($params)
     {
         // Perform API call to retrieve extension information
         // A connection error should return a simple array with error key and message
         // return ['error' => 'This error occurred',];
-        try {
-            $extensionData = $this->apiClient->call('searchExtensionRequest')->getData();
-        } catch (\Exception $e) {
-            return ['error' => 'This error occurred: ' . $e->getMessage()];
+        $extensionResponse = $this->apiClient->call('searchExtensionRequest');
+        if (!$extensionResponse->isSuccess()) {
+            return ['error' => 'This error occurred: ' . $extensionResponse->getMessage()];
         }
+
+        $extensionData = $extensionResponse->getData();
 
         // Store the cache.
         $tldPriceCache = new TldPriceCache();
         $tldPriceCache->write($extensionData);
-
-        return;
     }
 }

@@ -1,10 +1,7 @@
 <?php
 
-
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-
-use OpenProvider\API\API;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
@@ -69,11 +66,10 @@ class IRTPVerificationEmailController extends BaseController
             'email' => $ownerEmail,
         ];
 
-        try {
-            $this->apiClient->call('restartCustomerEmailVerificationRequest', $args);
-        } catch (\Exception $e) {
+        $restartCustomerEmailVerificationResponse = $this->apiClient->call('restartCustomerEmailVerificationRequest', $args);
+        if (!$restartCustomerEmailVerificationResponse->isSuccess()) {
             $success = false;
-            $errorMessage = $e->getMessage();
+            $errorMessage = $restartCustomerEmailVerificationResponse->getMessage();
         }
 
         if ($success) {

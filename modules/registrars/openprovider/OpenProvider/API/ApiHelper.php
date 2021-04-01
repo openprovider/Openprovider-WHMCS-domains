@@ -30,6 +30,7 @@ class ApiHelper
     /**
      * @param Domain $domain
      * @return array
+     * @throws \Exception
      */
     public function getDomain(Domain $domain): array
     {
@@ -39,13 +40,14 @@ class ApiHelper
             'withVerificationEmail' => true,
         ];
 
-        return $this->apiClient->call('searchDomainRequest', $args)->getData()['results'][0] ?? [];
+        return $this->buildResponse($this->apiClient->call('searchDomainRequest', $args))['results'][0];
     }
 
     /**
      * @param int $id
      * @param array $data
      * @return array
+     * @throws \Exception
      */
     public function updateDomain(int $id, array $data): array
     {
@@ -54,12 +56,13 @@ class ApiHelper
         ];
         $args = array_merge($args, $data);
 
-        return $this->apiClient->call('modifyDomainRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('modifyDomainRequest', $args));
     }
 
     /**
      * @param DomainRegistration $domainRegistration
      * @return array
+     * @throws \Exception
      */
     public function createDomain(DomainRegistration $domainRegistration): array
     {
@@ -74,12 +77,13 @@ class ApiHelper
 
         $args = $this->serializer->normalize($domainRegistration);
 
-        return $this->apiClient->call('createDomainRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('createDomainRequest', $args));
     }
 
     /**
      * @param DomainTransfer $domainTransfer
      * @return array
+     * @throws \Exception
      */
     public function transferDomain(DomainTransfer $domainTransfer): array
     {
@@ -94,12 +98,13 @@ class ApiHelper
 
         $args = $this->serializer->normalize($domainTransfer);
 
-        return $this->apiClient->call('transferDomainRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('transferDomainRequest', $args));
     }
 
     /**
      * @param int $id
      * @return array
+     * @throws \Exception
      */
     public function deleteDomain(int $id): array
     {
@@ -107,12 +112,13 @@ class ApiHelper
             'id' => $id,
         ];
 
-        return $this->apiClient->call('deleteDomainRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('deleteDomainRequest', $args));
     }
 
     /**
      * @param int $id
      * @return array
+     * @throws \Exception
      */
     public function restoreDomain(int $id): array
     {
@@ -120,13 +126,14 @@ class ApiHelper
             'id' => $id,
         ];
 
-        return $this->apiClient->call('restoreDomainRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('restoreDomainRequest', $args));
     }
 
     /**
      * @param int $id
      * @param int $period
      * @return array
+     * @throws \Exception
      */
     public function renewDomain(int $id, int $period): array
     {
@@ -135,12 +142,13 @@ class ApiHelper
             'period' => $period,
         ];
 
-        return $this->apiClient->call('renewDomainRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('renewDomainRequest', $args));
     }
 
     /**
      * @param Domain $domain
      * @return array
+     * @throws \Exception
      */
     public function getDomainNameservers(Domain $domain): array
     {
@@ -158,6 +166,7 @@ class ApiHelper
      * @param Domain $domain
      * @param array $nameServers
      * @return array
+     * @throws \Exception
      */
     public function saveDomainNameservers(Domain $domain, array $nameServers): array
     {
@@ -168,12 +177,13 @@ class ApiHelper
             'nameServers' => $nameServers,
         ];
 
-        return $this->apiClient->call('modifyDomainRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('modifyDomainRequest', $args));
     }
 
     /**
      * @param array $domains
      * @return array
+     * @throws \Exception
      */
     public function checkDomains(array $domains): array
     {
@@ -181,12 +191,13 @@ class ApiHelper
             'domains' => $domains,
         ];
 
-        return $this->apiClient->call('checkDomainRequest', $args)->getData();
+        return $this->$this->apiClient->call('checkDomainRequest', $args);
     }
 
     /**
      * @param Domain $domain
      * @return array
+     * @throws \Exception
      */
     public function getDomainContacts(Domain $domain): array
     {
@@ -210,12 +221,13 @@ class ApiHelper
     /**
      * @param DomainNameServer $nameServer
      * @return array
+     * @throws \Exception
      */
     public function createNameserver(DomainNameServer $nameServer): array
     {
         $args = $this->serializer->normalize($nameServer);
 
-        return $this->apiClient->call('createNsRequest', $args)->getData();
+        return $this->$this->apiClient->call('createNsRequest', $args);
     }
 
     /**
@@ -237,12 +249,13 @@ class ApiHelper
 
         $args = $this->serializer->normalize($nameServer);
 
-        return $this->apiClient->call('modifyNsRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('modifyNsRequest', $args));
     }
 
     /**
      * @param string $nameServerName
      * @return array
+     * @throws \Exception
      */
     public function deleteNameserver(string $nameServerName): array
     {
@@ -250,12 +263,13 @@ class ApiHelper
             'name' => $nameServerName,
         ];
 
-        return $this->apiClient->call('deleteNsRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('deleteNsRequest', $args));
     }
 
     /**
      * @param Domain $domain
      * @return array
+     * @throws \Exception
      */
     public function getDns(Domain $domain): array
     {
@@ -264,7 +278,7 @@ class ApiHelper
             'withHistory' => false,
         ];
 
-        return $this->apiClient->call('retrieveZoneDnsRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('retrieveZoneDnsRequest', $args));
     }
 
     /**
@@ -272,6 +286,7 @@ class ApiHelper
      * @param array $prevRecords
      * @param array $newRecords
      * @return array
+     * @throws \Exception
      */
     public function updateDnsRecords(Domain $domain, array $prevRecords, array $newRecords): array
     {
@@ -284,13 +299,14 @@ class ApiHelper
             ]
         ];
 
-        return $this->apiClient->call('modifyZoneDnsRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('modifyZoneDnsRequest', $args));
     }
 
     /**
      * @param Domain $domain
      * @param $records
      * @return array
+     * @throws \Exception
      */
     public function createDnsRecords(Domain $domain, $records): array
     {
@@ -300,12 +316,13 @@ class ApiHelper
             'records' => $records,
         ];
 
-        return $this->apiClient->call('createZoneDnsRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('createZoneDnsRequest', $args));
     }
 
     /**
      * @param Domain $domain
      * @return array
+     * @throws \Exception
      */
     public function deleteDnsRecords(Domain $domain): array
     {
@@ -313,13 +330,14 @@ class ApiHelper
             'name' => $domain->getFullName(),
         ];
 
-        return $this->apiClient->call('deleteZoneDnsRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('deleteZoneDnsRequest', $args));
     }
 
     /**
      * @param string $handle
      * @param bool $formattedForWhmcs
      * @return array
+     * @throws \Exception
      */
     public function getCustomer(string $handle, bool $formattedForWhmcs = true): array
     {
@@ -327,7 +345,7 @@ class ApiHelper
             'handle' => $handle,
         ];
 
-        $customerOp = $this->apiClient->call('retrieveCustomerRequest', $args)->getData();
+        $customerOp = $this->buildResponse($this->apiClient->call('retrieveCustomerRequest', $args));
 
         if (!$formattedForWhmcs) {
             return $customerOp;
@@ -355,23 +373,39 @@ class ApiHelper
     /**
      * @param Customer $customer
      * @return array
+     * @throws \Exception
      */
     public function createCustomer(Customer $customer): array
     {
         $args = $this->serializer->normalize($customer);
-        return $this->apiClient->call('createCustomerRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('createCustomerRequest', $args));
     }
 
     /**
      * @param string $handle
      * @param Customer $customer
      * @return array
+     * @throws \Exception
      */
     public function updateCustomer(string $handle, Customer $customer): array
     {
         $args = $this->serializer->normalize($customer);
         $args['handle'] = $handle;
 
-        return $this->apiClient->call('modifyCustomerRequest', $args)->getData();
+        return $this->buildResponse($this->apiClient->call('modifyCustomerRequest', $args));
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @return array
+     * @throws \Exception
+     */
+    private function buildResponse(ResponseInterface $response): array
+    {
+        if (!$response->isSuccess()) {
+            throw new \Exception($response->getMessage(), $response->getCode());
+        }
+
+        return $response->getData();
     }
 }

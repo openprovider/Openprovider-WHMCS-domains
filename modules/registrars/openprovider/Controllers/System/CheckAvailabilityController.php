@@ -73,12 +73,11 @@ class CheckAvailabilityController  extends BaseController
             $domains[]          = $domain;
         }
 
-        try {
-            $status =  $this->apiClient->call('checkDomainRequest', [
+        $statusResponse =  $this->apiClient->call('checkDomainRequest', [
                 "domains" => $domains
-            ])->getData()['results'];
-        } catch (Exception $e) {
-            if($e->getcode() == 307) {
+            ]);
+        if (!$statusResponse->isSuccess()) {
+            if ($statusResponse->getcode() == 307) {
                 // OP response: "Your domain request contains an invalid extension!""
                 // Meaning: the id is not supported.
 
@@ -89,12 +88,13 @@ class CheckAvailabilityController  extends BaseController
                     $searchResult->setStatus(SearchResult::STATUS_TLD_NOT_SUPPORTED);
                     $results->append($searchResult);
                 }
-                return $results;
             } else {
-                \logModuleCall('openprovider', 'whois', $domains, $e->getMessage(), null, [$params['Password']]);
-                return $results;
+                \logModuleCall('openprovider', 'whois', $domains, $statusResponse->getMessage(), null, [$params['Password']]);
             }
+            return $results;
         }
+
+        $status = $statusResponse->getData()['results'];
 
         foreach($status as $domain_status) {
             $domain_sld = explode('.', $domain_status['domain'])[0];

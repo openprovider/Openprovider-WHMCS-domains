@@ -58,22 +58,17 @@ class IdProtectController extends BaseController
         if(isset($params['protectenable']))
             $domain->idprotection = $params['protectenable'];
 
-        try {
-            $OpenProvider       = new OP($params, $this->apiClient);
-            $op_domain_obj      = $OpenProvider->domain($domain->domain);
-            $op_domain = $this->apiClient->call('searchDomainRequest', [
-                'domainNamePattern' => $op_domain_obj->name,
-                'extension' => $op_domain_obj->extension,
-            ])->getData()['results'][0];
-            $OpenProvider->toggle_whois_protection($domain, $op_domain_obj, $op_domain);
+        $OpenProvider       = new OP($params, $this->apiClient);
+        $op_domain_obj      = $OpenProvider->domain($domain->domain);
+        $opDomainResponse = $this->apiClient->call('searchDomainRequest', [
+            'domainNamePattern' => $op_domain_obj->name,
+            'extension' => $op_domain_obj->extension,
+        ]);
 
-            return array(
-                'success' => 'success',
-            );
-        } catch (Exception $e) {
-            \logModuleCall('OpenProvider', 'Save identity toggle',$params['domainname'], [$OpenProvider->domain, @$op_domain, $OpenProvider], $e->getMessage(), [$params['Password']]);
+        if (!$opDomainResponse->isSuccess()) {
+            \logModuleCall('OpenProvider', 'Save identity toggle',$params['domainname'], [$OpenProvider->domain, @$op_domain, $OpenProvider], $opDomainResponse->getMessage(), [$params['Password']]);
 
-            if($e->getMessage() == 'Wpp contract is not signed')
+            if($opDomainResponse->getMessage() == 'Wpp contract is not signed')
             {
                 $notification = new Notification();
                 $notification->WPP_contract_unsigned_one_domain($params['domainname'])
@@ -81,8 +76,15 @@ class IdProtectController extends BaseController
             }
 
             return array(
-                'error' => $e->getMessage(),
+                'error' => $opDomainResponse->getMessage(),
             );
         }
+
+        $opDomain = $opDomainResponse->getData()['results'][0];
+        $OpenProvider->toggle_whois_protection($domain, $op_domain_obj, $opDomain);
+
+        return array(
+            'success' => 'success',
+        );
     }
 }

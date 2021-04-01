@@ -106,9 +106,9 @@ class ApiController extends BaseController
             'pubKey'   => $params['pubKey'],
         ];
         $domain = $this->openProvider->domain($domainDB->domain);
-        $domainOP = $this->apiHelper->getDomain($domain);
-
-        if (empty($domainOP)) {
+        try {
+            $domainOP = $this->apiHelper->getDomain($domain);
+        } catch (\Exception $ex) {
             throw new \Exception('Domain not exist in openprovider!');
         }
 
@@ -143,7 +143,7 @@ class ApiController extends BaseController
         try {
             $this->apiHelper->updateDomain($domainOP['id'], $args);
         } catch (\Exception $e) {
-            ApiResponse::error(400, $e->getMessage());
+            ApiResponse::error($e->getCode(), $e->getMessage());
             return;
         }
         ApiResponse::success(['dnssecKeys' => $args['dnssecKeys']]);

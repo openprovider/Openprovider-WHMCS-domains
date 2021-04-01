@@ -43,4 +43,9 @@ interface ResponseInterface
      * @return string
      */
     public function getMessage(): string;
+
+    /**
+     * @return bool
+     */
+    public function isSuccess(): bool;
 }

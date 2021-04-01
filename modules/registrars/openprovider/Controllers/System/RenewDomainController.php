@@ -45,9 +45,10 @@ class RenewDomainController extends BaseController
         $domain = $this->domain;
 
         $period = $params['regperiod'];
-        $domainOp = $this->apiHelper->getDomain($domain);
 
-        if (empty($domainOp)) {
+        try {
+            $domainOp = $this->apiHelper->getDomain($domain);
+        } catch (\Exception $ex) {
             throw new \Exception("Domain not found in openprovider.", 1);
         }
 
