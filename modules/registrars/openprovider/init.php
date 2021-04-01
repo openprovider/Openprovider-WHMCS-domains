@@ -51,7 +51,7 @@ function openprovider_bind_required_classes($launcher)
         Configuration::get('api_url_cte') :
         Configuration::get('api_url');
 
-    $useApiV1 = false;
+    $useApiV1 = true;
 
     $launcher->set(LoggerInterface::class, function (ContainerInterface $c) {
         return new Logger();
