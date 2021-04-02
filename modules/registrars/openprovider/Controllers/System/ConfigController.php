@@ -11,6 +11,8 @@ use OpenProvider\WhmcsRegistrar\src\Configuration;
 use Symfony\Component\HttpFoundation\Session\Session;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
+use WeDevelopCoffee\wPower\Models\Registrar;
+use WHMCS\Database\Capsule;
 
 /**
  * Class ConfigController
@@ -60,6 +62,15 @@ class ConfigController extends BaseController
         // Process any updated data.
         list($configarray, $params) = $this->parsePostInput($params, $configarray);
 
+        $oldParams = (new Registrar())->getRegistrarData()['openprovider'];
+
+        if (
+            $params['Password'] != $oldParams['Password'] ||
+            $params['Username'] != $oldParams['Username'] ||
+            $params['test_mode'] != $oldParams['test_mode']
+        ) {
+            $this->session->remove('AUTH_TOKEN');
+        }
         // If we have some login data, let's try to login.
         $areCredentialsExist = isset($params['Password']) && isset($params['Username'])
             && (!empty($params['Password']) || !empty($params['Username']));
@@ -169,20 +180,11 @@ class ConfigController extends BaseController
 
     protected function checkCredentials($configarray, $params)
     {
-        $choosenHost = $params['test_mode'] == 'on' ?
-            Configuration::get('api_url_cte') :
-            Configuration::get('api_url');
         $differentHost = $params['test_mode'] == 'on' ?
             Configuration::get('api_url') :
             Configuration::get('api_url_cte');
 
-        $tokenIsExist = !!$this->session->get(
-            SessionNameForToken::encode(
-                $params['Username'],
-                $params['Password'],
-                $choosenHost
-            )
-        );
+        $tokenIsExist = !!$this->session->get('AUTH_TOKEN');
 
         if ($tokenIsExist) {
             $checkingTokenRequest = $this->checkRequest();
@@ -198,17 +200,6 @@ class ConfigController extends BaseController
             }
         }
 
-        // Check in session first
-        if ($this->session->get(
-            SessionNameForToken::encode(
-                $params['Username'],
-                $params['Password'],
-                $differentHost
-            )
-        )) {
-            return $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
-        }
-
         // if token doesn't exist we try to get it from openprovider
         $this->apiClient->getConfiguration()->setHost($differentHost);
 
@@ -220,11 +211,6 @@ class ConfigController extends BaseController
         $replyData = $reply->getData();
 
         if (isset($replyData['token']) && $replyData['token']) {
-            $this->session->set(SessionNameForToken::encode(
-                $params['Username'],
-                $params['Password'],
-                $differentHost
-            ), $replyData['token']);
             return $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
         }
 

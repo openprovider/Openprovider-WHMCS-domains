@@ -72,17 +72,16 @@ function openprovider_bind_required_classes($launcher)
         $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter);
         $client->getConfiguration()->setHost($host);
 
-        $tokenName = SessionNameForToken::encode($params['Username'], $params['Password'], $host);
 
-        if (!$session->get($tokenName)) {
+        if (!$session->get('AUTH_TOKEN')) {
             $token = $client->call('generateAuthTokenRequest', [
                 'username' => $params['Username'],
                 'password' => $params['Password']
             ])->getData()['token'];
-            $session->set($tokenName, $token);
+            $session->set('AUTH_TOKEN', $token);
             $session->getMetadataBag()->stampNew(SESSION_EXPIRATION_LIFE_TIME);
         }
-        $client->getConfiguration()->setToken($session->get($tokenName) ?? '');
+        $client->getConfiguration()->setToken($session->get('AUTH_TOKEN') ?? '');
 
         return $client;
     });
