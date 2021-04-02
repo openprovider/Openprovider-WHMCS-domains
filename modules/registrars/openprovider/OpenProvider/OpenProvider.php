@@ -1,4 +1,5 @@
 <?php
+
 namespace OpenProvider;
 
 use OpenProvider\API\ApiInterface;

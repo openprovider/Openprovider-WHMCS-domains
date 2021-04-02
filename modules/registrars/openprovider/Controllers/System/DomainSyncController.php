@@ -3,10 +3,10 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\ApiHelper;
+use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WHMCS\Carbon;
 use OpenProvider\WhmcsHelpers\Activity;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\Domain as api_domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -23,10 +23,6 @@ class DomainSyncController extends BaseController
      */
     private $api_domain;
     /**
-     * @var OpenProvider
-     */
-    private $openprovider;
-    /**
      * @var Domain
      */
     private $domain;
@@ -38,12 +34,11 @@ class DomainSyncController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, api_domain $api_domain, Domain $domain, OpenProvider $openprovider, ApiHelper $apiHelper)
+    public function __construct(Core $core, api_domain $api_domain, Domain $domain, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
         $this->api_domain = $api_domain;
-        $this->openprovider = $openprovider;
         $this->domain = $domain;
         $this->apiHelper = $apiHelper;
     }
@@ -74,19 +69,19 @@ class DomainSyncController extends BaseController
         try
         {
             // get data from op
-            $this->api_domain   = $this->openprovider->domain($this->domain->domain);
+            $this->api_domain   = DomainFullNameToDomainObject::convert($this->domain->domain);
 
-            $op_domain_result   = $this->apiHelper->getDomain($this->api_domain);
-            $expiration_date    = Carbon::createFromFormat('Y-m-d H:i:s', $op_domain_result['expirationDate'], 'Europe/Amsterdam');
-            if($op_domain_result['status'] == 'ACT')
+            $domainOp   = $this->apiHelper->getDomain($this->api_domain);
+            $expiration_date    = Carbon::createFromFormat('Y-m-d H:i:s', $domainOp['expirationDate'], 'Europe/Amsterdam');
+            if($domainOp['status'] == 'ACT')
             {
                 // auto renew on or not? -> WHMCS is leading.
                 if($setting['syncAutoRenewSetting'] == true)
-                    $this->process_auto_renew($op_domain_result);
+                    $this->process_auto_renew($domainOp);
 
                 // Identity protection or not? -> WHMCS is leading.
                 if($setting['syncIdentityProtectionToggle'] == true)
-                    $this->process_identity_protection($op_domain_result);
+                    $this->process_identity_protection($domainOp);
 
                 return array(
                     'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
@@ -134,10 +129,11 @@ class DomainSyncController extends BaseController
      * Process the Domain autorenew setting
      *
      * @return void
-     **/
-    private function process_auto_renew($op_domain_result)
+     * @throws \Exception
+     */
+    private function process_auto_renew($domainOp)
     {
-        $result = $this->openprovider->toggle_autorenew($this->domain, $op_domain_result);
+        $result = $this->apiHelper->toggleAutorenewDomain($this->domain, $domainOp);
 
         if($result != 'correct')
         {
@@ -160,15 +156,15 @@ class DomainSyncController extends BaseController
      *
      * @return void
      **/
-    private function process_identity_protection($op_domain_result)
+    private function process_identity_protection($domainOp)
     {
         try {
-            $result = $this->openprovider->toggle_whois_protection($this->domain, $op_domain_result);
+            $result = $this->apiHelper->toggleWhoisProtection($this->domain, $domainOp);
 
         } catch (\Exception $e) {
-            \logModuleCall('OpenProvider', 'Save identity toggle', $this->domain->domain, [$this->domain->domain, @$op_domain_result], $e->getMessage(), [$params['Password']]);
+            \logModuleCall('OpenProvider', 'Save identity toggle', $this->domain->domain, [$this->domain->domain, @$domainOp], $e->getMessage(), [$params['Password']]);
 
-            $this->unsigned_wpp_contract_domains[] = $this->objectDomain->domain;
+            $this->unsigned_wpp_contract_domains[] = $this->domain->domain;
         }
 
         if($result != 'correct')
@@ -177,8 +173,8 @@ class DomainSyncController extends BaseController
              * Log the activity data
              */
             $activity_data = [
-                'id'            => $this->objectDomain->id,
-                'domain'        => $this->objectDomain->domain,
+                'id'            => $this->domain->id,
+                'domain'        => $this->domain->domain,
                 'old_setting'   => $result['old_setting'],
                 'new_setting'   => $result['new_setting'],
             ];

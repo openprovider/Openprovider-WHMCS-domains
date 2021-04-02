@@ -2,7 +2,6 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
-use OpenProvider\API\API;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -32,7 +31,7 @@ class CheckAvailabilityController  extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, Domain $domain, $resultsList = '', ApiInterface $apiClient)
+    public function __construct(Core $core, Domain $domain, ApiInterface $apiClient)
     {
         parent::__construct($core);
 

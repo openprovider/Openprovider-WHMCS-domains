@@ -5,7 +5,6 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 use OpenProvider\API\API;
 use OpenProvider\API\APIConfig;
 use OpenProvider\API\ApiHelper;
-use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
@@ -24,10 +23,6 @@ use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
 class ContactController extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-    /**
      * @var Domain
      */
     private $domain;
@@ -43,11 +38,10 @@ class ContactController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, Handle $handle, ApiHelper $apiHelper)
+    public function __construct(Core $core, Domain $domain, Handle $handle, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
-        $this->API = $API;
         $this->domain = $domain;
         $this->handle = $handle;
         $this->apiHelper = $apiHelper;

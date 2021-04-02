@@ -1,4 +1,5 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use OpenProvider\API\ApiHelper;

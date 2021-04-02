@@ -10,6 +10,7 @@ use Openprovider\Api\Rest\Client\Auth\Api\AuthApi;
 use Openprovider\Api\Rest\Client\Helpers\Api\TagServiceApi;
 use Openprovider\Api\Rest\Client\Person\Api\CustomerApi;
 use Openprovider\Api\Rest\Client\Person\Api\EmailVerificationApi;
+use Openprovider\Api\Rest\Client\Person\Api\ResellerServiceApi;
 use Openprovider\Api\Rest\Client\Tld\Api\TldServiceApi;
 
 class CommandMapping
@@ -135,6 +136,12 @@ class CommandMapping
         'searchTagRequest' => [
             self::COMMAND_MAP_METHOD => 'listTags',
             self::COMMAND_MAP_CLASS => TagServiceApi::class,
+        ],
+
+        // Reseller
+        'retrieveResellerRequest' => [
+            self::COMMAND_MAP_METHOD => 'getReseller',
+            self::COMMAND_MAP_CLASS  => ResellerServiceApi::class
         ],
     ];
 

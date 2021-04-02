@@ -1,6 +1,5 @@
 <?php
 
-
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use \Exception;

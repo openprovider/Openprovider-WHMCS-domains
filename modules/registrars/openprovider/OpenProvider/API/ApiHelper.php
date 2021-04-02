@@ -191,7 +191,7 @@ class ApiHelper
             'domains' => $domains,
         ];
 
-        return $this->$this->apiClient->call('checkDomainRequest', $args);
+        return $this->buildResponse($this->apiClient->call('checkDomainRequest', $args));
     }
 
     /**
@@ -219,6 +219,77 @@ class ApiHelper
     }
 
     /**
+     * @param WeDevelopCoffee\wPower\Models\Domain $domainModel
+     * @param array $domainOp
+     * @return array|string
+     * @throws \Exception
+     */
+    public function toggleAutorenewDomain(WeDevelopCoffee\wPower\Models\Domain $domainModel, array $domainOp)
+    {
+        // Check if we should auto renew or use the default settings
+        if($domainModel->donotrenew == 0)
+            $auto_renew = 'default';
+        else
+            $auto_renew = 'off';
+
+        // Check if openprovider has the same data
+        if($domainModel['autorenew'] != $auto_renew)
+        {
+            $args = [
+                'autorenew' => $auto_renew,
+            ];
+
+            $this->updateDomain($domainOp['id'], $args);
+
+            return [
+                'status'      => 'changed',
+                'old_setting' => $domainModel['autorenew'],
+                'new_setting' => $auto_renew
+            ];
+        }
+
+        return 'correct';
+    }
+
+    /**
+     * @param WeDevelopCoffee\wPower\Models\Domain $domainModel
+     * @param array $domainOp
+     * @return array|string
+     * @throws \Exception
+     */
+    public function toggleWhoisProtection(WeDevelopCoffee\wPower\Models\Domain $domainModel, array $domainOp)
+    {
+        $idprotection = $domainModel->idprotection == 1;
+
+        // Check if openprovider has the same data
+        if ($domainOp['isPrivateWhoisEnabled'] != $idprotection) {
+            if ($idprotection == false) {
+                $domainOp['isPrivateWhoisEnabled'] = true;
+            }
+
+            if (!is_null($this->apiClient)) {
+                $this->apiClient->call('modifyDomainRequest', [
+                    'id' => $domainOp['id'],
+                    'isPrivateWhoisEnabled' => $idprotection,
+                ]);
+            } else {
+                $args = [
+                    'isPrivateWhoisEnabled' => $idprotection,
+                ];
+                $this->updateDomain($domainOp['id'], $args);
+            }
+
+            return [
+                'status'      => 'changed',
+                'old_setting' => $domainOp['isPrivateWhoisEnabled'],
+                'new_setting' => $idprotection
+            ];
+        }
+
+        return 'correct';
+    }
+
+    /**
      * @param DomainNameServer $nameServer
      * @return array
      * @throws \Exception
@@ -227,7 +298,7 @@ class ApiHelper
     {
         $args = $this->serializer->normalize($nameServer);
 
-        return $this->$this->apiClient->call('createNsRequest', $args);
+        return $this->buildResponse($this->apiClient->call('createNsRequest', $args));
     }
 
     /**
@@ -393,6 +464,19 @@ class ApiHelper
         $args['handle'] = $handle;
 
         return $this->buildResponse($this->apiClient->call('modifyCustomerRequest', $args));
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function getReseller(): array
+    {
+        $args = [
+            'withStatistics' => true,
+        ];
+
+        return $this->buildResponse($this->apiClient->call('retrieveResellerRequest', $args));
     }
 
     /**

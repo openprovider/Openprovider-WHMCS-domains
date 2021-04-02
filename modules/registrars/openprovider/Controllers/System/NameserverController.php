@@ -35,46 +35,19 @@ class NameserverController extends BaseController
     /**
      * Get the nameservers.
      *
+     * This method needed to show Nameservers paragraph on domain information page in the client area.
+     *
+     * This data takes from domainInformationController
+     * by parameter ->setNameservers($nameservers)
+     * And here we no need additional request to get only nameservers data from openprovider
+     * because it already loaded in the DomainInformationController
+     *
      * @param $params
      * @return array
      */
     function get($params)
     {
         return [];
-        /*
-         * This method needed to show Nameservers paragraph on domain information page in the client area.
-         *
-         * This data takes from domainInformationController
-         * by parameter ->setNameservers($nameservers)
-         * And here we no need additional request to get only nameservers data from openprovider
-         * because it already loaded in the DomainInformationController
-         * But if we need separate this logic, below we have code, that may be helpfull with it
-         */
-//        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-//        $params['tld'] = $params['original']['domainObj']->getTopLevel();
-//
-//        try {
-//            $domain             =   $this->domain;
-//            $domain->load(array (
-//                'name' => $params['sld'],
-//                'extension' => $params['tld']
-//            ));
-//            $nameservers = $this->apiHelper->getDomainNameservers($domain);
-//            $return = array ();
-//            $i = 1;
-//
-//            foreach ($nameservers as $ns) {
-//                $return['ns' . $i] = $ns;
-//                $i++;
-//            }
-//
-//            return $return;
-//        } catch (\Exception $e) {
-//            return array
-//            (
-//                'error' => $e->getMessage(),
-//            );
-//        }
     }
 
     /**

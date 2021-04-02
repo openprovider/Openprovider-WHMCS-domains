@@ -11,10 +11,6 @@ use WeDevelopCoffee\wPower\Core\Core;
 class IRTPVerificationEmailController extends BaseController
 {
     /**
-     * @var Domain
-     */
-    private $domain;
-    /**
      * @var ApiHelper
      */
     private $apiHelper;
@@ -26,13 +22,12 @@ class IRTPVerificationEmailController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper, ApiInterface $apiClient)
+    public function __construct(Core $core, ApiHelper $apiHelper, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
         $this->apiHelper = $apiHelper;
         $this->apiClient = $apiClient;
-        $this->domain = $domain;
     }
 
     /**

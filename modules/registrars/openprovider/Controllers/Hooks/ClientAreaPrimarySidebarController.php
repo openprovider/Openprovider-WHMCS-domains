@@ -3,8 +3,8 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use OpenProvider\API\ApiHelper;
-use OpenProvider\OpenProvider;
 use OpenProvider\WhmcsRegistrar\helpers\DNS;
+use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use WHMCS\Database\Capsule;
 
 /**
@@ -68,8 +68,7 @@ jQuery( document ).ready(function() {
                 ->select('status', 'dnsmanagement', 'domain')
                 ->first();
 
-            $openProvider = new OpenProvider();
-            $domain = $openProvider->domain($isDomainEnabled->domain);
+            $domain = DomainFullNameToDomainObject::convert($isDomainEnabled->domain);
             $op_domain = $this->apiHelper->getDomain($domain);
             if (empty($op_domain)) {
                 return;

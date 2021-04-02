@@ -7,17 +7,13 @@ use OpenProvider\API\Customer;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\ApiResponse;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use WHMCS\Database\Capsule;
 
 class ApiController extends BaseController
 {
-    /**
-     * @var OpenProvider
-     */
-    private $openProvider;
     /**
      * @var ApiHelper
      */
@@ -26,10 +22,9 @@ class ApiController extends BaseController
     /**
      * ApiController constructor.
      */
-    public function __construct(Core $core, OpenProvider $openProvider, ApiHelper $apiHelper)
+    public function __construct(Core $core, ApiHelper $apiHelper)
     {
         parent::__construct($core);
-        $this->openProvider = $openProvider;
         $this->apiHelper = $apiHelper;
     }
 
@@ -105,7 +100,8 @@ class ApiController extends BaseController
             'protocol' => 3,
             'pubKey'   => $params['pubKey'],
         ];
-        $domain = $this->openProvider->domain($domainDB->domain);
+        $domain = DomainFullNameToDomainObject::convert($domainDB->domain);
+
         try {
             $domainOP = $this->apiHelper->getDomain($domain);
         } catch (\Exception $ex) {
@@ -167,7 +163,7 @@ class ApiController extends BaseController
             return;
         }
 
-        $domain = $this->openProvider->domain($domainDB->domain);
+        $domain = DomainFullNameToDomainObject::convert($domainDB->domain);
         $args = [
             'isDnssecEnabled' => $params['isDnssecEnabled'],
             'domain'          => $domain,
@@ -230,8 +226,6 @@ class ApiController extends BaseController
         foreach ($contactsHandles as $contactHandle) {
             try {
                 $customer = new Customer(['tags' => $tags, 'handle' => $contactHandle]);
-
-
                 $this->apiHelper->updateCustomer($contactHandle, $customer);
             } catch (\Exception $e) {
                 continue;

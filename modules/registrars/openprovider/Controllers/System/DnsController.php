@@ -7,7 +7,6 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
  *
  * @copyright Copyright (c) Openprovider 2019
  */
-use OpenProvider\API\API;
 use OpenProvider\API\APIConfig;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\Domain;

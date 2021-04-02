@@ -1,8 +1,8 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use OpenProvider\API\ApiHelper;
-use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\Domain as api_domain;
 use WeDevelopCoffee\wPower\Models\Domain;
 

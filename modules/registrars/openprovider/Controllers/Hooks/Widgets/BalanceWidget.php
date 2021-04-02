@@ -1,8 +1,8 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks\Widgets;
 
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
-use Punic\Exception;
+use OpenProvider\API\ApiHelper;
+use OpenProvider\API\XmlApiAdapter;
 
 /**
  * Show OP balance
@@ -19,13 +19,26 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
     protected $cacheExpiry = 120;
     protected $requiredPermission = '';
 
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
+    /**
+     * @var XmlApiAdapter
+     */
+    private $xmlApiAdapter;
+
+    public function __construct(ApiHelper $apiHelper, XmlApiAdapter $xmlApiAdapter)
+    {
+        $this->apiHelper = $apiHelper;
+        $this->xmlApiAdapter = $xmlApiAdapter;
+    }
+
     public function getData()
     {
         try {
-            $openprovider = new OpenProvider();
-            $balance = $openprovider->api->getResellerBalance()['balance'];
-
-            $statistics = $openprovider->api->getResellerStatistics();
+            $resellerResponse = $this->apiHelper->getReseller();
+            $balance = $resellerResponse['balance'];
 
         } catch ( \Exception $e)
         {
@@ -35,13 +48,13 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
         $html = '';
         try {
             // Get the update message.
-            $messages = $openprovider->api->getUpdateMessage();
+            $messages = $this->xmlApiAdapter->call('retrieveUpdateMessageRequest');
         } catch ( \Exception $e)
         {
             // Do nothing.
         }
 
-        $domainsTotal = $statistics['domain']['total'];
+        $domainsTotal = $resellerResponse['statistics']['domain']['total'];
 
         if(isset($messages['results']))
         {
@@ -54,13 +67,11 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
             }
         }
 
-        $returnData = [
+        return [
             'balance' => $balance,
             'domainsTotal' => $domainsTotal,
             'html' => $html
         ];
-
-        return $returnData;
     }
 
     public function generateOutput($data)

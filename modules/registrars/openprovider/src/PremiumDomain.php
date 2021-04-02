@@ -2,7 +2,6 @@
 
 namespace OpenProvider\WhmcsRegistrar\src;
 
-use Exception;
 use OpenProvider\API\ApiInterface;
 use WHMCS\Domains\DomainLookup\ResultsList;
 
@@ -26,9 +25,11 @@ class PremiumDomain
      */
     public function getCreationPrice($domain_sld, $domain_tld)
     {
-        $args['domainName'] = $domain_sld;
-        $args['domainExtension'] = $domain_tld;
-        $args['operation'] = 'create';
+        $args = [
+            'domainName' => $domain_sld,
+            'domainExtension' => $domain_tld,
+            'operation' => 'create',
+        ];
 
         $create_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args);
         return $create_pricing['price'];
@@ -42,9 +43,11 @@ class PremiumDomain
      */
     public function getTransferPrice($domain_sld, $domain_tld)
     {
-        $args['domainName'] = $domain_sld;
-        $args['domainExtension'] = $domain_tld;
-        $args['operation'] = 'transfer';
+        $args = [
+            'domainName' => $domain_sld,
+            'domainExtension' => $domain_tld,
+            'operation' => 'transfer',
+        ];
 
         $transfer_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args);
         return $transfer_pricing['price'];
@@ -72,6 +75,10 @@ class PremiumDomain
             return 0;
     }
 
+    /**
+     * @param ApiInterface $apiClient
+     * @return void
+     */
     public function setApiClient(ApiInterface $apiClient)
     {
         $this->apiClient = $apiClient;
