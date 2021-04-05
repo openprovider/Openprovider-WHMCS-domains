@@ -41,4 +41,7 @@ return [
     // The placement+ credentials
     'placementPlusAccount'  => '',
     'placementPlusPassword' => '',
+
+    // maxRegistrationPeriod
+    'maxRegistrationPeriod' => 5,
 ];
