@@ -18,6 +18,10 @@ use WeDevelopCoffee\wPower\Models\Domain;
  */
 class DomainSyncController extends BaseController
 {
+    const DOMAIN_STATUSES_ACTIVE = ['ACT'];
+    const DOMAIN_STATUSES_INACTIVE = ['REQ', 'PEN', 'SCH'];
+    const DOMAIN_STATUSES_CANELLED = ['FAI', 'DEL'];
+
     /**
      * @var api_domain
      */
@@ -51,13 +55,13 @@ class DomainSyncController extends BaseController
      */
     public function sync($params)
     {
+        $this->domain = $this->domain->find($params['domainid']);
         // Check if the native synchronisation feature
         if(Configuration::getOrDefault('syncUseNativeWHMCS', false) == false) {
-            $domain = Domain::find($params['domainid']);
             return array (
-                'expirydate' => $domain->expirydate, // Format: YYYY-MM-DD
+                'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
                 'active' => true, // Return true if the domain is active
-                'expired' => false, // Return true if the domain has expired
+                'cancelled' => false, // Return true if the domain has expired
                 'transferredAway' => false, // Return true if the domain is transferred out
             );
         }
@@ -66,15 +70,14 @@ class DomainSyncController extends BaseController
         $setting['syncAutoRenewSetting'] = Configuration::getOrDefault('syncAutoRenewSetting', true);
         $setting['syncIdentityProtectionToggle'] = Configuration::getOrDefault('syncIdentityProtectionToggle', true);
 
-        try
-        {
+        try {
             // get data from op
             $this->api_domain   = DomainFullNameToDomainObject::convert($this->domain->domain);
 
             $domainOp   = $this->apiHelper->getDomain($this->api_domain);
             $expiration_date    = Carbon::createFromFormat('Y-m-d H:i:s', $domainOp['expirationDate'], 'Europe/Amsterdam');
-            if($domainOp['status'] == 'ACT')
-            {
+
+            if(in_array($domainOp['status'], self::DOMAIN_STATUSES_ACTIVE)) {
                 // auto renew on or not? -> WHMCS is leading.
                 if($setting['syncAutoRenewSetting'] == true)
                     $this->process_auto_renew($domainOp);
@@ -83,43 +86,42 @@ class DomainSyncController extends BaseController
                 if($setting['syncIdentityProtectionToggle'] == true)
                     $this->process_identity_protection($domainOp);
 
-                return array(
-                    'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
+                return [
+                    'expirydate' => $expiration_date, // Format: YYYY-MM-DD
                     'active' => true, // Return true if the domain is active
-                    'expired' => false, // Return true if the domain has expired
+                    'cancelled' => false, // Return true if the domain has expired
                     'transferredAway' => false, // Return true if the domain is transferred out
-                );
-            }
-
-            return array();
-        }
-        catch (\Exception $ex)
-        {
-            if($ex->getMessage() == 'This action is prohibitted for current domain status.') {
-                // Set the status to expired.
-                return array(
+                ];
+            } else if (in_array($domainOp['status'], self::DOMAIN_STATUSES_INACTIVE)) {
+                return [
                     'expirydate' => $expiration_date, // Format: YYYY-MM-DD
                     'active' => false, // Return true if the domain is active
-                    'expired' => true, // Return true if the domain has expired
+                    'cancelled' => false, // Return true if the domain has expired
                     'transferredAway' => false, // Return true if the domain is transferred out
-                );
+                ];
             }
-            else if($ex->getMessage() == 'The domain is not in your account; please transfer it to your account first.') {
+        } catch (\Exception $ex) {
+            if($ex->getMessage() == 'This action is prohibitted for current domain status.') {
                 // Set the status to expired.
-                return array(
+                return [
                     'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
                     'active' => false, // Return true if the domain is active
-                    'expired' => false, // Return true if the domain has expired
+                    'cancelled' => true, // Return true if the domain has expired
+                    'transferredAway' => false, // Return true if the domain is transferred out
+                ];
+            } else if($ex->getMessage() == 'The domain is not in your account; please transfer it to your account first.') {
+                // Set the status to expired.
+                return [
+                    'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
+                    'active' => false, // Return true if the domain is active
+                    'cancelled' => false, // Return true if the domain has expired
                     'transferredAway' => true, // Return true if the domain is transferred out
-                );
+                ];
             }
-            else
-            {
-                return array
-                (
-                    'error' =>  $ex->getMessage()
-                );
-            }
+            
+            return [
+                'error' =>  $ex->getMessage()
+            ];
         }
 
         return [];
@@ -163,8 +165,6 @@ class DomainSyncController extends BaseController
 
         } catch (\Exception $e) {
             \logModuleCall('OpenProvider', 'Save identity toggle', $this->domain->domain, [$this->domain->domain, @$domainOp], $e->getMessage(), [$params['Password']]);
-
-            $this->unsigned_wpp_contract_domains[] = $this->domain->domain;
         }
 
         if($result != 'correct')

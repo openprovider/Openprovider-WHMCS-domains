@@ -2,6 +2,7 @@
 
 namespace OpenProvider\API;
 
+use OpenProvider\PlacementPlus;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
@@ -24,6 +25,11 @@ class API
     protected $username         =   null;
     protected $password         =   null;
     protected $cache; // Cache responses made in this request.
+
+    /**
+     * @var PlacementPlus
+     */
+    protected $placementplus;
 
     /**
      * API constructor.
@@ -56,6 +62,16 @@ class API
         $this->debug        =   $debug;
     }
 
+    public function setPlacementPlus(PlacementPlus $placementplus)
+    {
+        $this->placementplus = $placementplus;
+    }
+
+    public function clearPlacementPlus()
+    {
+        $this->placementplus = null;
+    }
+
     public function modifyCustomer(\OpenProvider\API\Customer $customer)
     {
         $args = $customer;
@@ -76,6 +92,10 @@ class API
         $this->request->setCommand($requestCommand);
 
         $this->request->setArgs(null);
+
+        if ($this->placementplus) {
+            $this->request->setPlacementPlus($this->placementplus);
+        }
 
         // prepare args
         if (isset($args) && !is_null($args))

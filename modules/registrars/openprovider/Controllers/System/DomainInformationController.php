@@ -3,6 +3,8 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\ApiHelper;
+use OpenProvider\WhmcsRegistrar\helpers\ArrayFromFileExtractor;
+use WeDevelopCoffee\wPower\Core\Path;
 use WHMCS\Carbon;
 use WHMCS\Domain\Registrar\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -14,6 +16,8 @@ use OpenProvider\API\Domain as api_domain;
  */
 class DomainInformationController extends BaseController
 {
+    const CC_TLD_LENGTH = 2;
+    
     /**
      * @var api_domain
      */
@@ -26,17 +30,22 @@ class DomainInformationController extends BaseController
      * @var ApiHelper
      */
     private $apiHelper;
+    /**
+     * @var Path
+     */
+    private $path;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, api_domain $api_domain, ApiInterface $apiClient, ApiHelper $apiHelper)
+    public function __construct(Core $core, api_domain $api_domain, ApiInterface $apiClient, ApiHelper $apiHelper, Path $path)
     {
         parent::__construct($core);
 
         $this->apiClient  = $apiClient;
         $this->apiHelper = $apiHelper;
         $this->api_domain = $api_domain;
+        $this->path = $path;
     }
 
     /**
@@ -44,6 +53,7 @@ class DomainInformationController extends BaseController
      *
      * @param $params
      * @return array
+     * @throws \Exception
      */
     function get($params)
     {
@@ -80,13 +90,28 @@ class DomainInformationController extends BaseController
         $response['expirydate']             = $op_domain['expirationDate'];
         $response['addons']['hasidprotect'] = $op_domain['isPrivateWhoisEnabled'];
 
+        $isCcTld = $this->isCcTld($response['tld']);
+
+        $result = (new Domain)
+            // domain part
+            ->setDomain($domain)
+            ->setNameservers($response['nameservers'])
+            ->setRegistrationStatus($response['status'])
+            ->setTransferLock($response['transferlock'])
+            ->setExpiryDate(Carbon::createFromFormat('Y-m-d H:i:s', $response['expirydate']), 'Europe/Amsterdam') // $response['expirydate'] = YYYY-MM-DD
+            ->setIdProtectionStatus($response['addons']['hasidprotect']);
+
+        if ($isCcTld) {
+            return $result;
+        }
+
         // getting verification data
         $args = [
             'email'  => $op_domain['verificationEmailName'] ?? '',
             'domain' => $response['domain']
         ];
-        $emailVerification = $this->apiClient->call('searchEmailVerificationDomainRequest', $args)->getData()['results'][0] ?? false;
 
+        $emailVerification = $this->apiClient->call('searchEmailVerificationDomainRequest', $args)->getData()['results'][0] ?? false;
         $verification = [];
         if (!$emailVerification) {
             $reply = $this->apiClient->call('startCustomerEmailVerificationRequest', $args);
@@ -102,24 +127,16 @@ class DomainInformationController extends BaseController
 
         $verification = $this->getIrtpVerificationEmailOptions($verification);
 
-        $result = (new Domain)
-            // domain part
-            ->setDomain($domain)
-            ->setNameservers($response['nameservers'])
-            ->setRegistrationStatus($response['status'])
-            ->setTransferLock($response['transferlock'])
-            ->setExpiryDate(Carbon::createFromFormat('Y-m-d H:i:s', $response['expirydate']), 'Europe/Amsterdam') // $response['expirydate'] = YYYY-MM-DD
-            ->setIdProtectionStatus($response['addons']['hasidprotect'])
-            // irtp part
-            ->setIsIrtpEnabled($verification['is_irtp_enabled'])
+        $result->setIsIrtpEnabled($verification['is_irtp_enabled'])
             ->setIrtpOptOutStatus($verification['irtp_opt_status'])
             ->setIrtpTransferLock($verification['irtp_transfer_lock'])
             ->setDomainContactChangePending($verification['domain_contact_change_pending'])
             ->setPendingSuspension($verification['pending_suspension'])
             ->setIrtpVerificationTriggerFields($verification['irtp_verification_trigger_fields']);
 
-        if ($verification['domain_contact_change_expiry_date'])
+        if ($verification['domain_contact_change_expiry_date']) {
             $result->setDomainContactChangeExpiryDate(Carbon::createFromFormat('Y-m-d H:i:s', $verification['domain_contact_change_expiry_date']));
+        }
 
         return $result;
     }
@@ -184,5 +201,23 @@ class DomainInformationController extends BaseController
         }
 
         return $result;
+    }
+
+    private function isCcTld($tld): bool
+    {
+        $tldArray = explode('.', $tld);
+        $lastTld = end($tldArray);
+
+        return strlen($lastTld) == self::CC_TLD_LENGTH || in_array($lastTld, $this->getPunyCodesCcTlds());
+    }
+
+    /**
+     * @return array
+     */
+    private function getPunyCodesCcTlds(): array
+    {
+        $modulePath = $this->path->getModulePath() ?? __DIR__ . '/../../';
+        $arrayFromFileExtractor = new ArrayFromFileExtractor($modulePath);
+        return $arrayFromFileExtractor->extract(ArrayFromFileExtractor::PUNY_CODE_CC_TLDS_PATH);
     }
 }
