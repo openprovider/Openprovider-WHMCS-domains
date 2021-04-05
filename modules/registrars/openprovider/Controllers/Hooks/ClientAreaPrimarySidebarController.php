@@ -17,6 +17,7 @@ use WHMCS\Database\Capsule;
  */
 class ClientAreaPrimarySidebarController
 {
+    const DNSSEC_PAGE_NAME = 'dnssec.php';
 
     public function show($primarySidebar)
     {
@@ -53,8 +54,10 @@ jQuery( document ).ready(function() {
 
     private function addDNSSECMenuItem($primarySidebar)
     {
-        if (!is_null($primarySidebar->getChild('Domain Details Management'))) {
-
+        if (
+            file_exists($GLOBALS['whmcsAppConfig']->getRootDir() . self::DNSSEC_PAGE_NAME) &&
+            !is_null($primarySidebar->getChild('Domain Details Management'))
+        ) {
             $domainId        = isset($_REQUEST['domainid']) ? $_REQUEST['domainid'] : $_REQUEST['id'];
             $isDomainEnabled = Capsule::table('tbldomains')
                 ->where('id', $domainId)
