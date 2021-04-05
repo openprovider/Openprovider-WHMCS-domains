@@ -3,7 +3,6 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use OpenProvider\API\API;
-use OpenProvider\API\Domain;
 use OpenProvider\OpenProvider;
 use OpenProvider\WhmcsRegistrar\helpers\DNS;
 use WeDevelopCoffee\wPower\Models\Registrar;
