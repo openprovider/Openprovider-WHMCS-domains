@@ -55,7 +55,7 @@ class TldPricingController extends BaseController
 
         $results = new ResultsList;
 
-        $advancedConfigurationMaxPeriod = Configuration::get('maxRegistrationPeriod');
+        $advancedConfigurationMaxPeriod = Configuration::getOrDefault('maxRegistrationPeriod', 5);
 
         foreach ($extensionData['results'] as $extension) {
             if ($extension['minPeriod'] > $advancedConfigurationMaxPeriod) {
