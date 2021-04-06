@@ -72,7 +72,7 @@ class Configuration
         return self::_getServerUrl() . "modules/registrars/openprovider/includes/templates/css/modules/{$cssModuleName}.css";
     }
 
-    private static function _getServerUrl()
+    public static function _getServerUrl()
     {
         return localAPI('GetConfigurationValue', ['setting' => 'SystemURL'])['value'];
     }

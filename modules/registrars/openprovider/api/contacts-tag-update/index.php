@@ -6,5 +6,4 @@ $params = [
     'userid' => $_GET['userid'],
 ];
 
-openprovider_registrar_launch('system')
-    ->output($params, 'updateContactsTagApi');
+openprovider_registrar_launch_decorator('updateContactsTagApi', $params);
