@@ -114,10 +114,7 @@ class DomainInformationController extends BaseController
         $emailVerification = $this->apiClient->call('searchEmailVerificationDomainRequest', $args)->getData()['results'][0] ?? false;
         $verification = [];
         if (!$emailVerification) {
-            $reply = $this->apiClient->call('startCustomerEmailVerificationRequest', $args);
-            if (!$reply->isSuccess()) {
-                throw new \Exception('Start customer email verification failed: ' . $reply->getMessage());
-            }
+            $reply = $this->apiClient->call('startCustomerEmailVerificationRequest', $args)->getData();
             if (isset($reply['id'])) {
                 $verification['status']         = 'in progress';
                 $verification['isSuspended']    = false;
