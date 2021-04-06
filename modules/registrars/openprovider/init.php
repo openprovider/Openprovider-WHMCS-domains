@@ -73,7 +73,7 @@ function openprovider_bind_required_classes($launcher)
         $client->getConfiguration()->setHost($host);
 
 
-        if (!$session->get('AUTH_TOKEN')) {
+        if (!$session->has('AUTH_TOKEN')) {
             $token = $client->call('generateAuthTokenRequest', [
                 'username' => $params['Username'],
                 'password' => $params['Password']

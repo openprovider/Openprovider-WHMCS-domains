@@ -67,10 +67,10 @@ class ApiHelper
     public function createDomain(DomainRegistration $domainRegistration): array
     {
         if($domainRegistration->dnsmanagement) {
-            // check if zone exists
-            $zoneResult = $this->getDns($domainRegistration->domain);
-
-            if (empty($zoneResult)) {
+            try {
+                $zoneResult = $this->getDns($domainRegistration->domain);
+            } catch (\Exception $e) {
+                // check if zone exists
                 $this->createDnsRecords($domainRegistration->domain, []);
             }
         }
