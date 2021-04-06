@@ -74,14 +74,13 @@ class DomainInformationController extends BaseController
         $response                           = [];
         $response['domain']                 = $op_domain['domain']['name'] . '.' . $op_domain['domain']['extension'];
         $response['tld']                    = $op_domain['domain']['extension'];
-        $response['nameservers']            = $this->getNameservers($op_domain['nameServers']);
+        $response['nameservers']            = $this->getNameservers($op_domain['nameServers'] ?: []);
         $response['status']                 = api_domain::convertOpStatusToWhmcs($op_domain['status']);
         $response['transferlock']           = $op_domain['isLocked'];
         $response['expirydate']             = $op_domain['expirationDate'];
         $response['addons']['hasidprotect'] = $op_domain['isPrivateWhoisEnabled'];
 
         // getting verification data
-        $ownerEmail = '';
         $args = [
             'email'  => $op_domain['verificationEmailName'] ?? '',
             'domain' => $response['domain']
@@ -90,8 +89,10 @@ class DomainInformationController extends BaseController
 
         $verification = [];
         if (!$emailVerification) {
-            $args['email'] = $ownerEmail;
-            $reply = $this->apiClient->call('startCustomerEmailVerificationRequest', $args)->getData();
+            $reply = $this->apiClient->call('startCustomerEmailVerificationRequest', $args);
+            if (!$reply->isSuccess()) {
+                throw new \Exception('Start customer email verification failed: ' . $reply->getMessage());
+            }
             if (isset($reply['id'])) {
                 $verification['status']         = 'in progress';
                 $verification['isSuspended']    = false;
@@ -133,7 +134,7 @@ class DomainInformationController extends BaseController
         $i = 1;
 
         foreach ($nameservers as $ns) {
-            $return['ns' . $i] = $ns['ip'] ?? $ns['name'];
+            $return['ns' . $i] = $ns['name'] ?? $ns['ip'];
             $i++;
         }
 

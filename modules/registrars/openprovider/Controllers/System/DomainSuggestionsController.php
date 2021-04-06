@@ -1,11 +1,11 @@
 <?php
 
-
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use \Exception;
 
 use OpenProvider\API\API;
+use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
 
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -32,16 +32,21 @@ class DomainSuggestionsController extends BaseController
      * @var ResultsList
      */
     private $resultsList;
+    /**
+     * @var ApiInterface
+     */
+    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, Api $API, Domain $domain)
+    public function __construct(Core $core, Api $API, Domain $domain, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
         $this->domain = $domain;
         $this->API = $API;
+        $this->apiClient = $apiClient;
 
         $this->resultsList = new ResultsList();
     }
@@ -101,12 +106,11 @@ class DomainSuggestionsController extends BaseController
      */
     private function checkDomains($domains, $params)
     {
-        $api = $this->API;
-
-        try {
-            $checkedDomains = $api->checkDomainArray($domains);
-        } catch (Exception $e) {
-            if($e->getcode() == 307)
+        $checkedDomainsResponse = $this->apiClient->call('checkDomainRequest', [
+            'domains' => $domains
+        ]);
+        if (!$checkedDomainsResponse->isSuccess()) {
+            if($checkedDomainsResponse->getcode() == 307)
             {
                 // OP response: "Your domain request contains an invalid extension!""
                 // Meaning: the id is not supported.
@@ -120,9 +124,11 @@ class DomainSuggestionsController extends BaseController
                 }
                 return;
             }
-            \logModuleCall('openprovider', 'whois', $domains, $e->getMessage(), null, [$params['Password']]);
+            \logModuleCall('openprovider', 'whois', $domains, $checkedDomainsResponse->getMessage(), null, [$params['Password']]);
             return;
         }
+
+        $checkedDomains = $checkedDomainsResponse->getData();
 
         foreach($checkedDomains as $domain_status)
         {
@@ -138,25 +144,28 @@ class DomainSuggestionsController extends BaseController
                 $args['domain']['name']      = $domain_sld;
                 $args['domain']['extension'] = $domain_tld;
                 $args['operation']           = 'create';
-                try {
-                    $create_pricing              = $api->sendRequest('retrievePriceDomainRequest', $args);
-                } catch (Exception $e) {
+
+                $createPricingResponse = $this->apiClient->call('retrievePriceDomainRequest', $args);
+                if (!$createPricingResponse->isSuccess()) {
                     continue;
                 }
 
+                $createPricing = $createPricingResponse->getData();
+
                 $args['operation'] = 'transfer';
-                try {
-                    $transfer_pricing  = $api->sendRequest('retrievePriceDomainRequest', $args);
-                } catch (Exception $e) {
+                $transferPricingResponse  = $this->apiClient->call('retrievePriceDomainRequest', $args);
+                if (!$transferPricingResponse->isSuccess()) {
                     continue;
                 }
+
+                $transferPricing = $transferPricingResponse->getData();
 
                 // Retrieve the pricing
                 $searchResult->setPremiumCostPricing(
                     array(
-                        'register'  => $create_pricing['price']['reseller']['price'],
-                        'renew'     =>  $transfer_pricing['price']['reseller']['price'],
-                        'CurrencyCode' => $create_pricing['price']['reseller']['currency'],
+                        'register'  => $createPricing['price']['reseller']['price'],
+                        'renew'     =>  $transferPricing['price']['reseller']['price'],
+                        'CurrencyCode' => $createPricing['price']['reseller']['currency'],
                     )
                 );
             }

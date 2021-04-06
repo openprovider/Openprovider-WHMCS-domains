@@ -1,8 +1,8 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\src;
 
-use Exception;
-use OpenProvider\API\API;
+use OpenProvider\API\ApiInterface;
 use WHMCS\Domains\DomainLookup\ResultsList;
 
 /**
@@ -12,48 +12,44 @@ use WHMCS\Domains\DomainLookup\ResultsList;
 class PremiumDomain
 {
     /**
-     * @var API
+     * @var ApiInterface
      */
-    private $API;
-
-    /**
-     * ConfigController constructor.
-     */
-    public function __construct(API $API)
-    {
-        $this->API = $API;
-    }
+    private $apiClient;
 
     /**
      * Get the creation price of a premium domain.
      *
-     * @param $params
-     * @return array ['reseller', '
-     * @throws Exception
+     * @param $domain_sld
+     * @param $domain_tld
+     * @return array
      */
     public function getCreationPrice($domain_sld, $domain_tld)
     {
-        $args['domain']['name'] = $domain_sld;
-        $args['domain']['extension'] = $domain_tld;
-        $args['operation'] = 'create';
+        $args = [
+            'domainName' => $domain_sld,
+            'domainExtension' => $domain_tld,
+            'operation' => 'create',
+        ];
 
-        $create_pricing = $this->API->sendRequest('retrievePriceDomainRequest', $args);
+        $create_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args);
         return $create_pricing['price'];
     }
 
     /**
      * Get the transfer price of a premium domain.
-     * @param $params
+     * @param $domain_sld
+     * @param $domain_tld
      * @return ResultsList
-     * @throws Exception
      */
     public function getTransferPrice($domain_sld, $domain_tld)
     {
-        $args['domain']['name'] = $domain_sld;
-        $args['domain']['extension'] = $domain_tld;
-        $args['operation'] = 'transfer';
+        $args = [
+            'domainName' => $domain_sld,
+            'domainExtension' => $domain_tld,
+            'operation' => 'transfer',
+        ];
 
-        $transfer_pricing = $this->API->sendRequest('retrievePriceDomainRequest', $args);
+        $transfer_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args);
         return $transfer_pricing['price'];
     }
 
@@ -63,9 +59,8 @@ class PremiumDomain
      * @param string $type
      * @param $domain_sld
      * @param $domain_tld
-     * @param $price
+     * @param $resellerPrice
      * @return float (0 when price does not match)
-     * @throws Exception
      */
     public function getRegistrarPriceWhenResellerPriceMatches($type = 'create', $domain_sld, $domain_tld, $resellerPrice)
     {
@@ -78,5 +73,14 @@ class PremiumDomain
             return $price['product']['price'];
         else
             return 0;
+    }
+
+    /**
+     * @param ApiInterface $apiClient
+     * @return void
+     */
+    public function setApiClient(ApiInterface $apiClient)
+    {
+        $this->apiClient = $apiClient;
     }
 }

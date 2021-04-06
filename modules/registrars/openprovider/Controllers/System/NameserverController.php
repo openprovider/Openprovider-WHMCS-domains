@@ -2,9 +2,9 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
+use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
 use OpenProvider\API\Domain;
 
 /**
@@ -13,60 +13,41 @@ use OpenProvider\API\Domain;
 class NameserverController extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-    /**
      * @var Domain
      */
     private $domain;
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
-        $this->API = $API;
         $this->domain = $domain;
+        $this->apiHelper = $apiHelper;
     }
 
     /**
      * Get the nameservers.
+     *
+     * This method needed to show Nameservers paragraph on domain information page in the client area.
+     *
+     * This data takes from domainInformationController
+     * by parameter ->setNameservers($nameservers)
+     * And here we no need additional request to get only nameservers data from openprovider
+     * because it already loaded in the DomainInformationController
      *
      * @param $params
      * @return array
      */
     function get($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
-
-        try {
-            $api                =   $this->API;
-            $api->setParams($params);
-            $domain             =   $this->domain;
-            $domain->load(array (
-                'name' => $params['sld'],
-                'extension' => $params['tld']
-            ));
-            $nameservers = $api->getNameservers($domain);
-            $return = array ();
-            $i = 1;
-
-            foreach ($nameservers as $ns) {
-                $return['ns' . $i] = $ns;
-                $i++;
-            }
-
-            return $return;
-        } catch (\Exception $e) {
-            return array
-            (
-                'error' => $e->getMessage(),
-            );
-        }
+        return [];
     }
 
     /**
@@ -77,28 +58,14 @@ class NameserverController extends BaseController
      */
     public function save($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $domain = $this->domain;
+        $domain->load(array(
+            'name'      => $params['original']['domainObj']->getSecondLevel(),
+            'extension' => $params['original']['domainObj']->getTopLevel(),
+        ));
 
-        try
-        {
-            $api                =   $this->API;
-            $api->setParams($params);
-            $domain             =   $this->domain;
-            $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
-            $nameServers        =   \OpenProvider\API\APITools::createNameserversArray($params);
-
-            $api->saveNameservers($domain, $nameServers);
-        }
-        catch (\Exception $e)
-        {
-            return array(
-                'error' => $e->getMessage(),
-            );
-        }
+        $nameServers = \OpenProvider\API\APITools::createNameserversArray($params);
+        $this->apiHelper->saveDomainNameservers($domain, $nameServers);
 
         return 'success';
     }
@@ -115,39 +82,24 @@ class NameserverController extends BaseController
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
         // get data from op
-        $api                =   $this->API;
-        $api->setParams($params);
         $domain             =   $this->domain;
         $domain->load(array(
             'name'          =>  $params['sld'],
             'extension'     =>  $params['tld']
         ));
 
-        try
+        $nameServer         =   new \OpenProvider\API\DomainNameServer();
+        $nameServer->name   =   $params['nameserver'];
+        $nameServer->ip     =   $params['ipaddress'];
+
+        if (($nameServer->name == '.' . $params['sld'] . '.' . $params['tld']) || !$nameServer->ip)
         {
-
-            $nameServer         =   new \OpenProvider\API\DomainNameServer();
-            $nameServer->name   =   $params['nameserver'];
-            $nameServer->ip     =   $params['ipaddress'];
-
-            if (($nameServer->name == '.' . $params['sld'] . '.' . $params['tld']) || !$nameServer->ip)
-            {
-                throw new Exception('You must enter all required fields');
-            }
-
-            $api = new \OpenProvider\API\API();
-            $api->setParams($params);
-            $api->nameserverRequest('create', $nameServer);
-
-            return 'success';
+            throw new Exception('You must enter all required fields');
         }
-        catch (\Exception $e)
-        {
-            return array
-            (
-                'error' => $e->getMessage(),
-            );
-        }
+
+        $this->apiHelper->createNameserver($nameServer);
+
+        return 'success';
     }
 
     /**
@@ -187,9 +139,7 @@ class NameserverController extends BaseController
             $nameServer->name = $params['nameserver'];
             $nameServer->ip = $newIp;
 
-            $api                =   $this->API;
-            $api->setParams($params);
-            $api->nameserverRequest('modify', $nameServer, $currentIp);
+            $this->apiHelper->updateNameserver($nameServer, $currentIp);
         }
         catch (\Exception $e)
         {
@@ -213,33 +163,16 @@ class NameserverController extends BaseController
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
-        try
-        {
-            $nameServer             =   new \OpenProvider\API\DomainNameServer();
-            $nameServer->name       =   $params['nameserver'];
-            $nameServer->ip         =   $params['ipaddress'];
-
-            // check if not empty
-            if ($nameServer->name == '.' . $params['sld'] . '.' . $params['tld'])
-            {
-                return array
-                (
-                    'error'     =>  'You must enter all required fields',
-                );
-            }
-
-            $api                =   $this->API;
-            $api->setParams($params);
-            $api->nameserverRequest('delete', $nameServer);
-
-            return 'success';
-        }
-        catch (\Exception $e)
-        {
+        // check if not empty
+        if ($params['nameserver'] == '.' . $params['sld'] . '.' . $params['tld']) {
             return array
             (
-                'error' => $e->getMessage(),
+                'error' => 'You must enter all required fields',
             );
         }
+
+        $this->apiHelper->deleteNameserver($params['nameserver']);
+
+        return 'success';
     }
 }

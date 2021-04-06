@@ -1,35 +1,33 @@
 <?php
 
-
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-
-use OpenProvider\API\API;
+use OpenProvider\API\ApiHelper;
+use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
-use Punic\Exception;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
 class IRTPVerificationEmailController extends BaseController
 {
     /**
-     * @var API
+     * @var ApiHelper
      */
-    private $API;
+    private $apiHelper;
     /**
-     * @var Domain
+     * @var ApiInterface
      */
-    private $domain;
+    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, ApiHelper $apiHelper, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
-        $this->API = $API;
-        $this->domain = $domain;
+        $this->apiHelper = $apiHelper;
+        $this->apiClient = $apiClient;
     }
 
     /**
@@ -43,15 +41,12 @@ class IRTPVerificationEmailController extends BaseController
         $errorMessage = '';
         $ownerEmail   = false;
 
-        $api = $this->API;
-        $api->setParams($params);
-
         // getting Email
         try {
             $domain = new Domain();
             $domain->name = $params['domainObj']->getSecondLevel();
             $domain->extension = $params['domainObj']->getTopLevel();
-            $ownerInfo = $api->getContactDetails($domain);
+            $ownerInfo = $this->apiHelper->getDomainContacts($domain);
             $ownerEmail = $ownerInfo['Owner']['Email Address'];
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
@@ -66,11 +61,10 @@ class IRTPVerificationEmailController extends BaseController
             'email' => $ownerEmail,
         ];
 
-        try {
-            $api->sendRequest('restartCustomerEmailVerificationRequest', $args);
-        } catch (\Exception $e) {
+        $restartCustomerEmailVerificationResponse = $this->apiClient->call('restartCustomerEmailVerificationRequest', $args);
+        if (!$restartCustomerEmailVerificationResponse->isSuccess()) {
             $success = false;
-            $errorMessage = $e->getMessage();
+            $errorMessage = $restartCustomerEmailVerificationResponse->getMessage();
         }
 
         if ($success) {

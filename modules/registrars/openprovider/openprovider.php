@@ -5,17 +5,7 @@
  * @copyright Copyright (c) Openprovider 2018
  */
 
-use OpenProvider\API\API;
-use OpenProvider\API\ApiHelper;
-use OpenProvider\API\ApiInterface;
-use OpenProvider\API\ApiV1;
-use OpenProvider\API\XmlApiAdapter;
-use OpenProvider\WhmcsRegistrar\helpers\Logger;
-use Psr\Container\ContainerInterface;
 use \OpenProvider\WhmcsRegistrar\src\Configuration;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
 if (!defined("WHMCS"))
 {
@@ -25,8 +15,6 @@ if (!defined("WHMCS"))
 require_once( __DIR__ . '/init.php');
 
 require_once __DIR__.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
-
-const SESSION_ACCESS_TOKEN_NAME = 'ACCESS_TOKEN';
 
 /**
  * Autoload
@@ -225,7 +213,7 @@ function openprovider_GetEPPCode($params)
  * @param type $params
  * @return array|string
  */
-function openprovider_RegisterNameserver($params)
+    function openprovider_RegisterNameserver($params)
 {
     return openprovider_registrar_launch_decorator('registerNameserver', $params);
 }
@@ -342,69 +330,10 @@ function openprovider_registrar_launch_decorator(string $route, $params = [], $l
     $modifiedParams = array_merge($params, Configuration::getParams());
     $modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
 
-    $host = $params['test_mode'] == 'on' ?
-        Configuration::get('api_url_cte') :
-        Configuration::get('api_url');
-
     $core = openprovider_registrar_core($level);
     $launch = $core->launch();
 
-    $core->launcher->set(LoggerInterface::class, function (ContainerInterface $c) {
-        return new \OpenProvider\Logger();
-    });
-
-    $core->launcher->set(Session::class, function (ContainerInterface $c) {
-        return new Session();
-    });
-
-    $core->launcher->set(CamelCaseToSnakeCaseNameConverter::class, function (ContainerInterface $e) {
-        return new CamelCaseToSnakeCaseNameConverter();
-    });
-
-    $useApiV1 = true;
-
-    $core->launcher->set(ApiV1::class, function (ContainerInterface $c) use ($params, $host) {
-        $session = $c->get(Session::class);
-        $camelCaseToSnakeCaseNameConverter = $c->get(CamelCaseToSnakeCaseNameConverter::class);
-        $logger = $c->get(LoggerInterface::class);
-        $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter);
-        $client->getConfiguration()->setHost($host);
-
-        if (!$session->get(SESSION_ACCESS_TOKEN_NAME)) {
-            $token = $client->call('generateAuthTokenRequest', [
-                'username' => $params['Username'],
-                'password' => $params['Password']
-            ])->getData()['token'];
-            $session->set(SESSION_ACCESS_TOKEN_NAME, $token);
-        }
-        $client->getConfiguration()->setToken($session->get(SESSION_ACCESS_TOKEN_NAME) ?? '');
-
-        return $client;
-    });
-
-    $core->launcher->set(XmlApiAdapter::class, function (ContainerInterface $c) use ($params, $host) {
-        $xmlApi = new API();
-
-        $client = new XmlApiAdapter($xmlApi);
-        $client->getConfiguration()->setUserName($params['Username']);
-        $client->getConfiguration()->setPassword($params['Password']);
-        $client->getConfiguration()->setHost($host);
-
-        return $client;
-    });
-
-    $core->launcher->set(ApiInterface::class, function (ContainerInterface $c) use ($params, $useApiV1, $host) {
-        if ($useApiV1) {
-            return $c->get(ApiV1::class);
-        }
-
-        return $c->get(XmlApiAdapter::class);
-    });
-
-    $core->launcher->set(ApiHelper::class, function(ContainerInterface $c) {
-        $apiClient = $c->get(ApiInterface::class);
-        return new ApiHelper($apiClient);
-    });
+    $core->launcher = openprovider_bind_required_classes($core->launcher);
 
     return $launch->output($modifiedParams, $route);
 }

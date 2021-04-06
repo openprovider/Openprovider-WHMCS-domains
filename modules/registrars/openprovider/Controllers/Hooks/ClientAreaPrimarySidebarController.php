@@ -2,11 +2,9 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
-use OpenProvider\API\API;
-use OpenProvider\API\Domain;
-use OpenProvider\OpenProvider;
+use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\helpers\DNS;
-use WeDevelopCoffee\wPower\Models\Registrar;
+use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use WHMCS\Database\Capsule;
 
 /**
@@ -17,6 +15,15 @@ use WHMCS\Database\Capsule;
  */
 class ClientAreaPrimarySidebarController
 {
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
+
+    public function __construct(ApiHelper $apiHelper)
+    {
+        $this->apiHelper = $apiHelper;
+    }
 
     public function show($primarySidebar)
     {
@@ -61,22 +68,15 @@ jQuery( document ).ready(function() {
                 ->select('status', 'dnsmanagement', 'domain')
                 ->first();
 
-            // TODO: update this fragment when api change
-            $api = new API();
-            $params = (new Registrar())->getRegistrarData()['openprovider'];
-            $api->setParams($params);
-            try {
-                $openProvider = new OpenProvider();
-                $domain = $openProvider->domain($isDomainEnabled->domain);
-                $op_domain = $api->retrieveDomainRequest($domain);
-                if (!$op_domain)
-                    return;
-            } catch (\Exception $e) {
+            $domain = DomainFullNameToDomainObject::convert($isDomainEnabled->domain);
+            $op_domain = $this->apiHelper->getDomain($domain);
+            if (empty($op_domain)) {
                 return;
             }
 
-            if (!$isDomainEnabled->dnsmanagement)
+            if (!$isDomainEnabled->dnsmanagement) {
                 return;
+            }
 
             $dnssecItemClass = '';
 

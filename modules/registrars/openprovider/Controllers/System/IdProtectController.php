@@ -2,15 +2,13 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-use Exception;
+use OpenProvider\API\ApiHelper;
 use OpenProvider\API\ApiInterface;
+use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsRegistrar\src\Notification;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider as OP;
 use WHMCS\Database\Capsule;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
-use OpenProvider\API\Domain;
 
 /**
  * Class IdProtect
@@ -19,28 +17,18 @@ use OpenProvider\API\Domain;
 class IdProtectController extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-    /**
-     * @var Domain
-     */
-    private $domain;
-    /**
      * @var ApiInterface
      */
-    private $apiClient;
+    private $apiHelper;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, ApiInterface $apiCient)
+    public function __construct(Core $core, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
-        $this->apiClient = $apiCient;
-        $this->API = $API;
-        $this->domain = $domain;
+        $this->apiHelper = $apiHelper;
     }
 
     /**
@@ -63,32 +51,24 @@ class IdProtectController extends BaseController
         if(isset($params['protectenable']))
             $domain->idprotection = $params['protectenable'];
 
+        $op_domain_obj      = DomainFullNameToDomainObject::convert($domain->domain);
         try {
-            $OpenProvider       = new OP();
-            $op_domain_obj      = $OpenProvider->domain($domain->domain);
-            $args = [
-                'domainNamePattern' => $op_domain_obj->name,
-                'extension' => $op_domain_obj->extension,
-            ];
-            $op_domain = $this->apiClient->call('searchDomainRequest', $args)->getData()['results'][0];
-            $OpenProvider->toggle_whois_protection($domain, $op_domain);
-
-            return array(
-                'success' => 'success',
-            );
-        } catch (Exception $e) {
-            \logModuleCall('OpenProvider', 'Save identity toggle',$params['domainname'], [$OpenProvider->domain, @$op_domain, $OpenProvider], $e->getMessage(), [$params['Password']]);
-
-            if($e->getMessage() == 'Wpp contract is not signed')
-            {
+            $opDomain = $this->apiHelper->getDomain($op_domain_obj);
+        } catch (\Exception $e) {
+            \logModuleCall('OpenProvider', 'Save identity toggle',$params['domainname'], [$OpenProvider->domain, @$opDomain, $OpenProvider], $e->getMessage(), [$params['Password']]);
+            if ($e->getMessage() == 'Wpp contract is not signed') {
                 $notification = new Notification();
                 $notification->WPP_contract_unsigned_one_domain($params['domainname'])
                     ->send_to_admins();
             }
-
             return array(
                 'error' => $e->getMessage(),
             );
         }
+
+        $this->apiHelper->toggleWhoisProtection($domain, $opDomain);
+        return array(
+            'success' => 'success',
+        );
     }
 }

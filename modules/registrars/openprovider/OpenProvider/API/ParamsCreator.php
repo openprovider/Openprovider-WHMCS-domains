@@ -92,7 +92,18 @@ class ParamsCreator
         if ($classNameOfBody === self::NO_CLASS) {
             return array((object)[]);
         }
-        $body = new $classNameOfBody($args);
+
+        $processedArgs = [];
+        foreach ($args as $key => $value) {
+            if (is_array($value) && empty($value)) {
+                $processedArgs[$key] = null;
+                continue;
+            }
+
+            $processedArgs[$key] = $value;
+        }
+
+        $body = new $classNameOfBody($processedArgs);
 
         return $this->argsCollect($client, $method, $body);
     }

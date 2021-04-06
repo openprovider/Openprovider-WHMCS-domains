@@ -6,6 +6,9 @@ use Openprovider\Api\Rest\Client\Base\Configuration;
 use GuzzleHttp6\Client as HttpClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use function GuzzleHttp\json_decode;
 
 class ApiV1 implements ApiInterface
 {
@@ -37,16 +40,24 @@ class ApiV1 implements ApiInterface
      * @var ParamsCreator 
      */
     private $paramsCreator;
+    /**
+     * @var Serializer
+     */
+    private $serializer;
 
     /**
      * ApiV1 constructor.
      * @param LoggerInterface $logger
      * @param CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter
      */
-    public function __construct(LoggerInterface $logger, CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter)
+    public function __construct(
+        LoggerInterface $logger,
+        CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter
+    )
     {
         $this->camelCaseToSnakeCaseNameConverter = $camelCaseToSnakeCaseNameConverter;
         $this->logger = $logger;
+        $this->serializer = new Serializer([new ObjectNormalizer()]);
 
         $this->apiConfiguration = new ApiConfiguration();
         $this->configuration = new Configuration();
@@ -86,16 +97,21 @@ class ApiV1 implements ApiInterface
             $requestParameters = $this->paramsCreator->createParameters($args, $service, $apiMethod);
             $reply = $service->$apiMethod(...$requestParameters);
         } catch (\Exception $e) {
-            $response = $this->failedResponse($response, $e->getMessage(), $e->getCode());
+            $responseData = $this->serializer->normalize(json_decode(substr($e->getMessage(), strpos($e->getMessage(), 'response:') + strlen('response:'))));
+            $response = $this->failedResponse(
+                $response,
+                $responseData['desc'] ?? $e->getMessage(),
+                $responseData['code'] ?? $e->getCode()
+            );
             $this->log($cmd, $args, $response);
 
             return $response;
         }
 
-        $data = json_decode($reply->getData(), true);
+        $data = $this->serializer->normalize($reply->getData());
         $response = $this->successResponse($response, $data);
 
-        $this->log($cmd, $args, $response);
+        $this->log($cmd, $this->serializer->normalize($requestParameters), $response);
 
         return $response;
     }

@@ -37,9 +37,12 @@ class XmlApiAdapter implements ApiInterface
         $response = new Response();
         $this->setXmlApiConfig();
         try {
+            $args = $this->convertArgsToValid($args);
             $reply = $this->xmlApi->sendRequest($cmd, $args);
-            $response->setTotal($reply['total'] ?? 0);
-            unset($reply['total']);
+            if (isset($reply['total'])) {
+                $response->setTotal($reply['total'] ?? 0);
+                unset($reply['total']);
+            }
             $response->setData($reply);
         } catch (\Exception $e) {
             $response->setCode($e->getCode());
@@ -70,5 +73,23 @@ class XmlApiAdapter implements ApiInterface
 
         $debug = $this->configuration->getDebug() ? 1 : 0;
         $this->xmlApi->setParams($params, $debug);
+    }
+
+    private function convertArgsToValid(array $args): array
+    {
+        $result = [];
+        foreach ($args as $key => $arg) {
+            if (is_array($arg)) {
+                $result[$key] = $this->convertArgsToValid($arg);
+                continue;
+            }
+            if (is_bool($arg)) {
+                $result[$key] = $arg ? 1 : 0;
+                continue;
+            }
+            $result[$key] = $arg;
+        }
+
+        return $result;
     }
 }

@@ -1,11 +1,10 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+
+use OpenProvider\API\ApiInterface;
 use OpenProvider\WhmcsRegistrar\src\TldPriceCache;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
-use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WHMCS\Domain\TopLevel\ImportItem;
 use WHMCS\Results\ResultsList;
@@ -17,48 +16,37 @@ use WHMCS\Results\ResultsList;
 class DownloadTldPricesCronController extends BaseController
 {
     /**
-     * @var API
+     * @var ApiInterface
      */
-    private $API;
-    /**
-     * @var Domain
-     */
-    private $domain;
-    /**
-     * @var OpenProvider
-     */
-    private $openProvider;
+    private $apiClient;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, OpenProvider $openProvider)
+    public function __construct(Core $core, ApiInterface $apiClient)
     {
         parent::__construct($core);
-        $this->openProvider = $openProvider;
+        $this->apiClient = $apiClient;
     }
 
     /**
      * @param $params
-     * @return array|ResultsList
+     * @return array|void
      */
     public function Download($params)
     {
         // Perform API call to retrieve extension information
         // A connection error should return a simple array with error key and message
         // return ['error' => 'This error occurred',];
-
-        try {
-            $extensionData = $this->openProvider->api->getTldsAndPricing();
-        } catch ( \Exception $e)
-        {
-            return ['error' => 'This error occurred: ' . $e->getMessage()];
+        $extensionResponse = $this->apiClient->call('searchExtensionRequest');
+        if (!$extensionResponse->isSuccess()) {
+            return ['error' => 'This error occurred: ' . $extensionResponse->getMessage()];
         }
+
+        $extensionData = $extensionResponse->getData();
 
         // Store the cache.
         $tldPriceCache = new TldPriceCache();
         $tldPriceCache->write($extensionData);
-
-        return;
     }
 }
