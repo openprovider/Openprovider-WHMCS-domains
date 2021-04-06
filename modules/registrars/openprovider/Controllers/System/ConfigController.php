@@ -184,9 +184,7 @@ class ConfigController extends BaseController
             Configuration::get('api_url') :
             Configuration::get('api_url_cte');
 
-        $tokenIsExist = !!$this->session->get('AUTH_TOKEN');
-
-        if ($tokenIsExist) {
+        if ($this->session->has('AUTH_TOKEN')) {
             $checkingTokenRequest = $this->checkRequest();
             if ($checkingTokenRequest->isSuccess()) {
                 return $configarray;
