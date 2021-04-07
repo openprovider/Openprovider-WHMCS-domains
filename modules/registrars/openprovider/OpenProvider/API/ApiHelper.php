@@ -219,12 +219,12 @@ class ApiHelper
     }
 
     /**
-     * @param WeDevelopCoffee\wPower\Models\Domain $domainModel
+     * @param \WeDevelopCoffee\wPower\Models\Domain $domainModel
      * @param array $domainOp
      * @return array|string
      * @throws \Exception
      */
-    public function toggleAutorenewDomain(WeDevelopCoffee\wPower\Models\Domain $domainModel, array $domainOp)
+    public function toggleAutorenewDomain(\WeDevelopCoffee\wPower\Models\Domain $domainModel, array $domainOp)
     {
         // Check if we should auto renew or use the default settings
         if($domainModel->donotrenew == 0)

@@ -5,6 +5,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use WHMCS\Database\Capsule;
+use WeDevelopCoffee\wPower\Models\Domain;
 
 /**
  * Class DomainController
@@ -19,14 +20,19 @@ class DomainController
      * @var ApiHelper
      */
     private $apiHelper;
+    /**
+     * @var Domain
+     */
+    private $domain;
 
     /**
      * DomainController constructor.
      * @param ApiHelper $apiHelper
      */
-    public function __construct(ApiHelper $apiHelper)
+    public function __construct(ApiHelper $apiHelper, Domain $domain)
     {
         $this->apiHelper = $apiHelper;
+        $this->domain = $domain;
     }
 
     /**
@@ -39,9 +45,7 @@ class DomainController
             return;
 
         // Get the domain details
-        $domain = Capsule::table('tbldomains')
-                    ->where('id', $vars['domainid'])
-                    ->get()[0];
+        $domain = $this->domain->find($vars['domainid']);
 
         // Check if OpenProvider is the provider
         if($domain->registrar != 'openprovider' || $domain->status != 'Active')

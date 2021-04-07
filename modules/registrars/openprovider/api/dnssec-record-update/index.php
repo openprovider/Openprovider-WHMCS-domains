@@ -10,6 +10,4 @@ $params = [
     'action'   => $_GET['action'],
 ];
 
-openprovider_registrar_launch('system')
-    ->output($params, 'updateDnsSecRecordApi');
-
+openprovider_registrar_launch_decorator('updateDnsSecRecordApi', $params);

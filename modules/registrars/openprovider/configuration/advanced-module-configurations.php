@@ -37,4 +37,8 @@ return [
     // please check your Openprovider account for detailed pricing information
     // before activating automatic trustee activation.
     'requestTrusteeService' => [],
+
+    // The placement+ credentials
+    'placementPlusAccount'  => '',
+    'placementPlusPassword' => '',
 ];
