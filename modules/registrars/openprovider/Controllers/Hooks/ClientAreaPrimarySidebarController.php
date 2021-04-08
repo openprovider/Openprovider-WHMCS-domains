@@ -16,7 +16,7 @@ use WHMCS\Database\Capsule;
  */
 class ClientAreaPrimarySidebarController
 {
-    const DNSSEC_PAGE_NAME = 'dnssec.php';
+    const DNSSEC_PAGE_NAME = '/dnssec.php';
 
     public function show($primarySidebar)
     {
