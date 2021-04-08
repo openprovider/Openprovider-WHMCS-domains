@@ -11,4 +11,4 @@ use OpenProvider\WhmcsHelpers\Activity;
 include('BaseCron.php');
 
 openprovider_registrar_launch('system')
-    ->output($params, 'DownloadTldPricesCron');
+    ->output([], 'DownloadTldPricesCron');
