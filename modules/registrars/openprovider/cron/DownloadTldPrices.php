@@ -10,4 +10,4 @@ $core = openprovider_registrar_core('system');
 $launch = $core->launch();
 $core->launcher = openprovider_bind_required_classes($core->launcher);
 
-$launch->output([], 'DownloadTldPricesCron');
+openprovider_registrar_launch_decorator('DownloadTldPricesCron');

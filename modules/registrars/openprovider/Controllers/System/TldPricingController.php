@@ -2,6 +2,7 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\src\TldPriceCache;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -41,7 +42,15 @@ class TldPricingController extends BaseController
 
         $results = new ResultsList;
 
+        $advancedConfigurationMaxPeriod = Configuration::getOrDefault('maxRegistrationPeriod', 5);
+
         foreach ($extensionData['results'] as $extension) {
+            if ($extension['minPeriod'] > $advancedConfigurationMaxPeriod) {
+                $extension['maxPeriod'] = $extension['minPeriod'];
+            } else {
+                $extension['maxPeriod'] = $advancedConfigurationMaxPeriod;
+            }
+
             // All the set methods can be chained and utilised together.
             $item = (new ImportItem)
                 ->setExtension($extension['name'])
