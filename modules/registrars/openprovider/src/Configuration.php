@@ -74,6 +74,7 @@ class Configuration
 
     private static function _getServerUrl()
     {
-        return localAPI('GetConfigurationValue', ['setting' => 'SystemURL'])['value'];
+        $systemUrl = localAPI('GetConfigurationValue', ['setting' => 'SystemURL'])['value'];
+        return str_replace('www.', '', $systemUrl);
     }
 }
