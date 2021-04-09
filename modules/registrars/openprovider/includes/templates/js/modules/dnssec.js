@@ -199,4 +199,3 @@ $(document).on('ready', function () {
         alertErrorMessage.removeClass('hidden').html(message);
     }
 })
-

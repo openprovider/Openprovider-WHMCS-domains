@@ -26,4 +26,7 @@ class WHMCSApiActionType
 
     // Tlds
     const GetTLDPricing = 'GetTLDPricing';
+
+    // Configuration
+    const GetConfigurationValue = 'GetConfigurationValue';
 }

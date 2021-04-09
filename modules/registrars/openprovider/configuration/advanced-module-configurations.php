@@ -43,5 +43,5 @@ return [
     'placementPlusPassword' => '',
 
     // maxRegistrationPeriod
-    'maxRegistrationPeriod' => 5,
+    'maxRegistrationPeriod' => 1,
 ];

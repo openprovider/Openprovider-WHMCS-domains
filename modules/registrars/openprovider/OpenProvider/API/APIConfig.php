@@ -19,12 +19,17 @@ class APIConfig
     static public $encoding          = 'UTF-8';
     static public $curlTimeout       = 1000;
     static public $defaultGender     = \OpenProvider\API\CustomerGender::MALE;
-    static public $handlesNames      = [
+    static public $handlesNames = [
         'ownerHandle'    => 'Owner',
         'billingHandle'  => 'Billing',
         'adminHandle'    => 'Admin',
         'techHandle'     => 'Tech',
         'resellerHandle' => 'Reseller'
+    ];
+    static public $nameservers = [
+        'ns1.openprovider.nl',
+        'ns2.openprovider.be',
+        'ns3.openprovider.eu'
     ];
 
     /**
@@ -52,5 +57,13 @@ class APIConfig
     {
         $moduleVersion = str_replace('whmcs-', 'v', self::$moduleVersion);
         return $moduleVersion;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getDefaultNameservers(): array
+    {
+        return self::$nameservers;
     }
 }

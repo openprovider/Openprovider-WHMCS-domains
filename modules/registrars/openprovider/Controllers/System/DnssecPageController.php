@@ -58,6 +58,14 @@ class DnssecPageController extends BaseController
             $domainOp = $this->apiHelper->getDomain($domainObj);
             $dnssecKeys = $domainOp['dnssecKeys'];
             $isDnssecEnabled = $domainOp['isDnssecEnabled'];
+
+            $openproviderNameserversCount = 0;
+            foreach ($domainOp['nameServers'] as $nameServer) {
+                if (!in_array($nameServer['name'], APIConfig::getDefaultNameservers())) {
+                    continue;
+                }
+                $openproviderNameserversCount++;
+            }
         } catch (\Exception $e) {
             header('Location: ' . $_SERVER["HTTP_REFERER"]);
         }
@@ -112,11 +120,13 @@ class DnssecPageController extends BaseController
             ->setUri("clientarea.php?action=domaincontacts&domainid={$domainId}")
             ->setOrder(40);
 
-        $primarySidebar->getChild('Domain Details Management')
-            ->addChild('DNS Management')
-            ->setLabel('DNS Management')
-            ->setUri("clientarea.php?action=domaindns&domainid={$domainId}")
-            ->setOrder(50);
+        if ($openproviderNameserversCount > 1) {
+            $primarySidebar->getChild('Domain Details Management')
+                ->addChild('DNS Management')
+                ->setLabel('DNS Management')
+                ->setUri("clientarea.php?action=domaindns&domainid={$domainId}")
+                ->setOrder(50);
+        }
 
         $ca->setTemplate('/modules/registrars/openprovider/includes/templates/dnssec.tpl');
 
