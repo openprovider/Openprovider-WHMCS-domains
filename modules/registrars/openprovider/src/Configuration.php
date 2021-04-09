@@ -2,6 +2,8 @@
 
 namespace OpenProvider\WhmcsRegistrar\src;
 
+use OpenProvider\WhmcsRegistrar\enums\WHMCSApiActionType;
+
 /**
  * Hardcoded configuration
  * OpenProvider Registrar module
@@ -74,7 +76,7 @@ class Configuration
 
     private static function _getServerUrl()
     {
-        $systemUrl = localAPI('GetConfigurationValue', ['setting' => 'SystemURL'])['value'];
+        $systemUrl = localAPI(WHMCSApiActionType::GetConfigurationValue, ['setting' => 'SystemURL'])['value'];
         return str_replace('www.', '', $systemUrl);
     }
 }
