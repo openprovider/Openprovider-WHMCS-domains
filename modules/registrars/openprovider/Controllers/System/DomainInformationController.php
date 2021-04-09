@@ -74,7 +74,13 @@ class DomainInformationController extends BaseController
         }
 
         // Get the data
-        $op_domain = $this->apiHelper->getDomain($domain);
+        try {
+            $op_domain = $this->apiHelper->getDomain($domain);
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage(),
+            ];
+        }
 
         if (!$op_domain) {
             return (new Domain)

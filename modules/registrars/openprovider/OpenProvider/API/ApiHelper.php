@@ -40,7 +40,9 @@ class ApiHelper
             'withVerificationEmail' => true,
         ];
 
-        return $this->buildResponse($this->apiClient->call('searchDomainRequest', $args))['results'][0];
+        $domain = $this->buildResponse($this->apiClient->call('searchDomainRequest', $args));
+
+        return $domain['results'][0];
     }
 
     /**
