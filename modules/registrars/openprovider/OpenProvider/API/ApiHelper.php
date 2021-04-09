@@ -42,7 +42,7 @@ class ApiHelper
 
         $domain = $this->buildResponse($this->apiClient->call('searchDomainRequest', $args));
 
-        return $domain['results'][0];
+        return $domain['results'][0] ?? [];
     }
 
     /**
