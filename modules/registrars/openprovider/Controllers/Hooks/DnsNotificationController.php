@@ -1,14 +1,14 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
+use OpenProvider\API\APIConfig;
 use OpenProvider\OpenProvider;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
-use WeDevelopCoffee\wPower\Models\Registrar;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\API;
 use OpenProvider\API\Domain as api_domain;
 use WeDevelopCoffee\wPower\Models\Domain;
-
 
 /**
  * Class DnsNotificationController
@@ -25,12 +25,6 @@ class DnsNotificationController{
      * @var Domain
      */
     private $domain;
-
-    protected $op_nameservers = [
-        'ns1.openprovider.nl',
-        'ns2.openprovider.be',
-        'ns3.openprovider.eu'
-    ];
 
     /**
      * ConfigController constructor.
@@ -68,7 +62,7 @@ class DnsNotificationController{
             $notOpenproviderNameservers = [];
             foreach($op_domain['nameServers'] as $nameserver)
             {
-                if(!in_array($nameserver['name'], $this->op_nameservers))
+                if(!in_array($nameserver['name'], APIConfig::getDefaultNameservers()))
                 {
                     $notOpenproviderNameservers[] = $nameserver['name'];
                 }
