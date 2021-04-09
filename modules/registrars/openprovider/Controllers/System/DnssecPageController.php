@@ -2,6 +2,7 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
+use OpenProvider\API\APIConfig;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use WHMCS\ClientArea;
 use OpenProvider\API\ApiHelper;
