@@ -1,9 +1,9 @@
 <?php
 
+use OpenProvider\API\APIConfig;
 use WHMCS\ClientArea;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider;
-use OpenProvider\WhmcsRegistrar\helpers\Language;
 
 define('CLIENTAREA', true);
 
@@ -44,11 +44,13 @@ $args = [
 
 $dnssecKeys = [];
 $isDnssecEnabled = false;
+$openproviderNameserversCount = 0;
+
 try {
     $domain = $api->sendRequest('retrieveDomainRequest', $args);
     $openproviderNameserversCount = 0;
     foreach ($domain['nameServers'] as $nameServer) {
-        if (!in_array($nameServer['name'], \OpenProvider\API\APIConfig::getDefaultNameservers())) {
+        if (!in_array($nameServer['name'], APIConfig::getDefaultNameservers())) {
             continue;
         }
         $openproviderNameserversCount++;
