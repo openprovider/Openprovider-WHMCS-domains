@@ -102,8 +102,6 @@ class ApiV1 implements ApiInterface
             if (!empty($args)) {
                 if (isset($args['domain']['name'])) {
                     $args['domain']['name'] = $this->idnaConvertDomainName($args['domain']['name']);
-                } else if (isset($args['name'])) {
-                    $args['name'] = $this->idnaConvertDomainName($args['name']);
                 } else if (isset($args['namePattern'])) {
                     $namePatternArr = explode('.', $args['namePattern'], 2);
                     $tmpDomainName = $this->idnaConvertDomainName($namePatternArr[0]);
