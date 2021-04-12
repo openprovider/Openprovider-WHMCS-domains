@@ -2,7 +2,7 @@
 
 namespace OpenProvider\API;
 
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 class ApiHelper
@@ -23,7 +23,7 @@ class ApiHelper
     public function __construct(ApiInterface $apiClient)
     {
         $this->apiClient = $apiClient;
-        $this->serializer = new Serializer([new PropertyNormalizer()]);
+        $this->serializer = new Serializer([new ObjectNormalizer()]);
     }
 
     /**

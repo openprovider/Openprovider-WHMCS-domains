@@ -6,7 +6,7 @@ use Openprovider\Api\Rest\Client\Base\Configuration;
 use GuzzleHttp6\Client as HttpClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 class ApiV1 implements ApiInterface
@@ -61,7 +61,7 @@ class ApiV1 implements ApiInterface
     {
         $this->camelCaseToSnakeCaseNameConverter = $camelCaseToSnakeCaseNameConverter;
         $this->logger = $logger;
-        $this->serializer = new Serializer([new PropertyNormalizer()]);
+        $this->serializer = new Serializer([new ObjectNormalizer()]);
         $this->idn = $idn;
 
         $this->apiConfiguration = new ApiConfiguration();
