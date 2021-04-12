@@ -3,7 +3,6 @@
 use OpenProvider\API\API;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\ApiInterface;
-use OpenProvider\API\SessionNameForToken;
 use OpenProvider\API\XmlApiAdapter;
 use OpenProvider\Logger;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
@@ -17,6 +16,7 @@ use WeDevelopCoffee\wPower\Models\Registrar;
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/classes/idna_convert.class.php';
 
 const SESSION_EXPIRATION_LIFE_TIME = 300;
 
@@ -65,11 +65,16 @@ function openprovider_bind_required_classes($launcher)
         return new CamelCaseToSnakeCaseNameConverter();
     });
 
+    $launcher->set(\idna_convert::class, function (ContainerInterface $e) {
+        return new \idna_convert();
+    });
+
     $launcher->set(ApiV1::class, function (ContainerInterface $c) use ($params, $host) {
         $session = $c->get(Session::class);
         $camelCaseToSnakeCaseNameConverter = $c->get(CamelCaseToSnakeCaseNameConverter::class);
         $logger = $c->get(LoggerInterface::class);
-        $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter);
+        $idn = $c->get(\idna_convert::class);
+        $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter, $idn);
         $client->getConfiguration()->setHost($host);
 
 

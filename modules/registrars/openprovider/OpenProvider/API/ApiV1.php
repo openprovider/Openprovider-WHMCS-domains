@@ -6,9 +6,8 @@ use Openprovider\Api\Rest\Client\Base\Configuration;
 use GuzzleHttp6\Client as HttpClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use function GuzzleHttp\json_decode;
 
 class ApiV1 implements ApiInterface
 {
@@ -44,6 +43,10 @@ class ApiV1 implements ApiInterface
      * @var Serializer
      */
     private $serializer;
+    /**
+     * @var \idna_convert
+     */
+    private $idn;
 
     /**
      * ApiV1 constructor.
@@ -52,12 +55,14 @@ class ApiV1 implements ApiInterface
      */
     public function __construct(
         LoggerInterface $logger,
-        CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter
+        CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter,
+        \idna_convert $idn
     )
     {
         $this->camelCaseToSnakeCaseNameConverter = $camelCaseToSnakeCaseNameConverter;
         $this->logger = $logger;
-        $this->serializer = new Serializer([new ObjectNormalizer()]);
+        $this->serializer = new Serializer([new PropertyNormalizer()]);
+        $this->idn = $idn;
 
         $this->apiConfiguration = new ApiConfiguration();
         $this->configuration = new Configuration();
@@ -94,10 +99,25 @@ class ApiV1 implements ApiInterface
         }
 
         try {
+            if (!empty($args)) {
+                if (isset($args['domain']['name'])) {
+                    $args['domain']['name'] = $this->idnaConvertDomainName($args['domain']['name']);
+                } else if (isset($args['name'])) {
+                    $args['name'] = $this->idnaConvertDomainName($args['name']);
+                } else if (isset($args['namePattern'])) {
+                    $namePatternArr = explode('.', $args['namePattern'], 2);
+                    $tmpDomainName = $this->idnaConvertDomainName($namePatternArr[0]);
+                    $args['namePattern'] = $tmpDomainName . '.' . $namePatternArr[1];
+                }
+            }
+
             $requestParameters = $this->paramsCreator->createParameters($args, $service, $apiMethod);
             $reply = $service->$apiMethod(...$requestParameters);
         } catch (\Exception $e) {
-            $responseData = $this->serializer->normalize(json_decode(substr($e->getMessage(), strpos($e->getMessage(), 'response:') + strlen('response:'))));
+            $responseData = $this->serializer->normalize(
+                    json_decode(substr($e->getMessage(), strpos($e->getMessage(), 'response:') + strlen('response:')))
+                ) ?? $e->getMessage();
+
             $response = $this->failedResponse(
                 $response,
                 $responseData['desc'] ?? $e->getMessage(),
@@ -193,5 +213,19 @@ class ApiV1 implements ApiInterface
         $response->setData($data);
 
         return $response;
+    }
+
+    /**
+     * @param string $domainName
+     * @return string
+     */
+    private function idnaConvertDomainName(string $domainName): string
+    {
+        $convertedDomainName = $domainName;
+        if (!preg_match('//u', $convertedDomainName)) {
+            $convertedDomainName = utf8_encode($convertedDomainName);
+        }
+
+        return $this->idn->encode($convertedDomainName);
     }
 }

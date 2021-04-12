@@ -1,8 +1,6 @@
 <?php
 
-
 namespace OpenProvider\API;
-
 
 use phpDocumentor\Reflection\DocBlockFactory;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;

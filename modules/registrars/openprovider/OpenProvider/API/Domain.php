@@ -32,7 +32,10 @@ class Domain extends \OpenProvider\API\AutoloadConstructor
     'RRQ' => 'Pending',		// RRQ	The domain name restore has been requested, but not yet completed.
     'SCH' => 'Pending',		// SCH	The domain name is scheduled for transfer in the future.
     ];
-    
+
+    /**
+     * @return string
+     */
     public function getFullName()
     {
         return $this->name . '.' . $this->extension;
