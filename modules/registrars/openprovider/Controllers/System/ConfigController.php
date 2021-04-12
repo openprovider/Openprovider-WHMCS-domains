@@ -202,8 +202,8 @@ class ConfigController extends BaseController
         $this->apiClient->getConfiguration()->setHost($differentHost);
 
         $reply = $this->apiClient->call('generateAuthTokenRequest', [
-            'Username' => $params['Username'],
-            'Password' => $params['Password']
+            'username' => $params['Username'],
+            'password' => $params['Password']
         ]);
 
         $replyData = $reply->getData();
