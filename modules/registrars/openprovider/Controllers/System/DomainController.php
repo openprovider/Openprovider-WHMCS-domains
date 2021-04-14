@@ -60,6 +60,10 @@ class DomainController extends BaseController
      * @var Serializer
      */
     private $serializer;
+    /**
+     * @var idna_convert
+     */
+    private $idn;
 
     /**
      * Constructor
@@ -74,7 +78,8 @@ class DomainController extends BaseController
         AdditionalFields $additionalFields,
         Handle $handle,
         ApiHelper $apiHelper,
-        ApiInterface $apiClient
+        ApiInterface $apiClient,
+        idna_convert $idn
     )
     {
         parent::__construct($core);
@@ -87,6 +92,7 @@ class DomainController extends BaseController
         $this->apiHelper        = $apiHelper;
         $this->apiClient        = $apiClient;
         $this->serializer       = new Serializer([new ObjectNormalizer()]);
+        $this->idn              = $idn;
     }
 
     /**
@@ -116,8 +122,13 @@ class DomainController extends BaseController
 
             // Prepare the additional data
             $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
-            if (isset($additionalFields['extensionCustomerAdditionalData']))
-                $handle->setExtensionAdditionalData($additionalFields['extensionCustomerAdditionalData']);
+            if (isset($additionalFields['extensionCustomerAdditionalData'])) {
+                $extensionCustomerAdditionalData = [];
+                foreach ($additionalFields['extensionCustomerAdditionalData'] as $field) {
+                    $extensionCustomerAdditionalData[] = $field->jsonSerialize();
+                }
+                $handle->setExtensionAdditionalData($extensionCustomerAdditionalData);
+            }
 
             if (isset($additionalFields['customerAdditionalData']))
                 $handle->setCustomerAdditionalData($additionalFields['customerAdditionalData']);
@@ -148,8 +159,15 @@ class DomainController extends BaseController
             $domainRegistration->dnsmanagement   = $params['dnsmanagement'];
             $domainRegistration->isDnssecEnabled = false;
 
+            if (
+                isset($params['is_idn']) && $params['is_idn'] &&
+                isset($params['idnLanguage']) && !empty($params['idnLanguage'])
+            ) {
+                $domainRegistration->domain->name = $this->idn->encode($domainRegistration->domain->name);
+            }
+
             if (isset($additionalFields['domainAdditionalData'])) {
-                $domainRegistration->additionalData = $this->serializer->normalize($additionalFields['domainAdditionalData']);
+                $domainRegistration->additionalData = $additionalFields['domainAdditionalData']->jsonSerialize();
             }
 
             // Check if premium is enabled. If so, set the received premium cost.
@@ -176,13 +194,13 @@ class DomainController extends BaseController
                         return mb_strcut($tld, 1);
                     return $tld;
                 }, $params['requestTrusteeService']);
+
                 if (in_array($domainRegistration->domain->extension, $trusteeServiceTds))
                     $domainRegistration->useDomicile = true;
             }
 
-            $idn = new idna_convert();
             if (
-                $params['sld'] . '.' . $params['tld'] == $idn->encode($params['sld'] . '.' . $params['tld'])
+                $params['sld'] . '.' . $params['tld'] == $this->idn->encode($params['sld'] . '.' . $params['tld'])
                 && strpos($params['sld'] . '.' . $params['tld'], 'xn--') === false
             ) {
                 unset($domainRegistration->additionalData->idnScript);
@@ -226,8 +244,13 @@ class DomainController extends BaseController
 
             // Prepare the additional data
             $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
-            if (isset($additionalFields['extensionCustomerAdditionalData']))
-                $handle->setExtensionAdditionalData($additionalFields['extensionCustomerAdditionalData']);
+            if (isset($additionalFields['extensionCustomerAdditionalData'])) {
+                $extensionCustomerAdditionalData = [];
+                foreach ($additionalFields['extensionCustomerAdditionalData'] as $field) {
+                    $extensionCustomerAdditionalData[] = $field->jsonSerialize();
+                }
+                $handle->setExtensionAdditionalData($extensionCustomerAdditionalData);
+            }
 
             if (isset($additionalFields['customer']))
                 $handle->setCustomerAdditionalData($additionalFields['customer']);
@@ -264,7 +287,7 @@ class DomainController extends BaseController
             }
 
             if (isset($additionalFields['domainAdditionalData']))
-                $domainTransfer->additionalData = $this->serializer->normalize($additionalFields['domainAdditionalData']);
+                $domainTransfer->additionalData = $additionalFields['domainAdditionalData']->jsonSerialize();
 
             if (isset($params['requestTrusteeService']) && !empty($params['requestTrusteeService'])) {
                 $trusteeServiceTds = array_map(function ($tld) {

@@ -2,7 +2,6 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-use OpenProvider\API\API;
 use OpenProvider\API\APIConfig;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\Domain;

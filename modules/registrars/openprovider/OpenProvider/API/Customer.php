@@ -69,7 +69,7 @@ class Customer
 
     /**
      *
-     * @var \OpenProvider\API\CustomerExtensionAdditionalData
+     * @var \OpenProvider\API\CustomerExtensionAdditionalData[]
      */
     public $extensionAdditionalData  =   null;
 

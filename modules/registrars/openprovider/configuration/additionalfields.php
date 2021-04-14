@@ -336,45 +336,12 @@ $additionaldomainfields[".ru"][] = array(
 );
 
 $additionaldomainfields[".ru"][] = array(
-    "Name" => "Mobile Phonenumber",
-    "LangVar" => "ruMobilePhoneNumber",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "mobilePhoneNumber"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Legal Address Cyrillic",
-    "LangVar" => "ruLegalAddressCyrillic",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "legalAddressCyrillic"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Tax Payer Number",
-    "LangVar" => "ruTaxPayerNumber",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "taxPayerNumber"
-);
-
-$additionaldomainfields[".ru"][] = array(
     "Name" => "Company Name Latin",
     "LangVar" => "ruCompanyNameLatin",
     "Type" => "text",
     "op_location" => "customerExtensionAdditionalData",
     "op_name" => "companyNameLatin"
 );
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Mobile Phonenumber",
-    "LangVar" => "ruMobilePhoneNumber",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "mobilePhoneNumber"
-);
-
 
 $additionaldomainfields['.xn--p1ai'] = $additionaldomainfields['.ru'];
 

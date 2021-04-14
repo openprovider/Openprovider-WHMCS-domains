@@ -99,16 +99,6 @@ class ApiV1 implements ApiInterface
         }
 
         try {
-            if (!empty($args)) {
-                if (isset($args['domain']['name'])) {
-                    $args['domain']['name'] = $this->idnaConvertDomainName($args['domain']['name']);
-                } else if (isset($args['namePattern'])) {
-                    $namePatternArr = explode('.', $args['namePattern'], 2);
-                    $tmpDomainName = $this->idnaConvertDomainName($namePatternArr[0]);
-                    $args['namePattern'] = $tmpDomainName . '.' . $namePatternArr[1];
-                }
-            }
-
             $requestParameters = $this->paramsCreator->createParameters($args, $service, $apiMethod);
             $reply = $service->$apiMethod(...$requestParameters);
         } catch (\Exception $e) {

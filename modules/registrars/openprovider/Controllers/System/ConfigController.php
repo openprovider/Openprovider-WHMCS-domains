@@ -5,7 +5,6 @@ use OpenProvider\API\API;
 use OpenProvider\API\APIConfig;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\ResponseInterface;
-use OpenProvider\API\SessionNameForToken;
 use OpenProvider\WhmcsRegistrar\enums\OpenproviderErrorType;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use Symfony\Component\HttpFoundation\Session\Session;
