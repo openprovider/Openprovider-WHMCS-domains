@@ -156,6 +156,8 @@ class DomainSuggestionsController extends BaseController
      */
     private function checkDomains($domains, $params)
     {
+        $result = [];
+
         $checkedDomainsResponse = $this->apiClient->call('checkDomainRequest', [
             'domains' => $domains
         ]);
@@ -173,10 +175,9 @@ class DomainSuggestionsController extends BaseController
                     $searchResult->setStatus(SearchResult::STATUS_TLD_NOT_SUPPORTED);
                     $result[] = $searchResult;
                 }
-                return;
             }
             \logModuleCall('openprovider', 'whois', $domains, $checkedDomainsResponse->getMessage(), null, [$params['Password']]);
-            return;
+            return $result;
         }
 
         $checkedDomains = $checkedDomainsResponse->getData();

@@ -111,10 +111,10 @@ class CheckAvailabilityController  extends BaseController
                     $args['domainName']      = $domain_sld;
                     $args['domainExtension'] = $domain_tld;
                     $args['operation'] = 'create';
-                    $create_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args);
+                    $create_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args)->getData();
 
                     $args['operation']    = 'transfer';
-                    $transfer_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args);
+                    $transfer_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args)->getData();
 
                     // Retrieve the pricing
                     $searchResult->setPremiumCostPricing(
