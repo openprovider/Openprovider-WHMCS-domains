@@ -50,14 +50,9 @@ class ApiController extends BaseController
                 ->where('clientid', $userId)
                 ->first();
 
-        $tags = $tag && $tag->tag
-            ? [
-                [
-                    'key' => 'customer',
-                    'value' => $tag->tag,
-                ]
-            ]
-            : '';
+        $tags = $tag && $tag->tag ?
+            [$tag->tag] :
+            '';
 
         $usersContacts = Capsule::table('wHandles')
             ->where([
