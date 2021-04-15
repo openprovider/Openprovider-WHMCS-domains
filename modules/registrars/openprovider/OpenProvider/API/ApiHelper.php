@@ -2,7 +2,7 @@
 
 namespace OpenProvider\API;
 
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 class ApiHelper
@@ -23,7 +23,7 @@ class ApiHelper
     public function __construct(ApiInterface $apiClient)
     {
         $this->apiClient = $apiClient;
-        $this->serializer = new Serializer([new ObjectNormalizer()]);
+        $this->serializer = new Serializer([new PropertyNormalizer()]);
     }
 
     /**
@@ -461,10 +461,14 @@ class ApiHelper
      */
     public function updateCustomer(string $handle, Customer $customer): array
     {
+        $oldCustomer = $this->getCustomer($handle, false);
         $args = $this->serializer->normalize($customer);
         $args['handle'] = $handle;
+        $args = $this->removeEmptyElementsFromArray($args);
 
-        return $this->buildResponse($this->apiClient->call('modifyCustomerRequest', $args));
+        $mergedArgs = array_merge($oldCustomer, $args);
+
+        return $this->buildResponse($this->apiClient->call('modifyCustomerRequest', $mergedArgs));
     }
 
     /**
@@ -492,5 +496,20 @@ class ApiHelper
         }
 
         return $response->getData();
+    }
+
+    private function removeEmptyElementsFromArray(array $arr): array
+    {
+        foreach ($arr as $key => $value) {
+            if (is_array($value)) {
+                $arr[$key] = $this->removeEmptyElementsFromArray($value);
+            }
+
+            if (empty($arr[$key])) {
+                unset($arr[$key]);
+            }
+        }
+
+        return $arr;
     }
 }

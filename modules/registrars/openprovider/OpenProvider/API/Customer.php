@@ -144,16 +144,30 @@ class Customer
         }
 
         // Customer Name
-        $initials       =   mb_substr($params[$indexes['firstname']], 0, 1) . '.' . mb_substr($params[$indexes['lastname']], 0, 1);
+        $initials = '';
+        if (!empty($params[$indexes['firstname']])) {
+            $initials .= mb_substr($params[$indexes['firstname']], 0, 1);
+        }
+        if (!empty($params[$indexes['lastname']])) {
+            $initials .= '.' . mb_substr($params[$indexes['lastname']], 0, 1);
+        }
         $name           =   new \OpenProvider\API\CustomerName(array(
-            'initials'  =>  $initials,
+            'initials'  =>  $initials ?: null,
             'firstName' =>  $params[$indexes['firstname']],
             'lastName'  =>  $params[$indexes['lastname']],
         ));
 
         //Customer Address
+        $fullAddress = '';
+        if ($getFromContactDetails) {
+            if (isset($params[$indexes['address']]) && !empty($params[$indexes['address']])) {
+                $fullAddress = $params[$indexes['address']];
+            } else if (!empty(trim($params[$indexes['address1']] . ' ' . $params[$indexes['address2']]))) {
+                $fullAddress = $params[$indexes['address1']] . ' ' . $params[$indexes['address2']];
+            }
+        }
         $address            =   new \OpenProvider\API\CustomerAddress(array(
-            'fulladdress'   =>  $getFromContactDetails ? $params[$indexes['address']] : $params[$indexes['address1']] . ' ' . $params[$indexes['address2']],
+            'fulladdress'   =>  $fullAddress ?: null,
             'zipcode'       =>  $params[$indexes['postcode']],
             'city'          =>  $params[$indexes['city']],
             'state'         =>  $params[$indexes['state']],
