@@ -31,7 +31,7 @@ class PremiumDomain
             'operation' => 'create',
         ];
 
-        $create_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args);
+        $create_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args)->getData();
         return $create_pricing['price'];
     }
 
@@ -49,7 +49,7 @@ class PremiumDomain
             'operation' => 'transfer',
         ];
 
-        $transfer_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args);
+        $transfer_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args)->getData();
         return $transfer_pricing['price'];
     }
 
