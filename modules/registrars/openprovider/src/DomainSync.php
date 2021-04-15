@@ -1,8 +1,8 @@
 <?php
 namespace OpenProvider\WhmcsRegistrar\src;
 use Carbon\Carbon;
-use WeDevelopCoffee\wPower\Models\Registrar;
-use WHMCS\Database\Capsule;
+use OpenProvider\API\ApiHelper;
+use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsHelpers\Domain;
 use OpenProvider\API\Domain as api_domain;
 use OpenProvider\WhmcsHelpers\Activity;
@@ -23,25 +23,16 @@ class DomainSync
      * @var string
      **/
     private $domains;
-
     /**
      * The WHMCS domain
      *
      * @var array
      **/
     private $objectDomain;
-
-    /**
-     * The OpenProvider object
-     *
-     * @var object
-     **/
-    private $OpenProvider;
-
     /**
      * The op domain object
      *
-     * @var object
+     * @var \OpenProvider\API\Domain
      **/
     private $op_domain_obj;
 
@@ -77,14 +68,20 @@ class DomainSync
      * @var \WeDevelopCoffee\wPower\Models\Domain
      */
     private $domain;
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
 
     /**
      * Init the class
      *
      * @return void
      **/
-    public function __construct($limit = false)
+    public function __construct(ApiHelper $apiHelper, $limit = false)
     {
+        $this->apiHelper = $apiHelper;
+
         // Check if there are domains missing from the DomainSync table
         helper_DomainSync::sync_DomainSync_table('openprovider');
         helper_DomainSync::remove_DomainSync_table_doubles('openprovider');
@@ -134,8 +131,6 @@ class DomainSync
     public function process_domains()
     {
         $this->printDebug('PROCESSING DOMAINS...');
-        $this->OpenProvider = new OpenProvider;
-        $this->OpenProvider->api->getResellerStatistics('domainsync');
 
         $setting['syncExpiryDate'] = Configuration::getOrDefault('syncExpiryDate', true);
         $setting['syncDomainStatus'] = Configuration::getOrDefault('syncDomainStatus', true);
@@ -163,9 +158,8 @@ class DomainSync
             try
             {
                 $this->objectDomain  = $domain;
-                $this->op_domain_obj = $this->OpenProvider->domain($domain->domain);
-                $this->op_domain   	 = $this->OpenProvider->api->retrieveDomainRequest($this->op_domain_obj);
-
+                $this->op_domain_obj = DomainFullNameToDomainObject::convert($domain->domain);
+                $this->op_domain   	 = $this->apiHelper->getDomain($this->op_domain_obj);
                 // Set the expire and due date -> openprovider is leading
                 if($setting['syncExpiryDate'] == true)
                     $this->process_expiry_date();
@@ -394,10 +388,10 @@ class DomainSync
                 {
                     if($this->objectDomain->check_renew_domain_setting_upon_completed_transfer() == true)
                     {
-                        $this->OpenProvider->api->renewDomain($this->op_domain_obj, $this->objectDomain->registrationperiod);
+                        $this->apiHelper->renewDomain($this->op_domain['id'], $this->objectDomain->registrationperiod);
 
                         // Fetch updated information
-                        $this->op_domain             =    $this->OpenProvider->api->retrieveDomainRequest($this->op_domain_obj);
+                        $this->op_domain             =    $this->apiHelper->getDomain($this->op_domain_obj);
                     }
 
                     // Since this is a transfer, we will always update the expiration date. We ignore the configuration setting
@@ -436,7 +430,7 @@ class DomainSync
      **/
     private function process_auto_renew()
     {
-        $result = $this->OpenProvider->toggle_autorenew($this->objectDomain, $this->op_domain);
+        $result = $this->apiHelper->toggleAutorenewDomain($this->objectDomain, $this->op_domain);
 
         if($result != 'correct')
         {
