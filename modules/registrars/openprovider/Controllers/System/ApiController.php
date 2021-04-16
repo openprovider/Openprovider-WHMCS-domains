@@ -160,8 +160,7 @@ class ApiController extends BaseController
 
         $domain = DomainFullNameToDomainObject::convert($domainDB->domain);
         $args = [
-            'isDnssecEnabled' => $params['isDnssecEnabled'],
-            'domain'          => $domain,
+            'isDnssecEnabled' => (bool)$params['isDnssecEnabled'],
         ];
 
         try {
