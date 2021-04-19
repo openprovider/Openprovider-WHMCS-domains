@@ -1,4 +1,7 @@
 <?php
+
+namespace OpenProvider\WhmcsRegistrar\cron;
+
 use OpenProvider\WhmcsRegistrar\src\DomainSync;
 use OpenProvider\WhmcsHelpers\Activity;
 
@@ -15,7 +18,8 @@ $core = openprovider_registrar_core();
 $core->launch();
 $launcher = openprovider_bind_required_classes($core->launcher);
 $apiHelper = $launcher->get(\OpenProvider\API\ApiHelper::class);
-$DomainSync = new DomainSync($apiHelper);
+$idn = $launcher->get(\idna_convert::class);
+$DomainSync = new DomainSync($apiHelper, $idn);
 
 // 2. Do we have anything?
 if(!$DomainSync->has_domains_to_process())

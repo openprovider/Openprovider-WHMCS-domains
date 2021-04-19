@@ -4,6 +4,7 @@ namespace OpenProvider\API;
 
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
 
 class ApiHelper
 {
@@ -41,7 +42,11 @@ class ApiHelper
 
         $domain = $this->buildResponse($this->apiClient->call('searchDomainRequest', $args));
 
-        return $domain['results'][0] ?? [];
+        if (!is_null($domain['results'][0])) {
+            return $domain['results'][0];
+        }
+
+        throw new \Exception('Domain not exist in OpenProvider!');
     }
 
     /**
@@ -220,12 +225,12 @@ class ApiHelper
     }
 
     /**
-     * @param \WeDevelopCoffee\wPower\Models\Domain $domainModel
+     * @param DomainModel $domainModel
      * @param array $domainOp
      * @return array|string
      * @throws \Exception
      */
-    public function toggleAutorenewDomain(\WeDevelopCoffee\wPower\Models\Domain $domainModel, array $domainOp)
+    public function toggleAutorenewDomain(DomainModel $domainModel, array $domainOp)
     {
         // Check if we should auto renew or use the default settings
         if($domainModel->donotrenew == 0)
@@ -253,12 +258,12 @@ class ApiHelper
     }
 
     /**
-     * @param WeDevelopCoffee\wPower\Models\Domain $domainModel
+     * @param DomainModel $domainModel
      * @param array $domainOp
      * @return array|string
      * @throws \Exception
      */
-    public function toggleWhoisProtection(WeDevelopCoffee\wPower\Models\Domain $domainModel, array $domainOp)
+    public function toggleWhoisProtection(DomainModel $domainModel, array $domainOp)
     {
         $idprotection = $domainModel->idprotection == 1;
 

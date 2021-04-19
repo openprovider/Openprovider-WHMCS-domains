@@ -1,9 +1,12 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\src;
+
 use Carbon\Carbon;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsHelpers\Domain;
+use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
 use OpenProvider\API\Domain as api_domain;
 use OpenProvider\WhmcsHelpers\Activity;
 use OpenProvider\WhmcsHelpers\General;
@@ -20,13 +23,13 @@ class DomainSync
     /**
      * The domains that need to get processed
      *
-     * @var string
+     * @var DomainModel[]
      **/
     private $domains;
     /**
      * The WHMCS domain
      *
-     * @var array
+     * @var DomainModel
      **/
     private $objectDomain;
     /**
@@ -39,7 +42,7 @@ class DomainSync
     /**
      * The op domain info
      *
-     * @var object
+     * @var array
      **/
     private $op_domain;
 
@@ -65,28 +68,32 @@ class DomainSync
     private $unsigned_wpp_contract_domains;
 
     /**
-     * @var \WeDevelopCoffee\wPower\Models\Domain
+     * @var DomainModel
      */
     private $domain;
     /**
      * @var ApiHelper
      */
     private $apiHelper;
+    /**
+     * @var \idna_convert
+     */
+    private $idn;
 
     /**
      * Init the class
      *
      * @return void
      **/
-    public function __construct(ApiHelper $apiHelper, $limit = false)
+    public function __construct(ApiHelper $apiHelper, \idna_convert $idn, $limit = false)
     {
         $this->apiHelper = $apiHelper;
-
+        $this->idn = $idn;
         // Check if there are domains missing from the DomainSync table
         helper_DomainSync::sync_DomainSync_table('openprovider');
         helper_DomainSync::remove_DomainSync_table_doubles('openprovider');
 
-        $this->domain = new \WeDevelopCoffee\wPower\Models\Domain();
+        $this->domain = new DomainModel();
 
         // Get all unprocessed domains
         if($limit === false)
@@ -159,14 +166,16 @@ class DomainSync
             {
                 $this->objectDomain  = $domain;
                 $this->op_domain_obj = DomainFullNameToDomainObject::convert($domain->domain);
+                $this->op_domain_obj->name = $this->idn->encode($this->op_domain_obj->name);
                 $this->op_domain   	 = $this->apiHelper->getDomain($this->op_domain_obj);
                 // Set the expire and due date -> openprovider is leading
-                if($setting['syncExpiryDate'] == true)
+                if($setting['syncExpiryDate'] == true) {
                     $this->process_expiry_date();
-
+                }
                 // Active or pending? -> openprovider is leading
-                if($setting['syncDomainStatus'] == true)
+                if($setting['syncDomainStatus'] == true) {
                     $this->process_domain_status();
+                }
 
                 if(Configuration::getOrDefault('syncUseNativeWHMCS', false) == false) {
                     // auto renew on or not? -> WHMCS is leading.
@@ -457,7 +466,7 @@ class DomainSync
     private function process_identity_protection()
     {
         try {
-            $result = $this->OpenProvider->toggle_whois_protection($this->objectDomain, $this->op_domain);
+            $result = $this->apiHelper->toggleWhoisProtection($this->objectDomain, $this->op_domain);
 
         } catch (\Exception $e) {
             \logModuleCall('OpenProvider', 'Save identity toggle', $this->objectDomain->domain, [$this->op_domain_obj->domain, @$this->op_domain, $this->op_domain_obj], $e->getMessage(), [$params['Password']]);
