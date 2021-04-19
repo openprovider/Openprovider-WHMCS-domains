@@ -270,6 +270,13 @@ class DomainController extends BaseController
             $domainTransfer->dnsmanagement   = $params['dnsmanagement'];
             $domainTransfer->isDnssecEnabled = false;
 
+            if (
+                isset($params['is_idn']) && $params['is_idn'] &&
+                isset($params['idnLanguage']) && !empty($params['idnLanguage'])
+            ) {
+                $domainTransfer->domain->name = $this->idn->encode($domainTransfer->domain->name);
+            }
+
             // Check if premium is enabled. If so, set the received premium cost.
             if ($params['premiumEnabled'] == true && $params['premiumCost'] != '')
                 $domainTransfer->acceptPremiumFee = $this->premiumDomain->getRegistrarPriceWhenResellerPriceMatches(

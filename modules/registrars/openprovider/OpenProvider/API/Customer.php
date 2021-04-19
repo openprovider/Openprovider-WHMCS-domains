@@ -165,7 +165,12 @@ class Customer
             } else if (!empty(trim($params[$indexes['address1']] . ' ' . $params[$indexes['address2']]))) {
                 $fullAddress = $params[$indexes['address1']] . ' ' . $params[$indexes['address2']];
             }
+        } else {
+            if (!empty(trim($params[$indexes['address1']] . ' ' . $params[$indexes['address2']]))) {
+                $fullAddress = $params[$indexes['address1']] . ' ' . $params[$indexes['address2']];
+            }
         }
+
         $address            =   new \OpenProvider\API\CustomerAddress(array(
             'fulladdress'   =>  $fullAddress ?: null,
             'zipcode'       =>  $params[$indexes['postcode']],

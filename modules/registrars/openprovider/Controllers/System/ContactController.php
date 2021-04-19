@@ -154,9 +154,9 @@ class ContactController extends BaseController
         return $values;
     }
 
-    private function getContactDetails($domain): array
+    private function getContactDetails(): array
     {
-        $domainOp = $this->apiHelper->getDomain($domain);
+        $domainOp = $this->apiHelper->getDomain($this->domain);
 
         if (empty($domainOp)) {
             return [];
