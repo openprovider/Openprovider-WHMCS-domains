@@ -3,9 +3,9 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\ApiHelper;
-use OpenProvider\API\ApiInterface;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsRegistrar\src\Notification;
+use WeDevelopCoffee\wPower\Models\Domain;
 use WHMCS\Database\Capsule;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
@@ -17,18 +17,23 @@ use WeDevelopCoffee\wPower\Core\Core;
 class IdProtectController extends BaseController
 {
     /**
-     * @var ApiInterface
+     * @var ApiHelper
      */
     private $apiHelper;
+    /**
+     * @var Domain
+     */
+    private $domain;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, ApiHelper $apiHelper)
+    public function __construct(Core $core, ApiHelper $apiHelper, Domain $domain)
     {
         parent::__construct($core);
 
         $this->apiHelper = $apiHelper;
+        $this->domain = $domain;
     }
 
     /**
@@ -44,9 +49,7 @@ class IdProtectController extends BaseController
         $params['domainname'] = $params['sld'] . '.' . $params['tld'];
 
         // Get the domain details
-        $domain = Capsule::table('tbldomains')
-            ->where('id', $params['domainid'])
-            ->get()[0];
+        $domain = $this->domain->find($params['domainid']);
 
         if(isset($params['protectenable']))
             $domain->idprotection = $params['protectenable'];
@@ -55,7 +58,7 @@ class IdProtectController extends BaseController
         try {
             $opDomain = $this->apiHelper->getDomain($op_domain_obj);
         } catch (\Exception $e) {
-            \logModuleCall('OpenProvider', 'Save identity toggle',$params['domainname'], [$OpenProvider->domain, @$opDomain, $OpenProvider], $e->getMessage(), [$params['Password']]);
+            \logModuleCall('OpenProvider', 'Save identity toggle',$params['domainname'], [$domain->domain, @$opDomain, $domain], $e->getMessage(), [$params['Password']]);
             if ($e->getMessage() == 'Wpp contract is not signed') {
                 $notification = new Notification();
                 $notification->WPP_contract_unsigned_one_domain($params['domainname'])
