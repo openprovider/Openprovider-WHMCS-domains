@@ -2,7 +2,6 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-use Exception;
 use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
@@ -42,23 +41,23 @@ class EppController extends BaseController
     {
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $values = [];
 
-        $values = array();
+        $domain = $this->domain;
+        $domain->load([
+            'name'      => $params['sld'],
+            'extension' => $params['tld']
+        ]);
 
-        $domain             =   $this->domain;
-        $domain->load(array(
-            'name'          =>  $params['sld'],
-            'extension'     =>  $params['tld']
-        ));
-
-        $domainOp = $this->apiHelper->getDomain($domain);
-        $eppCode = $domainOp['authCode'];
-        $values["eppcode"] = $eppCode ?? '';
-
-        if(!$eppCode)
-        {
-            throw new Exception('EPP code is not set');
+        try {
+            $domainOp = $this->apiHelper->getDomain($domain);
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage()
+            ];
         }
+
+        $values["eppcode"] = $domainOp['authCode'] ?? '';
 
         return $values;
     }

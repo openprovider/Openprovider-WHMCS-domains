@@ -35,8 +35,8 @@ class ApiHelper
     public function getDomain(Domain $domain): array
     {
         $args = [
-            'domainNamePattern' => $domain->name,
-            'extension' => $domain->extension,
+            'domainNamePattern'     => $domain->name,
+            'extension'             => $domain->extension,
             'withVerificationEmail' => true,
         ];
 

@@ -73,8 +73,9 @@ jQuery( document ).ready(function() {
                 ->first();
 
             $domain = DomainFullNameToDomainObject::convert($isDomainEnabled->domain);
-            $op_domain = $this->apiHelper->getDomain($domain);
-            if (empty($op_domain)) {
+            try {
+                $op_domain = $this->apiHelper->getDomain($domain);
+            } catch (\Exception $e) {
                 return;
             }
 

@@ -89,7 +89,7 @@ class RenewDomainController extends BaseController
                 $this->apiHelper->restoreDomain($domainOp['id']);
             } else {
                 // This only happens when the isInRedemptionGracePeriod was not true.
-                throw new Exception("Domacin has expired and additional costs may be applied. Please check the domain in your reseller control panel", 1);
+                throw new Exception("Domain has expired and additional costs may be applied. Please check the domain in your reseller control panel", 1);
             }
 
         } catch (\Exception $e) {
