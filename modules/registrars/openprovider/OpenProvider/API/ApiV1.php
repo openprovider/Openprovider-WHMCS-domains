@@ -67,8 +67,13 @@ class ApiV1 implements ApiInterface
         $this->apiConfiguration = new ApiConfiguration();
         $this->configuration = new Configuration();
         $this->commandMapping = new CommandMapping();
-        $this->httpClient = new HttpClient();
         $this->paramsCreator = new ParamsCreator();
+
+        $this->httpClient = new HttpClient([
+            'headers' => [
+                'X-Client' => APIConfig::$moduleVersion . '-' . APIConfig::getInitiator()
+            ]
+        ]);
     }
 
     /**
