@@ -19,7 +19,12 @@ class Logger extends AbstractLogger
             self::MODULE_NAME,
             $message,
             json_encode($context['request']),
-            json_encode($context['response'])
+            json_encode($context['response']),
+            null,
+            isset($context['request']['password']) ? [
+                $context['request']['password'],
+                htmlentities($context['request']['password'])
+            ] : []
         );
     }
 }

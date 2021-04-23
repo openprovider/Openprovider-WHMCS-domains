@@ -53,11 +53,9 @@ class CheckAvailabilityController  extends BaseController
     public function check($params)
     {
         // Safety feature: Make premium opt-in with warning only. See https://requests.whmcs.com/topic/major-bug-premium-domains-billed-incorrectly.
-        if(isset($params['OpenproviderPremium']) && $params['OpenproviderPremium'] === true) {
-            $premiumEnabled = (bool) $params['premiumEnabled'];
-        } else {
-            $premiumEnabled = false;
-        }
+        $premiumEnabled = isset($params['premiumEnabled']) &&
+            $params['premiumEnabled'] &&
+            $params['OpenproviderPremium'];
 
         $results = $this->resultsList;
         if(empty($params['tldsToInclude'])) {
@@ -93,15 +91,14 @@ class CheckAvailabilityController  extends BaseController
             return $results;
         }
 
-        $status = $statusResponse->getData()['results'];
-
-        foreach($status as $domain_status) {
-            $domain_sld = explode('.', $domain_status['domain'])[0];
-            $domain_tld = str_replace($domain_sld . '.', '', $domain_status['domain']);
+        $domainsStatuses = $statusResponse->getData()['results'];
+        foreach($domainsStatuses as $domainStatus) {
+            $domain_sld = explode('.', $domainStatus['domain'])[0];
+            $domain_tld = str_replace($domain_sld . '.', '', $domainStatus['domain']);
 
             $searchResult = new SearchResult($domain_sld, $domain_tld);
 
-            if(isset($domain_status['premium']) && $domain_status['status'] == 'free') {
+            if(isset($domainStatus['premium']) && $domainStatus['status'] == 'free') {
                 if($premiumEnabled == false) {
                     $status = SearchResult::STATUS_RESERVED;
                 } else {
@@ -126,7 +123,7 @@ class CheckAvailabilityController  extends BaseController
                     );
 
                 }
-            } elseif($domain_status['status'] == 'free') {
+            } elseif($domainStatus['status'] == 'free') {
                 $status = SearchResult::STATUS_NOT_REGISTERED;
             } else {
                 $status = SearchResult::STATUS_REGISTERED;

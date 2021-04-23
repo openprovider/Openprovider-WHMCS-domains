@@ -119,7 +119,7 @@ class ApiV1 implements ApiInterface
         $data = $this->serializer->normalize($reply->getData());
         $response = $this->successResponse($response, $data);
 
-        $this->log($cmd, $this->serializer->normalize($requestParameters), $response);
+        $this->log($cmd, $args, $response);
 
         return $response;
     }

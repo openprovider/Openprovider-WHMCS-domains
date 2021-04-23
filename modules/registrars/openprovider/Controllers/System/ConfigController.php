@@ -1,7 +1,7 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-use OpenProvider\API\API;
 use OpenProvider\API\APIConfig;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\ResponseInterface;
@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Models\Registrar;
-use WHMCS\Database\Capsule;
 
 /**
  * Class ConfigController
@@ -24,10 +23,6 @@ class ConfigController extends BaseController
     const ERROR_NOT_HAVE_AUTHORITY    = 'This ip address does not have authority to make API calls with this account. Please check the IP whitelist and blacklist of your account.';
 
     /**
-     * @var API
-     */
-    private $API;
-    /**
      * @var Session
      */
     private $session;
@@ -39,11 +34,10 @@ class ConfigController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Session $session, ApiInterface $apiClient)
+    public function __construct(Core $core, Session $session, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
-        $this->API = $API;
         $this->apiClient = $apiClient;
         $this->session = $session;
     }
@@ -71,12 +65,14 @@ class ConfigController extends BaseController
             $this->session->remove('AUTH_TOKEN');
         }
         // If we have some login data, let's try to login.
-        $areCredentialsExist = isset($params['Password']) && isset($params['Username'])
-            && (!empty($params['Password']) || !empty($params['Username']));
-        if($areCredentialsExist)
-        {
+        $areCredentialsExist = isset($params['Password']) &&
+            isset($params['Username']) &&
+            !empty($params['Password']) &&
+            !empty($params['Username']);
+        if ($areCredentialsExist) {
             $configarray = $this->checkCredentials($configarray, $params);
         }
+
         return $configarray;
     }
 

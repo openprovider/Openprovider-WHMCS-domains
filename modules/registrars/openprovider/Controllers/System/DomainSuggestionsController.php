@@ -32,10 +32,6 @@ class DomainSuggestionsController extends BaseController
      */
     private $API;
     /**
-     * @var Domain
-     */
-    private $domain;
-    /**
      * @var ResultsList
      */
     private $resultsList;
@@ -47,11 +43,10 @@ class DomainSuggestionsController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, Api $API, Domain $domain, ApiInterface $apiClient)
+    public function __construct(Core $core, Api $API, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
-        $this->domain = $domain;
         $this->API = $API;
         $this->apiClient = $apiClient;
 
@@ -181,14 +176,13 @@ class DomainSuggestionsController extends BaseController
         }
 
         $checkedDomains = $checkedDomainsResponse->getData();
-
-        foreach($checkedDomains as $domain_status)
+        foreach($checkedDomains['results'] as $domain_status)
         {
             $domain_sld = explode('.', $domain_status['domain'])[0];
             $domain_tld = str_replace($domain_sld . '.', '', $domain_status['domain']);
 
             $searchResult = new SearchResult($domain_sld, $domain_tld);
-            if($params['OpenproviderPremium'] == 'on' && isset($domain_status['premium']) && $domain_status['status'] == 'free')
+            if($params['OpenproviderPremium'] == true && isset($domain_status['premium']) && $domain_status['status'] == 'free')
             {
                 $status = SearchResult::STATUS_NOT_REGISTERED;
                 $searchResult->setPremiumDomain(true);
