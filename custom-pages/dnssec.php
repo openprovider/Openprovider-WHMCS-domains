@@ -1,9 +1,9 @@
 <?php
 
+use OpenProvider\API\APIConfig;
 use WHMCS\ClientArea;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider;
-use OpenProvider\WhmcsRegistrar\helpers\Language;
 
 define('CLIENTAREA', true);
 
@@ -44,12 +44,23 @@ $args = [
 
 $dnssecKeys = [];
 $isDnssecEnabled = false;
+$openproviderNameserversCount = 0;
+
 try {
     $domain = $api->sendRequest('retrieveDomainRequest', $args);
+    $openproviderNameserversCount = 0;
+    foreach ($domain['nameServers'] as $nameServer) {
+        if (!in_array($nameServer['name'], APIConfig::getDefaultNameservers())) {
+            continue;
+        }
+        $openproviderNameserversCount++;
+    }
+
     $dnssecKeys = $domain['dnssecKeys'];
     $isDnssecEnabled = $domain['isDnssecEnabled'];
 } catch (\Exception $e) {
     header("Location: " . $_SERVER["HTTP_REFERER"]);
+    return;
 }
 
 $ca->assign('dnssecKeys', $dnssecKeys);
@@ -102,11 +113,13 @@ $primarySidebar->getChild('Domain Details Management')
     ->setUri("clientarea.php?action=domaincontacts&domainid={$domainId}")
     ->setOrder(40);
 
-$primarySidebar->getChild('Domain Details Management')
-    ->addChild('DNS Management')
-    ->setLabel('DNS Management')
-    ->setUri("clientarea.php?action=domaindns&domainid={$domainId}")
-    ->setOrder(50);
+if ($openproviderNameserversCount > 1) {
+    $primarySidebar->getChild('Domain Details Management')
+        ->addChild('DNS Management')
+        ->setLabel('DNS Management')
+        ->setUri("clientarea.php?action=domaindns&domainid={$domainId}")
+        ->setOrder(50);
+}
 
 $ca->setTemplate('/modules/registrars/openprovider/includes/templates/dnssec.tpl');
 
