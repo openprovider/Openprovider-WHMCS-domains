@@ -81,3 +81,15 @@ Models
 
 ### OpenProvider
 The folder where place OpenrPovider Api client and classes used for it
+
+### src
+Here placed files that used in module's main working logic
+
+### tests
+Tests
+
+### vendor
+Additional libraries
+
+### vendor-static
+Static additional libraries
