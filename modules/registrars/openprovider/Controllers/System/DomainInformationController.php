@@ -126,6 +126,8 @@ class DomainInformationController extends BaseController
                 $verification['isSuspended']    = false;
                 $verification['expirationDate'] = false;
             }
+        } else {
+            $verification = $emailVerification;
         }
 
         $verification = $this->getIrtpVerificationEmailOptions($verification);
