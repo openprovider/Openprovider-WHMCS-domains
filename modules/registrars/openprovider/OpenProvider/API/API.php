@@ -262,7 +262,7 @@ class API
 
     public function getUpdateMessage()
     {
-        return $this->sendRequest('searchPromoMessageRequest');
+        return $this->sendRequest('retrieveUpdateMessageRequest');
     }
 
     public function getResellerStatistics($task = '')
