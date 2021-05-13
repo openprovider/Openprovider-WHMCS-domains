@@ -157,7 +157,7 @@ class ConfigController extends BaseController
         try {
             $this->API->setParams($params);
             // Try to login and fetch the DNS template data.
-            $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
+            $uselessApiCall = $this->API->sendRequest('searchPromoMessageRequest');
             return $configarray;
         } catch (\Exception $ex) {
             if (
@@ -176,7 +176,7 @@ class ConfigController extends BaseController
 
         $this->API->setParams($params);
         try {
-            $uselessApiCall = $this->API->sendRequest('retrieveUpdateMessageRequest');
+            $uselessApiCall = $this->API->sendRequest('searchPromoMessageRequest');
             // Incorrect mode
             $configarray = $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
         } catch (\Exception $e) {
