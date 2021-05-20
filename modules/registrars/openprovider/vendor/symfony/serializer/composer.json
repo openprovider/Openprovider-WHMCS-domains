@@ -22,7 +22,6 @@
     },
     "require-dev": {
         "doctrine/annotations": "^1.10.4",
-        "doctrine/cache": "~1.0",
         "phpdocumentor/reflection-docblock": "^3.2|^4.0|^5.0",
         "symfony/cache": "^4.4|^5.0",
         "symfony/config": "^4.4|^5.0",
@@ -55,8 +54,6 @@
         "symfony/config": "For using the XML mapping loader.",
         "symfony/property-access": "For using the ObjectNormalizer.",
         "symfony/mime": "For using a MIME type guesser within the DataUriNormalizer.",
-        "doctrine/annotations": "For using the annotation mapping. You will also need doctrine/cache.",
-        "doctrine/cache": "For using the default cached annotation reader and metadata cache.",
         "symfony/var-exporter": "For using the metadata compiler."
     },
     "autoload": {

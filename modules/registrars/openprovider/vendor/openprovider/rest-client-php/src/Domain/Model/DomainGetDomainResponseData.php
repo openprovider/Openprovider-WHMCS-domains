@@ -94,6 +94,7 @@ class DomainGetDomainResponseData implements ModelInterface, ArrayAccess
         'is_hosted_whois' => 'bool',
         'is_lockable' => 'bool',
         'is_locked' => 'bool',
+        'is_parked' => 'bool',
         'is_premium' => 'bool',
         'is_private_whois_allowed' => 'bool',
         'is_private_whois_enabled' => 'bool',
@@ -178,6 +179,7 @@ class DomainGetDomainResponseData implements ModelInterface, ArrayAccess
         'is_hosted_whois' => 'boolean',
         'is_lockable' => 'boolean',
         'is_locked' => 'boolean',
+        'is_parked' => 'boolean',
         'is_premium' => 'boolean',
         'is_private_whois_allowed' => 'boolean',
         'is_private_whois_enabled' => 'boolean',
@@ -283,6 +285,7 @@ class DomainGetDomainResponseData implements ModelInterface, ArrayAccess
         'is_hosted_whois' => 'is_hosted_whois',
         'is_lockable' => 'is_lockable',
         'is_locked' => 'is_locked',
+        'is_parked' => 'is_parked',
         'is_premium' => 'is_premium',
         'is_private_whois_allowed' => 'is_private_whois_allowed',
         'is_private_whois_enabled' => 'is_private_whois_enabled',
@@ -367,6 +370,7 @@ class DomainGetDomainResponseData implements ModelInterface, ArrayAccess
         'is_hosted_whois' => 'setIsHostedWhois',
         'is_lockable' => 'setIsLockable',
         'is_locked' => 'setIsLocked',
+        'is_parked' => 'setIsParked',
         'is_premium' => 'setIsPremium',
         'is_private_whois_allowed' => 'setIsPrivateWhoisAllowed',
         'is_private_whois_enabled' => 'setIsPrivateWhoisEnabled',
@@ -451,6 +455,7 @@ class DomainGetDomainResponseData implements ModelInterface, ArrayAccess
         'is_hosted_whois' => 'getIsHostedWhois',
         'is_lockable' => 'getIsLockable',
         'is_locked' => 'getIsLocked',
+        'is_parked' => 'getIsParked',
         'is_premium' => 'getIsPremium',
         'is_private_whois_allowed' => 'getIsPrivateWhoisAllowed',
         'is_private_whois_enabled' => 'getIsPrivateWhoisEnabled',
@@ -589,6 +594,7 @@ class DomainGetDomainResponseData implements ModelInterface, ArrayAccess
         $this->container['is_hosted_whois'] = isset($data['is_hosted_whois']) ? $data['is_hosted_whois'] : null;
         $this->container['is_lockable'] = isset($data['is_lockable']) ? $data['is_lockable'] : null;
         $this->container['is_locked'] = isset($data['is_locked']) ? $data['is_locked'] : null;
+        $this->container['is_parked'] = isset($data['is_parked']) ? $data['is_parked'] : null;
         $this->container['is_premium'] = isset($data['is_premium']) ? $data['is_premium'] : null;
         $this->container['is_private_whois_allowed'] = isset($data['is_private_whois_allowed']) ? $data['is_private_whois_allowed'] : null;
         $this->container['is_private_whois_enabled'] = isset($data['is_private_whois_enabled']) ? $data['is_private_whois_enabled'] : null;
@@ -1515,6 +1521,30 @@ class DomainGetDomainResponseData implements ModelInterface, ArrayAccess
     public function setIsLocked($is_locked)
     {
         $this->container['is_locked'] = $is_locked;
+
+        return $this;
+    }
+
+    /**
+     * Gets is_parked
+     *
+     * @return bool|null
+     */
+    public function getIsParked()
+    {
+        return $this->container['is_parked'];
+    }
+
+    /**
+     * Sets is_parked
+     *
+     * @param bool|null $is_parked is_parked
+     *
+     * @return $this
+     */
+    public function setIsParked($is_parked)
+    {
+        $this->container['is_parked'] = $is_parked;
 
         return $this;
     }

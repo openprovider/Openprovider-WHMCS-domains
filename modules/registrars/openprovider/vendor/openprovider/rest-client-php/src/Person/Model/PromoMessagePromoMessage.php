@@ -1,6 +1,6 @@
 <?php
 /**
- * ResellerResellerAdditionalData
+ * PromoMessagePromoMessage
  *
  * PHP version 5
  *
@@ -34,14 +34,14 @@ use Openprovider\Api\Rest\Client\Base\ObjectSerializer;
 use Openprovider\Api\Rest\Client\Base\ModelInterface;
 
 /**
- * ResellerResellerAdditionalData Class Doc Comment
+ * PromoMessagePromoMessage Class Doc Comment
  *
  * @category Class
  * @package  Openprovider\Api\Rest\Client\Person
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
+class PromoMessagePromoMessage implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'resellerResellerAdditionalData';
+    protected static $openAPIModelName = 'promo_messagePromoMessage';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,9 +58,9 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'cif_nif_number' => 'string',
-        'gstin' => 'string',
-        'internal_reference' => 'string'
+        'html' => 'string',
+        'plain_text' => 'string',
+        'updated' => 'string'
     ];
 
     /**
@@ -69,9 +69,9 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'cif_nif_number' => null,
-        'gstin' => null,
-        'internal_reference' => null
+        'html' => null,
+        'plain_text' => null,
+        'updated' => null
     ];
 
     /**
@@ -101,9 +101,9 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'cif_nif_number' => 'cif_nif_number',
-        'gstin' => 'gstin',
-        'internal_reference' => 'internal_reference'
+        'html' => 'html',
+        'plain_text' => 'plain_text',
+        'updated' => 'updated'
     ];
 
     /**
@@ -112,9 +112,9 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'cif_nif_number' => 'setCifNifNumber',
-        'gstin' => 'setGstin',
-        'internal_reference' => 'setInternalReference'
+        'html' => 'setHtml',
+        'plain_text' => 'setPlainText',
+        'updated' => 'setUpdated'
     ];
 
     /**
@@ -123,9 +123,9 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'cif_nif_number' => 'getCifNifNumber',
-        'gstin' => 'getGstin',
-        'internal_reference' => 'getInternalReference'
+        'html' => 'getHtml',
+        'plain_text' => 'getPlainText',
+        'updated' => 'getUpdated'
     ];
 
     /**
@@ -188,9 +188,9 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['cif_nif_number'] = isset($data['cif_nif_number']) ? $data['cif_nif_number'] : null;
-        $this->container['gstin'] = isset($data['gstin']) ? $data['gstin'] : null;
-        $this->container['internal_reference'] = isset($data['internal_reference']) ? $data['internal_reference'] : null;
+        $this->container['html'] = isset($data['html']) ? $data['html'] : null;
+        $this->container['plain_text'] = isset($data['plain_text']) ? $data['plain_text'] : null;
+        $this->container['updated'] = isset($data['updated']) ? $data['updated'] : null;
     }
 
     /**
@@ -218,73 +218,73 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets cif_nif_number
+     * Gets html
      *
      * @return string|null
      */
-    public function getCifNifNumber()
+    public function getHtml()
     {
-        return $this->container['cif_nif_number'];
+        return $this->container['html'];
     }
 
     /**
-     * Sets cif_nif_number
+     * Sets html
      *
-     * @param string|null $cif_nif_number cif_nif_number
+     * @param string|null $html html
      *
      * @return $this
      */
-    public function setCifNifNumber($cif_nif_number)
+    public function setHtml($html)
     {
-        $this->container['cif_nif_number'] = $cif_nif_number;
+        $this->container['html'] = $html;
 
         return $this;
     }
 
     /**
-     * Gets gstin
+     * Gets plain_text
      *
      * @return string|null
      */
-    public function getGstin()
+    public function getPlainText()
     {
-        return $this->container['gstin'];
+        return $this->container['plain_text'];
     }
 
     /**
-     * Sets gstin
+     * Sets plain_text
      *
-     * @param string|null $gstin gstin
+     * @param string|null $plain_text plain_text
      *
      * @return $this
      */
-    public function setGstin($gstin)
+    public function setPlainText($plain_text)
     {
-        $this->container['gstin'] = $gstin;
+        $this->container['plain_text'] = $plain_text;
 
         return $this;
     }
 
     /**
-     * Gets internal_reference
+     * Gets updated
      *
      * @return string|null
      */
-    public function getInternalReference()
+    public function getUpdated()
     {
-        return $this->container['internal_reference'];
+        return $this->container['updated'];
     }
 
     /**
-     * Sets internal_reference
+     * Sets updated
      *
-     * @param string|null $internal_reference internal_reference
+     * @param string|null $updated updated
      *
      * @return $this
      */
-    public function setInternalReference($internal_reference)
+    public function setUpdated($updated)
     {
-        $this->container['internal_reference'] = $internal_reference;
+        $this->container['updated'] = $updated;
 
         return $this;
     }

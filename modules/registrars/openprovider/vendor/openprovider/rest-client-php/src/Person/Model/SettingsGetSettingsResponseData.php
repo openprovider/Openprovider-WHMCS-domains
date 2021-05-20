@@ -91,6 +91,7 @@ class SettingsGetSettingsResponseData implements ModelInterface, ArrayAccess
         'pay_methods' => 'string[]',
         'payment_methods' => '\Openprovider\Api\Rest\Client\Person\Model\SettingsPaymentMethods[]',
         'preregistered_domain_priorities' => 'string',
+        'recurring_payment_methods' => '\Openprovider\Api\Rest\Client\Person\Model\SettingsPaymentMethods[]',
         'renew_notification_days' => 'int[]',
         'renew_notification_every_week' => 'bool',
         'signed_contracts' => '\Openprovider\Api\Rest\Client\Person\Model\SettingsSignedContracts[]',
@@ -139,6 +140,7 @@ class SettingsGetSettingsResponseData implements ModelInterface, ArrayAccess
         'pay_methods' => null,
         'payment_methods' => null,
         'preregistered_domain_priorities' => null,
+        'recurring_payment_methods' => null,
         'renew_notification_days' => 'int32',
         'renew_notification_every_week' => 'boolean',
         'signed_contracts' => null,
@@ -208,6 +210,7 @@ class SettingsGetSettingsResponseData implements ModelInterface, ArrayAccess
         'pay_methods' => 'pay_methods',
         'payment_methods' => 'payment_methods',
         'preregistered_domain_priorities' => 'preregistered_domain_priorities',
+        'recurring_payment_methods' => 'recurring_payment_methods',
         'renew_notification_days' => 'renew_notification_days',
         'renew_notification_every_week' => 'renew_notification_every_week',
         'signed_contracts' => 'signed_contracts',
@@ -256,6 +259,7 @@ class SettingsGetSettingsResponseData implements ModelInterface, ArrayAccess
         'pay_methods' => 'setPayMethods',
         'payment_methods' => 'setPaymentMethods',
         'preregistered_domain_priorities' => 'setPreregisteredDomainPriorities',
+        'recurring_payment_methods' => 'setRecurringPaymentMethods',
         'renew_notification_days' => 'setRenewNotificationDays',
         'renew_notification_every_week' => 'setRenewNotificationEveryWeek',
         'signed_contracts' => 'setSignedContracts',
@@ -304,6 +308,7 @@ class SettingsGetSettingsResponseData implements ModelInterface, ArrayAccess
         'pay_methods' => 'getPayMethods',
         'payment_methods' => 'getPaymentMethods',
         'preregistered_domain_priorities' => 'getPreregisteredDomainPriorities',
+        'recurring_payment_methods' => 'getRecurringPaymentMethods',
         'renew_notification_days' => 'getRenewNotificationDays',
         'renew_notification_every_week' => 'getRenewNotificationEveryWeek',
         'signed_contracts' => 'getSignedContracts',
@@ -406,6 +411,7 @@ class SettingsGetSettingsResponseData implements ModelInterface, ArrayAccess
         $this->container['pay_methods'] = isset($data['pay_methods']) ? $data['pay_methods'] : null;
         $this->container['payment_methods'] = isset($data['payment_methods']) ? $data['payment_methods'] : null;
         $this->container['preregistered_domain_priorities'] = isset($data['preregistered_domain_priorities']) ? $data['preregistered_domain_priorities'] : null;
+        $this->container['recurring_payment_methods'] = isset($data['recurring_payment_methods']) ? $data['recurring_payment_methods'] : null;
         $this->container['renew_notification_days'] = isset($data['renew_notification_days']) ? $data['renew_notification_days'] : null;
         $this->container['renew_notification_every_week'] = isset($data['renew_notification_every_week']) ? $data['renew_notification_every_week'] : null;
         $this->container['signed_contracts'] = isset($data['signed_contracts']) ? $data['signed_contracts'] : null;
@@ -1227,6 +1233,30 @@ class SettingsGetSettingsResponseData implements ModelInterface, ArrayAccess
     public function setPreregisteredDomainPriorities($preregistered_domain_priorities)
     {
         $this->container['preregistered_domain_priorities'] = $preregistered_domain_priorities;
+
+        return $this;
+    }
+
+    /**
+     * Gets recurring_payment_methods
+     *
+     * @return \Openprovider\Api\Rest\Client\Person\Model\SettingsPaymentMethods[]|null
+     */
+    public function getRecurringPaymentMethods()
+    {
+        return $this->container['recurring_payment_methods'];
+    }
+
+    /**
+     * Sets recurring_payment_methods
+     *
+     * @param \Openprovider\Api\Rest\Client\Person\Model\SettingsPaymentMethods[]|null $recurring_payment_methods recurring_payment_methods
+     *
+     * @return $this
+     */
+    public function setRecurringPaymentMethods($recurring_payment_methods)
+    {
+        $this->container['recurring_payment_methods'] = $recurring_payment_methods;
 
         return $this;
     }

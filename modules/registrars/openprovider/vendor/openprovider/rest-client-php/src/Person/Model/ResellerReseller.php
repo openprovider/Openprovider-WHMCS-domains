@@ -74,6 +74,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         'settings' => '\Openprovider\Api\Rest\Client\Person\Model\ResellerSettings',
         'statistics' => '\Openprovider\Api\Rest\Client\Person\Model\ResellerStatistics',
         'status' => 'string',
+        'tier' => 'int',
         'vat' => 'string',
         'vatperc' => 'double'
     ];
@@ -100,6 +101,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         'settings' => null,
         'statistics' => null,
         'status' => null,
+        'tier' => 'int32',
         'vat' => null,
         'vatperc' => 'double'
     ];
@@ -147,6 +149,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         'settings' => 'settings',
         'statistics' => 'statistics',
         'status' => 'status',
+        'tier' => 'tier',
         'vat' => 'vat',
         'vatperc' => 'vatperc'
     ];
@@ -173,6 +176,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         'settings' => 'setSettings',
         'statistics' => 'setStatistics',
         'status' => 'setStatus',
+        'tier' => 'setTier',
         'vat' => 'setVat',
         'vatperc' => 'setVatperc'
     ];
@@ -199,6 +203,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         'settings' => 'getSettings',
         'statistics' => 'getStatistics',
         'status' => 'getStatus',
+        'tier' => 'getTier',
         'vat' => 'getVat',
         'vatperc' => 'getVatperc'
     ];
@@ -279,6 +284,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         $this->container['settings'] = isset($data['settings']) ? $data['settings'] : null;
         $this->container['statistics'] = isset($data['statistics']) ? $data['statistics'] : null;
         $this->container['status'] = isset($data['status']) ? $data['status'] : null;
+        $this->container['tier'] = isset($data['tier']) ? $data['tier'] : null;
         $this->container['vat'] = isset($data['vat']) ? $data['vat'] : null;
         $this->container['vatperc'] = isset($data['vatperc']) ? $data['vatperc'] : null;
     }
@@ -687,6 +693,30 @@ class ResellerReseller implements ModelInterface, ArrayAccess
     public function setStatus($status)
     {
         $this->container['status'] = $status;
+
+        return $this;
+    }
+
+    /**
+     * Gets tier
+     *
+     * @return int|null
+     */
+    public function getTier()
+    {
+        return $this->container['tier'];
+    }
+
+    /**
+     * Sets tier
+     *
+     * @param int|null $tier tier
+     *
+     * @return $this
+     */
+    public function setTier($tier)
+    {
+        $this->container['tier'] = $tier;
 
         return $this;
     }

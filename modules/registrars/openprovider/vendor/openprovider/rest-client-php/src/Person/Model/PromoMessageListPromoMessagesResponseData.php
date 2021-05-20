@@ -1,6 +1,6 @@
 <?php
 /**
- * ResellerResellerAdditionalData
+ * PromoMessageListPromoMessagesResponseData
  *
  * PHP version 5
  *
@@ -34,14 +34,14 @@ use Openprovider\Api\Rest\Client\Base\ObjectSerializer;
 use Openprovider\Api\Rest\Client\Base\ModelInterface;
 
 /**
- * ResellerResellerAdditionalData Class Doc Comment
+ * PromoMessageListPromoMessagesResponseData Class Doc Comment
  *
  * @category Class
  * @package  Openprovider\Api\Rest\Client\Person
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
+class PromoMessageListPromoMessagesResponseData implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'resellerResellerAdditionalData';
+    protected static $openAPIModelName = 'promo_messageListPromoMessagesResponseData';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,9 +58,8 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'cif_nif_number' => 'string',
-        'gstin' => 'string',
-        'internal_reference' => 'string'
+        'results' => '\Openprovider\Api\Rest\Client\Person\Model\PromoMessagePromoMessage[]',
+        'total' => 'int'
     ];
 
     /**
@@ -69,9 +68,8 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'cif_nif_number' => null,
-        'gstin' => null,
-        'internal_reference' => null
+        'results' => null,
+        'total' => 'int32'
     ];
 
     /**
@@ -101,9 +99,8 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'cif_nif_number' => 'cif_nif_number',
-        'gstin' => 'gstin',
-        'internal_reference' => 'internal_reference'
+        'results' => 'results',
+        'total' => 'total'
     ];
 
     /**
@@ -112,9 +109,8 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'cif_nif_number' => 'setCifNifNumber',
-        'gstin' => 'setGstin',
-        'internal_reference' => 'setInternalReference'
+        'results' => 'setResults',
+        'total' => 'setTotal'
     ];
 
     /**
@@ -123,9 +119,8 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'cif_nif_number' => 'getCifNifNumber',
-        'gstin' => 'getGstin',
-        'internal_reference' => 'getInternalReference'
+        'results' => 'getResults',
+        'total' => 'getTotal'
     ];
 
     /**
@@ -188,9 +183,8 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['cif_nif_number'] = isset($data['cif_nif_number']) ? $data['cif_nif_number'] : null;
-        $this->container['gstin'] = isset($data['gstin']) ? $data['gstin'] : null;
-        $this->container['internal_reference'] = isset($data['internal_reference']) ? $data['internal_reference'] : null;
+        $this->container['results'] = isset($data['results']) ? $data['results'] : null;
+        $this->container['total'] = isset($data['total']) ? $data['total'] : null;
     }
 
     /**
@@ -218,73 +212,49 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets cif_nif_number
+     * Gets results
      *
-     * @return string|null
+     * @return \Openprovider\Api\Rest\Client\Person\Model\PromoMessagePromoMessage[]|null
      */
-    public function getCifNifNumber()
+    public function getResults()
     {
-        return $this->container['cif_nif_number'];
+        return $this->container['results'];
     }
 
     /**
-     * Sets cif_nif_number
+     * Sets results
      *
-     * @param string|null $cif_nif_number cif_nif_number
+     * @param \Openprovider\Api\Rest\Client\Person\Model\PromoMessagePromoMessage[]|null $results results
      *
      * @return $this
      */
-    public function setCifNifNumber($cif_nif_number)
+    public function setResults($results)
     {
-        $this->container['cif_nif_number'] = $cif_nif_number;
+        $this->container['results'] = $results;
 
         return $this;
     }
 
     /**
-     * Gets gstin
+     * Gets total
      *
-     * @return string|null
+     * @return int|null
      */
-    public function getGstin()
+    public function getTotal()
     {
-        return $this->container['gstin'];
+        return $this->container['total'];
     }
 
     /**
-     * Sets gstin
+     * Sets total
      *
-     * @param string|null $gstin gstin
+     * @param int|null $total total
      *
      * @return $this
      */
-    public function setGstin($gstin)
+    public function setTotal($total)
     {
-        $this->container['gstin'] = $gstin;
-
-        return $this;
-    }
-
-    /**
-     * Gets internal_reference
-     *
-     * @return string|null
-     */
-    public function getInternalReference()
-    {
-        return $this->container['internal_reference'];
-    }
-
-    /**
-     * Sets internal_reference
-     *
-     * @param string|null $internal_reference internal_reference
-     *
-     * @return $this
-     */
-    public function setInternalReference($internal_reference)
-    {
-        $this->container['internal_reference'] = $internal_reference;
+        $this->container['total'] = $total;
 
         return $this;
     }

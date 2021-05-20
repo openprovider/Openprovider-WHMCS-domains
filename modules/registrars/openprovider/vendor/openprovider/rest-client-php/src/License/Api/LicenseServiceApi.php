@@ -2491,11 +2491,11 @@ class LicenseServiceApi
      * @param  string $order_by_id Object ID. (optional)
      * @param  string $order_by_key_id License key ID. (optional)
      * @param  string $order_by_title Custom license title. (optional)
-     * @param  string $order_by_product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $order_by_product Product type (only Plesk is available). (optional)
      * @param  string $order_by_status License status. (optional)
      * @param  string $order_by_key_number License key number. (optional)
      * @param  string $order_by_expiration_date License expiration date. (optional)
-     * @param  string $product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $product Product type (only Plesk is available). (optional)
      *
      * @throws \Openprovider\Api\Rest\Client\Base\ApiException; on non-2xx response
      * @throws \InvalidArgumentException
@@ -2517,11 +2517,11 @@ class LicenseServiceApi
      * @param  string $order_by_id Object ID. (optional)
      * @param  string $order_by_key_id License key ID. (optional)
      * @param  string $order_by_title Custom license title. (optional)
-     * @param  string $order_by_product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $order_by_product Product type (only Plesk is available). (optional)
      * @param  string $order_by_status License status. (optional)
      * @param  string $order_by_key_number License key number. (optional)
      * @param  string $order_by_expiration_date License expiration date. (optional)
-     * @param  string $product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $product Product type (only Plesk is available). (optional)
      *
      * @throws Openprovider\Api\Rest\Client\Base\ApiException; on non-2xx response
      * @throws \InvalidArgumentException
@@ -2634,11 +2634,11 @@ class LicenseServiceApi
      * @param  string $order_by_id Object ID. (optional)
      * @param  string $order_by_key_id License key ID. (optional)
      * @param  string $order_by_title Custom license title. (optional)
-     * @param  string $order_by_product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $order_by_product Product type (only Plesk is available). (optional)
      * @param  string $order_by_status License status. (optional)
      * @param  string $order_by_key_number License key number. (optional)
      * @param  string $order_by_expiration_date License expiration date. (optional)
-     * @param  string $product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $product Product type (only Plesk is available). (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Promise\PromiseInterface
@@ -2663,11 +2663,11 @@ class LicenseServiceApi
      * @param  string $order_by_id Object ID. (optional)
      * @param  string $order_by_key_id License key ID. (optional)
      * @param  string $order_by_title Custom license title. (optional)
-     * @param  string $order_by_product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $order_by_product Product type (only Plesk is available). (optional)
      * @param  string $order_by_status License status. (optional)
      * @param  string $order_by_key_number License key number. (optional)
      * @param  string $order_by_expiration_date License expiration date. (optional)
-     * @param  string $product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $product Product type (only Plesk is available). (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Promise\PromiseInterface
@@ -2719,11 +2719,11 @@ class LicenseServiceApi
      * @param  string $order_by_id Object ID. (optional)
      * @param  string $order_by_key_id License key ID. (optional)
      * @param  string $order_by_title Custom license title. (optional)
-     * @param  string $order_by_product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $order_by_product Product type (only Plesk is available). (optional)
      * @param  string $order_by_status License status. (optional)
      * @param  string $order_by_key_number License key number. (optional)
      * @param  string $order_by_expiration_date License expiration date. (optional)
-     * @param  string $product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $product Product type (only Plesk is available). (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Psr7\Request
@@ -2859,11 +2859,11 @@ class LicenseServiceApi
      * @param  string $order_by_id Object ID. (optional)
      * @param  string $order_by_key_id License key ID. (optional)
      * @param  string $order_by_title Custom license title. (optional)
-     * @param  string $order_by_product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $order_by_product Product type (only Plesk is available). (optional)
      * @param  string $order_by_status License status. (optional)
      * @param  string $order_by_key_number License key number. (optional)
      * @param  string $order_by_expiration_date License expiration date. (optional)
-     * @param  string $product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $product Product type (only Plesk is available). (optional)
      * @param  string $key_number License key number. (optional)
      * @param  string $title_pattern Custom title pattern. Wildcard (*) can be sued. (optional)
      * @param  string $key_number_pattern License key number pattern. Wildcard (*) can be used. (optional)
@@ -2890,11 +2890,11 @@ class LicenseServiceApi
      * @param  string $order_by_id Object ID. (optional)
      * @param  string $order_by_key_id License key ID. (optional)
      * @param  string $order_by_title Custom license title. (optional)
-     * @param  string $order_by_product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $order_by_product Product type (only Plesk is available). (optional)
      * @param  string $order_by_status License status. (optional)
      * @param  string $order_by_key_number License key number. (optional)
      * @param  string $order_by_expiration_date License expiration date. (optional)
-     * @param  string $product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $product Product type (only Plesk is available). (optional)
      * @param  string $key_number License key number. (optional)
      * @param  string $title_pattern Custom title pattern. Wildcard (*) can be sued. (optional)
      * @param  string $key_number_pattern License key number pattern. Wildcard (*) can be used. (optional)
@@ -3012,11 +3012,11 @@ class LicenseServiceApi
      * @param  string $order_by_id Object ID. (optional)
      * @param  string $order_by_key_id License key ID. (optional)
      * @param  string $order_by_title Custom license title. (optional)
-     * @param  string $order_by_product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $order_by_product Product type (only Plesk is available). (optional)
      * @param  string $order_by_status License status. (optional)
      * @param  string $order_by_key_number License key number. (optional)
      * @param  string $order_by_expiration_date License expiration date. (optional)
-     * @param  string $product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $product Product type (only Plesk is available). (optional)
      * @param  string $key_number License key number. (optional)
      * @param  string $title_pattern Custom title pattern. Wildcard (*) can be sued. (optional)
      * @param  string $key_number_pattern License key number pattern. Wildcard (*) can be used. (optional)
@@ -3046,11 +3046,11 @@ class LicenseServiceApi
      * @param  string $order_by_id Object ID. (optional)
      * @param  string $order_by_key_id License key ID. (optional)
      * @param  string $order_by_title Custom license title. (optional)
-     * @param  string $order_by_product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $order_by_product Product type (only Plesk is available). (optional)
      * @param  string $order_by_status License status. (optional)
      * @param  string $order_by_key_number License key number. (optional)
      * @param  string $order_by_expiration_date License expiration date. (optional)
-     * @param  string $product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $product Product type (only Plesk is available). (optional)
      * @param  string $key_number License key number. (optional)
      * @param  string $title_pattern Custom title pattern. Wildcard (*) can be sued. (optional)
      * @param  string $key_number_pattern License key number pattern. Wildcard (*) can be used. (optional)
@@ -3107,11 +3107,11 @@ class LicenseServiceApi
      * @param  string $order_by_id Object ID. (optional)
      * @param  string $order_by_key_id License key ID. (optional)
      * @param  string $order_by_title Custom license title. (optional)
-     * @param  string $order_by_product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $order_by_product Product type (only Plesk is available). (optional)
      * @param  string $order_by_status License status. (optional)
      * @param  string $order_by_key_number License key number. (optional)
      * @param  string $order_by_expiration_date License expiration date. (optional)
-     * @param  string $product Product type (Plesk or Virtuozzo). (optional)
+     * @param  string $product Product type (only Plesk is available). (optional)
      * @param  string $key_number License key number. (optional)
      * @param  string $title_pattern Custom title pattern. Wildcard (*) can be sued. (optional)
      * @param  string $key_number_pattern License key number pattern. Wildcard (*) can be used. (optional)
@@ -3949,7 +3949,7 @@ class LicenseServiceApi
      *
      * Reset hwid
      *
-     * @param  string $product Product type (Plesk or Virtuozzo) (required)
+     * @param  string $product Product type (only Plesk is available) (required)
      * @param  int $key_id License key ID (required)
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseResetHwidRequest $body body (required)
      *
@@ -3968,7 +3968,7 @@ class LicenseServiceApi
      *
      * Reset hwid
      *
-     * @param  string $product Product type (Plesk or Virtuozzo) (required)
+     * @param  string $product Product type (only Plesk is available) (required)
      * @param  int $key_id License key ID (required)
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseResetHwidRequest $body (required)
      *
@@ -4078,7 +4078,7 @@ class LicenseServiceApi
      *
      * Reset hwid
      *
-     * @param  string $product Product type (Plesk or Virtuozzo) (required)
+     * @param  string $product Product type (only Plesk is available) (required)
      * @param  int $key_id License key ID (required)
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseResetHwidRequest $body (required)
      *
@@ -4100,7 +4100,7 @@ class LicenseServiceApi
      *
      * Reset hwid
      *
-     * @param  string $product Product type (Plesk or Virtuozzo) (required)
+     * @param  string $product Product type (only Plesk is available) (required)
      * @param  int $key_id License key ID (required)
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseResetHwidRequest $body (required)
      *
@@ -4149,7 +4149,7 @@ class LicenseServiceApi
     /**
      * Create request for operation 'resetHwid'
      *
-     * @param  string $product Product type (Plesk or Virtuozzo) (required)
+     * @param  string $product Product type (only Plesk is available) (required)
      * @param  int $key_id License key ID (required)
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseResetHwidRequest $body (required)
      *

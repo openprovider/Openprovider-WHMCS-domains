@@ -11,6 +11,7 @@ use Openprovider\Api\Rest\Client\Base\HeaderSelector;
 use Openprovider\Api\Rest\Client\Person\Api\ContactServiceApi;
 use Openprovider\Api\Rest\Client\Person\Api\CustomerApi;
 use Openprovider\Api\Rest\Client\Person\Api\EmailVerificationApi;
+use Openprovider\Api\Rest\Client\Person\Api\PromoMessageServiceApi;
 use Openprovider\Api\Rest\Client\Person\Api\ResellerServiceApi;
 use Openprovider\Api\Rest\Client\Person\Api\SettingsApi;
 use Openprovider\Api\Rest\Client\Person\Api\StatisticsApi;
@@ -25,6 +26,9 @@ class PersonModule
 
     /** @var EmailVerificationApi */
     protected $EmailVerificationApi;
+
+    /** @var PromoMessageServiceApi */
+    protected $PromoMessageServiceApi;
 
     /** @var ResellerServiceApi */
     protected $ResellerServiceApi;
@@ -50,6 +54,7 @@ class PersonModule
         $this->ContactServiceApi = new ContactServiceApi($client, $config, $selector, $host_index);
 	    $this->CustomerApi = new CustomerApi($client, $config, $selector, $host_index);
 	    $this->EmailVerificationApi = new EmailVerificationApi($client, $config, $selector, $host_index);
+	    $this->PromoMessageServiceApi = new PromoMessageServiceApi($client, $config, $selector, $host_index);
 	    $this->ResellerServiceApi = new ResellerServiceApi($client, $config, $selector, $host_index);
 	    $this->SettingsApi = new SettingsApi($client, $config, $selector, $host_index);
 	    $this->StatisticsApi = new StatisticsApi($client, $config, $selector, $host_index);
@@ -80,6 +85,15 @@ class PersonModule
     public function getEmailVerificationApi() 
     {
       return $this->EmailVerificationApi;
+    }
+
+    /**
+     * Gets PromoMessageServiceApi api.
+     * @return PromoMessageServiceApi
+     */
+    public function getPromoMessageServiceApi() 
+    {
+      return $this->PromoMessageServiceApi;
     }
 
     /**

@@ -67,6 +67,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         'comments' => 'string',
         'dnssec_keys' => '\Openprovider\Api\Rest\Client\Domain\Model\DomainDnssecKey[]',
         'domain' => '\Openprovider\Api\Rest\Client\Domain\Model\DomainDomain',
+        'force_registry_update' => 'bool',
         'id' => 'int',
         'is_dnssec_enabled' => 'bool',
         'is_locked' => 'bool',
@@ -77,6 +78,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         'ns_template_id' => 'int',
         'ns_template_name' => 'string',
         'owner_handle' => 'string',
+        'remove_nses' => 'bool',
         'reseller_handle' => 'string',
         'reset_auth_code' => 'bool',
         'scheduled_at' => 'string',
@@ -99,6 +101,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         'comments' => null,
         'dnssec_keys' => null,
         'domain' => null,
+        'force_registry_update' => 'boolean',
         'id' => 'int32',
         'is_dnssec_enabled' => 'boolean',
         'is_locked' => 'boolean',
@@ -109,6 +112,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         'ns_template_id' => 'int32',
         'ns_template_name' => null,
         'owner_handle' => null,
+        'remove_nses' => 'boolean',
         'reseller_handle' => null,
         'reset_auth_code' => 'boolean',
         'scheduled_at' => null,
@@ -152,6 +156,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         'comments' => 'comments',
         'dnssec_keys' => 'dnssec_keys',
         'domain' => 'domain',
+        'force_registry_update' => 'force_registry_update',
         'id' => 'id',
         'is_dnssec_enabled' => 'is_dnssec_enabled',
         'is_locked' => 'is_locked',
@@ -162,6 +167,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         'ns_template_id' => 'ns_template_id',
         'ns_template_name' => 'ns_template_name',
         'owner_handle' => 'owner_handle',
+        'remove_nses' => 'remove_nses',
         'reseller_handle' => 'reseller_handle',
         'reset_auth_code' => 'reset_auth_code',
         'scheduled_at' => 'scheduled_at',
@@ -184,6 +190,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         'comments' => 'setComments',
         'dnssec_keys' => 'setDnssecKeys',
         'domain' => 'setDomain',
+        'force_registry_update' => 'setForceRegistryUpdate',
         'id' => 'setId',
         'is_dnssec_enabled' => 'setIsDnssecEnabled',
         'is_locked' => 'setIsLocked',
@@ -194,6 +201,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         'ns_template_id' => 'setNsTemplateId',
         'ns_template_name' => 'setNsTemplateName',
         'owner_handle' => 'setOwnerHandle',
+        'remove_nses' => 'setRemoveNses',
         'reseller_handle' => 'setResellerHandle',
         'reset_auth_code' => 'setResetAuthCode',
         'scheduled_at' => 'setScheduledAt',
@@ -216,6 +224,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         'comments' => 'getComments',
         'dnssec_keys' => 'getDnssecKeys',
         'domain' => 'getDomain',
+        'force_registry_update' => 'getForceRegistryUpdate',
         'id' => 'getId',
         'is_dnssec_enabled' => 'getIsDnssecEnabled',
         'is_locked' => 'getIsLocked',
@@ -226,6 +235,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         'ns_template_id' => 'getNsTemplateId',
         'ns_template_name' => 'getNsTemplateName',
         'owner_handle' => 'getOwnerHandle',
+        'remove_nses' => 'getRemoveNses',
         'reseller_handle' => 'getResellerHandle',
         'reset_auth_code' => 'getResetAuthCode',
         'scheduled_at' => 'getScheduledAt',
@@ -302,6 +312,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         $this->container['comments'] = isset($data['comments']) ? $data['comments'] : null;
         $this->container['dnssec_keys'] = isset($data['dnssec_keys']) ? $data['dnssec_keys'] : null;
         $this->container['domain'] = isset($data['domain']) ? $data['domain'] : null;
+        $this->container['force_registry_update'] = isset($data['force_registry_update']) ? $data['force_registry_update'] : null;
         $this->container['id'] = isset($data['id']) ? $data['id'] : null;
         $this->container['is_dnssec_enabled'] = isset($data['is_dnssec_enabled']) ? $data['is_dnssec_enabled'] : null;
         $this->container['is_locked'] = isset($data['is_locked']) ? $data['is_locked'] : null;
@@ -312,6 +323,7 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
         $this->container['ns_template_id'] = isset($data['ns_template_id']) ? $data['ns_template_id'] : null;
         $this->container['ns_template_name'] = isset($data['ns_template_name']) ? $data['ns_template_name'] : null;
         $this->container['owner_handle'] = isset($data['owner_handle']) ? $data['owner_handle'] : null;
+        $this->container['remove_nses'] = isset($data['remove_nses']) ? $data['remove_nses'] : null;
         $this->container['reseller_handle'] = isset($data['reseller_handle']) ? $data['reseller_handle'] : null;
         $this->container['reset_auth_code'] = isset($data['reset_auth_code']) ? $data['reset_auth_code'] : null;
         $this->container['scheduled_at'] = isset($data['scheduled_at']) ? $data['scheduled_at'] : null;
@@ -560,6 +572,30 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets force_registry_update
+     *
+     * @return bool|null
+     */
+    public function getForceRegistryUpdate()
+    {
+        return $this->container['force_registry_update'];
+    }
+
+    /**
+     * Sets force_registry_update
+     *
+     * @param bool|null $force_registry_update force_registry_update
+     *
+     * @return $this
+     */
+    public function setForceRegistryUpdate($force_registry_update)
+    {
+        $this->container['force_registry_update'] = $force_registry_update;
+
+        return $this;
+    }
+
+    /**
      * Gets id
      *
      * @return int|null
@@ -795,6 +831,30 @@ class DomainUpdateDomainRequest implements ModelInterface, ArrayAccess
     public function setOwnerHandle($owner_handle)
     {
         $this->container['owner_handle'] = $owner_handle;
+
+        return $this;
+    }
+
+    /**
+     * Gets remove_nses
+     *
+     * @return bool|null
+     */
+    public function getRemoveNses()
+    {
+        return $this->container['remove_nses'];
+    }
+
+    /**
+     * Sets remove_nses
+     *
+     * @param bool|null $remove_nses remove_nses
+     *
+     * @return $this
+     */
+    public function setRemoveNses($remove_nses)
+    {
+        $this->container['remove_nses'] = $remove_nses;
 
         return $this;
     }

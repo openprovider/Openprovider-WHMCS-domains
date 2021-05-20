@@ -1,6 +1,6 @@
 <?php
 /**
- * ResellerResellerAdditionalData
+ * PromoMessageListPromoMessagesResponse
  *
  * PHP version 5
  *
@@ -34,14 +34,14 @@ use Openprovider\Api\Rest\Client\Base\ObjectSerializer;
 use Openprovider\Api\Rest\Client\Base\ModelInterface;
 
 /**
- * ResellerResellerAdditionalData Class Doc Comment
+ * PromoMessageListPromoMessagesResponse Class Doc Comment
  *
  * @category Class
  * @package  Openprovider\Api\Rest\Client\Person
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
  */
-class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
+class PromoMessageListPromoMessagesResponse implements ModelInterface, ArrayAccess
 {
     const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
       *
       * @var string
       */
-    protected static $openAPIModelName = 'resellerResellerAdditionalData';
+    protected static $openAPIModelName = 'promo_messageListPromoMessagesResponse';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,9 +58,11 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
-        'cif_nif_number' => 'string',
-        'gstin' => 'string',
-        'internal_reference' => 'string'
+        'code' => 'int',
+        'data' => '\Openprovider\Api\Rest\Client\Person\Model\PromoMessageListPromoMessagesResponseData',
+        'desc' => 'string',
+        'maintenance' => 'bool',
+        'warnings' => '\Openprovider\Api\Rest\Client\Person\Model\ErrorWarning[]'
     ];
 
     /**
@@ -69,9 +71,11 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
-        'cif_nif_number' => null,
-        'gstin' => null,
-        'internal_reference' => null
+        'code' => 'int32',
+        'data' => null,
+        'desc' => null,
+        'maintenance' => 'boolean',
+        'warnings' => null
     ];
 
     /**
@@ -101,9 +105,11 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
-        'cif_nif_number' => 'cif_nif_number',
-        'gstin' => 'gstin',
-        'internal_reference' => 'internal_reference'
+        'code' => 'code',
+        'data' => 'data',
+        'desc' => 'desc',
+        'maintenance' => 'maintenance',
+        'warnings' => 'warnings'
     ];
 
     /**
@@ -112,9 +118,11 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
-        'cif_nif_number' => 'setCifNifNumber',
-        'gstin' => 'setGstin',
-        'internal_reference' => 'setInternalReference'
+        'code' => 'setCode',
+        'data' => 'setData',
+        'desc' => 'setDesc',
+        'maintenance' => 'setMaintenance',
+        'warnings' => 'setWarnings'
     ];
 
     /**
@@ -123,9 +131,11 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
-        'cif_nif_number' => 'getCifNifNumber',
-        'gstin' => 'getGstin',
-        'internal_reference' => 'getInternalReference'
+        'code' => 'getCode',
+        'data' => 'getData',
+        'desc' => 'getDesc',
+        'maintenance' => 'getMaintenance',
+        'warnings' => 'getWarnings'
     ];
 
     /**
@@ -188,9 +198,11 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
-        $this->container['cif_nif_number'] = isset($data['cif_nif_number']) ? $data['cif_nif_number'] : null;
-        $this->container['gstin'] = isset($data['gstin']) ? $data['gstin'] : null;
-        $this->container['internal_reference'] = isset($data['internal_reference']) ? $data['internal_reference'] : null;
+        $this->container['code'] = isset($data['code']) ? $data['code'] : null;
+        $this->container['data'] = isset($data['data']) ? $data['data'] : null;
+        $this->container['desc'] = isset($data['desc']) ? $data['desc'] : null;
+        $this->container['maintenance'] = isset($data['maintenance']) ? $data['maintenance'] : null;
+        $this->container['warnings'] = isset($data['warnings']) ? $data['warnings'] : null;
     }
 
     /**
@@ -218,73 +230,121 @@ class ResellerResellerAdditionalData implements ModelInterface, ArrayAccess
 
 
     /**
-     * Gets cif_nif_number
+     * Gets code
      *
-     * @return string|null
+     * @return int|null
      */
-    public function getCifNifNumber()
+    public function getCode()
     {
-        return $this->container['cif_nif_number'];
+        return $this->container['code'];
     }
 
     /**
-     * Sets cif_nif_number
+     * Sets code
      *
-     * @param string|null $cif_nif_number cif_nif_number
+     * @param int|null $code code
      *
      * @return $this
      */
-    public function setCifNifNumber($cif_nif_number)
+    public function setCode($code)
     {
-        $this->container['cif_nif_number'] = $cif_nif_number;
+        $this->container['code'] = $code;
 
         return $this;
     }
 
     /**
-     * Gets gstin
+     * Gets data
      *
-     * @return string|null
+     * @return \Openprovider\Api\Rest\Client\Person\Model\PromoMessageListPromoMessagesResponseData|null
      */
-    public function getGstin()
+    public function getData()
     {
-        return $this->container['gstin'];
+        return $this->container['data'];
     }
 
     /**
-     * Sets gstin
+     * Sets data
      *
-     * @param string|null $gstin gstin
+     * @param \Openprovider\Api\Rest\Client\Person\Model\PromoMessageListPromoMessagesResponseData|null $data data
      *
      * @return $this
      */
-    public function setGstin($gstin)
+    public function setData($data)
     {
-        $this->container['gstin'] = $gstin;
+        $this->container['data'] = $data;
 
         return $this;
     }
 
     /**
-     * Gets internal_reference
+     * Gets desc
      *
      * @return string|null
      */
-    public function getInternalReference()
+    public function getDesc()
     {
-        return $this->container['internal_reference'];
+        return $this->container['desc'];
     }
 
     /**
-     * Sets internal_reference
+     * Sets desc
      *
-     * @param string|null $internal_reference internal_reference
+     * @param string|null $desc desc
      *
      * @return $this
      */
-    public function setInternalReference($internal_reference)
+    public function setDesc($desc)
     {
-        $this->container['internal_reference'] = $internal_reference;
+        $this->container['desc'] = $desc;
+
+        return $this;
+    }
+
+    /**
+     * Gets maintenance
+     *
+     * @return bool|null
+     */
+    public function getMaintenance()
+    {
+        return $this->container['maintenance'];
+    }
+
+    /**
+     * Sets maintenance
+     *
+     * @param bool|null $maintenance maintenance
+     *
+     * @return $this
+     */
+    public function setMaintenance($maintenance)
+    {
+        $this->container['maintenance'] = $maintenance;
+
+        return $this;
+    }
+
+    /**
+     * Gets warnings
+     *
+     * @return \Openprovider\Api\Rest\Client\Person\Model\ErrorWarning[]|null
+     */
+    public function getWarnings()
+    {
+        return $this->container['warnings'];
+    }
+
+    /**
+     * Sets warnings
+     *
+     * @param \Openprovider\Api\Rest\Client\Person\Model\ErrorWarning[]|null $warnings warnings
+     *
+     * @return $this
+     */
+    public function setWarnings($warnings)
+    {
+        $this->container['warnings'] = $warnings;
 
         return $this;
     }

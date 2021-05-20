@@ -68,13 +68,15 @@ class CustomerCustomerAdditionalData implements ModelInterface, ArrayAccess
         'company_registration_city' => 'string',
         'company_registration_number' => 'string',
         'company_registration_subscription_date' => 'string',
+        'company_url' => 'string',
         'headquarters_address' => 'string',
         'headquarters_city' => 'string',
         'headquarters_country' => 'string',
         'headquarters_state' => 'string',
         'headquarters_zipcode' => 'string',
         'passport_number' => 'string',
-        'social_security_number' => 'string'
+        'social_security_number' => 'string',
+        'trading_name' => 'string'
     ];
 
     /**
@@ -93,13 +95,15 @@ class CustomerCustomerAdditionalData implements ModelInterface, ArrayAccess
         'company_registration_city' => null,
         'company_registration_number' => null,
         'company_registration_subscription_date' => null,
+        'company_url' => null,
         'headquarters_address' => null,
         'headquarters_city' => null,
         'headquarters_country' => null,
         'headquarters_state' => null,
         'headquarters_zipcode' => null,
         'passport_number' => null,
-        'social_security_number' => null
+        'social_security_number' => null,
+        'trading_name' => null
     ];
 
     /**
@@ -139,13 +143,15 @@ class CustomerCustomerAdditionalData implements ModelInterface, ArrayAccess
         'company_registration_city' => 'company_registration_city',
         'company_registration_number' => 'company_registration_number',
         'company_registration_subscription_date' => 'company_registration_subscription_date',
+        'company_url' => 'company_url',
         'headquarters_address' => 'headquarters_address',
         'headquarters_city' => 'headquarters_city',
         'headquarters_country' => 'headquarters_country',
         'headquarters_state' => 'headquarters_state',
         'headquarters_zipcode' => 'headquarters_zipcode',
         'passport_number' => 'passport_number',
-        'social_security_number' => 'social_security_number'
+        'social_security_number' => 'social_security_number',
+        'trading_name' => 'trading_name'
     ];
 
     /**
@@ -164,13 +170,15 @@ class CustomerCustomerAdditionalData implements ModelInterface, ArrayAccess
         'company_registration_city' => 'setCompanyRegistrationCity',
         'company_registration_number' => 'setCompanyRegistrationNumber',
         'company_registration_subscription_date' => 'setCompanyRegistrationSubscriptionDate',
+        'company_url' => 'setCompanyUrl',
         'headquarters_address' => 'setHeadquartersAddress',
         'headquarters_city' => 'setHeadquartersCity',
         'headquarters_country' => 'setHeadquartersCountry',
         'headquarters_state' => 'setHeadquartersState',
         'headquarters_zipcode' => 'setHeadquartersZipcode',
         'passport_number' => 'setPassportNumber',
-        'social_security_number' => 'setSocialSecurityNumber'
+        'social_security_number' => 'setSocialSecurityNumber',
+        'trading_name' => 'setTradingName'
     ];
 
     /**
@@ -189,13 +197,15 @@ class CustomerCustomerAdditionalData implements ModelInterface, ArrayAccess
         'company_registration_city' => 'getCompanyRegistrationCity',
         'company_registration_number' => 'getCompanyRegistrationNumber',
         'company_registration_subscription_date' => 'getCompanyRegistrationSubscriptionDate',
+        'company_url' => 'getCompanyUrl',
         'headquarters_address' => 'getHeadquartersAddress',
         'headquarters_city' => 'getHeadquartersCity',
         'headquarters_country' => 'getHeadquartersCountry',
         'headquarters_state' => 'getHeadquartersState',
         'headquarters_zipcode' => 'getHeadquartersZipcode',
         'passport_number' => 'getPassportNumber',
-        'social_security_number' => 'getSocialSecurityNumber'
+        'social_security_number' => 'getSocialSecurityNumber',
+        'trading_name' => 'getTradingName'
     ];
 
     /**
@@ -268,6 +278,7 @@ class CustomerCustomerAdditionalData implements ModelInterface, ArrayAccess
         $this->container['company_registration_city'] = isset($data['company_registration_city']) ? $data['company_registration_city'] : null;
         $this->container['company_registration_number'] = isset($data['company_registration_number']) ? $data['company_registration_number'] : null;
         $this->container['company_registration_subscription_date'] = isset($data['company_registration_subscription_date']) ? $data['company_registration_subscription_date'] : null;
+        $this->container['company_url'] = isset($data['company_url']) ? $data['company_url'] : null;
         $this->container['headquarters_address'] = isset($data['headquarters_address']) ? $data['headquarters_address'] : null;
         $this->container['headquarters_city'] = isset($data['headquarters_city']) ? $data['headquarters_city'] : null;
         $this->container['headquarters_country'] = isset($data['headquarters_country']) ? $data['headquarters_country'] : null;
@@ -275,6 +286,7 @@ class CustomerCustomerAdditionalData implements ModelInterface, ArrayAccess
         $this->container['headquarters_zipcode'] = isset($data['headquarters_zipcode']) ? $data['headquarters_zipcode'] : null;
         $this->container['passport_number'] = isset($data['passport_number']) ? $data['passport_number'] : null;
         $this->container['social_security_number'] = isset($data['social_security_number']) ? $data['social_security_number'] : null;
+        $this->container['trading_name'] = isset($data['trading_name']) ? $data['trading_name'] : null;
     }
 
     /**
@@ -542,6 +554,30 @@ class CustomerCustomerAdditionalData implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets company_url
+     *
+     * @return string|null
+     */
+    public function getCompanyUrl()
+    {
+        return $this->container['company_url'];
+    }
+
+    /**
+     * Sets company_url
+     *
+     * @param string|null $company_url company_url
+     *
+     * @return $this
+     */
+    public function setCompanyUrl($company_url)
+    {
+        $this->container['company_url'] = $company_url;
+
+        return $this;
+    }
+
+    /**
      * Gets headquarters_address
      *
      * @return string|null
@@ -705,6 +741,30 @@ class CustomerCustomerAdditionalData implements ModelInterface, ArrayAccess
     public function setSocialSecurityNumber($social_security_number)
     {
         $this->container['social_security_number'] = $social_security_number;
+
+        return $this;
+    }
+
+    /**
+     * Gets trading_name
+     *
+     * @return string|null
+     */
+    public function getTradingName()
+    {
+        return $this->container['trading_name'];
+    }
+
+    /**
+     * Sets trading_name
+     *
+     * @param string|null $trading_name trading_name
+     *
+     * @return $this
+     */
+    public function setTradingName($trading_name)
+    {
+        $this->container['trading_name'] = $trading_name;
 
         return $this;
     }
