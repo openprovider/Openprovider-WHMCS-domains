@@ -69,6 +69,7 @@ First Make sure that the currency that you are using to pay Openprovider is conf
 
 1. Enable **Support premium domains**
 2. Save Changes.
+3. In the Advanced configuraiton file of the module ( `/modules/registrars/openprovider/configuration/advanced-module-configurations.php`) find the parameter "OpenproviderPremium" and set to **true**
 
 ### Allow additional DNS records
 
