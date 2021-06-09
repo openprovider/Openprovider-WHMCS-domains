@@ -3233,6 +3233,298 @@ class DomainServiceApi
     }
 
     /**
+     * Operation suggestNameDomain
+     *
+     * Suggest name domain
+     *
+     * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainRequest $body body (required)
+     *
+     * @throws \Openprovider\Api\Rest\Client\Base\ApiException; on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainResponse|\Openprovider\Api\Rest\Client\Domain\Model\ErrorError
+     */
+    public function suggestNameDomain($body)
+    {
+        list($response) = $this->suggestNameDomainWithHttpInfo($body);
+        return $response;
+    }
+
+    /**
+     * Operation suggestNameDomainWithHttpInfo
+     *
+     * Suggest name domain
+     *
+     * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainRequest $body (required)
+     *
+     * @throws Openprovider\Api\Rest\Client\Base\ApiException; on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainResponse|\Openprovider\Api\Rest\Client\Domain\Model\ErrorError, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function suggestNameDomainWithHttpInfo($body)
+    {
+        $request = $this->suggestNameDomainRequest($body);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('\Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainResponse' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                default:
+                    if ('\Openprovider\Api\Rest\Client\Domain\Model\ErrorError' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Openprovider\Api\Rest\Client\Domain\Model\ErrorError', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainResponse';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = $responseBody->getContents();
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Openprovider\Api\Rest\Client\Domain\Model\ErrorError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation suggestNameDomainAsync
+     *
+     * Suggest name domain
+     *
+     * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainRequest $body (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Promise\PromiseInterface
+     */
+    public function suggestNameDomainAsync($body)
+    {
+        return $this->suggestNameDomainAsyncWithHttpInfo($body)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation suggestNameDomainAsyncWithHttpInfo
+     *
+     * Suggest name domain
+     *
+     * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainRequest $body (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Promise\PromiseInterface
+     */
+    public function suggestNameDomainAsyncWithHttpInfo($body)
+    {
+        $returnType = '\Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainResponse';
+        $request = $this->suggestNameDomainRequest($body);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'suggestNameDomain'
+     *
+     * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainRequest $body (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Psr7\Request
+     */
+    protected function suggestNameDomainRequest($body)
+    {
+        // verify the required parameter 'body' is set
+        if ($body === null || (is_array($body) && count($body) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $body when calling suggestNameDomain'
+            );
+        }
+
+        $resourcePath = '/v1beta/domains/suggest-name';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // body params
+        $_tempBody = null;
+        if (isset($body)) {
+            $_tempBody = $body;
+        }
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/json'],
+                ['application/json']
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = \GuzzleHttp6\Psr7\build_query($formParams);
+            }
+        }
+
+        // this endpoint requires API key authentication
+        $apiKey = $this->config->getApiKeyWithPrefix('Authorization');
+        if ($apiKey !== null) {
+            $headers['Authorization'] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = \GuzzleHttp6\Psr7\build_query($queryParams);
+        return new Request(
+            'POST',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation tradeDomain
      *
      * Trade domain

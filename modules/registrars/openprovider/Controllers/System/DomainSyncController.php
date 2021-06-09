@@ -74,8 +74,10 @@ class DomainSyncController extends BaseController
             // get data from op
             $this->api_domain   = DomainFullNameToDomainObject::convert($this->domain->domain);
 
-            $domainOp   = $this->apiHelper->getDomain($this->api_domain);
-            $expiration_date    = Carbon::createFromFormat('Y-m-d H:i:s', $domainOp['expirationDate'], 'Europe/Amsterdam');
+            $domainOp = $this->apiHelper->getDomain($this->api_domain);
+
+            $expiration_date = (Carbon::createFromFormat('Y-m-d H:i:s', $domainOp['expirationDate'], 'Europe/Amsterdam'))
+                ->toDateString();
 
             if(in_array($domainOp['status'], self::DOMAIN_STATUSES_ACTIVE)) {
                 // auto renew on or not? -> WHMCS is leading.

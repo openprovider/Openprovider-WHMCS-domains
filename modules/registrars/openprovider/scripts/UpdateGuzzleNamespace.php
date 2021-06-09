@@ -42,7 +42,7 @@ class UpdateGuzzleNamespace
 
             $filePath = "{$pathDir}/{$element}";
             $fileContent = file_get_contents($filePath);
-            $fileContent = preg_replace('/GuzzleHttp6*/', 'GuzzleHttp6', $fileContent);
+            $fileContent = preg_replace('/GuzzleHttp(6|7)*/', 'GuzzleHttp6', $fileContent);
             file_put_contents($filePath, $fileContent);
         }
     }
