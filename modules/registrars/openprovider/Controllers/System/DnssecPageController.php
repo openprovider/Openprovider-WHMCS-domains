@@ -2,13 +2,14 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
+use WHMCS\ClientArea;
+use WHMCS\Authentication\CurrentUser;
 use OpenProvider\API\APIConfig;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
-use WHMCS\ClientArea;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
-use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 /**
  * Class DnssecPageController
@@ -41,16 +42,24 @@ class DnssecPageController extends BaseController
 
         $ca->setPageTitle(self::PAGE_NAME);
 
+        $currentUser = new CurrentUser();
+        $authUser = $currentUser->user();
+        $selectedClient = $currentUser->client();
+
+        if (!$authUser || !$selectedClient) {
+            $this->redirectUserAway();
+            return;
+        }
+
         $domainId = $_GET['domainid'];
         $domain = \WHMCS\Database\Capsule::table('tbldomains')
             ->where('id', $domainId)
+            ->where('userid', $selectedClient->id)
             ->first();
 
-        if (!$domain->dnsmanagement && isset($_SERVER['HTTP_REFERER'])) {
-            header('Location: ' . $_SERVER['HTTP_REFERER']);
-        }
-        elseif (!$domain->dnsmanagement) {
-            header('Location: ' . '/');
+        if (!$domain || !$domain->dnsmanagement) {
+            $this->redirectUserAway();
+            return;
         }
 
         $domainObj = DomainFullNameToDomainObject::convert($domain->domain);
@@ -68,7 +77,8 @@ class DnssecPageController extends BaseController
                 $openproviderNameserversCount++;
             }
         } catch (\Exception $e) {
-            header('Location: ' . $_SERVER["HTTP_REFERER"]);
+            $this->redirectUserAway();
+            return;
         }
 
         $ca->assign('dnssecKeys', $dnssecKeys);
@@ -132,5 +142,15 @@ class DnssecPageController extends BaseController
         $ca->setTemplate('/modules/registrars/openprovider/includes/templates/dnssec.tpl');
 
         $ca->output();
+    }
+
+    private function redirectUserAway()
+    {
+        if (isset($_SERVER["HTTP_REFERER"])) {
+            header("Location: " . $_SERVER["HTTP_REFERER"]);
+            return;
+        }
+
+        header("Location: " . Configuration::getServerUrl());
     }
 }
