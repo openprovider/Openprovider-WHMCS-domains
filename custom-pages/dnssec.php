@@ -1,7 +1,8 @@
 <?php
 
-use OpenProvider\API\APIConfig;
 use WHMCS\ClientArea;
+use WHMCS\Authentication\CurrentUser;
+use OpenProvider\API\APIConfig;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\src\OpenProvider;
 
@@ -18,15 +19,22 @@ $ca = new ClientArea();
 $ca->setPageTitle(PAGE_NAME);
 
 $domainId = $_GET['domainid'];
+
+$currentUser = new CurrentUser();
+$authUser = $currentUser->user();
+$selectedClient = $currentUser->client();
+
+if (!$authUser || !$selectedClient) {
+    redirectUserAway();
+}
+
 $domain = \WHMCS\Database\Capsule::table('tbldomains')
     ->where('id', $domainId)
+    ->where('userid', $selectedClient->id)
     ->first();
 
-if (!$domain->dnsmanagement && isset($_SERVER["HTTP_REFERER"])) {
-    header("Location: " . $_SERVER["HTTP_REFERER"]);
-}
-elseif (!$domain->dnsmanagement) {
-    header("Location: " . '/whmcs/');
+if (!$domain || !$domain->dnsmanagement) {
+    redirectUserAway();
 }
 
 $domainName = $domain->domain;
@@ -59,8 +67,7 @@ try {
     $dnssecKeys = $domain['dnssecKeys'];
     $isDnssecEnabled = $domain['isDnssecEnabled'];
 } catch (\Exception $e) {
-    header("Location: " . $_SERVER["HTTP_REFERER"]);
-    return;
+    redirectUserAway();
 }
 
 $ca->assign('dnssecKeys', $dnssecKeys);
@@ -124,3 +131,13 @@ if ($openproviderNameserversCount > 1) {
 $ca->setTemplate('/modules/registrars/openprovider/includes/templates/dnssec.tpl');
 
 $ca->output();
+
+function redirectUserAway()
+{
+    if (isset($_SERVER["HTTP_REFERER"])) {
+        header("Location: " . $_SERVER["HTTP_REFERER"]);
+        return;
+    }
+
+    header("Location: " . Configuration::getServerUrl());
+}

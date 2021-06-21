@@ -61,20 +61,20 @@ class Configuration
 
     public static function getApiUrl($apiMethod)
     {
-        return self::_getServerUrl() . "modules/registrars/openprovider/api/{$apiMethod}";
+        return self::getServerUrl() . "modules/registrars/openprovider/api/{$apiMethod}";
     }
 
     public static function getJsModuleUrl($jsModuleName)
     {
-        return self::_getServerUrl() . "modules/registrars/openprovider/includes/templates/js/modules/{$jsModuleName}.js";
+        return self::getServerUrl() . "modules/registrars/openprovider/includes/templates/js/modules/{$jsModuleName}.js";
     }
 
     public static function getCssModuleUrl($cssModuleName)
     {
-        return self::_getServerUrl() . "modules/registrars/openprovider/includes/templates/css/modules/{$cssModuleName}.css";
+        return self::getServerUrl() . "modules/registrars/openprovider/includes/templates/css/modules/{$cssModuleName}.css";
     }
 
-    private static function _getServerUrl()
+    public static function getServerUrl()
     {
         $systemUrl = localAPI(WHMCSApiActionType::GetConfigurationValue, ['setting' => 'SystemURL'])['value'];
         return str_replace('www.', '', $systemUrl);

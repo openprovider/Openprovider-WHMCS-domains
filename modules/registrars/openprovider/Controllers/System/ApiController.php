@@ -11,6 +11,8 @@ use OpenProvider\WhmcsRegistrar\src\OpenProvider;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use WHMCS\Database\Capsule;
+use WHMCS\Authentication\CurrentUser;
+
 
 class ApiController extends BaseController
 {
@@ -36,13 +38,16 @@ class ApiController extends BaseController
      */
     public function updateContactsTag($params)
     {
-        $userId = (
-                isset($params['userid'])
-                && !empty($params['userid'])
-                && is_int(intval($params['userid']))
-            )
-            ? intval($params['userid'])
-            : false;
+        $currentUser = new CurrentUser();
+        $authUser = $currentUser->user();
+        $selectedClient = $currentUser->client();
+
+        if (!$authUser || !$selectedClient) {
+            ApiResponse::error(400, 'You are have no authority to make this request.');
+            return;
+        }
+
+        $userId = $selectedClient->id;
 
         $tag = '';
         if (DBHelper::checkTableExist(DatabaseTable::ClientTags))
@@ -87,7 +92,16 @@ class ApiController extends BaseController
             return;
         }
 
-        $domain = $this->_checkDomainExistInDatabase($params['domainId']);
+        $currentUser = new CurrentUser();
+        $authUser = $currentUser->user();
+        $selectedClient = $currentUser->client();
+
+        if (!$authUser || !$selectedClient) {
+            ApiResponse::error(400, 'You are have no authority to make this request.');
+            return;
+        }
+
+        $domain = $this->_checkDomainExistInDatabase($params['domainId'], $selectedClient->id);
         if (!$domain) {
             ApiResponse::error('Domain not found!');
             return;
@@ -163,7 +177,16 @@ class ApiController extends BaseController
             return;
         }
 
-        $domain = $this->_checkDomainExistInDatabase($params['domainId']);
+        $currentUser = new CurrentUser();
+        $authUser = $currentUser->user();
+        $selectedClient = $currentUser->client();
+
+        if (!$authUser || !$selectedClient) {
+            ApiResponse::error(400, 'You are have no authority to make this request.');
+            return;
+        }
+
+        $domain = $this->_checkDomainExistInDatabase($params['domainId'], $selectedClient->id);
         if (!$domain) {
             ApiResponse::error('Domain not found!');
             return;
@@ -255,10 +278,11 @@ class ApiController extends BaseController
      * @param int $domainId Domain id from database
      * @return (false|databaseRow)
      */
-    private function _checkDomainExistInDatabase($domainId)
+    private function _checkDomainExistInDatabase($domainId, $userId)
     {
         $domain = Capsule::table('tbldomains')
             ->where('id', $domainId)
+            ->where('userid', $userId)
             ->first();
 
         if ($domain)
@@ -282,4 +306,3 @@ class ApiController extends BaseController
         ];
     }
 }
-
