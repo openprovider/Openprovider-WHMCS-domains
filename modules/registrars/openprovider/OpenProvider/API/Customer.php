@@ -3,6 +3,7 @@ namespace OpenProvider\API;
 use OpenProvider\WhmcsHelpers\CustomField;
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
 use WeDevelopCoffee\wPower\Domain\AdditionalFields;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 /**
  * Customer
@@ -17,61 +18,61 @@ class Customer
      *
      * @var string
      */
-    public $companyName     =   null;
+    public $companyName = null;
 
     /**
      *
      * @var string
      */
-    public $vat             =   null;
+    public $vat = null;
 
     /**
      *
      * @var \OpenProvider\API\CustomerName
      */
-    public $name            =   null;
+    public $name = null;
 
     /**
      *
      * @var type
      */
-    public $gender          =   null;
+    public $gender = null;
 
     /**
      *
      * @var \OpenProvider\API\CustomerAddress
      */
-    public $address         =   null;
+    public $address = null;
 
     /**
      *
      * @var \OpenProvider\API\CustomerPhone
      */
-    public $phone           =   null;
+    public $phone = null;
 
     /**
      *
      * @var string
      */
-    public $email           =   null;
+    public $email = null;
 
     /**
      *
      * @var string
      */
-    public $handle          =   null;
+    public $handle = null;
 
     /**
      *
      * @var \OpenProvider\API\CustomerAdditionalData
      */
-    public $additionalData  =   null;
+    public $additionalData = null;
 
     /**
      *
      * @var \OpenProvider\API\CustomerExtensionAdditionalData[]
      */
-    public $extensionAdditionalData  =   null;
+    public $extensionAdditionalData = null;
 
     /**
      * @var \OpenProvider\API\CustomerTags
@@ -87,10 +88,10 @@ class Customer
     {
         if($prefix == 'all')
             $prefix = '';
-            
+
         if($prefix == 'registrant')
             $prefix = 'owner';
-        
+
         $getFromContactDetails = false;
         if (isset($params['contactdetails']))
         {
@@ -214,9 +215,31 @@ class Customer
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
         $this->tags         =   $tags->getTags();
-//        $this->vat          =   CustomField::getValueFromCustomFields('VATNumber', $params['customfields']);;
 
         $this->additionalData = new CustomerAdditionalData();
+        if ($getFromContactDetails) {
+            if (!empty($params['company name']) && !empty($params['company or individual id'])) {
+                $this->additionalData->set('companyRegistrationNumber', $params['company or individual id']);
+            }
+
+            if (empty($params['company name']) && !empty($params['company or individual id'])) {
+                $this->additionalData->set('passportNumber', $params['company or individual id']);
+            }
+        }
+
+        if (isset($_SESSION['contactsession'])) {
+            $contactsNew = json_decode($_SESSION['contactsession'], true);
+            if ($contactsNew[$prefix] != null && $contactsNew[$prefix][0] == 'c') {
+                $contactid = substr($contactsNew[$prefix], 1);
+                $idn       = Capsule::table('mod_contactsAdditional')
+                    ->where("contact_id", "=", $contactid)
+                    ->first();
+                
+                $idn_id_type = $idn->identification_type;
+                $idn_id      = $idn->identification_number;
+                $this->additionalData->set($idn_id_type, $idn_id);
+            }
+        }
     }
 
     public function setAddressStateShort()

@@ -36,7 +36,7 @@ class ApiV1 implements ApiInterface
      */
     private $logger;
     /**
-     * @var ParamsCreator 
+     * @var ParamsCreator
      */
     private $paramsCreator;
     /**
