@@ -4,7 +4,6 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use \Exception;
 
-use OpenProvider\API\API;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
 use OpenProvider\PlacementPlus;
@@ -26,11 +25,6 @@ class DomainSuggestionsController extends BaseController
     private const SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_LIVE = 1;
     private const SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_CTE = 10;
 
-
-    /**
-     * @var API
-     */
-    private $API;
     /**
      * @var ResultsList
      */
@@ -43,11 +37,10 @@ class DomainSuggestionsController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, Api $API, ApiInterface $apiClient)
+    public function __construct(Core $core, ApiInterface $apiClient)
     {
         parent::__construct($core);
 
-        $this->API = $API;
         $this->apiClient = $apiClient;
 
         $this->resultsList = new ResultsList();
@@ -60,8 +53,6 @@ class DomainSuggestionsController extends BaseController
      */
     public function get($params)
     {
-        $api = $this->API;
-        $api->setParams($params);
         $args = [
             'name' => $params['searchTerm'],
             'limit' => self::SUGGESTION_DOMAIN_NAME_COUNT,
