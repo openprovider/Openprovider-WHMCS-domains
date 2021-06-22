@@ -71,8 +71,7 @@ class DomainSuggestionsController extends BaseController
         if (isset($suggestionSettings['preferredLanguage']) && !empty($suggestionSettings['preferredLanguage']))
             $args['language'] = $suggestionSettings['preferredLanguage'];
 
-        if (isset($suggestionSettings['sensitive']) && $suggestionSettings['sensitive'] == 'on')
-            $args['sensitive'] = 1;
+        $args['sensitive'] = isset($suggestionSettings['sensitive']) && $suggestionSettings['sensitive'] == 'on';
 
         if (isset($suggestionSettings['suggestTlds']) && count($suggestionSettings['suggestTlds']) > 0) {
             $args['tlds'] = array_map(function ($tld) {
@@ -102,24 +101,11 @@ class DomainSuggestionsController extends BaseController
                 }
                 break;
             }
-
-            if (!$isTestModeEnabled) {
-                $firstRankedDomain = $placementPlusSuggestionDomains[0];
-
-                if (isset($firstRankedDomain['domain'])) {
-                    $placementPlus = new PlacementPlus([
-                        'input' => $encodedDomain,
-                        'output' => $firstRankedDomain['domain']
-                    ]);
-                    $api->setPlacementPlus($placementPlus);
-                }
-            }
         }
 
         //get suggested domains
         try {
-            $suggestedDomains = $api->sendRequest('suggestNameDomainRequest', $args);
-            $api->clearPlacementPlus();
+            $suggestedDomains = $this->apiClient->call('suggestNameDomainRequest', $args)->getData()['results'];
         } catch (Exception $e) {
             return $this->resultsList;
         }
