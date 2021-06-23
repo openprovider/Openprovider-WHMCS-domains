@@ -1,7 +1,7 @@
 <?php
 /**
  * OpenProvider Registrar module
- * 
+ *
  * @copyright Copyright (c) Openprovider 2018
  */
 
@@ -21,10 +21,10 @@ require_once __DIR__.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_con
  * @param type $class_name
  */
 
-spl_autoload_register(function ($className) 
+spl_autoload_register(function ($className)
 {
     $className  =   implode(DIRECTORY_SEPARATOR, explode('\\', $className));
-    
+
     if(file_exists((__DIR__).DIRECTORY_SEPARATOR.$className.'.php'))
     {
         require_once (__DIR__).DIRECTORY_SEPARATOR.$className.'.php';
@@ -82,7 +82,7 @@ function openprovider_GetDomainInformation($params)
  * @param type $params
  * @return type
  */
-function openprovider_GetNameservers($params) 
+function openprovider_GetNameservers($params)
 {
     return openprovider_registrar_launch_decorator('getNameservers', $params);
 }

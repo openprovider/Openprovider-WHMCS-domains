@@ -546,7 +546,9 @@ class API
     {
         $args = array(
             'handle' => $handle,
+            'withAdditionalData' => true
         );
+
         $contact = $this->sendRequest('retrieveCustomerRequest', $args);
 
         if($raw == true)

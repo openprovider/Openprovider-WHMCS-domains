@@ -3,6 +3,7 @@ namespace OpenProvider\API;
 use OpenProvider\WhmcsHelpers\CustomField;
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
 use WeDevelopCoffee\wPower\Domain\AdditionalFields;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 /**
  * Customer
@@ -85,12 +86,13 @@ class Customer
      */
     public function __construct($params, $prefix = '')
     {
+
         if($prefix == 'all')
             $prefix = '';
-            
+
         if($prefix == 'registrant')
             $prefix = 'owner';
-        
+
         $getFromContactDetails = false;
         if (isset($params['contactdetails']))
         {
@@ -118,6 +120,7 @@ class Customer
                 $indexes['state'] = 'state';
 
             $params = array_change_key_case($params["contactdetails"][ucfirst($prefix)]);
+
         }
         else
         {
@@ -141,6 +144,8 @@ class Customer
             {
                 $value = $prefix . $value;
             }
+
+
         }
 
         // Customer Name
@@ -216,7 +221,37 @@ class Customer
         $this->tags         =   $tags->getTags();
 //        $this->vat          =   CustomField::getValueFromCustomFields('VATNumber', $params['customfields']);;
 
+
         $this->additionalData = new CustomerAdditionalData();
+
+        if($getFromContactDetails)
+        {
+          if(!empty($params['company name']) && !empty($params['company or individual id']))
+          {
+              $this->additionalData->set('companyRegistrationNumber' , $params['company or individual id']);
+          }
+
+          if(empty($params['company name']) && !empty($params['company or individual id']))
+          {
+              $this->additionalData->set('passportNumber' , $params['company or individual id']);
+          }
+
+        }
+
+          if(isset($_SESSION['contactsession']))
+          {
+            $contactsNew = json_decode($_SESSION['contactsession'] , true);
+            if($contactsNew[$prefix] != null && $contactsNew[$prefix][0] == 'c')
+            {
+              $contactid = substr($contactsNew[$prefix], 1);
+              $idn = Capsule::table('mod_contactsAdditional')
+                        ->where("contact_id", "=", $contactid )
+                        ->first();
+              $idn_id_type =  $idn->identification_type;
+              $idn_id =  $idn->identification_number;
+              $this->additionalData->set( $idn_id_type, $idn_id);
+            }
+          }
     }
 
     public function setAddressStateShort()

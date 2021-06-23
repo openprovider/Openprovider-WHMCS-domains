@@ -420,6 +420,7 @@ class ApiHelper
     {
         $args = [
             'handle' => $handle,
+            'with_additional_data' => 1
         ];
 
         $customerOp = $this->buildResponse($this->apiClient->call('retrieveCustomerRequest', $args));
@@ -443,6 +444,12 @@ class ApiHelper
         $customerInfo['Phone Number'] = $customerOp['phone']['countryCode'] . '.' .
             $customerOp['phone']['areaCode'] .
             $customerOp['phone']['subscriberNumber'];
+
+        if (!empty($customerOp['companyName'])) {
+            $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['companyRegistrationNumber'];
+        } else {
+            $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['passportNumber'];
+        }
 
         return $customerInfo;
     }
