@@ -29,4 +29,6 @@ class DatabaseTable
     const Currencies = 'tblcurrencies';
 
     const Configuration = 'tblconfiguration';
+
+    const Hosting = 'tblhosting';
 }
