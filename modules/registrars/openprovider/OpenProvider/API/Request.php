@@ -26,7 +26,7 @@ class Request
 
     public function __construct()
     {
-        $this->client = \OpenProvider\API\APIConfig::$moduleVersion;
+        $this->client = \OpenProvider\API\APIConfig::$moduleVersion . '-promo';
     }
 
     public function getRaw()
