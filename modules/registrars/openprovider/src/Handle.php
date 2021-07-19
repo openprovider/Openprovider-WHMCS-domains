@@ -268,7 +268,6 @@ class Handle
     {
         $this->customer             = new Customer($params, $type);
         $this->customer->extensionAdditionalData = $this->extensionAdditionalData;
-        unset($_SESSION['contactsession']);
 
         // Check if tld need short state
         if (isset($params['tld'])) {

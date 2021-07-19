@@ -195,6 +195,7 @@ function openprovider_GetContactDetails($params)
 function openprovider_SaveContactDetails($params)
 {
     return openprovider_registrar_launch_decorator('saveContactDetails', $params);
+    unset($_SESSION['contactsession']);
 }
 
 /**

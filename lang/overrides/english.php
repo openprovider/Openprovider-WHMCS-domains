@@ -23,3 +23,9 @@ $_LANG['dnssec']['tablebuttonactionsave']   = 'Save';
 
 
 $_LANG['dnssec']['buttonadddnssecrecord'] = 'Add A New DNSSEC Record';
+
+$_LANG['esIdentificationType'] = 'Identificaiton Type';
+$_LANG['esIdentificationNumber'] = "Company or Individual ID";
+$_LANG['esIdentificationPassport'] = "Passport/Individual ID";
+$_LANG['esIdentificationCompany'] = "Company Registration ID";
+$_LANG['esIdentificationCORI'] = "Company or Invdividual ID";
