@@ -11,7 +11,7 @@ class ContactController
     {
         $esmodification = Configuration::get('esmod');
 
-        if ($esmodification == "on") {
+        if ($esmodification) {
 
             $idtype = $_POST['id_type'];
             $cord   = $_POST['cord'];
@@ -24,7 +24,7 @@ class ContactController
     {
         $esmodification = Configuration::get('esmod');
 
-        if ($esmodification == "on") {
+        if ($esmodification) {
             DB::verifyContactstables();
         }
     }
@@ -33,7 +33,7 @@ class ContactController
     {
         $esmodification = Configuration::get('esmod');
 
-        if ($esmodification == "on") {
+        if ($esmodification) {
             DB::verifyContactstables();
 
             $cord      = $_POST['cord'];

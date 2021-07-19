@@ -13,7 +13,7 @@ class ShoppingCartController
 
         $esmodification = Configuration::get('esmod');
 
-        if ($esmodification == "on") {
+        if ($esmodification) {
             $domainsToMatch = ['es'];
 
             foreach ($vars['cart']['domains'] as $domain) {
@@ -61,7 +61,7 @@ class ShoppingCartController
     {
         $esmodification = Configuration::get('esmod');
 
-        if ($esmodification == "on") {
+        if ($esmodification) {
             $domainsToMatch = array('es');
             $contactid      = $vars['contact'];
 

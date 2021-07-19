@@ -15,7 +15,7 @@ class ClientAreaFooterController
 
         $esmodification = Configuration::get('esmod');
 
-        if ($esmodification == "on") {
+        if ($esmodification) {
 
             $template        = $vars['templatefile'];
             $check_tempaltes = array('account-contacts-manage', 'account-contacts-new');
