@@ -46,7 +46,7 @@ class ApiHelper
             return $domain['results'][0];
         }
 
-        throw new \Exception('Domain is not exist in OpenProvider!');
+        throw new \Exception('Domain does not exist in Openprovider!');
     }
 
     /**
