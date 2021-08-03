@@ -78,22 +78,25 @@ class Configuration
     {
         $systemUrl = localAPI(WHMCSApiActionType::GetConfigurationValue, ['setting' => 'SystemURL'])['value'];
 
-        $systemUrlWithouProtocol = str_replace('http://', '', $systemUrl);
-        $systemUrlWithouProtocol = str_replace('https://', '', $systemUrlWithouProtocol);
-
+        $systemUrlWithoutProtocol = str_replace(['http://', 'https://'], '', $systemUrl);
         $phpHostUrl = $_SERVER['HTTP_HOST'];
 
-        if (strpos($systemUrlWithouProtocol, $phpHostUrl) !== false) {
-            return '//' . $systemUrlWithouProtocol;
+        if (
+            (strpos($systemUrlWithoutProtocol, 'www.') !== false &&
+            strpos($phpHostUrl, 'www.') !== false) ||
+            (strpos($systemUrlWithoutProtocol, 'www.') === false &&
+            strpos($phpHostUrl, 'www.') === false)
+        ) {
+            return '//' . $systemUrlWithoutProtocol;
         }
 
         if (
-            strpos($systemUrlWithouProtocol, 'www.') !== false &&
+            strpos($systemUrlWithoutProtocol, 'www.') !== false &&
             strpos($phpHostUrl, 'www.') === false
         ) {
-            return '//' . str_replace('www.', '', $systemUrlWithouProtocol);
+            return '//' . str_replace('www.', '', $systemUrlWithoutProtocol);
         }
 
-        return '//www.' . $systemUrlWithouProtocol;
+        return '//www.' . $systemUrlWithoutProtocol;
     }
 }
