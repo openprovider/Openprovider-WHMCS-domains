@@ -19,7 +19,7 @@ return [
     'syncAutoRenewSetting'              => true,  //  Default: true,  Synchronize Auto renew setting to Openprovider?
     'syncIdentityProtectionToggle'      => true,  //  Default: true,  Synchronize Identity protection to Openprovider?
 
-    //Openprovid Synchronization settings
+    //Openprovider Synchronization settings
     'syncUseNativeWHMCS'                => true,  //  Default: true,  Use the native WHMCS synchronisation
     'syncDomainStatus'                  => true,  //  Default: true,  Synchronize Domain status from Openprovider
     'syncExpiryDate'                    => true,  //  Default: true,  Synchronize Expiry date from Openprovider
