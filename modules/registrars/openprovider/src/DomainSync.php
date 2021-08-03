@@ -289,7 +289,7 @@ class DomainSync
     protected function process_next_due_dates()
     {
         $this->printDebug('PROCESSING NEXT DUE DATES SYNC FOR ALL OP DOMAINS');
-        $days_before_expiry_date = Configuration::getOrDefault('nextDueDateOffset',14);
+        $days_before_expiry_date = Configuration::getOrDefault('nextDueDateOffset',0);
         $nextDueDateUpdateMaxDayDifference = Configuration::getOrDefault('nextDueDateUpdateMaxDayDifference', 100);
 
         $updated_domains = $this->domain->updateNextDueDateOffset($days_before_expiry_date, $nextDueDateUpdateMaxDayDifference, 'openprovider');
