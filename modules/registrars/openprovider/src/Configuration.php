@@ -77,8 +77,6 @@ class Configuration
     public static function getServerUrl()
     {
         $systemUrl = localAPI(WHMCSApiActionType::GetConfigurationValue, ['setting' => 'SystemURL'])['value'];
-        $urlWithoutWWW = str_replace('www.', '', $systemUrl);
-
-        return str_replace('http:', '', $urlWithoutWWW);
+        return str_replace('http:', '', $systemUrl);
     }
 }
