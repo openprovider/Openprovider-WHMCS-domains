@@ -1,12 +1,13 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+
+use OpenProvider\API\ApiHelper;
+use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WHMCS\Carbon;
 use OpenProvider\WhmcsHelpers\Activity;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
 use OpenProvider\API\Domain as api_domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Models\Domain;
@@ -22,34 +23,28 @@ class DomainSyncController extends BaseController
     const DOMAIN_STATUSES_CANELLED = ['FAI', 'DEL'];
 
     /**
-     * @var API
-     */
-    private $API;
-
-    /**
      * @var api_domain
      */
     private $api_domain;
     /**
-     * @var OpenProvider
-     */
-    private $openprovider;
-    /**
      * @var Domain
      */
     private $domain;
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, api_domain $api_domain, Domain $domain, OpenProvider $openprovider)
+    public function __construct(Core $core, api_domain $api_domain, Domain $domain, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
-        $this->API = $API;
         $this->api_domain = $api_domain;
-        $this->openprovider = $openprovider;
         $this->domain = $domain;
+        $this->apiHelper = $apiHelper;
     }
 
     /**
@@ -71,27 +66,27 @@ class DomainSyncController extends BaseController
             );
         }
 
+        $this->domain = $this->domain->find($params['domainid']);
         $setting['syncAutoRenewSetting'] = Configuration::getOrDefault('syncAutoRenewSetting', true);
         $setting['syncIdentityProtectionToggle'] = Configuration::getOrDefault('syncIdentityProtectionToggle', true);
 
         try {
             // get data from op
-            $this->api_domain = $this->openprovider->domain($this->domain->domain);
-            $op_domain_result = $this->openprovider->api->retrieveDomainRequest($this->api_domain, true);
-            $expiration_date  = Carbon::createFromFormat(
-                'Y-m-d H:i:s',
-                $op_domain_result['expirationDate'],
-                'Europe/Amsterdam'
-            )->format('Y-m-d');
+            $this->api_domain   = DomainFullNameToDomainObject::convert($this->domain->domain);
 
-            if(in_array($op_domain_result['status'], self::DOMAIN_STATUSES_ACTIVE)) {
+            $domainOp = $this->apiHelper->getDomain($this->api_domain);
+
+            $expiration_date = (Carbon::createFromFormat('Y-m-d H:i:s', $domainOp['expirationDate'], 'Europe/Amsterdam'))
+                ->toDateString();
+
+            if(in_array($domainOp['status'], self::DOMAIN_STATUSES_ACTIVE)) {
                 // auto renew on or not? -> WHMCS is leading.
                 if($setting['syncAutoRenewSetting'] == true)
-                    $this->process_auto_renew($op_domain_result);
+                    $this->process_auto_renew($domainOp);
 
                 // Identity protection or not? -> WHMCS is leading.
                 if($setting['syncIdentityProtectionToggle'] == true)
-                    $this->process_identity_protection($op_domain_result);
+                    $this->process_identity_protection($domainOp);
 
                 return [
                     'expirydate' => $expiration_date, // Format: YYYY-MM-DD
@@ -99,7 +94,7 @@ class DomainSyncController extends BaseController
                     'cancelled' => false, // Return true if the domain has expired
                     'transferredAway' => false, // Return true if the domain is transferred out
                 ];
-            } else if (in_array($op_domain_result['status'], self::DOMAIN_STATUSES_INACTIVE)) {
+            } else if (in_array($domainOp['status'], self::DOMAIN_STATUSES_INACTIVE)) {
                 return [
                     'expirydate' => $expiration_date, // Format: YYYY-MM-DD
                     'active' => false, // Return true if the domain is active
@@ -138,10 +133,11 @@ class DomainSyncController extends BaseController
      * Process the Domain autorenew setting
      *
      * @return void
-     **/
-    private function process_auto_renew($op_domain_result)
+     * @throws \Exception
+     */
+    private function process_auto_renew($domainOp)
     {
-        $result = $this->openprovider->toggle_autorenew($this->domain, $op_domain_result);
+        $result = $this->apiHelper->toggleAutorenewDomain($this->domain, $domainOp);
 
         if($result != 'correct')
         {
@@ -164,15 +160,13 @@ class DomainSyncController extends BaseController
      *
      * @return void
      **/
-    private function process_identity_protection($op_domain_result)
+    private function process_identity_protection($domainOp)
     {
         try {
-            $result = $this->openprovider->toggle_whois_protection($this->domain, $op_domain_result);
+            $result = $this->apiHelper->toggleWhoisProtection($this->domain, $domainOp);
 
         } catch (\Exception $e) {
-            \logModuleCall('OpenProvider', 'Save identity toggle', $this->domain->domain, [$this->domain->domain, @$op_domain_result], $e->getMessage(), [$params['Password']]);
-
-            $this->unsigned_wpp_contract_domains[] = $this->objectDomain->domain;
+            \logModuleCall('OpenProvider', 'Save identity toggle', $this->domain->domain, [$this->domain->domain, @$domainOp], $e->getMessage(), [$params['Password']]);
         }
 
         if($result != 'correct')
@@ -181,8 +175,8 @@ class DomainSyncController extends BaseController
              * Log the activity data
              */
             $activity_data = [
-                'id'            => $this->objectDomain->id,
-                'domain'        => $this->objectDomain->domain,
+                'id'            => $this->domain->id,
+                'domain'        => $this->domain->domain,
                 'old_setting'   => $result['old_setting'],
                 'new_setting'   => $result['new_setting'],
             ];

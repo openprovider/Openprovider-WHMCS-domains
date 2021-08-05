@@ -1,11 +1,10 @@
 <?php
 /**
  * OpenProvider Registrar module
- * 
+ *
  * @copyright Copyright (c) Openprovider 2018
  */
 
-use WeDevelopCoffee\wPower\Models\Domain;
 use \OpenProvider\WhmcsRegistrar\src\Configuration;
 
 if (!defined("WHMCS"))
@@ -22,10 +21,10 @@ require_once __DIR__.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_con
  * @param type $class_name
  */
 
-spl_autoload_register(function ($className) 
+spl_autoload_register(function ($className)
 {
     $className  =   implode(DIRECTORY_SEPARATOR, explode('\\', $className));
-    
+
     if(file_exists((__DIR__).DIRECTORY_SEPARATOR.$className.'.php'))
     {
         require_once (__DIR__).DIRECTORY_SEPARATOR.$className.'.php';
@@ -83,7 +82,7 @@ function openprovider_GetDomainInformation($params)
  * @param type $params
  * @return type
  */
-function openprovider_GetNameservers($params) 
+function openprovider_GetNameservers($params)
 {
     return openprovider_registrar_launch_decorator('getNameservers', $params);
 }
@@ -214,7 +213,7 @@ function openprovider_GetEPPCode($params)
  * @param type $params
  * @return array|string
  */
-function openprovider_RegisterNameserver($params)
+    function openprovider_RegisterNameserver($params)
 {
     return openprovider_registrar_launch_decorator('registerNameserver', $params);
 }
@@ -326,10 +325,15 @@ function openprovider_ResendIRTPVerificationEmail(array $params)
  * @param string $level
  * @return mixed
  */
-function openprovider_registrar_launch_decorator($route, $params = [], $level = 'system')
+function openprovider_registrar_launch_decorator(string $route, $params = [], $level = 'system')
 {
     $modifiedParams = array_merge($params, Configuration::getParams());
     $modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
-    return openprovider_registrar_launch($level)
-        ->output($modifiedParams, $route);
+
+    $core = openprovider_registrar_core($level);
+    $launch = $core->launch();
+
+    $core->launcher = openprovider_bind_required_classes($core->launcher);
+
+    return $launch->output($modifiedParams, $route);
 }

@@ -3,10 +3,10 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use Carbon\Carbon;
+use OpenProvider\API\ApiInterface;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
 use WHMCS\Database\Capsule;
 
 /**
@@ -19,14 +19,27 @@ use WHMCS\Database\Capsule;
 
 class AdminClientProfileTabController
 {
+    /**
+     * @var ApiInterface
+     */
+    private $apiClient;
+
+    /**
+     * AdminClientProfileTabController constructor.
+     * @param ApiInterface $apiClient
+     */
+    public function __construct(ApiInterface $apiClient)
+    {
+        $this->apiClient = $apiClient;
+    }
+
     public function additionalFields($vars)
     {
         $tagsData     = [];
         $userId       = $vars['userid'];
-        $OpenProvider = new OpenProvider();
 
         try {
-            $tagsData = $OpenProvider->api->sendRequest('searchTagRequest');
+            $tagsData = $this->apiClient->call('searchTagRequest')->getData();
         } catch (\Exception $e) {}
 
         $tags = [];

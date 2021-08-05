@@ -4,6 +4,8 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use idna_convert;
 use OpenProvider\API\API;
+use OpenProvider\API\ApiHelper;
+use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
 use OpenProvider\API\APITools;
 use OpenProvider\API\DomainTransfer;
@@ -11,6 +13,8 @@ use OpenProvider\API\DomainRegistration;
 use OpenProvider\WhmcsRegistrar\src\PremiumDomain;
 use OpenProvider\WhmcsRegistrar\src\Handle;
 use OpenProvider\WhmcsRegistrar\src\AdditionalFields;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
@@ -44,13 +48,39 @@ class DomainController extends BaseController
      * @var PremiumDomain
      */
     private $premiumDomain;
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
+    /**
+     * @var ApiInterface
+     */
+    private $apiClient;
+    /**
+     * @var Serializer
+     */
+    private $serializer;
+    /**
+     * @var idna_convert
+     */
+    private $idn;
 
     /**
      * Constructor
      *
      * @return void
      */
-    public function __construct(Core $core, API $API, Domain $domain, PremiumDomain $premiumDomain, AdditionalFields $additionalFields, Handle $handle)
+    public function __construct(
+        Core $core,
+        API $API,
+        Domain $domain,
+        PremiumDomain $premiumDomain,
+        AdditionalFields $additionalFields,
+        Handle $handle,
+        ApiHelper $apiHelper,
+        ApiInterface $apiClient,
+        idna_convert $idn
+    )
     {
         parent::__construct($core);
 
@@ -59,11 +89,16 @@ class DomainController extends BaseController
         $this->additionalFields = $additionalFields;
         $this->handle           = $handle;
         $this->premiumDomain    = $premiumDomain;
+        $this->apiHelper        = $apiHelper;
+        $this->apiClient        = $apiClient;
+        $this->serializer       = new Serializer([new ObjectNormalizer()]);
+        $this->idn              = $idn;
     }
 
     /**
      * Register a domain
      *
+     * @param $params
      * @return array
      */
     public function register($params)
@@ -81,15 +116,19 @@ class DomainController extends BaseController
             // Prepare the nameservers
             $nameServers = APITools::createNameserversArray($params);
 
-            $api = $this->API;
-            $api->setParams($params);
             $handle = $this->handle;
-            $handle->setApi($api);
+            $handle->setApiHelper($this->apiHelper);
+            $this->premiumDomain->setApiClient($this->apiClient);
 
             // Prepare the additional data
             $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
-            if (isset($additionalFields['extensionCustomerAdditionalData']))
-                $handle->setExtensionAdditionalData($additionalFields['extensionCustomerAdditionalData']);
+            if (isset($additionalFields['extensionCustomerAdditionalData'])) {
+                $extensionCustomerAdditionalData = [];
+                foreach ($additionalFields['extensionCustomerAdditionalData'] as $field) {
+                    $extensionCustomerAdditionalData[] = $field->jsonSerialize();
+                }
+                $handle->setExtensionAdditionalData($extensionCustomerAdditionalData);
+            }
 
             if (isset($additionalFields['customerAdditionalData']))
                 $handle->setCustomerAdditionalData($additionalFields['customerAdditionalData']);
@@ -118,13 +157,17 @@ class DomainController extends BaseController
             $domainRegistration->billingHandle   = $handles['billingHandle'];
             $domainRegistration->nameServers     = $nameServers;
             $domainRegistration->dnsmanagement   = $params['dnsmanagement'];
-            $domainRegistration->isDnssecEnabled = 0;
+            $domainRegistration->isDnssecEnabled = false;
+
+            if (
+                isset($params['is_idn']) && $params['is_idn'] &&
+                isset($params['idnLanguage']) && !empty($params['idnLanguage'])
+            ) {
+                $domainRegistration->domain->name = $this->idn->encode($domainRegistration->domain->name);
+            }
 
             if (isset($additionalFields['domainAdditionalData'])) {
-                $domainRegistration->additionalData = json_decode(
-                    json_encode($additionalFields['domainAdditionalData']),
-                    1
-                );
+                $domainRegistration->additionalData = $additionalFields['domainAdditionalData']->jsonSerialize();
             }
 
             // Check if premium is enabled. If so, set the received premium cost.
@@ -138,7 +181,7 @@ class DomainController extends BaseController
             }
 
             if ($params['idprotection'] == 1)
-                $domainRegistration->isPrivateWhoisEnabled = 1;
+                $domainRegistration->isPrivateWhoisEnabled = true;
 
             //use dns templates
             if (isset($params['dnsTemplate']) && !empty($params['dnsTemplate'])) {
@@ -151,13 +194,13 @@ class DomainController extends BaseController
                         return mb_strcut($tld, 1);
                     return $tld;
                 }, $params['requestTrusteeService']);
+
                 if (in_array($domainRegistration->domain->extension, $trusteeServiceTds))
-                    $domainRegistration->useDomicile = 1;
+                    $domainRegistration->useDomicile = true;
             }
 
-            $idn = new idna_convert();
             if (
-                $params['sld'] . '.' . $params['tld'] == $idn->encode($params['sld'] . '.' . $params['tld'])
+                $params['sld'] . '.' . $params['tld'] == $this->idn->encode($params['sld'] . '.' . $params['tld'])
                 && strpos($params['sld'] . '.' . $params['tld'], 'xn--') === false
             ) {
                 unset($domainRegistration->additionalData->idnScript);
@@ -166,7 +209,7 @@ class DomainController extends BaseController
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
 
-            $api->registerDomain($domainRegistration);
+            $this->apiHelper->createDomain($domainRegistration);
         } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
@@ -176,7 +219,7 @@ class DomainController extends BaseController
     /**
      * Transfer the domain.
      *
-     * @param [type] $params
+     * @param array $params
      * @return array
      */
     public function transfer($params)
@@ -192,18 +235,22 @@ class DomainController extends BaseController
                 'name'      => $params['sld'],
                 'extension' => $params['tld']
             ));
-            $api = new API();
-            $api->setParams($params);
 
             $nameServers = APITools::createNameserversArray($params);
 
             $handle = $this->handle;
-            $handle->setApi($api);
+            $handle->setApiHelper($this->apiHelper);
+            $this->premiumDomain->setApiClient($this->apiClient);
 
             // Prepare the additional data
             $additionalFields = $this->additionalFields->processAdditionalFields($params, $domain);
-            if (isset($additionalFields['extensionCustomerAdditionalData']))
-                $handle->setExtensionAdditionalData($additionalFields['extensionCustomerAdditionalData']);
+            if (isset($additionalFields['extensionCustomerAdditionalData'])) {
+                $extensionCustomerAdditionalData = [];
+                foreach ($additionalFields['extensionCustomerAdditionalData'] as $field) {
+                    $extensionCustomerAdditionalData[] = $field->jsonSerialize();
+                }
+                $handle->setExtensionAdditionalData($extensionCustomerAdditionalData);
+            }
 
             if (isset($additionalFields['customer']))
                 $handle->setCustomerAdditionalData($additionalFields['customer']);
@@ -221,7 +268,14 @@ class DomainController extends BaseController
             $domainTransfer->billingHandle   = $adminHandle;
             $domainTransfer->authCode        = $params['transfersecret'];
             $domainTransfer->dnsmanagement   = $params['dnsmanagement'];
-            $domainTransfer->isDnssecEnabled = 0;
+            $domainTransfer->isDnssecEnabled = false;
+
+            if (
+                isset($params['is_idn']) && $params['is_idn'] &&
+                isset($params['idnLanguage']) && !empty($params['idnLanguage'])
+            ) {
+                $domainTransfer->domain->name = $this->idn->encode($domainTransfer->domain->name);
+            }
 
             // Check if premium is enabled. If so, set the received premium cost.
             if ($params['premiumEnabled'] == true && $params['premiumCost'] != '')
@@ -233,17 +287,14 @@ class DomainController extends BaseController
                 );
 
             if ($params['idprotection'] == 1)
-                $domainTransfer->isPrivateWhoisEnabled = 1;
+                $domainTransfer->isPrivateWhoisEnabled = true;
 
             if (isset($params['dnsTemplate']) && !empty($params['dnsTemplate'])) {
                 $domainTransfer->nsTemplateName = $params['dnsTemplate'];
             }
 
             if (isset($additionalFields['domainAdditionalData']))
-                $domainTransfer->additionalData = json_decode(
-                    json_encode($additionalFields['domainAdditionalData']),
-                    1
-                );
+                $domainTransfer->additionalData = $additionalFields['domainAdditionalData']->jsonSerialize();
 
             if (isset($params['requestTrusteeService']) && !empty($params['requestTrusteeService'])) {
                 $trusteeServiceTds = array_map(function ($tld) {
@@ -253,12 +304,13 @@ class DomainController extends BaseController
                 }, $params['requestTrusteeService']);
 
                 if (in_array($domainTransfer->domain->extension, $trusteeServiceTds))
-                    $domainTransfer->useDomicile = 1;
+                    $domainTransfer->useDomicile = true;
             }
 
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
-            $api->transferDomain($domainTransfer);
+
+            $this->apiHelper->transferDomain($domainTransfer);
         } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }

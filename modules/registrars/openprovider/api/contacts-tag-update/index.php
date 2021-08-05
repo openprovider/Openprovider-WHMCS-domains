@@ -2,5 +2,4 @@
 
 include ('../api.php');
 
-openprovider_registrar_launch('system')
-    ->output([], 'updateContactsTagApi');
+openprovider_registrar_launch_decorator('updateContactsTagApi', []);

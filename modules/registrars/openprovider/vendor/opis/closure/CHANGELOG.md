@@ -1,6 +1,14 @@
 CHANGELOG
 ---------
 
+### v3.6.2, 2021.04.09
+
+- Fixed string interpolation
+
+### v3.6.1, 2020.11.07
+
+- Fixed serialization error [#84](https://github.com/opis/closure/issues/84)
+
 ### v3.6.0, 2020.10.12
 
 - Initial PHP 8 Support [#67](https://github.com/opis/closure/issues/67).

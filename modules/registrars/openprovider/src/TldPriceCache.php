@@ -1,9 +1,8 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\src;
 
 use Exception;
-use OpenProvider\API\API;
-use WHMCS\Domains\DomainLookup\ResultsList;
 
 /**
  * Class TldPriceCache
@@ -46,7 +45,7 @@ class TldPriceCache
     public function write($content)
     {
         $json = json_encode($content);
-        $file_content = "<?php exit('ACCESS DENIED;?>\n" . $json;
+        $file_content = "<?php exit('ACCESS DENIED');?>\n" . $json;
 
         if(!file_put_contents($this->getLocation(), $file_content))
             throw new \Exception('Unable to write to ' . $this->getLocation());

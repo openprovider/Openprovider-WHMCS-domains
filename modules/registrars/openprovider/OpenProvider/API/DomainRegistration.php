@@ -1,4 +1,5 @@
 <?php
+
 namespace OpenProvider\API;
 
 /**
@@ -71,13 +72,13 @@ class DomainRegistration extends \OpenProvider\API\AutoloadConstructor
      *
      * @var int (0|1) default 0
      */
-    public $useDomicile = 0;
+    public $useDomicile = false;
 
     /**
      *
      * @var int (0|1) default 0
      */
-    public $isPrivateWhoisEnabled = 0;
+    public $isPrivateWhoisEnabled = false;
 
     /**
      * The cost for a premium domain.

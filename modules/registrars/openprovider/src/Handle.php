@@ -1,6 +1,8 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\src;
 
+use OpenProvider\API\ApiHelper;
 use OpenProvider\API\Customer;
 
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
@@ -30,16 +32,16 @@ class Handle
     /**
      * Customer object
      *
-     * @var object \OpenProvider\API\Customer
+     * @var Customer
      */
     protected $customer;
 
     /**
-     * OpenProvider API
+     * OpenProvider ApiHelper
      *
-     * @var object \OpenProvider\API\API
+     * @var ApiHelper
      */
-    protected $api;
+    protected $apiHelper;
 
     /**
      * Additional data for handles
@@ -266,6 +268,7 @@ class Handle
     {
         $this->customer             = new Customer($params, $type);
         $this->customer->extensionAdditionalData = $this->extensionAdditionalData;
+        unset($_SESSION['contactsession']);
 
         // Check if tld need short state
         if (isset($params['tld'])) {
@@ -320,31 +323,20 @@ class Handle
      */
     public function checkIfHandleStillExists(\WeDevelopCoffee\wPower\Handles\Models\Handle $model)
     {
-        try
-        {
-            $opCustomer = $this->api->retrieveCustomerRequest($model->handle, true);
-            return true;
-        } catch ( \Exception $e)
-        {
-            // If the handle does not exist, create a new one.
-            return false;
-        }
+        $opCustomer = $this->apiHelper->getCustomer($model->handle, false);
+
+        return !empty($opCustomer);
     }
 
     /**
      * Find the changes between the current and updated data.
      *
-     * @return void
+     * @return false|string
      */
     protected function findChanges ($params)
     {
-        try
-        {
-            $opCustomer = $this->api->retrieveCustomerRequest($this->model->handle, true);
-        }
-        catch ( \Exception $e)
-        {
-            // If the handle does not exist, create a new one.
+        $opCustomer = $this->apiHelper->getCustomer($this->model->handle, true);
+        if (empty($opCustomer)) {
             return 'create';
         }
 
@@ -365,15 +357,17 @@ class Handle
         )
         {
             return false;
-        }
-        //if name & company name are the same, then call modifyCustomerRequest only
-        elseif ($opCustomer['name']['firstName'] == $this->customer->name->firstName &&
+        } elseif (
+            //if name & company name are the same, then call modifyCustomerRequest only
+            $opCustomer['name']['firstName'] == $this->customer->name->firstName &&
             $opCustomer['name']['lastName'] == $this->customer->name->lastName &&
             $opCustomer['companyName'] == $this->customer->companyName &&
-            $this->model->isUsedByOtherDomains($params['domainid']) === false)
+            $this->model->isUsedByOtherDomains($params['domainid']) === false
+        ) {
             return 'update';
-        else
-            return 'create';
+        }
+
+        return 'create';
     }
 
     /**
@@ -383,7 +377,7 @@ class Handle
      */
     protected function create ($params, $type)
     {
-        $result                 = $this->api->createCustomerInOPdatabase($this->customer);
+        $result                 = $this->apiHelper->createCustomer($this->customer);
         $this->model->id        = '';
         $this->model->exists    = false;
         $this->model->handle    = $result['handle'];
@@ -400,7 +394,7 @@ class Handle
     protected function update ($params)
     {
         $this->customer->handle = $this->model->handle;
-        $result                 = $this->api->modifyCustomer($this->customer);
+        $result                 = $this->apiHelper->updateCustomer($this->customer->handle, $this->customer);
         $this->model->data      = $this->customer;
         $this->model->save(['overrideUniqueCheck' => true]);
 
@@ -410,15 +404,12 @@ class Handle
     /**
      * Set the api object.
      *
-     * @param object $api \OpenProvider\API\API
-     *
+     * @param ApiHelper $apiHelper
      * @return $this
      */
-    public function setApi ($api)
+    public function setApiHelper (ApiHelper $apiHelper): Handle
     {
-        $this->api = $api;
+        $this->apiHelper = $apiHelper;
         return $this;
     }
 }
-
-

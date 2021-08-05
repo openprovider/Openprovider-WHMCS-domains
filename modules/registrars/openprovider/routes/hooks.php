@@ -66,5 +66,34 @@ return [
         'priority'  => 1,
         'controller'=> 'AdminClientProfileTabController@saveFields',
     ],
+    [
+        'hookPoint' => 'ShoppingCartCheckoutOutput',
+        'priority'  => 1,
+        'controller'=> 'ShoppingCartController@checkoutOutput',
+    ],
+    [
+        'hookPoint' => 'PreShoppingCartCheckout',
+        'priority'  => 1,
+        'controller'=> 'ShoppingCartController@preCheckout',
+    ],
+    [
+        'hookPoint' => 'ContactAdd',
+        'priority'  => 1,
+        'controller'=> 'ContactController@add',
+    ],
+    [
+        'hookPoint' => 'ContactDelete',
+        'priority'  => 1,
+        'controller'=> 'ContactController@delete',
+    ],
+    [
+        'hookPoint' => 'ContactEdit',
+        'priority'  => 1,
+        'controller'=> 'ContactController@edit',
+    ],
+    [
+        'hookPoint' => 'ClientAreaFooterOutput',
+        'priority'  => 1,
+        'controller'=> 'ClientAreaFooterController@output',
+    ],
 ];
-

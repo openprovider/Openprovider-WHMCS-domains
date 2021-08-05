@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright (c) 2018-2019 Zindex Software
+ * Copyright (c) 2018-2021 Zindex Software
  *
  * Licensed under the MIT License
  * =========================================================================== */
@@ -94,7 +94,7 @@ class SerializableClosure implements Serializable
     public function getReflector()
     {
         if ($this->reflector === null) {
-            $this->reflector = new ReflectionClosure($this->closure, $this->code);
+            $this->reflector = new ReflectionClosure($this->closure);
             $this->code = null;
         }
 

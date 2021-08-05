@@ -1,11 +1,10 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
+
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\src\TldPriceCache;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
-use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WHMCS\Domain\TopLevel\ImportItem;
 use WHMCS\Results\ResultsList;
@@ -16,24 +15,15 @@ use WHMCS\Results\ResultsList;
  */
 class TldPricingController extends BaseController
 {
-    /**
-     * @var API
-     */
-    private $API;
-    /**
-     * @var Domain
-     */
-    private $domain;
+    const ERROR_MESSAGE_IF_TLDS_WITHOUT_PRICES = 'It looks like there are no prices in the "tld_cache" file.
+Check if you downloaded the tld prices from your Openprovider live account, because there are no tld prices in the test environment.';
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core)
     {
         parent::__construct($core);
-
-        $this->API = $API;
-        $this->domain = $domain;
     }
 
     /**
@@ -58,6 +48,10 @@ class TldPricingController extends BaseController
         $advancedConfigurationMaxPeriod = Configuration::getOrDefault('maxRegistrationPeriod', 5);
 
         foreach ($extensionData['results'] as $extension) {
+            if (!isset($extension['prices']) || is_null($extension['prices'])) {
+                throw new \Exception(self::ERROR_MESSAGE_IF_TLDS_WITHOUT_PRICES);
+            }
+
             if ($extension['minPeriod'] > $advancedConfigurationMaxPeriod) {
                 $extension['maxPeriod'] = $extension['minPeriod'];
             } else {

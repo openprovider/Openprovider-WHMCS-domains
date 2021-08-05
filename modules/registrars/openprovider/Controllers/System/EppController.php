@@ -2,10 +2,9 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-use Exception;
+use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
 use OpenProvider\API\Domain;
 
 /**
@@ -15,9 +14,9 @@ use OpenProvider\API\Domain;
 class EppController extends BaseController
 {
     /**
-     * @var API
+     * @var ApiHelper
      */
-    private $API;
+    private $apiHelper;
     /**
      * @var Domain
      */
@@ -25,12 +24,12 @@ class EppController extends BaseController
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
-        $this->API = $API;
-        $this->domain = $domain;
+        $this->apiHelper = $apiHelper;
+        $this->domain    = $domain;
     }
 
     /**
@@ -42,31 +41,23 @@ class EppController extends BaseController
     {
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        $values = [];
 
-        $values = array();
+        $domain = $this->domain;
+        $domain->load([
+            'name'      => $params['sld'],
+            'extension' => $params['tld']
+        ]);
 
-        try
-        {
-            $domain             =   $this->domain;
-            $domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
-
-            $api                =   $this->API;
-            $api->setParams($params);
-            $eppCode = $api->getEPPCode($domain);
-
-            if(!$eppCode)
-            {
-                throw new Exception('EPP code is not set');
-            }
-            $values["eppcode"] = $eppCode ? $eppCode : '';
+        try {
+            $domainOp = $this->apiHelper->getDomain($domain);
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage()
+            ];
         }
-        catch (\Exception $e)
-        {
-            $values["error"] = $e->getMessage();
-        }
+
+        $values["eppcode"] = $domainOp['authCode'] ?? '';
 
         return $values;
     }

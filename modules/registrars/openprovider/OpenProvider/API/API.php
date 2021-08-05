@@ -262,7 +262,7 @@ class API
 
     public function getUpdateMessage()
     {
-        return $this->sendRequest('retrieveUpdateMessageRequest');
+        return $this->sendRequest('searchPromoMessageRequest');
     }
 
     public function getResellerStatistics($task = '')
@@ -546,7 +546,9 @@ class API
     {
         $args = array(
             'handle' => $handle,
+            'withAdditionalData' => true
         );
+
         $contact = $this->sendRequest('retrieveCustomerRequest', $args);
 
         if($raw == true)

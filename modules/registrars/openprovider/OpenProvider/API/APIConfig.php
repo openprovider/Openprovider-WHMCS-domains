@@ -1,6 +1,7 @@
 <?php
 
 namespace OpenProvider\API;
+
 /**
  * Class APIConfig
  * @package OpenProvider\API* OpenProvider Registrar module
@@ -10,7 +11,7 @@ namespace OpenProvider\API;
 
 class APIConfig
 {
-    static public $moduleVersion     = 'whmcs-4.0';
+    static public $moduleVersion     = 'whmcs-5.3-REST-beta';
     static public $supportedDnsTypes = array('A', 'AAAA', 'CAA', 'CNAME', 'MX', 'SPF', 'SSHFP', 'SRV', 'TLSA', 'TXT');
     static public $dnsRecordTtl      = 86400;
     static public $dnsRecordPriority = 10;
