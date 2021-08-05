@@ -3,6 +3,7 @@ namespace OpenProvider\API;
 use OpenProvider\WhmcsHelpers\CustomField;
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
 use WeDevelopCoffee\wPower\Domain\AdditionalFields;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 /**
  * Customer
@@ -69,7 +70,7 @@ class Customer
 
     /**
      *
-     * @var \OpenProvider\API\CustomerExtensionAdditionalData
+     * @var \OpenProvider\API\CustomerExtensionAdditionalData[]
      */
     public $extensionAdditionalData  =   null;
 
@@ -80,17 +81,18 @@ class Customer
 
     /**
      *
-     * @param type $params
+     * @param array $params
      * @param string $prefix
      */
     public function __construct($params, $prefix = '')
     {
+
         if($prefix == 'all')
             $prefix = '';
-            
+
         if($prefix == 'registrant')
             $prefix = 'owner';
-        
+
         $getFromContactDetails = false;
         if (isset($params['contactdetails']))
         {
@@ -118,6 +120,7 @@ class Customer
                 $indexes['state'] = 'state';
 
             $params = array_change_key_case($params["contactdetails"][ucfirst($prefix)]);
+
         }
         else
         {
@@ -141,19 +144,40 @@ class Customer
             {
                 $value = $prefix . $value;
             }
+
+
         }
 
         // Customer Name
-        $initials       =   mb_substr($params[$indexes['firstname']], 0, 1) . '.' . mb_substr($params[$indexes['lastname']], 0, 1);
+        $initials = '';
+        if (!empty($params[$indexes['firstname']])) {
+            $initials .= mb_substr($params[$indexes['firstname']], 0, 1);
+        }
+        if (!empty($params[$indexes['lastname']])) {
+            $initials .= '.' . mb_substr($params[$indexes['lastname']], 0, 1);
+        }
         $name           =   new \OpenProvider\API\CustomerName(array(
-            'initials'  =>  $initials,
+            'initials'  =>  $initials ?: null,
             'firstName' =>  $params[$indexes['firstname']],
             'lastName'  =>  $params[$indexes['lastname']],
         ));
 
         //Customer Address
+        $fullAddress = '';
+        if ($getFromContactDetails) {
+            if (isset($params[$indexes['address']]) && !empty($params[$indexes['address']])) {
+                $fullAddress = $params[$indexes['address']];
+            } else if (!empty(trim($params[$indexes['address1']] . ' ' . $params[$indexes['address2']]))) {
+                $fullAddress = $params[$indexes['address1']] . ' ' . $params[$indexes['address2']];
+            }
+        } else {
+            if (!empty(trim($params[$indexes['address1']] . ' ' . $params[$indexes['address2']]))) {
+                $fullAddress = $params[$indexes['address1']] . ' ' . $params[$indexes['address2']];
+            }
+        }
+
         $address            =   new \OpenProvider\API\CustomerAddress(array(
-            'fulladdress'   =>  $getFromContactDetails ? $params[$indexes['address']] : $params[$indexes['address1']] . ' ' . $params[$indexes['address2']],
+            'fulladdress'   =>  $fullAddress ?: null,
             'zipcode'       =>  $params[$indexes['postcode']],
             'city'          =>  $params[$indexes['city']],
             'state'         =>  $params[$indexes['state']],
@@ -197,7 +221,37 @@ class Customer
         $this->tags         =   $tags->getTags();
 //        $this->vat          =   CustomField::getValueFromCustomFields('VATNumber', $params['customfields']);;
 
+
         $this->additionalData = new CustomerAdditionalData();
+
+        if($getFromContactDetails)
+        {
+          if(!empty($params['company name']) && !empty($params['company or individual id']))
+          {
+              $this->additionalData->set('companyRegistrationNumber' , $params['company or individual id']);
+          }
+
+          if(empty($params['company name']) && !empty($params['company or individual id']))
+          {
+              $this->additionalData->set('passportNumber' , $params['company or individual id']);
+          }
+
+        }
+
+          if(isset($_SESSION['contactsession']))
+          {
+            $contactsNew = json_decode($_SESSION['contactsession'] , true);
+            if($contactsNew[$prefix] != null && $contactsNew[$prefix][0] == 'c')
+            {
+              $contactid = substr($contactsNew[$prefix], 1);
+              $idn = Capsule::table('mod_contactsAdditional')
+                        ->where("contact_id", "=", $contactid )
+                        ->first();
+              $idn_id_type =  $idn->identification_type;
+              $idn_id =  $idn->identification_number;
+              $this->additionalData->set( $idn_id_type, $idn_id);
+            }
+          }
     }
 
     public function setAddressStateShort()

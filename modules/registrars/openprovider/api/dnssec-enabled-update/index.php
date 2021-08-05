@@ -7,6 +7,4 @@ $params = [
     'domainId'        => $_GET['domainId'],
 ];
 
-openprovider_registrar_launch('system')
-    ->output($params, 'updateDnsSecEnabledApi');
-
+openprovider_registrar_launch_decorator('updateDnsSecEnabledApi', $params);

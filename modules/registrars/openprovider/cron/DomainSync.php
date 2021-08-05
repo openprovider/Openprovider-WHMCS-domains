@@ -1,4 +1,7 @@
 <?php
+
+namespace OpenProvider\WhmcsRegistrar\cron;
+
 use OpenProvider\WhmcsRegistrar\src\DomainSync;
 use OpenProvider\WhmcsHelpers\Activity;
 
@@ -11,7 +14,12 @@ use OpenProvider\WhmcsHelpers\Activity;
 include('BaseCron.php');
 
 // 1. Get all domains for $openprovider who need an update
-$DomainSync = new DomainSync();
+$core = openprovider_registrar_core();
+$core->launch();
+$launcher = openprovider_bind_required_classes($core->launcher);
+$apiHelper = $launcher->get(\OpenProvider\API\ApiHelper::class);
+$idn = $launcher->get(\idna_convert::class);
+$DomainSync = new DomainSync($apiHelper, $idn);
 
 // 2. Do we have anything?
 if(!$DomainSync->has_domains_to_process())
@@ -33,4 +41,3 @@ Activity::send_email_report();
 // Send a 200 HTTP code back. Some mod_php setups require this. Otherwise, a HTTP 500 is returned.
 header("HTTP/1.1 200 OK");
 exit();
-

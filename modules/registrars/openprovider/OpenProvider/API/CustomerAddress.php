@@ -20,10 +20,9 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
     
     public function __construct($fields = array())
     {
-        parent::__construct($fields);   
+        parent::__construct($fields);
 
-        if(isset($fields['fulladdress']))
-        {
+        if (isset($fields['fulladdress']) && !is_null($fields['fulladdress'])) {
             $this->setAddress($fields['fulladdress']);
         }
     }

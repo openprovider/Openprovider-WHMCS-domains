@@ -5,21 +5,23 @@
  * @copyright Copyright (c) WeDevelopCoffee 2018
  */
 
+use WeDevelopCoffee\wPower\Module\Setup;
+use Illuminate\Database\Capsule\Manager as Capsule;
+
 if (!defined("WHMCS")) {
     die("This file cannot be accessed directly");
 }
 
 require_once(__DIR__ .'/init.php');
 
-openprovider_registrar_launch()
+$core = openprovider_registrar_core();
+
+$core->launch()
     ->hooks();
 
-$core = openprovider_registrar_core('admin');
-$core->launch();
+$core->launcher = openprovider_bind_required_classes($core->launcher);
 
-
-
-$activate = $core->launcher->get(\WeDevelopCoffee\wPower\Module\Setup::class);
+$activate = $core->launcher->get(Setup::class);
 $activate->enableFeature('handles');
 $activate->addMigrationPath(__DIR__.'/migrations');
 $activate->migrate();

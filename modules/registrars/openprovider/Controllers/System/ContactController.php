@@ -2,7 +2,8 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
-use OpenProvider\API\API;
+use OpenProvider\API\APIConfig;
+use OpenProvider\API\ApiHelper;
 use OpenProvider\API\Domain;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
@@ -21,10 +22,6 @@ use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
 class ContactController extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-    /**
      * @var Domain
      */
     private $domain;
@@ -32,44 +29,39 @@ class ContactController extends BaseController
      * @var Handle
      */
     private $handle;
+    /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain, Handle $handle)
+    public function __construct(Core $core, Domain $domain, Handle $handle, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
-        $this->API = $API;
         $this->domain = $domain;
         $this->handle = $handle;
+        $this->apiHelper = $apiHelper;
     }
 
     /**
      * Get the contact details.
      * @param $params
-     * @return \OpenProvider\API\type
+     * @return array
      */
     public function getDetails($params)
     {
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
-        try
-        {
-            $this->domain->load(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
+        $this->domain->load(array(
+            'name'          =>  $params['sld'],
+            'extension'     =>  $params['tld']
+        ));
 
-            $api                =   $this->API;
-            $api->setParams($params);
-            $values             =   $api->getContactDetails($this->domain);
-        }
-        catch (\Exception $e)
-        {
-            $values["error"] = $e->getMessage();
-        }
+        $values = $this->getContactDetails($this->domain);
 
         $domainTld = new Tld($params['tld']);
         array_walk($values, function (&$contact) use ($domainTld) {
@@ -123,16 +115,13 @@ class ContactController extends BaseController
 
         try
         {
-            $api                =   $this->API;
-            $api->setParams($params);
-            $handles            =   array_flip(\OpenProvider\API\APIConfig::$handlesNames);
             $this->domain->load(array(
                 'name'          =>  $params['sld'],
                 'extension'     =>  $params['tld']
             ));
 
             $handle = $this->handle;
-            $handle->setApi($api);
+            $handle->setApiHelper($this->apiHelper);
 
             $customers['ownerHandle']   = $handle->updateOrCreate($params, 'registrant');
             $customers['adminHandle']   = $handle->updateOrCreate($params, 'admin');
@@ -151,8 +140,10 @@ class ContactController extends BaseController
                     $finalCustomers[$key] = $handle;
             });
 
-            if(!empty($finalCustomers))
-                $api->modifyDomainCustomers($this->domain, $finalCustomers);
+            if(!empty($finalCustomers)) {
+                $domainOp = $this->apiHelper->getDomain($this->domain);
+                $this->apiHelper->updateDomain($domainOp['id'], $finalCustomers);
+            }
 
             return ['success' => true];
         }
@@ -161,5 +152,34 @@ class ContactController extends BaseController
             $values["error"] = $e->getMessage();
         }
         return $values;
+    }
+
+    private function getContactDetails(): array
+    {
+        $domainOp = $this->apiHelper->getDomain($this->domain);
+
+        if (empty($domainOp)) {
+            return [];
+        }
+
+        $contacts = [];
+        foreach (APIConfig::$handlesNames as $key => $name) {
+            if (empty($domainOp[$key])) {
+                continue;
+            }
+
+            $customerOp = $this->apiHelper->getCustomer($domainOp[$key]) ?? false;
+
+            if (!$customerOp) {
+                continue;
+            }
+
+            $contacts[$name] = $customerOp;
+        }
+
+        unset($contacts['Reseller']);
+        unset($contacts['reseller']);
+
+        return $contacts;
     }
 }

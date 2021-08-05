@@ -1,12 +1,11 @@
 <?php
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
-use OpenProvider\WhmcsRegistrar\src\Configuration;
+
+use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Core\Core;
-use OpenProvider\API\API;
 use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
-use WeDevelopCoffee\wPower\Models\Registrar;
 use Carbon\Carbon;
 
 /**
@@ -16,21 +15,22 @@ use Carbon\Carbon;
 class TransferSyncController extends BaseController
 {
     /**
-     * @var API
-     */
-    private $API;
-    /**
      * @var Domain
      */
     private $domain;
     /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
+
+    /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, API $API, Domain $domain)
+    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper)
     {
         parent::__construct($core);
 
-        $this->API = $API;
+        $this->apiHelper = $apiHelper;
         $this->domain = $domain;
     }
 
@@ -50,70 +50,42 @@ class TransferSyncController extends BaseController
 
         $domainModel = \OpenProvider\WhmcsRegistrar\Models\Domain::where('id', $params['domainid'])->first();
 
-        try
-        {
+        try {
             // get data from op
-            $api                = new \OpenProvider\API\API();
-            $params['Password'] = html_entity_decode($params['Password']);
-            $api->setParams($params);
-            $domain             =   new \OpenProvider\API\Domain(array(
-                'name'          =>  $params['sld'],
-                'extension'     =>  $params['tld']
-            ));
+            $domain = $this->domain;
+            $domain->load([
+                'name'      => $params['sld'],
+                'extension' => $params['tld']
+            ]);
+            $opInfo = $this->apiHelper->getDomain($domain);
 
-            $opInfo             =   $api->retrieveDomainRequest($domain);
-
-            if($opInfo['status'] == 'ACT')
-            {
-                if($domainModel->check_renew_domain_setting_upon_completed_transfer() == true)
-                {
-                    $api->renewDomain($domain, $params['regperiod']);
+            if ($opInfo['status'] == 'ACT') {
+                if ($domainModel->check_renew_domain_setting_upon_completed_transfer() == true) {
+                    $this->apiHelper->renewDomain($opInfo['id'], $params['regperiod']);
 
                     // Fetch updated information
-                    $opInfo             =   $api->retrieveDomainRequest($domain);
+                    $opInfo = $this->apiHelper->getDomain($domain);
                 }
 
-                return array
-                (
-                    'completed'     =>  true,
-                    'expirydate'    =>  Carbon::createFromFormat('Y-m-d H:i:s',$opInfo['renewalDate'], 'Europe/Amsterdam')->toDateString()
-                );
+                $expiryDate = Carbon::createFromFormat(
+                        'Y-m-d H:i:s',
+                        $opInfo['renewalDate'],
+                        'Europe/Amsterdam'
+                    )->toDateString();
+
+                return [
+                    'completed'  => true,
+                    'expirydate' => $expiryDate
+                ];
             }
 
-            return array();
-        }
-        catch (\Exception $ex)
-        {
-            return array
-            (
-                'error' =>  $ex->getMessage()
-            );
+            return [];
+        } catch (\Exception $ex) {
+            return [
+                'error' => $ex->getMessage()
+            ];
         }
 
         return [];
-    }
-
-    /**
-     * Check if the domain should be renewed.
-     *
-     * @param $domain
-     */
-    protected function check_renew_domain_setting_upon_completed_transfer($domain)
-    {
-        $setting_value = Configuration::getOrDefault('renewTldsUponTransferCompletion', '');
-
-        // When nothing was found; return false.
-        if(count($setting_value) == 0
-            || count($setting_value ) && $setting_value == '')
-            return false;
-
-        $tlds = explode(",",$setting_value);
-
-        // We found it!
-        if(in_array($domain->extension, $tlds))
-            return true;
-
-        // The domain TLD does not match with the renewal TLDs.
-        return false;
     }
 }
