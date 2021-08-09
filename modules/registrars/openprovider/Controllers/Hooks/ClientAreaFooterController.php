@@ -13,9 +13,9 @@ class ClientAreaFooterController
     {
         GLOBAL $_LANG;
 
-        $esmodification = Configuration::get('esmod');
+        $idnumbermod = Configuration::get('idnumbermod');
 
-        if ($esmodification) {
+        if ($idnumbermod) {
 
             $template        = $vars['templatefile'];
             $check_tempaltes = array('account-contacts-manage', 'account-contacts-new');

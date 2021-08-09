@@ -9,9 +9,9 @@ class ContactController
 {
     public function add($vars)
     {
-        $esmodification = Configuration::get('esmod');
+        $idnumbermod = Configuration::get('idnumbermod');
 
-        if ($esmodification) {
+        if ($idnumbermod) {
 
             $idtype = $_POST['id_type'];
             $cord   = $_POST['cord'];
@@ -22,18 +22,18 @@ class ContactController
 
     public function delete($vars)
     {
-        $esmodification = Configuration::get('esmod');
+        $idnumbermod = Configuration::get('idnumbermod');
 
-        if ($esmodification) {
+        if ($idnumbermod) {
             DB::verifyContactstables();
         }
     }
 
     public function edit($vars)
     {
-        $esmodification = Configuration::get('esmod');
+        $idnumbermod = Configuration::get('idnumbermod');
 
-        if ($esmodification) {
+        if ($idnumbermod) {
             DB::verifyContactstables();
 
             $cord      = $_POST['cord'];

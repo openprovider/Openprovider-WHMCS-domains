@@ -11,9 +11,9 @@ class ShoppingCartController
     {
         GLOBAL $_LANG;
 
-        $esmodification = Configuration::get('esmod');
+        $idnumbermod = Configuration::get('idnumbermod');
 
-        if ($esmodification) {
+        if ($idnumbermod) {
             $domainsToMatch = ['es', 'pt'];
 
             foreach ($vars['cart']['domains'] as $domain) {
@@ -65,9 +65,9 @@ class ShoppingCartController
 
     public function preCheckout($vars)
     {
-        $esmodification = Configuration::get('esmod');
+        $idnumbermod = Configuration::get('idnumbermod');
 
-        if ($esmodification) {
+        if ($idnumbermod) {
             $domainsToMatch = array('es', 'pt');
             $contactid      = $vars['contact'];
 
