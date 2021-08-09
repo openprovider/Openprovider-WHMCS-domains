@@ -16,6 +16,8 @@ class DatabaseTable
     const InvoiceItems = 'tblinvoiceitems';
 
     const InvoiceData = 'tblinvoicedata';
+
+    const ModContactsAdditional = 'mod_contactsAdditional';
   
       // Default tables
     const Orders = 'tblorders';

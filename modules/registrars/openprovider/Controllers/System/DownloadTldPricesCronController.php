@@ -39,7 +39,7 @@ class DownloadTldPricesCronController extends BaseController
         // A connection error should return a simple array with error key and message
         // return ['error' => 'This error occurred',];
         $extensionResponse = $this->apiClient->call('searchExtensionRequest', [
-            'withPrices' => true,
+            'withPrice' => true,
         ]);
         if (!$extensionResponse->isSuccess()) {
             return ['error' => 'This error occurred: ' . $extensionResponse->getMessage()];

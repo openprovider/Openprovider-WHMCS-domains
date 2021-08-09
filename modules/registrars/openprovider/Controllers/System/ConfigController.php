@@ -108,36 +108,36 @@ class ConfigController extends BaseController
      */
     public function getConfigArray()
     {
-        return array
-        (
-            "version"   => array
-            (
+            $configs = [];
+
+            $configs["version"] = [
                 "FriendlyName"  => "Module Version",
                 "Type"          => "text",
                 "Description"   => APIConfig::getModuleVersion() . "<style>input[name='version']{display: none;}</style>",
-            ),
-            "Username"          => array
-            (
+            ];
+
+            $configs["Username"] = [
                 "FriendlyName"  => "Username",
                 "Type"          => "text",
                 "Size"          => "20",
                 "Description"   => "Openprovider login",
-            ),
-            "Password"          => array
-            (
+            ];
+
+            $configs["Password"] = [
                 "FriendlyName"  => "Password",
                 "Type"          => "password",
                 "Size"          => "20",
                 "Description"   => "Openprovider password",
-            ),
-            "test_mode"   => array
-            (
+            ];
+
+            $configs["test_mode"] = [
                 "FriendlyName"  => "Enable Openprovider Test mode",
                 "Type"          => "yesno",
                 "Description"   => "Choose this option if you are using CTE credentials and want to connect to the test API.",
                 "Default"       => "no"
-            ),
-        );
+            ];
+
+            return $configs;
     }
 
     /**

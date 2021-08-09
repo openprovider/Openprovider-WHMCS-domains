@@ -94,7 +94,6 @@ class ApiController extends BaseController
             ApiResponse::error(400, 'You are have no authority to make this request.');
             return;
         }
-
         $domainDB = $this->_checkDomainExistInDatabase($params['domainId'], $selectedClient->id);
 
         if (!$domainDB) {

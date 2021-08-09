@@ -46,7 +46,7 @@ class ApiHelper
             return $domain['results'][0];
         }
 
-        throw new \Exception('Domain is not exist in OpenProvider!');
+        throw new \Exception('Domain does not exist in Openprovider!');
     }
 
     /**
@@ -72,18 +72,25 @@ class ApiHelper
      */
     public function createDomain(DomainRegistration $domainRegistration): array
     {
+        $args = $this->serializer->normalize($domainRegistration);
+
+        $result = $this->buildResponse($this->apiClient->call('createDomainRequest', $args));
+
         if($domainRegistration->dnsmanagement) {
             try {
                 $zoneResult = $this->getDns($domainRegistration->domain);
             } catch (\Exception $e) {
-                // check if zone exists
-                $this->createDnsRecords($domainRegistration->domain, []);
+                $zoneResult = [];
+            }
+
+            if (empty($zoneResult)) {
+                try {
+                    $this->createDnsRecords($domainRegistration->domain, []);
+                } catch (\Exception $e) {}
             }
         }
 
-        $args = $this->serializer->normalize($domainRegistration);
-
-        return $this->buildResponse($this->apiClient->call('createDomainRequest', $args));
+        return $result;
     }
 
     /**
@@ -93,15 +100,6 @@ class ApiHelper
      */
     public function transferDomain(DomainTransfer $domainTransfer): array
     {
-        if($domainTransfer->dnsmanagement == 1) {
-            // check if zone exists
-            $zoneResult = $this->getDns($domainTransfer->domain);
-
-            if (empty($zoneResult)) {
-                $this->createDnsRecords($domainTransfer->domain, []);
-            }
-        }
-
         $args = $this->serializer->normalize($domainTransfer);
 
         return $this->buildResponse($this->apiClient->call('transferDomainRequest', $args));
@@ -407,7 +405,17 @@ class ApiHelper
             'name' => $domain->getFullName(),
         ];
 
-        return $this->buildResponse($this->apiClient->call('deleteZoneDnsRequest', $args));
+        try {
+            $this->apiClient->call('deleteZoneDnsRequest', $args);
+        } catch (\Exception $e) {
+            if ($e->getCode() != 872 ||
+                strpos('Zone specified is not found', $e->getMessage()) === false
+            ) {
+                throw new \Exception($e->getMessage(), $e->getCode());
+            }
+        }
+
+        return [];
     }
 
     /**
