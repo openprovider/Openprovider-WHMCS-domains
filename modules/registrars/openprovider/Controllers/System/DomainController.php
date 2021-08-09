@@ -211,7 +211,7 @@ class DomainController extends BaseController
             }
 
             if (isset($params['premiumDNS']) && $params['premiumDNS']) {
-                $domainRegistration->premiumDNS = $params['premiumDNS'];
+                $domainRegistration->isSectigoDnsEnabled = $params['premiumDNS'];
             }
 
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
