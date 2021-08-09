@@ -14,7 +14,7 @@ class ShoppingCartController
         $esmodification = Configuration::get('esmod');
 
         if ($esmodification) {
-            $domainsToMatch = ['es'];
+            $domainsToMatch = ['es', 'pt'];
 
             foreach ($vars['cart']['domains'] as $domain) {
                 $tld       = explode('.', $domain['domain']);
@@ -46,6 +46,12 @@ class ShoppingCartController
                     case 'passportNumber':
                         $name = $_LANG['esIdentificationPassport'];
                         break;
+                    case 'vat':
+                        $name = $_LANG['ptIdentificationVat'];
+                        break;
+                    case 'socialSecurityNumber':
+                        $name = $_LANG['ptIdentificationSocialSecurityNumber'];
+                        break;
                 }
 
                 $fieldDisplay .= "<div class='col-sm-12'><div class='form-group prepend-icon'><label class='field-icon' for='" . $domain . "_" . $fields["field"] . "'> <i class='fas id-card'></i></label><input required class='form-control' readonly id='" . $domain . "_" . $fields["field"] . "' type='text' name='" . $fields["field"] . "' value='[$domain] $name:  " . $fields["value"] . "' /> </div></div>";
@@ -62,7 +68,7 @@ class ShoppingCartController
         $esmodification = Configuration::get('esmod');
 
         if ($esmodification) {
-            $domainsToMatch = array('es');
+            $domainsToMatch = array('es', 'pt');
             $contactid      = $vars['contact'];
 
             foreach ($vars['domains'] as $domain) {
@@ -72,7 +78,12 @@ class ShoppingCartController
                 if (in_array($tld[1], $domainsToMatch)) {
                     $fieldData = array();
                     foreach ($domain['fields'] as $field) {
-                        if ($field == 'passportNumber' || $field == 'companyRegistrationNumber') {
+                        if (
+                            $field == 'passportNumber' ||
+                            $field == 'companyRegistrationNumber' ||
+                            $field == 'vat' ||
+                            $field == 'socialSecurityNumber'
+                        ) {
                             $fieldData['field'] = $field;
                         }
 
