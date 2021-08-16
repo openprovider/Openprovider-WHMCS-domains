@@ -87,7 +87,7 @@ function openprovider_CreateAccount(array $params)
 
         $modifyDomainRequest = $api->call('modifyDomainRequest', [
             'id' => $domain['id'],
-            'premiumDNS' => true,
+            'isSectigoDnsEnabled' => true,
         ]);
 
         if ($modifyDomainRequest->getCode() != 0) {
