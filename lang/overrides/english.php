@@ -1,8 +1,9 @@
 <?php
 
+$_LANG['dnssectabname'] = 'DNSSEC Management';
+
 $_LANG['dnssec']['pagename']  = 'DNSSEC Records';
 $_LANG['dnssec']['tablename'] = 'Manage DNSSEC Records';
-
 
 $_LANG['dnssec']['activatednssecbutton']   = 'Activate DNSSEC';
 $_LANG['dnssec']['deactivatednssecbutton'] = 'Deactivate DNSSEC';
@@ -23,6 +24,7 @@ $_LANG['dnssec']['tablebuttonactionsave']   = 'Save';
 
 
 $_LANG['dnssec']['buttonadddnssecrecord'] = 'Add A New DNSSEC Record';
+
 
 $_LANG['esIdentificationType'] = 'Identificaiton Type';
 $_LANG['esIdentificationNumber'] = "Company or Individual ID";
