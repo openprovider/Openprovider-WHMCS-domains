@@ -57,7 +57,7 @@ class DnssecPageController extends BaseController
             ->where('userid', $selectedClient->id)
             ->first();
 
-        if (!$domain || !$domain->dnsmanagement) {
+        if (!$domain) {
             $this->redirectUserAway();
             return;
         }
@@ -131,7 +131,7 @@ class DnssecPageController extends BaseController
             ->setUri("clientarea.php?action=domaincontacts&domainid={$domainId}")
             ->setOrder(40);
 
-        if ($openproviderNameserversCount > 1) {
+        if ($openproviderNameserversCount > 1 && $domain->dnsmanagement) {
             $primarySidebar->getChild('Domain Details Management')
                 ->addChild('DNS Management')
                 ->setLabel(\Lang::trans('domaindnsmanagement'))

@@ -79,10 +79,6 @@ jQuery( document ).ready(function() {
                 return;
             }
 
-            if (!$isDomainEnabled->dnsmanagement) {
-                return;
-            }
-
             $dnssecItemClass = '';
 
             if ($isDomainEnabled->status != 'Active')
