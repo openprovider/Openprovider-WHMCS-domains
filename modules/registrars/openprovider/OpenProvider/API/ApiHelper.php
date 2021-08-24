@@ -504,6 +504,11 @@ class ApiHelper
         return $this->buildResponse($this->apiClient->call('retrieveResellerRequest', $args));
     }
 
+    public function getPromoMessages(): array
+    {
+        return $this->buildResponse($this->apiClient->call('searchPromoMessageRequest'));
+    }
+
     /**
      * @param ResponseInterface $response
      * @return array
