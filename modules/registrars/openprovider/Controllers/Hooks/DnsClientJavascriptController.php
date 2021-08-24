@@ -75,7 +75,10 @@ class DnsClientJavascriptController
     .each(function(){
         if(jQuery(this).val() == 'NS' || jQuery(this).val() == 'SOA')
       {
-        jQuery(this).parent().parent().find('input, textarea, button, select').attr('disabled','disabled');
+        var element = jQuery(this).parent().parent().find('input, textarea, button, select');
+        var elementClone = element.clone();
+          element.attr('disabled','disabled');
+          element.parent().append(elementClone.attr('hidden', 'hidden'))
         console.log('FOUND NS');
       }
     });

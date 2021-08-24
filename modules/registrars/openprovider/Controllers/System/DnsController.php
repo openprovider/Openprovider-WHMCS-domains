@@ -46,7 +46,6 @@ class DnsController extends BaseController
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
-        $dnsRecordsArr = array();
         $this->domain->load(array(
             'name'      => $params['sld'],
             'extension' => $params['tld']
