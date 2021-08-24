@@ -77,7 +77,6 @@ function openprovider_bind_required_classes($launcher)
         $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter, $idn);
         $client->getConfiguration()->setHost($host);
 
-
         if (!$session->has('AUTH_TOKEN')) {
             $token = $client->call('generateAuthTokenRequest', [
                 'username' => $params['Username'],
