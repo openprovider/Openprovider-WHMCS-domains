@@ -358,19 +358,17 @@ class ApiHelper
 
     /**
      * @param Domain $domain
-     * @param array $prevRecords
-     * @param array $newRecords
+     * @param array $records
      * @return array
      * @throws \Exception
      */
-    public function updateDnsRecords(Domain $domain, array $prevRecords, array $newRecords): array
+    public function updateDnsRecords(Domain $domain, array $records): array
     {
         $args = [
             'name' => $domain->getFullName(),
             'type' => 'master',
             'records' => [
-                'remove' => $prevRecords,
-                'add' => $newRecords,
+                'replace' => $records,
             ]
         ];
 
