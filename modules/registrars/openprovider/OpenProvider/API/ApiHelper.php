@@ -358,8 +358,7 @@ class ApiHelper
 
     /**
      * @param Domain $domain
-     * @param array $prevRecords
-     * @param array $newRecords
+     * @param array $records
      * @return array
      * @throws \Exception
      */
