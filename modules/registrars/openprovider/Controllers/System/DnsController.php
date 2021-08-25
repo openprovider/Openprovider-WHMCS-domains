@@ -16,6 +16,8 @@ use WeDevelopCoffee\wPower\Core\Core;
 
 class DnsController extends BaseController
 {
+    const RETURN_SUCCESS = "success";
+
     /**
      * @var Domain
      */
@@ -90,24 +92,24 @@ class DnsController extends BaseController
             if (empty($records)) {
                 $this->apiHelper->deleteDnsRecords($domain);
 
-                return "success";
+                return self::RETURN_SUCCESS;
             }
 
             $dnsZone = $this->apiHelper->getDns($domain);
             if ($dnsZone) {
                 $this->apiHelper->updateDnsRecords($domain, $records);
 
-                return "success";
+                return self::RETURN_SUCCESS;
             }
 
             $this->apiHelper->createDnsRecords($domain, $records);
+
+            return self::RETURN_SUCCESS;
         } catch (\Exception $e) {
             return [
                 'error' => $e->getMessage(),
             ];
         }
-
-        return "success";
     }
 
     /**
@@ -150,6 +152,17 @@ class DnsController extends BaseController
         return $result;
     }
 
+    /**
+     * example:
+     * "www.domain.com" => "www"
+     * "ftp.domain.com" => "ftp"
+     * "domain.com" => ""
+     *
+     * @param string $name
+     * @param string $domainName
+     *
+     * @return string name without domain part
+     */
     private function removeDomainNameFromRecordName(string $name, string $domainName): string
     {
         if ($name == $domainName) {
@@ -167,7 +180,7 @@ class DnsController extends BaseController
     /**
      * @param array $records
      *
-     * @return DNSrecord[] records to replace or empty array
+     * @return DNSrecord[] array of objects
      */
     private function convertToObjects(array $records): array
     {
