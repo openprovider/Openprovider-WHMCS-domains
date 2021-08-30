@@ -80,7 +80,7 @@ function openprovidersectigodns_CreateAccount(array $params)
         'name' => $params['domain'],
     ]);
 
-    // if zone doesn't exist
+    // if zone exists
     if ($dnsZoneResponse->getCode() == 0) {
         $modifyZoneResponse = $api->call('modifyZoneDnsRequest', [
             'name' => $params['domain'],
@@ -94,7 +94,12 @@ function openprovidersectigodns_CreateAccount(array $params)
         return 'success';
     }
 
-    list($domainName, $domainExtension) = getDomainArrayFromDomain($params['domain']);
+    // if zone does not exist
+    try {
+        list($domainName, $domainExtension) = getDomainArrayFromDomain($params['domain']);
+    } catch (Exception $e) {
+        return $e->getMessage();
+    }
 
     $createDnsZoneResponse = $api->call('createZoneDnsRequest', [
         'domain' => [
