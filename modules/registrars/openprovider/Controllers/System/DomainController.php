@@ -115,8 +115,6 @@ class DomainController extends BaseController
             $domain->extension = $params['tld'];
             $domain->name      = $params['sld'];
 
-            $params = $this->setPremiumDNSInParamsIfProductChoosen($params);
-
             // Prepare the nameservers
             $nameServers = APITools::createNameserversArray($params);
 
@@ -208,10 +206,6 @@ class DomainController extends BaseController
                 && strpos($params['sld'] . '.' . $params['tld'], 'xn--') === false
             ) {
                 unset($domainRegistration->additionalData->idnScript);
-            }
-
-            if (isset($params['premiumDNS']) && $params['premiumDNS']) {
-                $domainRegistration->isSectigoDnsEnabled = $params['premiumDNS'];
             }
 
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
@@ -323,40 +317,5 @@ class DomainController extends BaseController
             $values["error"] = $e->getMessage();
         }
         return $values;
-    }
-
-    /**
-     * @param array $params
-     * @return array $params but if premium dns enabled, params with premium name servers
-     */
-    private function setPremiumDNSInParamsIfProductChoosen(array $params)
-    {
-        if (!isset($params['domainid'])) {
-            return $params;
-        }
-
-        try {
-            $orderRow = Capsule::table(DatabaseTable::Domains)
-                ->where('id', $params['domainid'])
-                ->select('orderid', 'domain')
-                ->first();
-
-            if (!$orderRow) {
-                return $params;
-            }
-
-            $hostingRow = Capsule::table(DatabaseTable::Hosting)
-                ->where('orderid', $orderRow->orderid)
-                ->where('domain', $orderRow->domain)
-                ->first();
-
-            if (!$hostingRow) {
-                return $params;
-            }
-
-            $params['premiumDNS'] = true;
-        } catch (\Exception $e) {}
-
-        return $params;
     }
 }

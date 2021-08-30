@@ -94,9 +94,4 @@ class DomainRegistration extends \OpenProvider\API\AutoloadConstructor
      * @var boolean
      */
     public $isDnssecEnabled;
-
-    /**
-     * @var boolean
-     */
-    public $isSectigoDnsEnabled;
 }

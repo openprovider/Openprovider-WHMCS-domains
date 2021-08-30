@@ -5,6 +5,7 @@ if (!defined("WHMCS")) {
 }
 
 include_once 'api.php';
+include_once 'functions.php';
 
 /**
  * Define module related meta data.
@@ -16,7 +17,7 @@ include_once 'api.php';
  *
  * @return array
  */
-function openprovider_MetaData()
+function openprovidersectigodns_MetaData()
 {
     return array(
         'DisplayName' => 'Openprovider-premiumDNS',
@@ -29,7 +30,7 @@ function openprovider_MetaData()
     );
 }
 
-function openprovider_ConfigOptions()
+function openprovidersectigodns_ConfigOptions()
 {
     return [
         // a text field type allows for single line text input
@@ -63,48 +64,50 @@ function openprovider_ConfigOptions()
  *
  * @return string "success" or an error message
  */
-function openprovider_CreateAccount(array $params)
+function openprovidersectigodns_CreateAccount(array $params)
 {
-    try {
-        $username = $params['configoption1'];
-        $password = $params['configoption2'];
+    $username = $params['configoption1'];
+    $password = $params['configoption2'];
 
-        $api = getApi($username, $password);
+    $api = getApi($username, $password);
 
-        if (is_null($api)) {
-            return 'provisioning module cannot configure api. Maybe your credentials are incorrect.';
-        }
+    if (is_null($api)) {
+        return 'provisioning module cannot configure api. Maybe your credentials are incorrect.';
+    }
 
-        $domainRequest = $api->call('searchDomainRequest', [
-            'fullName' => $params['domain']
+    // get dns zone if exist
+    $dnsZoneResponse = $api->call('retrieveZoneDnsRequest', [
+        'name' => $params['domain'],
+    ]);
+
+    // if zone doesn't exist
+    if ($dnsZoneResponse->getCode() == 0) {
+        $modifyZoneResponse = $api->call('modifyZoneDnsRequest', [
+            'name' => $params['domain'],
+            'premiumDNS' => true,
         ]);
 
-        if ($domainRequest->getCode() != 0 || count($domainRequest->getData()['results']) == 0) {
-            return 'This domain not found in Openprovider or something went wrong!';
+        if ($modifyZoneResponse->getCode() != 0) {
+            return $modifyZoneResponse->getMessage();
         }
 
-        $domain = $domainRequest->getData()['results'][0];
+        return 'success';
+    }
 
-        $modifyDomainRequest = $api->call('modifyDomainRequest', [
-            'id' => $domain['id'],
-            'isSectigoDnsEnabled' => true,
-        ]);
+    list($domainName, $domainExtension) = getDomainArrayFromDomain($params['domain']);
 
-        if ($modifyDomainRequest->getCode() != 0) {
-            return $modifyDomainRequest->getMessage();
-        }
+    $createDnsZoneResponse = $api->call('createZoneDnsRequest', [
+        'domain' => [
+            'name' => $domainName,
+            'extension' => $domainExtension,
+        ],
+        'records' => [],
+        'type' => 'master',
+        'premiumDNS' => true,
+    ]);
 
-    } catch (Exception $e) {
-        // Record the error in WHMCS's module log.
-        logModuleCall(
-            'provisioningmodule',
-            __FUNCTION__,
-            $params,
-            $e->getMessage(),
-            $e->getTraceAsString()
-        );
-
-        return $e->getMessage();
+    if ($createDnsZoneResponse->getCode() != 0) {
+        return $createDnsZoneResponse->getMessage();
     }
 
     return 'success';
