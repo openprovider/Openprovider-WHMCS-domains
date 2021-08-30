@@ -7,6 +7,24 @@ if (!defined("WHMCS")) {
 include_once 'api.php';
 include_once 'functions.php';
 
+const CREATE_DNS_ZONE_TYPE = 'master';
+
+const SUCCESS_MESSAGE = 'success';
+
+const MODULE_NAME = 'Openprovider-premiumDNS';
+const API_VERSION = '1.1'; // Use API Version 1.1
+const REQUIRES_SERVER = true; // Set true if module requires a server to work
+const DEFAULT_NON_SSL_PORT = '1111'; // Default Non-SSL Connection Port
+const DEFAULT_SSL_PORT = '1112'; // Default SSL Connection Port
+const SERVICE_SINGLE_SIGN_ON_LABEL = 'Login to Panel as User';
+const ADMIN_SINGLE_SIGN_ON_LABEL = 'Login to Panel as Admin';
+
+const CONFIG_OPTION_LOGIN_NAME = 'Login';
+const CONFIG_OPTION_LOGIN_DESCRIPTION = 'Enter Openprovider login';
+
+const CONFIG_OPTION_PASSWORD_NAME = 'Password';
+const CONFIG_OPTION_PASSWORD_DESCRIPTION = 'Enter Openprovider password';
+
 /**
  * Define module related meta data.
  *
@@ -20,13 +38,13 @@ include_once 'functions.php';
 function openprovidersectigodns_MetaData()
 {
     return array(
-        'DisplayName' => 'Openprovider-premiumDNS',
-        'APIVersion' => '1.1', // Use API Version 1.1
-        'RequiresServer' => true, // Set true if module requires a server to work
-        'DefaultNonSSLPort' => '1111', // Default Non-SSL Connection Port
-        'DefaultSSLPort' => '1112', // Default SSL Connection Port
-        'ServiceSingleSignOnLabel' => 'Login to Panel as User',
-        'AdminSingleSignOnLabel' => 'Login to Panel as Admin',
+        'DisplayName' => MODULE_NAME,
+        'APIVersion' => API_VERSION,
+        'RequiresServer' => REQUIRES_SERVER,
+        'DefaultNonSSLPort' => DEFAULT_NON_SSL_PORT,
+        'DefaultSSLPort' => DEFAULT_SSL_PORT,
+        'ServiceSingleSignOnLabel' => SERVICE_SINGLE_SIGN_ON_LABEL,
+        'AdminSingleSignOnLabel' => ADMIN_SINGLE_SIGN_ON_LABEL,
     );
 }
 
@@ -34,15 +52,15 @@ function openprovidersectigodns_ConfigOptions()
 {
     return [
         // a text field type allows for single line text input
-        'Login' => [
+        CONFIG_OPTION_LOGIN_NAME => [
             'Type' => 'text',
-            'Description' => 'Enter Openprovider login',
+            'Description' => CONFIG_OPTION_LOGIN_DESCRIPTION,
             'SimpleMode' => true,
         ],
         // a password field type allows for masked text input
-        'Password' => [
+        CONFIG_OPTION_PASSWORD_NAME => [
             'Type' => 'password',
-            'Description' => 'Enter Openprovider password',
+            'Description' => CONFIG_OPTION_PASSWORD_DESCRIPTION,
             'SimpleMode' => true,
         ],
     ];
@@ -66,10 +84,7 @@ function openprovidersectigodns_ConfigOptions()
  */
 function openprovidersectigodns_CreateAccount(array $params)
 {
-    $username = $params['configoption1'];
-    $password = $params['configoption2'];
-
-    $api = getApi($username, $password);
+    $api = getApi($params['configoption1'], $params['configoption2']);
 
     if (is_null($api)) {
         return 'provisioning module cannot configure api. Maybe your credentials are incorrect.';
@@ -91,23 +106,20 @@ function openprovidersectigodns_CreateAccount(array $params)
             return $modifyZoneResponse->getMessage();
         }
 
-        return 'success';
+        return SUCCESS_MESSAGE;
     }
 
     // if zone does not exist
     try {
-        list($domainName, $domainExtension) = getDomainArrayFromDomain($params['domain']);
+        $domainArray = getDomainArrayFromDomain($params['domain']);
     } catch (Exception $e) {
         return $e->getMessage();
     }
 
     $createDnsZoneResponse = $api->call('createZoneDnsRequest', [
-        'domain' => [
-            'name' => $domainName,
-            'extension' => $domainExtension,
-        ],
+        'domain' => $domainArray,
         'records' => [],
-        'type' => 'master',
+        'type' => CREATE_DNS_ZONE_TYPE,
         'premiumDNS' => true,
     ]);
 
@@ -115,5 +127,5 @@ function openprovidersectigodns_CreateAccount(array $params)
         return $createDnsZoneResponse->getMessage();
     }
 
-    return 'success';
+    return SUCCESS_MESSAGE;
 }

@@ -18,7 +18,7 @@ function getDomainArrayFromDomain(string $domain): array
     $domainTld = substr(str_replace($domainSld, '', $domain), 1);
 
     return [
-        $domainSld,
-        $domainTld
+        'name'      => $domainSld,
+        'extension' => $domainTld
     ];
 }

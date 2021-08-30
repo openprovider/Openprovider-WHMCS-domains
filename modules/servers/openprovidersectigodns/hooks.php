@@ -18,19 +18,14 @@ add_hook('ShoppingCartValidateDomain', 1, function($vars) {
         ->where('id', $productId)
         ->first();
 
-    $username = $productRow->configoption1;
-    $password = $productRow->configoption2;
-
-    $api = getApi($username, $password);
+    $api = getApi($productRow->configoption1, $productRow->configoption2);
 
     if (is_null($api)) {
         return 'Something was wrong! Check your credentials and try again';
     }
 
-    $domainFullName = $vars['sld'] . $vars['tld'];
-
     $domainRequest = $api->call('searchDomainRequest', [
-        'fullName' => $domainFullName
+        'fullName' => sprintf('%s.%s', $vars['sld'], $vars['tld'])
     ]);
 
     if ($domainRequest->getCode() != 0 || count($domainRequest->getData()['results']) == 0) {
