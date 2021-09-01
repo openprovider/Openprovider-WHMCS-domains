@@ -10,6 +10,7 @@ use OpenProvider\API\Domain;
 use OpenProvider\API\APITools;
 use OpenProvider\API\DomainTransfer;
 use OpenProvider\API\DomainRegistration;
+use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\src\PremiumDomain;
 use OpenProvider\WhmcsRegistrar\src\Handle;
 use OpenProvider\WhmcsRegistrar\src\AdditionalFields;
@@ -17,6 +18,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
+use WHMCS\Database\Capsule;
 
 /**
  * Class DomainController

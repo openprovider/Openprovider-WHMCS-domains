@@ -46,8 +46,10 @@ class DomainRegistration extends \OpenProvider\API\AutoloadConstructor
      * @var string
      */
     public $billingHandle   =   null;
-    
-    
+
+    /**
+     * @var array
+     */
     public $nameServers     =   null;
     
     /**
@@ -92,5 +94,4 @@ class DomainRegistration extends \OpenProvider\API\AutoloadConstructor
      * @var boolean
      */
     public $isDnssecEnabled;
-
 }
