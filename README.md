@@ -29,7 +29,7 @@ Features
 ```
 if (function_exists('openprovider_additional_fields'))
     $additionaldomainfields = openprovider_additional_fields();
-``` 
+```
 - [Optional] Upload `<Module directory>/modules/addons/openprovider` to `<WHMCS directory>/modules/addons`
 ## Basic Configurations
 
@@ -71,6 +71,14 @@ First Make sure that the currency that you are using to pay Openprovider is conf
 2. Configure premium pricing and margins
 3. In the Advanced configuration file of the module ( `/modules/registrars/openprovider/configuration/advanced-module-configurations.php`) find the parameter "OpenproviderPremium" and set to **true**
 
+### Start selling Premium DNS service
+
+Openprovider’s premium DNS leverages Sectigo’s advanced DNS infrastructure to provide a single, integrated and easy to adopt solution which offers a 99.99% Uptime Guarantee and near real-time updates, features DDoS protection and blazing fast resolution. While our standard DNS service is sufficient for users who don’t have any special needs when it comes to DNS resolution, the premium DNS service can be an excellent service to your hosting services portfolio.
+
+- Copy the contents of `/modules/servers/openprovidersectigodns` to `<your-WHMCS-directory>/modules/servers/openprovidersectigodns`
+- Set up a product with the Openprovider-premiumDNS module (make sure to require a domain) and start selling. [See here for detailed setup instructions.](docs/premium_dns_product_setup.md) 
+- Note that there is no test environment and records created with the premium DNS module will be billed to your Openprovider account.
+
 ### Allow additional DNS records
 
 If you plan on allowing your end users to edit their own DNS records, and want them to be able to create all record types supported by Openprovider, you can make some modifications to the WHMCS templates as described here:
@@ -110,12 +118,6 @@ Set up tag management to send custom emails to the end users of your resellers.
 
 - [Configuration instructions can be found here](docs/associate_tags_with_customers.md)
 
-### Configure the Openprovider cron sync
-
-If you are concerned that the "out of the box" domain sync included by WHMCS is not sufficient and would like more granular control over domain sync, you can configure the Openprovider sync script. 
-
-- [Configuration instructions can be found here](docs/configure_openprovider_cron_sync.md)
-
 ### Decide whether to use Openprovider Auto-renew
 
 Various options exist for managing domain renewals. A detailed explanation of your options [can be found here](docs/auto_renew_logic.md)
@@ -134,3 +136,10 @@ If there are any connectivity issues with Openprovider, or API commands are not 
 ### FAQ
 
 Common issues and solutions for them can be found [here](https://support.openprovider.eu/hc/en-us/articles/360009201193).
+
+
+### [DEPRECATED] Configure the Openprovider cron sync
+
+This feature is deprecated since version 5.3 of the Openprovider domain module, and is not recommended for versions WHMCS 8+. We suggest that you use the WHMCS native domain sync and do not use the Openprovider custom sync for  WHMCS 8 and higher.
+
+- [Configuration instructions can be found here](docs/configure_openprovider_cron_sync.md)

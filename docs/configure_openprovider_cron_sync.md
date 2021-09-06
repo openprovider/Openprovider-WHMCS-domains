@@ -1,4 +1,6 @@
-# Openprovider Domain Sync
+# Openprovider Domain Sync - DEPRECATED
+
+This feature is deprecated since version 5.3 of the Openprovider domain module, and is not recommended for versions WHMCS 8+. We suggest that you use the WHMCS native domain sync and do not use the Openprovider custom sync for  WHMCS 8 and higher.
 
 ## Setting up cron task
 

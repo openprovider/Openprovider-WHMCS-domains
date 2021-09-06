@@ -18,7 +18,6 @@ To include an SPF and SRV records, you could add the examples shown below:
 ```
 <option value="SPF"{if $dnsrecord.type eq "SPF"} selected="selected"{/if}>SPF</option>
 <option value="SRV"{if $dnsrecord.type eq "SRV"} selected="selected"{/if}>SRV</option>
-<option value="NS"{if $dnsrecord.type eq "NS"} selected="selected"{/if}>NS</option>
 ```
 
 ### Find place to edit which records can be created
@@ -31,7 +30,6 @@ Add the below options to allow end users to create SPF and SRV records.
 ```
 <option value="SPF">SPF</option>
 <option value="SRV">SRV</option>
-<option value="NS">NS</option>
 ```
 
 ### Add priority field if necessary (for example for SRV records)
