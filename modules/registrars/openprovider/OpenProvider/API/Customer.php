@@ -248,10 +248,9 @@ class Customer
             }
 
             if (
-                !empty($params['company name']) &&
-                (!empty($params['tax number']) || !empty($params['vat']))
+                !empty($params['company name']) && !empty($params['vat or tax id'])
             ) {
-                $this->vat = $params['tax number'] ?? $params['vat'];
+                $this->vat = $params['vat or tax id'];
             }
 
             if (empty($params['company name']) && !empty($params['company or individual id'])) {
@@ -259,10 +258,9 @@ class Customer
             }
 
             if (
-                empty($params['company name']) &&
-                (!empty($params['tax number']) || !empty($params['vat']))
+                empty($params['company name']) && !empty($params['vat or tax id'])
             ) {
-                $this->additionalData->set('socialSecurityNumber', $params['tax number'] ?? $params['vat']);
+                $this->additionalData->set('socialSecurityNumber', $params['vat or tax id']);
             }
         }
 

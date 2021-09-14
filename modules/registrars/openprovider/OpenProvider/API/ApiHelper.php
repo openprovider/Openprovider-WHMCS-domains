@@ -454,13 +454,13 @@ class ApiHelper
 
         if (!empty($customerOp['companyName'])) {
             if (empty($customerOp['additionalData']['companyRegistrationNumber'])) {
-                $customerInfo['Company or Individual Id'] = $customerOp['vat'];
+                $customerInfo['Vat or Tax ID'] = $customerOp['vat'];
             } else {
                 $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['companyRegistrationNumber'];
             }
         } else {
             if (empty($customerOp['additionalData']['passportNumber'])) {
-                $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['socialSecurityNumber'];
+                $customerInfo['Vat or Tax ID'] = $customerOp['additionalData']['socialSecurityNumber'];
             } else {
                 $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['passportNumber'];
             }

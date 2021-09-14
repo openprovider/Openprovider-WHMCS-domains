@@ -63,6 +63,7 @@ class ClientAreaFooterController
                 $domain = DomainFullNameToDomainObject::convert($vars['domain']);
                 $idNumberName = $_LANG[sprintf('%s%s', $domain->extension ?? 'es', 'IdentificationCORI')];
                 $js = '$("#frmDomainContactModification").submit(function(e){ e.preventDefault(); setSessionContact();  $(this).unbind("submit").submit(); }); $("input[name=\"contactdetails[Owner][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Admin][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Tech][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Billing][Company or Individual Id]\"]").attr("required" , true); $("label:contains(\"Company or Individual Id\")").html("' . $idNumberName . '");';
+                $js .= '$("#frmDomainContactModification").submit(function(e){ e.preventDefault(); setSessionContact();  $(this).unbind("submit").submit(); }); $("input[name=\"contactdetails[Owner][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Admin][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Tech][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Billing][Vat or Tax ID]\"]").attr("required" , true); $("label:contains(\"Vat or Tax ID\")").html("' . $idNumberName . '");';
             }
 
             $systemurl = $vars['systemurl'];
