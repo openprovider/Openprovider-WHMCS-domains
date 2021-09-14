@@ -15,7 +15,6 @@ if($_POST['set'] == 'contactsession')
   );
 
   $_SESSION['contactsession'] = json_encode($data);
-  // echo $_SESSION['contactsession'];
 }
 else
 {
