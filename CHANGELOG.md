@@ -1,7 +1,68 @@
 # Changelog
-## DOMAIN TRANSFER
 
-## V3.4.1
+## v5.4
+
+###### Features and improvements
+
+- 
+
+###### Bugfixes
+
+- 
+
+## v5.3
+
+###### Features and improvements
+
+- Allow end users and WHMCS administrators to update domain contact  details for .es domains, including the company / personal identification number
+
+###### Bugfixes
+
+- Fixes issue with DNSSEC domain validation
+
+## v5.0
+
+###### Features and improvements
+
+- Migrated the module from the Openprovider XML API to use the Openprovider REST API.
+- Control the maximum period for price imports.
+- Added option for partners to use Placement+ domain search
+
+###### Bugfixes
+
+- various bugfixes and improvements
+- Fixes issue where WHMCS domain sync would not update domain expiration dates in some cases
+
+## v4.0.3
+
+###### Bugfixes
+
+- Fixes issue with DNSSEC domain validation
+
+## v4.0.2
+
+###### Bugfixes
+
+- Fixes issue with unnecessary variable type
+- Fixes "getting oops error with mixed registrars"
+- Updates menu item & API scripts' absolute path
+
+## v4.0.1
+
+###### Features
+
+- Added support for Domain contact verification, for more information see the [WHMCS documentation](https://docs.whmcs.com/Domain_Contact_Verification)
+- [Support for tag management of clients](https://github.com/openprovider/OP-WHMCS7#allow-end-users-to-edit-dnssec-records)
+- Simplified configuration page
+- [Allow end users to manage DNSSEC records](https://github.com/openprovider/OP-WHMCS7#allow-end-users-to-edit-dnssec-records)
+- Refactored documentation
+
+###### Bugfixes
+
+- Fixes issue with unnecessary variable type
+
+## v3.4.1
+
 - [FEATURE] Added support for TLD price caching.
 - [IMPROVEMENT] Simplified login page and moved advanced configuration options to a file
 - [BUGFIX] Incorrect credentials were sometimes not being indicated when activating the module
@@ -9,7 +70,7 @@
 - [FEATURE] Added support for WHMCS feature domain verification as described in [the WHMCS documentaitno](https://docs.whmcs.com/Domain_Contact_Verification)
 - [FEATURE] Adds support for assigning tags to specific clients, which allows the WHMCS administrator to send custom emails to the client and all of the client's contacts
 
-## V3.3
+## v3.3
 Notes:
 To improve DNS support, perform the actions are instructed in "Install the DNS management options". We have created a [request for WHMCS to make this easier. Please upvote this request here](https://requests.whmcs.com/topic/add-support-for-custom-dns-types).
 
@@ -23,7 +84,7 @@ To improve DNS support, perform the actions are instructed in "Install the DNS m
 - Improvement: #132 Remove non-required .de required fields
 - Improvement: #148 Skip domains marked as fraud in synchronisation
 
-## V3.1
+## v3.1
 
 - Feature: Execute renewal action for free domain transfers (#126)
 - Bugfix: Removed the by WHMCS introduced field "Eurid Entity type" for .eu (#130)
@@ -31,7 +92,7 @@ To improve DNS support, perform the actions are instructed in "Install the DNS m
 - Bugfix: Domains in Pending transfer are skipped by DomainSync (#131)
 
 
-## All previous versions to V3.0
+## All previous versions to v3.0
 
 Manual action required: Check step 12 of hte installation manual in order to remove the domain lock warning for certain TLDs.
 

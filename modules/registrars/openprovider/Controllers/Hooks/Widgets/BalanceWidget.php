@@ -48,7 +48,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
         $html = '';
         try {
             // Get the update message.
-            $messages = $this->xmlApiAdapter->call('searchPromoMessageRequest')->getData();
+            $messages = $this->apiHelper->getPromoMessages();
         } catch ( \Exception $e)
         {
             // Do nothing.

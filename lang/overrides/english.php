@@ -1,8 +1,9 @@
 <?php
 
+$_LANG['dnssectabname'] = 'DNSSEC Management';
+
 $_LANG['dnssec']['pagename']  = 'DNSSEC Records';
 $_LANG['dnssec']['tablename'] = 'Manage DNSSEC Records';
-
 
 $_LANG['dnssec']['activatednssecbutton']   = 'Activate DNSSEC';
 $_LANG['dnssec']['deactivatednssecbutton'] = 'Deactivate DNSSEC';

@@ -79,10 +79,6 @@ jQuery( document ).ready(function() {
                 return;
             }
 
-            if (!$isDomainEnabled->dnsmanagement) {
-                return;
-            }
-
             $dnssecItemClass = '';
 
             if ($isDomainEnabled->status != 'Active')
@@ -90,7 +86,7 @@ jQuery( document ).ready(function() {
 
             $primarySidebar->getChild('Domain Details Management')
                 ->addChild('DNSSEC')
-                ->setLabel('DNSSEC Management')
+                ->setLabel(\Lang::trans('dnssectabname'))
                 ->setUri("dnssec.php?domainid={$domainId}")
                 ->setClass($dnssecItemClass)
                 ->setOrder(100);

@@ -9,12 +9,15 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
  */
 use OpenProvider\API\APIConfig;
 use OpenProvider\API\ApiHelper;
+use OpenProvider\API\DNSrecord;
 use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 
 class DnsController extends BaseController
 {
+    const RETURN_SUCCESS = "success";
+
     /**
      * @var Domain
      */
@@ -45,53 +48,33 @@ class DnsController extends BaseController
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
-        $dnsRecordsArr = array();
         $this->domain->load(array(
             'name'      => $params['sld'],
             'extension' => $params['tld']
         ));
 
-        $dnsInfo = $this->apiHelper->getDns($this->domain);
-
-        if (empty($dnsInfo)) {
+        try {
+            $dnsInfo = $this->apiHelper->getDns($this->domain);
+        } catch (\Exception $e) {
             return [];
         }
 
-        $supportedDnsTypes = APIConfig::$supportedDnsTypes;
-        $domainName        = $params['sld'] . '.' . $params['tld'];
-
-        foreach ($dnsInfo['records'] as $dnsRecord) {
-            if (!in_array($dnsRecord['type'], $supportedDnsTypes)) {
-                continue;
-            }
-
-            $hostname = $dnsRecord['name'];
-
-            if ($hostname == $domainName) {
-                $hostname = '';
-            } else {
-                $pos = stripos($hostname, '.' . $domainName);
-                if ($pos !== false) {
-                    $hostname = substr($hostname, 0, $pos);
-                }
-            }
-
-            $prio            = is_numeric($dnsRecord['prio']) ? $dnsRecord['prio'] : '';
-            $dnsRecordsArr[] = [
-                'hostname' => $hostname,
-                'type'     => $dnsRecord['type'],
-                'address'  => $dnsRecord['value'],
-                'priority' => $prio
-            ];
+        if (empty($dnsInfo) || empty($dnsInfo['records'])) {
+            return [];
         }
 
-        return $dnsRecordsArr;
+        $dnsRecords = $this->removeUnsupportedRecords($dnsInfo['records']);
+
+        return $dnsRecords ?
+            $this->prepareRecordsToDisplay($dnsRecords, sprintf('%s.%s', $params['sld'], $params['tld'])) :
+            [];
     }
 
     /**
      * Save the new DNS settings.
      *
      * @param $params
+     *
      * @return array|string
      */
     public function save($params)
@@ -99,23 +82,128 @@ class DnsController extends BaseController
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
-        $dnsRecordsArr = [];
-        $values = [];
-        foreach ($params['dnsrecords'] as $tmpDnsRecord) {
-            if (!$tmpDnsRecord['hostname'] && !$tmpDnsRecord['address']) {
+        $records = $this->convertToObjects($params['dnsrecords']);
+
+        $domain = $this->domain;
+        $domain->name = $params['sld'];
+        $domain->extension = $params['tld'];
+
+        try {
+            if (empty($records)) {
+                $this->apiHelper->deleteDnsRecords($domain);
+
+                return self::RETURN_SUCCESS;
+            }
+
+            $dnsZone = $this->apiHelper->getDns($domain);
+            if ($dnsZone) {
+                $this->apiHelper->updateDnsRecords($domain, $records);
+
+                return self::RETURN_SUCCESS;
+            }
+
+            $this->apiHelper->createDnsRecords($domain, $records);
+
+            return self::RETURN_SUCCESS;
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * @param array $records
+     *
+     * @return array records filtered by type. Type must be included in APIConfig::$supportedDnsTypes array
+     */
+    private function removeUnsupportedRecords(array $records): array
+    {
+        $result = [];
+        foreach ($records as $record) {
+            if (!in_array($record['type'], APIConfig::$supportedDnsTypes)) {
                 continue;
             }
 
-            $dnsRecord        = new \OpenProvider\API\DNSrecord();
-            $dnsRecord->type  = $tmpDnsRecord['type'];
-            $dnsRecord->name  = $tmpDnsRecord['hostname'];
-            $dnsRecord->value = $tmpDnsRecord['address'];
+            $result[] = $record;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $records
+     * @param string $domainName
+     *
+     * @return array records to display on dns management page or empty array
+     */
+    private function prepareRecordsToDisplay(array $records, string $domainName): array
+    {
+        $result = [];
+        foreach ($records as $record) {
+            $result[] = [
+                'hostname' => $this->removeDomainNameFromRecordName($record['name'], $domainName),
+                'type'     => $record['type'],
+                'address'  => $record['value'],
+                'priority' => is_numeric($record['prio']) ? $record['prio'] : ''
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * example:
+     * "www.domain.com" => "www"
+     * "ftp.domain.com" => "ftp"
+     * "domain.com" => ""
+     *
+     * @param string $name
+     * @param string $domainName
+     *
+     * @return string name without domain part
+     */
+    private function removeDomainNameFromRecordName(string $name, string $domainName): string
+    {
+        if ($name == $domainName) {
+            return '';
+        }
+
+        $pos = stripos($name, '.' . $domainName);
+        if ($pos !== false) {
+            $name = substr($name, 0, $pos);
+        }
+
+        return $name;
+    }
+
+    /**
+     * @param array $records
+     *
+     * @return DNSrecord[] array of objects
+     */
+    private function convertToObjects(array $records): array
+    {
+        if (empty($records)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($records as $record) {
+            if (!$record['hostname'] && !$record['address']) {
+                continue;
+            }
+
+            $dnsRecord        = new DNSrecord();
+            $dnsRecord->type  = $record['type'];
+            $dnsRecord->name  = $record['hostname'];
+            $dnsRecord->value = $record['address'];
             $dnsRecord->ttl   = APIConfig::$dnsRecordTtl;
 
             // priority - required for MX records and SRV records; ignored for all other record types
             if ('MX' == $dnsRecord->type or 'SRV' == $dnsRecord->type) {
-                if (is_numeric($tmpDnsRecord['priority'])) {
-                    $dnsRecord->prio = $tmpDnsRecord['priority'];
+                if (is_numeric($record['priority'])) {
+                    $dnsRecord->prio = $record['priority'];
                 } else {
                     $dnsRecord->prio = APIConfig::$dnsRecordPriority;
                 }
@@ -125,35 +213,13 @@ class DnsController extends BaseController
                 continue;
             }
 
-            if (in_array($dnsRecord, $dnsRecordsArr)) {
+            if (in_array($dnsRecord, $result)) {
                 continue;
             }
 
-            $dnsRecordsArr[] = $dnsRecord;
+            $result[] = $dnsRecord;
         }
 
-        $domain = $this->domain;
-        $domain->name = $params['sld'];
-        $domain->extension = $params['tld'];
-
-        try {
-            if (count($dnsRecordsArr)) {
-                $dnsZone = $this->apiHelper->getDns($domain);
-                if ($dnsZone) {
-                    $this->apiHelper->updateDnsRecords($domain, $dnsZone['records'], $dnsRecordsArr);
-                } else {
-                    $this->apiHelper->createDnsRecords($domain, $dnsRecordsArr);
-                }
-
-            } else {
-                $this->apiHelper->deleteDnsRecords($domain);
-            }
-
-            return "success";
-        } catch (\Exception $e) {
-            $values["error"] = $e->getMessage();
-        }
-
-        return $values;
+        return $result;
     }
 }

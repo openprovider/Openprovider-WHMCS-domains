@@ -57,7 +57,7 @@ class DnssecPageController extends BaseController
             ->where('userid', $selectedClient->id)
             ->first();
 
-        if (!$domain || !$domain->dnsmanagement) {
+        if (!$domain) {
             $this->redirectUserAway();
             return;
         }
@@ -103,38 +103,38 @@ class DnssecPageController extends BaseController
 
         $primarySidebar->getChild('Domain Details Management')
             ->addChild('Overview')
-            ->setLabel('Overview')
+            ->setLabel(\Lang::trans('overview'))
             ->setUri("clientarea.php?action=domaindetails&id={$domainId}")
             ->setOrder(0);
 
         $primarySidebar->getChild('Domain Details Management')
             ->addChild('Auto Renew')
-            ->setLabel('Auto Renew')
+            ->setLabel(\Lang::trans('domainsautorenew'))
             ->setUri("clientarea.php?action=domaindetails&id={$domainId}#tabAutorenew")
             ->setOrder(10);
 
         $primarySidebar->getChild('Domain Details Management')
             ->addChild('Nameservers')
-            ->setLabel('Nameservers')
+            ->setLabel(\Lang::trans('orderservernameservers'))
             ->setUri("clientarea.php?action=domaindetails&id={$domainId}#tabNameservers")
             ->setOrder(20);
 
         $primarySidebar->getChild('Domain Details Management')
             ->addChild('Addons')
-            ->setLabel('Addons')
+            ->setLabel(\Lang::trans('domainaddons'))
             ->setUri("clientarea.php?action=domaindetails&id={$domainId}#tabAddons")
             ->setOrder(30);
 
         $primarySidebar->getChild('Domain Details Management')
             ->addChild('Contact Information')
-            ->setLabel('Contact Information')
+            ->setLabel(\Lang::trans('domaincontactinfo'))
             ->setUri("clientarea.php?action=domaincontacts&domainid={$domainId}")
             ->setOrder(40);
 
-        if ($openproviderNameserversCount > 1) {
+        if ($openproviderNameserversCount > 1 && $domain->dnsmanagement) {
             $primarySidebar->getChild('Domain Details Management')
                 ->addChild('DNS Management')
-                ->setLabel('DNS Management')
+                ->setLabel(\Lang::trans('domaindnsmanagement'))
                 ->setUri("clientarea.php?action=domaindns&domainid={$domainId}")
                 ->setOrder(50);
         }

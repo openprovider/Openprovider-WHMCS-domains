@@ -47,6 +47,7 @@ class DnsClientJavascriptController
 
     /**
      * @param $params
+     *
      * @return string|void
      */
     public function run ($params)
@@ -75,7 +76,12 @@ class DnsClientJavascriptController
     .each(function(){
         if(jQuery(this).val() == 'NS' || jQuery(this).val() == 'SOA')
       {
-        jQuery(this).parent().parent().find('input, textarea, button, select').attr('disabled','disabled');
+        var element = jQuery(this).parent().parent().find('input, textarea, button, select');
+        // we need to clone this element without disabled attribute
+        // to send this value into controller 
+        var elementClone = element.clone();
+          element.attr('disabled','disabled');
+          element.parent().append(elementClone.attr('hidden', 'hidden'))
         console.log('FOUND NS');
       }
     });
