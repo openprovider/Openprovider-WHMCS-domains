@@ -22,12 +22,16 @@ $_LANG['dnssec']['tableheaderactions']     = 'Actions';
 $_LANG['dnssec']['tablebuttonactiondelete'] = 'Delete';
 $_LANG['dnssec']['tablebuttonactionsave']   = 'Save';
 
-
 $_LANG['dnssec']['buttonadddnssecrecord'] = 'Add A New DNSSEC Record';
 
-
-$_LANG['esIdentificationType'] = 'Identificaiton Type';
+$_LANG['esIdentificationType'] = 'Identification Type';
 $_LANG['esIdentificationNumber'] = "Company or Individual ID";
 $_LANG['esIdentificationPassport'] = "Passport/Individual ID";
 $_LANG['esIdentificationCompany'] = "Company Registration ID";
-$_LANG['esIdentificationCORI'] = "Company or Invdividual ID";
+$_LANG['esIdentificationCORI'] = "Company or Individual ID";
+
+$_LANG['ptIdentificationType'] = 'Tipo de Contribuinte (VAT/TAX ID)';
+$_LANG['ptIdentificationNumber'] = 'Tipo de Contribuinte (VAT/TAX ID)';
+$_LANG['ptIdentificationVat'] = "NIPC (empresa)";
+$_LANG['ptIdentificationSocialSecurityNumber'] = "NIF (particular)";
+$_LANG['ptIdentificationCORI'] = 'Tipo de Contribuinte (VAT/TAX ID)';

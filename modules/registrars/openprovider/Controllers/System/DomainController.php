@@ -3,7 +3,6 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use idna_convert;
-use OpenProvider\API\API;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\Domain;
@@ -14,8 +13,6 @@ use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\src\PremiumDomain;
 use OpenProvider\WhmcsRegistrar\src\Handle;
 use OpenProvider\WhmcsRegistrar\src\AdditionalFields;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use WHMCS\Database\Capsule;
@@ -34,10 +31,6 @@ class DomainController extends BaseController
      * @var object \OpenProvider\WhmcsRegistrar\src\AdditionalFields
      */
     protected $additionalFields;
-    /**
-     * @var API
-     */
-    private $API;
     /**
      * @var Domain
      */
@@ -59,10 +52,6 @@ class DomainController extends BaseController
      */
     private $apiClient;
     /**
-     * @var Serializer
-     */
-    private $serializer;
-    /**
      * @var idna_convert
      */
     private $idn;
@@ -74,7 +63,6 @@ class DomainController extends BaseController
      */
     public function __construct(
         Core $core,
-        API $API,
         Domain $domain,
         PremiumDomain $premiumDomain,
         AdditionalFields $additionalFields,
@@ -86,14 +74,12 @@ class DomainController extends BaseController
     {
         parent::__construct($core);
 
-        $this->API              = $API;
         $this->domain           = $domain;
         $this->additionalFields = $additionalFields;
         $this->handle           = $handle;
         $this->premiumDomain    = $premiumDomain;
         $this->apiHelper        = $apiHelper;
         $this->apiClient        = $apiClient;
-        $this->serializer       = new Serializer([new ObjectNormalizer()]);
         $this->idn              = $idn;
     }
 

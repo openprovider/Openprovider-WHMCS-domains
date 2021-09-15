@@ -451,10 +451,19 @@ class ApiHelper
             $customerOp['phone']['areaCode'] .
             $customerOp['phone']['subscriberNumber'];
 
+
         if (!empty($customerOp['companyName'])) {
-            $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['companyRegistrationNumber'];
+            if (empty($customerOp['additionalData']['companyRegistrationNumber'])) {
+                $customerInfo['Vat or Tax ID'] = $customerOp['vat'];
+            } else {
+                $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['companyRegistrationNumber'];
+            }
         } else {
-            $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['passportNumber'];
+            if (empty($customerOp['additionalData']['passportNumber'])) {
+                $customerInfo['Vat or Tax ID'] = $customerOp['additionalData']['socialSecurityNumber'];
+            } else {
+                $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['passportNumber'];
+            }
         }
 
         return $customerInfo;

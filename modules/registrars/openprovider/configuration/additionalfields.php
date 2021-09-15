@@ -119,32 +119,22 @@ $additionaldomainfields[".aero"][] = array(
     "op_name" => "ensKey"
 );
 
-// .pt
+// .PT
 $additionaldomainfields[".pt"][] = array(
-    "Name" => "Company Registration Number",
-    "LangVar" => "ptCompanyRegistrationNumber",
-    "Type" => "text",
-    "Size" => "30",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name"  => "companyRegistrationNumber"
+    "Name" => "Tipo de Contribuinte (VAT/TAX ID)",
+    "LangVar" => "ptIdentificationType",
+    "Options" => "vat|NIPC (empresa),socialSecurityNumber|NIF (particular)",
+    "Type" => "dropdown",
+    "op_dropdown_for_op_name" => "ptIdentificationNumber"
 );
 
-$additionaldomainfields[".pt"][] = array(
-    "Name" => "Social Security Number",
-    "LangVar" => "ptSocialSecurityNumber",
+$additionaldomainfields['.pt'][] = array(
+    'Name' => 'Número de identificación',
     "Type" => "text",
     "Size" => "30",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name"   => "socialSecurityNumber"
-);
-
-$additionaldomainfields[".pt"][] = array(
-    "Name" => "Passport Number",
-    "LangVar" => "ptPassportNumber",
-    "Type" => "text",
-    "Size" => "30",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "passportNumber"
+    "Required" => true,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "ptIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
 
 // it

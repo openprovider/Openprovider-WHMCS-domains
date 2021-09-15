@@ -46,5 +46,5 @@ return [
     'maxRegistrationPeriod' => 1,
 
     // enable domains registration .es
-    'esmod' => false,
+    'idnumbermod' => false,
 ];

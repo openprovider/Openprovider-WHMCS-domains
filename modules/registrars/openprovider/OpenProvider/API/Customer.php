@@ -219,39 +219,63 @@ class Customer
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
         $this->tags         =   $tags->getTags();
-//        $this->vat          =   CustomField::getValueFromCustomFields('VATNumber', $params['customfields']);;
-
 
         $this->additionalData = new CustomerAdditionalData();
 
-        if($getFromContactDetails)
-        {
-          if(!empty($params['company name']) && !empty($params['company or individual id']))
-          {
-              $this->additionalData->set('companyRegistrationNumber' , $params['company or individual id']);
-          }
+        if (isset($params['additionalfields']) && !empty($params['additionalfields'])) {
+            $additionalData = [];
+            foreach($params['additionalfields'] as $additionalfield) {
+                if (isset($additionalData['vat']) && empty($additionalData['vat'])) {
+                    $additionalData['vat'] = $additionalfield;
+                    $this->vat = $additionalfield;
+                    continue;
+                }
 
-          if(empty($params['company name']) && !empty($params['company or individual id']))
-          {
-              $this->additionalData->set('passportNumber' , $params['company or individual id']);
-          }
+                if (isset($additionalData['socialSecurityNumber']) && empty($additionalData['socialSecurityNumber'])) {
+                    $additionalData['socialSecurityNumber'] = $additionalfield;
+                    $this->additionalData->set('socialSecurityNumber', $additionalfield);
+                    $this->companyName = null;
+                    continue;
+                }
 
+                $additionalData[$additionalfield] = '';
+            }
         }
 
-          if(isset($_SESSION['contactsession']))
-          {
-            $contactsNew = json_decode($_SESSION['contactsession'] , true);
-            if($contactsNew[$prefix] != null && $contactsNew[$prefix][0] == 'c')
-            {
-              $contactid = substr($contactsNew[$prefix], 1);
-              $idn = Capsule::table('mod_contactsAdditional')
-                        ->where("contact_id", "=", $contactid )
-                        ->first();
-              $idn_id_type =  $idn->identification_type;
-              $idn_id =  $idn->identification_number;
-              $this->additionalData->set( $idn_id_type, $idn_id);
+        if ($getFromContactDetails) {
+            if (!empty($params['company name']) && !empty($params['company or individual id'])) {
+                $this->additionalData->set('companyRegistrationNumber', $params['company or individual id']);
             }
-          }
+
+            if (
+                !empty($params['company name']) && !empty($params['vat or tax id'])
+            ) {
+                $this->vat = $params['vat or tax id'];
+            }
+
+            if (empty($params['company name']) && !empty($params['company or individual id'])) {
+                $this->additionalData->set('passportNumber', $params['company or individual id']);
+            }
+
+            if (
+                empty($params['company name']) && !empty($params['vat or tax id'])
+            ) {
+                $this->additionalData->set('socialSecurityNumber', $params['vat or tax id']);
+            }
+        }
+
+        if (isset($_SESSION['contactsession'])) {
+            $contactsNew = json_decode($_SESSION['contactsession'], true);
+            if ($contactsNew[$prefix] != null && $contactsNew[$prefix][0] == 'c') {
+                $contactid = substr($contactsNew[$prefix], 1);
+                $idn = Capsule::table('mod_contactsAdditional')
+                    ->where("contact_id", "=", $contactid)
+                    ->first();
+                $idn_id_type = $idn->identification_type;
+                $idn_id = $idn->identification_number;
+                $this->additionalData->set($idn_id_type, $idn_id);
+            }
+        }
     }
 
     public function setAddressStateShort()

@@ -5,6 +5,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\helpers\DB;
+use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use WHMCS\Database\Capsule;
 
 class ClientAreaFooterController
@@ -13,13 +14,12 @@ class ClientAreaFooterController
     {
         GLOBAL $_LANG;
 
-        $esmodification = Configuration::get('esmod');
+        $idnumbermod = Configuration::get('idnumbermod');
 
-        if ($esmodification) {
+        if ($idnumbermod) {
 
             $template        = $vars['templatefile'];
             $check_tempaltes = array('account-contacts-manage', 'account-contacts-new');
-            $msg             = $_SESSION['msg'];
             unset($_SESSION['msg']);
             if (in_array($template, $check_tempaltes)) {
                 $contactid = $vars['contactid'];
@@ -41,18 +41,31 @@ class ClientAreaFooterController
                     $number = $idn->identification_number;
                 }
 
-                $passport = ($type == 'passportNumber') ? '<option selected value="passportNumber">' . $_LANG['esIdentificationPassport'] . '</option>' : '<option value="passportNumber">Individual ID</option>';
-                $company  = ($type == 'companyRegistrationNumber') ? '<option selected value="companyRegistrationNumber">' . $_LANG['esIdentificationCompany'] . '</option>' : '<option value="companyRegistrationNumber">Company Registration ID</option>';
+                $typePassport = $type == 'passportNumber';
+                $typeCompanyRegistrationNumber = $type == 'companyRegistrationNumber';
+                $typeVat = $type == 'vat';
+                $typeSocialSecurityNumber = $type == 'socialSecurityNumber';
+
+                $passport = $typePassport ? '<option selected value="passportNumber">' . $_LANG['esIdentificationPassport'] . '</option>' : '<option value="passportNumber">Individual ID</option>';
+                $company = $typeCompanyRegistrationNumber ? '<option selected value="companyRegistrationNumber">' . $_LANG['esIdentificationCompany'] . '</option>' : '<option value="companyRegistrationNumber">Company Registration ID</option>';
+                $vat = $typeVat ? '<option selected value="vat">' . $_LANG['ptIdentificationVat'] . '</option>' : '<option value="vat">NIPC (empresa)</option>';
+                $socialSecurityNumber = $typeSocialSecurityNumber ? '<option selected value="socialSecurityNumber">' . $_LANG['esIdentificationSocialSecurityNumber'] . '</option>' : '<option value="socialSecurityNumber">NIF (particular)</option>';
 
 
-                $js = "$('.main-content form .row .col-xs-12').each(function(index , element){ $(this).attr('data-number' , 'contactsRightDiv_'+index); }); $('.main-content form .row .col-sm-6:not(.pull-right)').each(function(index , element){ $(this).attr('data-number' , 'contactsDiv_'+index); }); $('*[data-number=\'contactsRightDiv_0\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $_LANG['esIdentificationNumber'] . "</label><input required type=\'text\' name=\'cord\' id=\'cord\' class=\'form-control\' value=\'" . $number . "\'></div>'); $('*[data-number=\'contactsDiv_1\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $_LANG['esIdentificationType'] . "</label><select id=\'id_type\' required name=\'id_type\' class=\'form-control\'><option value=\'\'>Select ID Type</option>" . $passport . $company . "</select></div>');";
+                if ($passport || $typeCompanyRegistrationNumber) {
+                    $js = "$('.main-content form .row .col-xs-12').each(function(index , element){ $(this).attr('data-number' , 'contactsRightDiv_'+index); }); $('.main-content form .row .col-sm-6:not(.pull-right)').each(function(index , element){ $(this).attr('data-number' , 'contactsDiv_'+index); }); $('*[data-number=\'contactsRightDiv_0\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $_LANG['esIdentificationNumber'] . "</label><input required type=\'text\' name=\'cord\' id=\'cord\' class=\'form-control\' value=\'" . $number . "\'></div>'); $('*[data-number=\'contactsDiv_1\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $_LANG['esIdentificationType'] . "</label><select id=\'id_type\' required name=\'id_type\' class=\'form-control\'><option value=\'\'>Select ID Type</option>" . $passport . $company . "</select></div>');";
+                } else if ($vat || $socialSecurityNumber) {
+                    $js = "$('.main-content form .row .col-xs-12').each(function(index , element){ $(this).attr('data-number' , 'contactsRightDiv_'+index); }); $('.main-content form .row .col-sm-6:not(.pull-right)').each(function(index , element){ $(this).attr('data-number' , 'contactsDiv_'+index); }); $('*[data-number=\'contactsRightDiv_0\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $_LANG['ptIdentificationNumber'] . "</label><input required type=\'text\' name=\'cord\' id=\'cord\' class=\'form-control\' value=\'" . $number . "\'></div>'); $('*[data-number=\'contactsDiv_1\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $_LANG['ptIdentificationType'] . "</label><select id=\'id_type\' required name=\'id_type\' class=\'form-control\'><option value=\'\'>Select ID Type</option>" . $passport . $company . "</select></div>');";
+                }
             }
 
             if ($template == 'clientareadomaincontactinfo') {
-                $js = '$("#frmDomainContactModification").submit(function(e){ e.preventDefault(); setSessionContact();  $(this).unbind("submit").submit(); }); $("input[name=\"contactdetails[Owner][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Admin][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Tech][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Billing][Company or Individual Id]\"]").attr("required" , true); $("label:contains(\"Company or Individual Id\")").html("' . $_LANG['esIdentificationCORI'] . '");';
+                $domain = DomainFullNameToDomainObject::convert($vars['domain']);
+                $idNumberName = $_LANG[sprintf('%s%s', $domain->extension ?? 'es', 'IdentificationCORI')];
+                $js = '$("#frmDomainContactModification").submit(function(e){ e.preventDefault(); setSessionContact();  $(this).unbind("submit").submit(); }); $("input[name=\"contactdetails[Owner][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Admin][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Tech][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Billing][Company or Individual Id]\"]").attr("required" , true); $("label:contains(\"Company or Individual Id\")").html("' . $idNumberName . '");';
+                $js .= '$("#frmDomainContactModification").submit(function(e){ e.preventDefault(); setSessionContact();  $(this).unbind("submit").submit(); }); $("input[name=\"contactdetails[Owner][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Admin][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Tech][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Billing][Vat or Tax ID]\"]").attr("required" , true); $("label:contains(\"Vat or Tax ID\")").html("' . $idNumberName . '");';
             }
 
-            $page      = $_SERVER['PHP_SELF'];
             $systemurl = $vars['systemurl'];
 
             return <<<HTML
