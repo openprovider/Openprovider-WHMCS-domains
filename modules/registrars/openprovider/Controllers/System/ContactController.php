@@ -61,7 +61,11 @@ class ContactController extends BaseController
             'extension'     =>  $params['tld']
         ));
 
-        $values = $this->getContactDetails($this->domain);
+        $values = $this->getContactDetails();
+
+        if ($values['error']) {
+            return $values;
+        }
 
         $domainTld = new Tld($params['tld']);
         array_walk($values, function (&$contact) use ($domainTld) {
@@ -156,7 +160,13 @@ class ContactController extends BaseController
 
     private function getContactDetails(): array
     {
-        $domainOp = $this->apiHelper->getDomain($this->domain);
+        try {
+            $domainOp = $this->apiHelper->getDomain($this->domain);
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage()
+            ];
+        }
 
         if (empty($domainOp)) {
             return [];
