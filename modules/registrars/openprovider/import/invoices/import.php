@@ -153,13 +153,13 @@ try {
 }
 
 /**
- * @param \Illuminate\Support\Collection $customers
+ * @param \Illuminate\Support6\Collection $customers
  * @param array $iSource
  * @param array $lSource
  *
  * @return array
  */
-function formatData(Illuminate\Support\Collection $customers, array $iSource, array $lSource): array
+function formatData(Illuminate\Support6\Collection $customers, array $iSource, array $lSource): array
 {
     if (count($iSource) === 0 || count($lSource) === 0) {
         throw new Exception("No invoices or lines data to import. Aborting");
@@ -226,7 +226,7 @@ function map(array $i, int $clientId, array $lines): array
 /**
  * @param int $userId
  *
- * @return Illuminate\Support\Collection
+ * @return Illuminate\Support6\Collection
  */
 function getPpCustomerId(int $userId)
 {
@@ -241,7 +241,7 @@ function getPpCustomerId(int $userId)
  * @param string $column
  * @param string $table
  *
- * @return \Illuminate\Support\Collection
+ * @return \Illuminate\Support6\Collection
  */
 function getOneFromDb(string $value, string $column, string $table)
 {

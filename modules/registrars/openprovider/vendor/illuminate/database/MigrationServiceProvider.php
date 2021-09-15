@@ -14,7 +14,7 @@ use Illuminate\Database\Console\Migrations\StatusCommand;
 use Illuminate\Database\Migrations\DatabaseMigrationRepository;
 use Illuminate\Database\Migrations\MigrationCreator;
 use Illuminate\Database\Migrations\Migrator;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support6\ServiceProvider;
 
 class MigrationServiceProvider extends ServiceProvider implements DeferrableProvider
 {

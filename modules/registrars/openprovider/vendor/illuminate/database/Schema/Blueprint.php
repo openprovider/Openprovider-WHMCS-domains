@@ -7,8 +7,8 @@ use Closure;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Grammars\Grammar;
 use Illuminate\Database\SQLiteConnection;
-use Illuminate\Support\Fluent;
-use Illuminate\Support\Traits\Macroable;
+use Illuminate\Support6\Fluent;
+use Illuminate\Support6\Traits\Macroable;
 
 class Blueprint
 {
@@ -38,7 +38,7 @@ class Blueprint
     /**
      * The commands that should be run for the table.
      *
-     * @var \Illuminate\Support\Fluent[]
+     * @var \Illuminate\Support6\Fluent[]
      */
     protected $commands = [];
 
@@ -158,7 +158,7 @@ class Blueprint
      * Get all of the commands matching the given names.
      *
      * @param  array  $names
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support6\Collection
      */
     protected function commandsNamed(array $names)
     {
@@ -260,7 +260,7 @@ class Blueprint
     /**
      * Indicate that the table needs to be created.
      *
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function create()
     {
@@ -280,7 +280,7 @@ class Blueprint
     /**
      * Indicate that the table should be dropped.
      *
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function drop()
     {
@@ -290,7 +290,7 @@ class Blueprint
     /**
      * Indicate that the table should be dropped if it exists.
      *
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function dropIfExists()
     {
@@ -301,7 +301,7 @@ class Blueprint
      * Indicate that the given columns should be dropped.
      *
      * @param  array|mixed  $columns
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function dropColumn($columns)
     {
@@ -315,7 +315,7 @@ class Blueprint
      *
      * @param  string  $from
      * @param  string  $to
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function renameColumn($from, $to)
     {
@@ -326,7 +326,7 @@ class Blueprint
      * Indicate that the given primary key should be dropped.
      *
      * @param  string|array|null  $index
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function dropPrimary($index = null)
     {
@@ -337,7 +337,7 @@ class Blueprint
      * Indicate that the given unique key should be dropped.
      *
      * @param  string|array  $index
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function dropUnique($index)
     {
@@ -348,7 +348,7 @@ class Blueprint
      * Indicate that the given index should be dropped.
      *
      * @param  string|array  $index
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function dropIndex($index)
     {
@@ -359,7 +359,7 @@ class Blueprint
      * Indicate that the given spatial index should be dropped.
      *
      * @param  string|array  $index
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function dropSpatialIndex($index)
     {
@@ -370,7 +370,7 @@ class Blueprint
      * Indicate that the given foreign key should be dropped.
      *
      * @param  string|array  $index
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function dropForeign($index)
     {
@@ -382,7 +382,7 @@ class Blueprint
      *
      * @param  string  $from
      * @param  string  $to
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function renameIndex($from, $to)
     {
@@ -459,7 +459,7 @@ class Blueprint
      * Rename the table to a given name.
      *
      * @param  string  $to
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function rename($to)
     {
@@ -472,7 +472,7 @@ class Blueprint
      * @param  string|array  $columns
      * @param  string|null  $name
      * @param  string|null  $algorithm
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function primary($columns, $name = null, $algorithm = null)
     {
@@ -485,7 +485,7 @@ class Blueprint
      * @param  string|array  $columns
      * @param  string|null  $name
      * @param  string|null  $algorithm
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function unique($columns, $name = null, $algorithm = null)
     {
@@ -498,7 +498,7 @@ class Blueprint
      * @param  string|array  $columns
      * @param  string|null  $name
      * @param  string|null  $algorithm
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function index($columns, $name = null, $algorithm = null)
     {
@@ -510,7 +510,7 @@ class Blueprint
      *
      * @param  string|array  $columns
      * @param  string|null  $name
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     public function spatialIndex($columns, $name = null)
     {
@@ -522,7 +522,7 @@ class Blueprint
      *
      * @param  string|array  $columns
      * @param  string|null  $name
-     * @return \Illuminate\Support\Fluent|\Illuminate\Database\Schema\ForeignKeyDefinition
+     * @return \Illuminate\Support6\Fluent|\Illuminate\Database\Schema\ForeignKeyDefinition
      */
     public function foreign($columns, $name = null)
     {
@@ -1292,7 +1292,7 @@ class Blueprint
      * @param  string|array  $columns
      * @param  string  $index
      * @param  string|null  $algorithm
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     protected function indexCommand($type, $columns, $index, $algorithm = null)
     {
@@ -1314,7 +1314,7 @@ class Blueprint
      * @param  string  $command
      * @param  string  $type
      * @param  string|array  $index
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     protected function dropIndexCommand($command, $type, $index)
     {
@@ -1381,7 +1381,7 @@ class Blueprint
      *
      * @param  string  $name
      * @param  array  $parameters
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     protected function addCommand($name, array $parameters = [])
     {
@@ -1395,7 +1395,7 @@ class Blueprint
      *
      * @param  string  $name
      * @param  array  $parameters
-     * @return \Illuminate\Support\Fluent
+     * @return \Illuminate\Support6\Fluent
      */
     protected function createCommand($name, array $parameters = [])
     {
@@ -1425,7 +1425,7 @@ class Blueprint
     /**
      * Get the commands on the blueprint.
      *
-     * @return \Illuminate\Support\Fluent[]
+     * @return \Illuminate\Support6\Fluent[]
      */
     public function getCommands()
     {

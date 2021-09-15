@@ -7,7 +7,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Connectors\ConnectionFactory;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Support\Traits\CapsuleManagerTrait;
+use Illuminate\Support6\Traits\CapsuleManagerTrait;
 use PDO;
 
 class Manager

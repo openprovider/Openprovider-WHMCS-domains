@@ -27,6 +27,7 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         'ca20aaae4a3fe829235e329cd2617217' => __DIR__ . '/../..' . '/vendor-static/guzzlehttp/guzzle/src/functions_include.php',
         'bec47d8cabb65f363f596b618b5c88f1' => __DIR__ . '/../..' . '/vendor-static/guzzlehttp/psr7/src/functions_include.php',
         '78a17a9a31b6b6b1779c3591d4be31bc' => __DIR__ . '/../..' . '/vendor-static/guzzlehttp/promises/src/functions_include.php',
+        'bdf7221e1fb5502b1bd6098f75e68bc4' => __DIR__ . '/../..' . '/vendor-static/illuminate/support/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -93,6 +94,7 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         array (
             'Invoker\\' => 8,
             'Illuminate\\Support\\' => 19,
+            'Illuminate\\Support6\\' => 20,
             'Illuminate\\Database\\' => 20,
             'Illuminate\\Contracts\\' => 21,
             'Illuminate\\Container\\' => 21,
@@ -291,6 +293,10 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         'Illuminate\\Support\\' => 
         array (
             0 => __DIR__ . '/..' . '/illuminate/support',
+        ),
+        'Illuminate\\Support6\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/vendor-static/illuminate/support',
         ),
         'Illuminate\\Database\\' => 
         array (

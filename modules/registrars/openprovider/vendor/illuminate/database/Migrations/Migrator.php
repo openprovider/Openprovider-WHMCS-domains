@@ -11,9 +11,9 @@ use Illuminate\Database\Events\MigrationsStarted;
 use Illuminate\Database\Events\MigrationStarted;
 use Illuminate\Database\Events\NoPendingMigrations;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
+use Illuminate\Support6\Arr;
+use Illuminate\Support6\Collection;
+use Illuminate\Support6\Str;
 
 class Migrator
 {

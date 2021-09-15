@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Query\Expression;
-use Illuminate\Support\Str;
+use Illuminate\Support6\Str;
 use RuntimeException;
 
 trait QueriesRelationships

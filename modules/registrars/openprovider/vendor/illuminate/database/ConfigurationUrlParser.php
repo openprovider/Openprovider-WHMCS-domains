@@ -2,7 +2,7 @@
 
 namespace Illuminate\Database;
 
-use Illuminate\Support\ConfigurationUrlParser as BaseConfigurationUrlParser;
+use Illuminate\Support6\ConfigurationUrlParser as BaseConfigurationUrlParser;
 
 class ConfigurationUrlParser extends BaseConfigurationUrlParser
 {

@@ -157,7 +157,7 @@ function deleteFromImportMapping(array $data): void
  * @param string $column
  * @param string $table
  *
- * @return \Illuminate\Support\Collection
+ * @return \Illuminate\Support6\Collection
  */
 function getOneFromDb(string $value, string $column, string $table)
 {

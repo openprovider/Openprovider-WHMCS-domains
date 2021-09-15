@@ -12,10 +12,10 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
 use Illuminate\Database\Eloquent\Relations\Concerns\AsPivot;
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection as BaseCollection;
-use Illuminate\Support\Str;
-use Illuminate\Support\Traits\ForwardsCalls;
+use Illuminate\Support6\Arr;
+use Illuminate\Support6\Collection as BaseCollection;
+use Illuminate\Support6\Str;
+use Illuminate\Support6\Traits\ForwardsCalls;
 use JsonSerializable;
 
 abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializable, QueueableEntity, UrlRoutable
@@ -845,7 +845,7 @@ abstract class Model implements Arrayable, ArrayAccess, Jsonable, JsonSerializab
     /**
      * Destroy the models for the given IDs.
      *
-     * @param  \Illuminate\Support\Collection|array|int  $ids
+     * @param  \Illuminate\Support6\Collection|array|int  $ids
      * @return int
      */
     public static function destroy($ids)

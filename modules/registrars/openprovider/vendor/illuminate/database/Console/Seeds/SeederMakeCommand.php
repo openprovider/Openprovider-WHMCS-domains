@@ -4,7 +4,7 @@ namespace Illuminate\Database\Console\Seeds;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Composer;
+use Illuminate\Support6\Composer;
 
 class SeederMakeCommand extends GeneratorCommand
 {
@@ -32,7 +32,7 @@ class SeederMakeCommand extends GeneratorCommand
     /**
      * The Composer instance.
      *
-     * @var \Illuminate\Support\Composer
+     * @var \Illuminate\Support6\Composer
      */
     protected $composer;
 
@@ -40,7 +40,7 @@ class SeederMakeCommand extends GeneratorCommand
      * Create a new command instance.
      *
      * @param  \Illuminate\Filesystem\Filesystem  $files
-     * @param  \Illuminate\Support\Composer  $composer
+     * @param  \Illuminate\Support6\Composer  $composer
      * @return void
      */
     public function __construct(Filesystem $files, Composer $composer)

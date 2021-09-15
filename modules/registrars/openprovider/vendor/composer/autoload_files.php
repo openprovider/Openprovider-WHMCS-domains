@@ -26,4 +26,5 @@ return array(
     'ca20aaae4a3fe829235e329cd2617217' => $baseDir . '/vendor-static/guzzlehttp/guzzle/src/functions_include.php',
     'bec47d8cabb65f363f596b618b5c88f1' => $baseDir . '/vendor-static/guzzlehttp/psr7/src/functions_include.php',
     '78a17a9a31b6b6b1779c3591d4be31bc' => $baseDir . '/vendor-static/guzzlehttp/promises/src/functions_include.php',
+    'bdf7221e1fb5502b1bd6098f75e68bc4' => $baseDir . '/vendor-static/illuminate/support/helpers.php',
 );

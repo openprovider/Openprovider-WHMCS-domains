@@ -107,9 +107,9 @@ interface Application extends Container
     /**
      * Register a service provider with the application.
      *
-     * @param  \Illuminate\Support\ServiceProvider|string  $provider
+     * @param  \Illuminate\Support6\ServiceProvider|string  $provider
      * @param  bool  $force
-     * @return \Illuminate\Support\ServiceProvider
+     * @return \Illuminate\Support6\ServiceProvider
      */
     public function register($provider, $force = false);
 
@@ -126,7 +126,7 @@ interface Application extends Container
      * Resolve a service provider instance from the class name.
      *
      * @param  string  $provider
-     * @return \Illuminate\Support\ServiceProvider
+     * @return \Illuminate\Support6\ServiceProvider
      */
     public function resolveProvider($provider);
 
@@ -237,7 +237,7 @@ interface Application extends Container
     /**
      * Get the registered service provider instances if any exist.
      *
-     * @param  \Illuminate\Support\ServiceProvider|string  $provider
+     * @param  \Illuminate\Support6\ServiceProvider|string  $provider
      * @return array
      */
     public function getProviders($provider);

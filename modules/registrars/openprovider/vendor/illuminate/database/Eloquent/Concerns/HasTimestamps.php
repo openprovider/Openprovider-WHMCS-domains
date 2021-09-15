@@ -2,7 +2,7 @@
 
 namespace Illuminate\Database\Eloquent\Concerns;
 
-use Illuminate\Support\Facades\Date;
+use Illuminate\Support6\Facades\Date;
 
 trait HasTimestamps
 {
@@ -80,7 +80,7 @@ trait HasTimestamps
     /**
      * Get a fresh timestamp for the model.
      *
-     * @return \Illuminate\Support\Carbon
+     * @return \Illuminate\Support6\Carbon
      */
     public function freshTimestamp()
     {

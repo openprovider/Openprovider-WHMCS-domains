@@ -11,9 +11,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use Illuminate\Support\Traits\ForwardsCalls;
+use Illuminate\Support6\Arr;
+use Illuminate\Support6\Str;
+use Illuminate\Support6\Traits\ForwardsCalls;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -663,7 +663,7 @@ class Builder
     /**
      * Get a lazy collection for the given query.
      *
-     * @return \Illuminate\Support\LazyCollection
+     * @return \Illuminate\Support6\LazyCollection
      */
     public function cursor()
     {
@@ -689,7 +689,7 @@ class Builder
      *
      * @param  string|\Illuminate\Database\Query\Expression  $column
      * @param  string|null  $key
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support6\Collection
      */
     public function pluck($column, $key = null)
     {
@@ -920,7 +920,7 @@ class Builder
             // messed up when adding scopes. Then we'll return back out the builder.
             $builder = $builder->callScope(
                 [$this->model, 'scope'.ucfirst($scope)],
-                (array) $parameters
+                Arr::wrap($parameters)
             );
         }
 

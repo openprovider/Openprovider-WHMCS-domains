@@ -5,7 +5,7 @@ namespace Illuminate\Database\Eloquent\Relations\Concerns;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support6\Collection as BaseCollection;
 
 trait InteractsWithPivotTable
 {
@@ -65,7 +65,7 @@ trait InteractsWithPivotTable
     /**
      * Sync the intermediate tables with a list of IDs without detaching.
      *
-     * @param  \Illuminate\Support\Collection|\Illuminate\Database\Eloquent\Model|array  $ids
+     * @param  \Illuminate\Support6\Collection|\Illuminate\Database\Eloquent\Model|array  $ids
      * @return array
      */
     public function syncWithoutDetaching($ids)
@@ -76,7 +76,7 @@ trait InteractsWithPivotTable
     /**
      * Sync the intermediate tables with a list of IDs or collection of models.
      *
-     * @param  \Illuminate\Support\Collection|\Illuminate\Database\Eloquent\Model|array  $ids
+     * @param  \Illuminate\Support6\Collection|\Illuminate\Database\Eloquent\Model|array  $ids
      * @param  bool  $detaching
      * @return array
      */
@@ -468,7 +468,7 @@ trait InteractsWithPivotTable
     /**
      * Get the pivot models that are currently attached.
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support6\Collection
      */
     protected function getCurrentlyAttachedPivots()
     {

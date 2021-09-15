@@ -4,7 +4,7 @@ namespace Illuminate\Database\Migrations;
 
 use Closure;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Str;
+use Illuminate\Support6\Str;
 use InvalidArgumentException;
 
 class MigrationCreator

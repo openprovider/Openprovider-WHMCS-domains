@@ -3,7 +3,7 @@
 namespace Illuminate\Database\Query\Grammars;
 
 use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Str;
+use Illuminate\Support6\Str;
 
 class MySqlGrammar extends Grammar
 {
