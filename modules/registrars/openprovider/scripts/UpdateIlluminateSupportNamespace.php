@@ -23,6 +23,7 @@ class UpdateIlluminateSupportNamespace
         self::takeoutIlluminateSupportFromVendor($vendorDir, $vendorStaticDir);
         self::replaceIlluminateNamespaceInDirectory($vendorStaticDir);
         self::replaceIlluminateNamespaceInDirectory(sprintf('%s/illuminate', $vendorDir));
+        self::replaceIlluminateNamespaceInDirectory(sprintf('%s/nesbot', $vendorDir));
         self::replaceIlluminateNamespaceInDirectory(sprintf('%s/../import', $vendorDir));
     }
 

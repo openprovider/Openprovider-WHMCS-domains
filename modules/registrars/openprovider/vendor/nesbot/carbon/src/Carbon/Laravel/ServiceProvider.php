@@ -9,11 +9,11 @@ use Carbon\CarbonPeriod;
 use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Events\EventDispatcher;
-use Illuminate\Support\Carbon as IlluminateCarbon;
-use Illuminate\Support\Facades\Date;
+use Illuminate\Support6\Carbon as IlluminateCarbon;
+use Illuminate\Support6\Facades\Date;
 use Throwable;
 
-class ServiceProvider extends \Illuminate\Support\ServiceProvider
+class ServiceProvider extends \Illuminate\Support6\ServiceProvider
 {
     public function boot()
     {
