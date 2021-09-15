@@ -20,7 +20,7 @@ class UpdateIlluminateSupportNamespace
 
         $vendorStaticDir = "{$vendorDir}/../vendor-static";
 
-//        self::takeoutIlluminateSupportFromVendor($vendorDir, $vendorStaticDir);
+        self::takeoutIlluminateSupportFromVendor($vendorDir, $vendorStaticDir);
         self::replaceIlluminateNamespaceInDirectory($vendorStaticDir);
         self::replaceIlluminateNamespaceInDirectory(sprintf('%s/illuminate', $vendorDir));
         self::replaceIlluminateNamespaceInDirectory(sprintf('%s/../import', $vendorDir));
@@ -55,7 +55,8 @@ class UpdateIlluminateSupportNamespace
     private static function takeoutIlluminateSupportFromVendor(string $vendorDir, string $vendorStaticDir)
     {
         shell_exec(sprintf("rm -rf %s/%s", $vendorStaticDir, self::LibraryPathInVendor));
-        shell_exec(sprintf("mkdir --parents %s/%s; mv %s/%s %s/%s",
-            $vendorStaticDir, self::LibraryPathInVendor, $vendorDir, self::LibraryPathInVendor, $vendorStaticDir, self::LibraryPathInVendor));
+        shell_exec(sprintf("mkdir --parents %s/%s; mv %s/%s %s/%s/../",
+            $vendorStaticDir, self::LibraryPathInVendor, $vendorDir,
+            self::LibraryPathInVendor, $vendorStaticDir, self::LibraryPathInVendor));
     }
 }

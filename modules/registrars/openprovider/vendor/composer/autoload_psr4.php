@@ -48,7 +48,6 @@ return array(
     'OpenProvider\\WhmcsRegistrar\\' => array($baseDir . '/'),
     'OpenProvider\\' => array($baseDir . '/OpenProvider'),
     'Invoker\\' => array($vendorDir . '/php-di/invoker/src'),
-    'Illuminate\\Support\\' => array($vendorDir . '/illuminate/support'),
     'Illuminate\\Support6\\' => array($baseDir . '/vendor-static/illuminate/support'),
     'Illuminate\\Database\\' => array($vendorDir . '/illuminate/database'),
     'Illuminate\\Contracts\\' => array($vendorDir . '/illuminate/contracts'),
