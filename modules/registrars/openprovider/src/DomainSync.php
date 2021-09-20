@@ -165,9 +165,9 @@ class DomainSync
             try
             {
                 $this->objectDomain  = $domain;
-                $this->op_domain_obj = DomainFullNameToDomainObject::convert($domain->domain);
-                $this->op_domain_obj->name = $this->idn->encode($this->op_domain_obj->name);
+                $this->op_domain_obj = DomainFullNameToDomainObject::convert($this->idn->encode($domain->domain));
                 $this->op_domain   	 = $this->apiHelper->getDomain($this->op_domain_obj);
+
                 // Set the expire and due date -> openprovider is leading
                 if($setting['syncExpiryDate'] == true) {
                     $this->process_expiry_date();
@@ -207,10 +207,12 @@ class DomainSync
                 }
                 else
                 {
-                    $activity['data']['id']     = $this->objectDomain->id;
-                    $activity['data']['domain'] = $this->objectDomain->domain;
-                    $activity['data']['message'] =  $ex->getMessage();;
-                    Activity::log('unexpected_error', $activity['data']);
+                    if (!$this->check_if_domain_transferred()) {
+                        $activity['data']['id']     = $this->objectDomain->id;
+                        $activity['data']['domain'] = $this->objectDomain->domain;
+                        $activity['data']['message'] =  $ex->getMessage();;
+                        Activity::log('unexpected_error', $activity['data']);
+                    }
                 }
             }
 
@@ -365,7 +367,7 @@ class DomainSync
      **/
     private function process_domain_status($status = null)
     {
-        if($status == 'Cancelled' || $status == 'Expired')
+        if($status == 'Cancelled' || $status == 'Expired' || $status == 'Transferred Away')
         {
             // Nothing to do.
             if($this->objectDomain->status == $status)
@@ -492,6 +494,27 @@ class DomainSync
         }
     }
 
+    /**
+     * @return bool
+     */
+    private function check_if_domain_transferred(): bool
+    {
+        try {
+            $this->op_domain = $this->apiHelper->getDomain($this->op_domain_obj, [
+                'isDeleted' => true,
+            ]);
+
+            if ($this->op_domain['status'] == 'FAI' && $this->op_domain['queueStatus'] == 'transfer') {
+                $this->process_domain_status('Cancelled');
+            } elseif ($this->op_domain['status'] == 'DEL' && $this->op_domain['queueStatus'] == 'transferOut') {
+                $this->process_domain_status('Transferred Away');
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 
     public function printDebug($message)
     {

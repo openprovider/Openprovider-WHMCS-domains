@@ -32,7 +32,7 @@ class ApiHelper
      * @return array
      * @throws \Exception
      */
-    public function getDomain(Domain $domain): array
+    public function getDomain(Domain $domain, array $additionalArgs = []): array
     {
         $args = [
             'domainNamePattern'     => $domain->name,
@@ -40,6 +40,7 @@ class ApiHelper
             'withVerificationEmail' => true,
         ];
 
+        $args = array_merge($args, $additionalArgs);
         $domain = $this->buildResponse($this->apiClient->call('searchDomainRequest', $args));
 
         if (!is_null($domain['results'][0])) {
