@@ -21,6 +21,13 @@ use OpenProvider\WhmcsHelpers\DomainSync as helper_DomainSync;
 class DomainSync
 {
     /**
+     *  WHMCS domain statuses in lower case to skip process
+     *
+     * @var string[]
+     */
+    private const STATUSES_TO_DO_NOT_PROCESS_DOMAINS_IF_NATIVE_SYNC = ['fraud', 'active', 'pending', 'cancelled'];
+
+    /**
      * The domains that need to get processed
      *
      * @var DomainModel[]
@@ -148,15 +155,12 @@ class DomainSync
 
         foreach($this->domains as $domain)
         {
-            // Do not process domains marked as fraud.
-            if($setting['syncUseNativeWHMCS'] == true && strtolower($domain->status) == 'fraud')
+            $doNotProcessDomains = $setting['syncUseNativeWHMCS'] == true &&
+                in_array(strtolower($domain->status),
+                    self::STATUSES_TO_DO_NOT_PROCESS_DOMAINS_IF_NATIVE_SYNC);
+            if ($doNotProcessDomains) {
                 continue;
-
-            // Do not process active or pending transfer domains when the native sync feature is enabled.
-            if($setting['syncUseNativeWHMCS'] == true
-                && (strtolower($domain->status) == 'active'
-                || strtolower($domain->status) == 'pending'))
-                continue;
+            }
 
             $this->printDebug('WORKING ON ' . $domain->domain);
             $this->update_executed_logs = null;
