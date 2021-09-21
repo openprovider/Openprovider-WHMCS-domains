@@ -207,7 +207,7 @@ class DomainSync
                 }
                 else
                 {
-                    if (!$this->check_if_domain_transferred()) {
+                    if (!$this->check_if_domain_deleted()) {
                         $activity['data']['id']     = $this->objectDomain->id;
                         $activity['data']['domain'] = $this->objectDomain->domain;
                         $activity['data']['message'] =  $ex->getMessage();;
@@ -497,19 +497,14 @@ class DomainSync
     /**
      * @return bool
      */
-    private function check_if_domain_transferred(): bool
+    private function check_if_domain_deleted(): bool
     {
         try {
             $this->op_domain = $this->apiHelper->getDomain($this->op_domain_obj, [
                 'isDeleted' => true,
             ]);
 
-            if ($this->op_domain['status'] == 'FAI' && $this->op_domain['queueStatus'] == 'transfer') {
-                $this->process_domain_status('Cancelled');
-            } elseif ($this->op_domain['status'] == 'DEL' && $this->op_domain['queueStatus'] == 'transferOut') {
-                $this->process_domain_status('Transferred Away');
-            }
-
+            $this->process_domain_status('Cancelled');
             return true;
         } catch (\Exception $e) {
             return false;
