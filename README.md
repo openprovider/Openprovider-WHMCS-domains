@@ -1,4 +1,4 @@
-# Domain Module for WHMCS
+# Domain Module for WHMCS 8+
 
 The Openprovider WHMCS module integrates conveniently with your [Openprovider account](https://rcp.openprovider.eu/registration.php#/registration), allowing you to automate many domain provisioning and management tasks, such as registration, renewal, deletion, and updates to contact details.
 
