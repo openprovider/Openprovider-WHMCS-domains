@@ -75,7 +75,7 @@ class CheckAvailabilityController  extends BaseController
             ]);
         if (!$statusResponse->isSuccess()) {
             if ($statusResponse->getcode() == 307) {
-                // OP response: "Your domain request contains an invalid extension!""
+                // OP response: "Your domain request contains an invalid extension!"
                 // Meaning: the id is not supported.
 
                 foreach($params['tldsToInclude'] as $tld) {
@@ -98,32 +98,34 @@ class CheckAvailabilityController  extends BaseController
 
             $searchResult = new SearchResult($domain_sld, $domain_tld);
 
-            if(isset($domainStatus['premium']) && $domainStatus['status'] == 'free') {
+            if(isset($domainStatus['premium'])) {
                 if($premiumEnabled == false) {
-                    $status = SearchResult::STATUS_RESERVED;
-                } else {
-                    $status = SearchResult::STATUS_NOT_REGISTERED;
-                    $searchResult->setPremiumDomain(true);
+                    $searchResult->setStatus(SearchResult::STATUS_RESERVED);
+                    $results->append($searchResult);
 
-                    $args['domainName']      = $domain_sld;
-                    $args['domainExtension'] = $domain_tld;
-                    $args['operation'] = 'create';
-                    $create_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args)->getData();
-
-                    $args['operation']    = 'transfer';
-                    $transfer_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args)->getData();
-
-                    // Retrieve the pricing
-                    $searchResult->setPremiumCostPricing(
-                        array(
-                            'register'  => $create_pricing['price']['reseller']['price'],
-                            'renew'     =>  $transfer_pricing['price']['reseller']['price'],
-                            'CurrencyCode' => $create_pricing['price']['reseller']['currency'],
-                        )
-                    );
-
+                    continue;
                 }
-            } elseif($domainStatus['status'] == 'free') {
+
+                $searchResult->setPremiumDomain(true);
+
+                $args['domainName']      = $domain_sld;
+                $args['domainExtension'] = $domain_tld;
+                $args['operation'] = 'create';
+                $create_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args)->getData();
+
+                $args['operation']    = 'transfer';
+                $transfer_pricing = $this->apiClient->call('retrievePriceDomainRequest', $args)->getData();
+
+                // Retrieve the pricing
+                $searchResult->setPremiumCostPricing([
+                    'register'  => $create_pricing['price']['reseller']['price'],
+                    'renew'     =>  $transfer_pricing['price']['reseller']['price'],
+                    'transfer'     =>  $transfer_pricing['price']['reseller']['price'],
+                    'CurrencyCode' => $create_pricing['price']['reseller']['currency'],
+                ]);
+            }
+
+            if($domainStatus['status'] == 'free') {
                 $status = SearchResult::STATUS_NOT_REGISTERED;
             } else {
                 $status = SearchResult::STATUS_REGISTERED;
@@ -131,7 +133,6 @@ class CheckAvailabilityController  extends BaseController
 
             $searchResult->setStatus($status);
             $results->append($searchResult);
-
         }
 
         return $results;
