@@ -215,6 +215,14 @@ class ConfigController extends BaseController
      */
     private function checkRequest(): ResponseInterface
     {
-        return $this->apiClient->call('retrieveExtensionRequest', ['name' => 'com']);
+        $args = [];
+        if ($this->apiClient->getConfiguration()->getHost() == Configuration::get('api_url')) {
+            $commandToCheckAccess = 'searchPromoMessageRequest';
+        } else {
+            $commandToCheckAccess = 'searchContactRequest';
+            $args['limit'] = 1;
+        }
+
+        return $this->apiClient->call($commandToCheckAccess, $args);
     }
 }
