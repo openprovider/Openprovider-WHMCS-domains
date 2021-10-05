@@ -3,7 +3,7 @@
 namespace Illuminate\Database\Eloquent;
 
 use Faker\Generator as Faker;
-use Illuminate\Support\Traits\Macroable;
+use Illuminate\Support6\Traits\Macroable;
 use InvalidArgumentException;
 
 class FactoryBuilder
@@ -206,7 +206,7 @@ class FactoryBuilder
     /**
      * Set the connection name on the results and store them.
      *
-     * @param  \Illuminate\Support\Collection  $results
+     * @param  \Illuminate\Support6\Collection  $results
      * @return void
      */
     protected function store($results)
@@ -388,7 +388,7 @@ class FactoryBuilder
     /**
      * Run after making callbacks on a collection of models.
      *
-     * @param  \Illuminate\Support\Collection  $models
+     * @param  \Illuminate\Support6\Collection  $models
      * @return void
      */
     public function callAfterMaking($models)
@@ -399,7 +399,7 @@ class FactoryBuilder
     /**
      * Run after creating callbacks on a collection of models.
      *
-     * @param  \Illuminate\Support\Collection  $models
+     * @param  \Illuminate\Support6\Collection  $models
      * @return void
      */
     public function callAfterCreating($models)
@@ -411,7 +411,7 @@ class FactoryBuilder
      * Call after callbacks for each model and state.
      *
      * @param  array  $afterCallbacks
-     * @param  \Illuminate\Support\Collection  $models
+     * @param  \Illuminate\Support6\Collection  $models
      * @return void
      */
     protected function callAfter(array $afterCallbacks, $models)

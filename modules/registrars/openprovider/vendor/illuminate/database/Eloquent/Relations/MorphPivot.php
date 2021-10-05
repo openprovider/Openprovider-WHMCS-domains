@@ -3,7 +3,7 @@
 namespace Illuminate\Database\Eloquent\Relations;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
+use Illuminate\Support6\Str;
 
 class MorphPivot extends Pivot
 {

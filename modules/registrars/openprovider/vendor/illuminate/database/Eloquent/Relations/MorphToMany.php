@@ -4,7 +4,7 @@ namespace Illuminate\Database\Eloquent\Relations;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
+use Illuminate\Support6\Arr;
 
 class MorphToMany extends BelongsToMany
 {
@@ -118,7 +118,7 @@ class MorphToMany extends BelongsToMany
     /**
      * Get the pivot models that are currently attached.
      *
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support6\Collection
      */
     protected function getCurrentlyAttachedPivots()
     {

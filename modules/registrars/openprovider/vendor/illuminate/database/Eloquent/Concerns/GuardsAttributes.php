@@ -2,7 +2,7 @@
 
 namespace Illuminate\Database\Eloquent\Concerns;
 
-use Illuminate\Support\Str;
+use Illuminate\Support6\Str;
 
 trait GuardsAttributes
 {

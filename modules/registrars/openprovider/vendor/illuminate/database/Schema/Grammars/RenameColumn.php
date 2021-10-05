@@ -7,7 +7,7 @@ use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\TableDiff;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Fluent;
+use Illuminate\Support6\Fluent;
 
 class RenameColumn
 {
@@ -16,7 +16,7 @@ class RenameColumn
      *
      * @param  \Illuminate\Database\Schema\Grammars\Grammar  $grammar
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
-     * @param  \Illuminate\Support\Fluent  $command
+     * @param  \Illuminate\Support6\Fluent  $command
      * @param  \Illuminate\Database\Connection  $connection
      * @return array
      */
@@ -38,7 +38,7 @@ class RenameColumn
      *
      * @param  \Illuminate\Database\Schema\Grammars\Grammar  $grammar
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
-     * @param  \Illuminate\Support\Fluent  $command
+     * @param  \Illuminate\Support6\Fluent  $command
      * @param  \Doctrine\DBAL\Schema\Column  $column
      * @param  \Doctrine\DBAL\Schema\AbstractSchemaManager  $schema
      * @return \Doctrine\DBAL\Schema\TableDiff
@@ -54,7 +54,7 @@ class RenameColumn
      * Set the renamed columns on the table diff.
      *
      * @param  \Doctrine\DBAL\Schema\TableDiff  $tableDiff
-     * @param  \Illuminate\Support\Fluent  $command
+     * @param  \Illuminate\Support6\Fluent  $command
      * @param  \Doctrine\DBAL\Schema\Column  $column
      * @return \Doctrine\DBAL\Schema\TableDiff
      */

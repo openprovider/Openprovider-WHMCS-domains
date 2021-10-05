@@ -3,7 +3,7 @@
 namespace Illuminate\Database\Console\Migrations;
 
 use Illuminate\Database\Migrations\Migrator;
-use Illuminate\Support\Collection;
+use Illuminate\Support6\Collection;
 use Symfony\Component\Console\Input\InputOption;
 
 class StatusCommand extends BaseCommand
@@ -73,7 +73,7 @@ class StatusCommand extends BaseCommand
      *
      * @param  array  $ran
      * @param  array  $batches
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support6\Collection
      */
     protected function getStatusFor(array $ran, array $batches)
     {

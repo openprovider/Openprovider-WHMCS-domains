@@ -4,7 +4,7 @@ namespace Illuminate\Database\Eloquent\Concerns;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Events\NullDispatcher;
-use Illuminate\Support\Arr;
+use Illuminate\Support6\Arr;
 use InvalidArgumentException;
 
 trait HasEvents

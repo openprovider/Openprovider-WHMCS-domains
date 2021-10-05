@@ -8,7 +8,7 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Grammar as BaseGrammar;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Fluent;
+use Illuminate\Support6\Fluent;
 use RuntimeException;
 
 abstract class Grammar extends BaseGrammar
@@ -31,7 +31,7 @@ abstract class Grammar extends BaseGrammar
      * Compile a rename column command.
      *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
-     * @param  \Illuminate\Support\Fluent  $command
+     * @param  \Illuminate\Support6\Fluent  $command
      * @param  \Illuminate\Database\Connection  $connection
      * @return array
      */
@@ -44,7 +44,7 @@ abstract class Grammar extends BaseGrammar
      * Compile a change column command into a series of SQL statements.
      *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
-     * @param  \Illuminate\Support\Fluent  $command
+     * @param  \Illuminate\Support6\Fluent  $command
      * @param  \Illuminate\Database\Connection  $connection
      * @return array
      *
@@ -59,7 +59,7 @@ abstract class Grammar extends BaseGrammar
      * Compile a foreign key command.
      *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
-     * @param  \Illuminate\Support\Fluent  $command
+     * @param  \Illuminate\Support6\Fluent  $command
      * @return string
      */
     public function compileForeign(Blueprint $blueprint, Fluent $command)
@@ -120,7 +120,7 @@ abstract class Grammar extends BaseGrammar
     /**
      * Get the SQL for the column data type.
      *
-     * @param  \Illuminate\Support\Fluent  $column
+     * @param  \Illuminate\Support6\Fluent  $column
      * @return string
      */
     protected function getType(Fluent $column)
@@ -131,7 +131,7 @@ abstract class Grammar extends BaseGrammar
     /**
      * Create the column definition for a generated, computed column type.
      *
-     * @param  \Illuminate\Support\Fluent  $column
+     * @param  \Illuminate\Support6\Fluent  $column
      * @return void
      *
      * @throws \RuntimeException
@@ -146,7 +146,7 @@ abstract class Grammar extends BaseGrammar
      *
      * @param  string  $sql
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
-     * @param  \Illuminate\Support\Fluent  $column
+     * @param  \Illuminate\Support6\Fluent  $column
      * @return string
      */
     protected function addModifiers($sql, Blueprint $blueprint, Fluent $column)
@@ -165,7 +165,7 @@ abstract class Grammar extends BaseGrammar
      *
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
      * @param  string  $name
-     * @return \Illuminate\Support\Fluent|null
+     * @return \Illuminate\Support6\Fluent|null
      */
     protected function getCommandByName(Blueprint $blueprint, $name)
     {

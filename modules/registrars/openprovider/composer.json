@@ -5,13 +5,15 @@
             "OpenProvider\\": "./OpenProvider",
             "GuzzleHttp6\\": "vendor-static/guzzlehttp/guzzle/src",
             "GuzzleHttp6\\Psr7\\": "vendor-static/guzzlehttp/psr7/src/",
-            "GuzzleHttp6\\Promise\\": "vendor-static/guzzlehttp/promises/src/"
+            "GuzzleHttp6\\Promise\\": "vendor-static/guzzlehttp/promises/src/",
+            "Illuminate\\Support6\\": "vendor-static/illuminate/support/"
         },
         "files":  [
             "helpers.php",
             "vendor-static/guzzlehttp/guzzle/src/functions_include.php",
             "vendor-static/guzzlehttp/psr7/src/functions_include.php",
-            "vendor-static/guzzlehttp/promises/src/functions_include.php"
+            "vendor-static/guzzlehttp/promises/src/functions_include.php",
+            "vendor-static/illuminate/support/helpers.php"
         ]
     },
     "require": {
@@ -35,8 +37,9 @@
         }
     ],
     "scripts": {
-        "post-update-cmd": [
+        "post-install-cmd": [
             "OpenProvider\\WhmcsRegistrar\\scripts\\UpdateGuzzleNamespace::postUpdate",
+            "OpenProvider\\WhmcsRegistrar\\scripts\\UpdateIlluminateSupportNamespace::postUpdate",
             "composer dump-autoload"
         ]
     }

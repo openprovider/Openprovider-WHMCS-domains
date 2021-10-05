@@ -3,8 +3,8 @@
 namespace Illuminate\Database\Console\Migrations;
 
 use Illuminate\Database\Migrations\MigrationCreator;
-use Illuminate\Support\Composer;
-use Illuminate\Support\Str;
+use Illuminate\Support6\Composer;
+use Illuminate\Support6\Str;
 
 class MigrateMakeCommand extends BaseCommand
 {
@@ -37,7 +37,7 @@ class MigrateMakeCommand extends BaseCommand
     /**
      * The Composer instance.
      *
-     * @var \Illuminate\Support\Composer
+     * @var \Illuminate\Support6\Composer
      */
     protected $composer;
 
@@ -45,7 +45,7 @@ class MigrateMakeCommand extends BaseCommand
      * Create a new migration install command instance.
      *
      * @param  \Illuminate\Database\Migrations\MigrationCreator  $creator
-     * @param  \Illuminate\Support\Composer  $composer
+     * @param  \Illuminate\Support6\Composer  $composer
      * @return void
      */
     public function __construct(MigrationCreator $creator, Composer $composer)

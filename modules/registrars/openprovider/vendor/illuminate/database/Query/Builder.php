@@ -11,12 +11,12 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
-use Illuminate\Support\LazyCollection;
-use Illuminate\Support\Str;
-use Illuminate\Support\Traits\ForwardsCalls;
-use Illuminate\Support\Traits\Macroable;
+use Illuminate\Support6\Arr;
+use Illuminate\Support6\Collection;
+use Illuminate\Support6\LazyCollection;
+use Illuminate\Support6\Str;
+use Illuminate\Support6\Traits\ForwardsCalls;
+use Illuminate\Support6\Traits\Macroable;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -2139,7 +2139,7 @@ class Builder
      * Execute the query as a "select" statement.
      *
      * @param  array|string  $columns
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support6\Collection
      */
     public function get($columns = ['*'])
     {
@@ -2263,7 +2263,7 @@ class Builder
     /**
      * Get a lazy collection for the given query.
      *
-     * @return \Illuminate\Support\LazyCollection
+     * @return \Illuminate\Support6\LazyCollection
      */
     public function cursor()
     {
@@ -2297,7 +2297,7 @@ class Builder
      *
      * @param  string  $column
      * @param  string|null  $key
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support6\Collection
      */
     public function pluck($column, $key = null)
     {
@@ -2352,7 +2352,7 @@ class Builder
      * @param  array  $queryResult
      * @param  string  $column
      * @param  string  $key
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support6\Collection
      */
     protected function pluckFromObjectColumn($queryResult, $column, $key)
     {
@@ -2377,7 +2377,7 @@ class Builder
      * @param  array  $queryResult
      * @param  string  $column
      * @param  string  $key
-     * @return \Illuminate\Support\Collection
+     * @return \Illuminate\Support6\Collection
      */
     protected function pluckFromArrayColumn($queryResult, $column, $key)
     {

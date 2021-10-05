@@ -195,7 +195,7 @@ trait BuildsQueries
     /**
      * Create a new length-aware paginator instance.
      *
-     * @param  \Illuminate\Support\Collection  $items
+     * @param  \Illuminate\Support6\Collection  $items
      * @param  int  $total
      * @param  int  $perPage
      * @param  int  $currentPage
@@ -212,7 +212,7 @@ trait BuildsQueries
     /**
      * Create a new simple paginator instance.
      *
-     * @param  \Illuminate\Support\Collection  $items
+     * @param  \Illuminate\Support6\Collection  $items
      * @param  int  $perPage
      * @param  int  $currentPage
      * @param  array  $options

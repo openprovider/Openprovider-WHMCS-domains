@@ -4,7 +4,7 @@ namespace Illuminate\Database\Eloquent\Concerns;
 
 use Closure;
 use Illuminate\Database\Eloquent\Scope;
-use Illuminate\Support\Arr;
+use Illuminate\Support6\Arr;
 use InvalidArgumentException;
 
 trait HasGlobalScopes

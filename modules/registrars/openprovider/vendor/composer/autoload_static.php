@@ -15,18 +15,18 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         '9e7a8ca9c2c682ec2704dd873a0e3618' => __DIR__ . '/..' . '/php-mock/php-mock/autoload.php',
-        'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
         '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
-        '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         'b33e3d135e5d9e47d845c576147bda89' => __DIR__ . '/..' . '/php-di/php-di/src/functions.php',
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
+        'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '2dcc1fe700145c8f64875eb0ae323e56' => __DIR__ . '/../..' . '/helpers.php',
         'ca20aaae4a3fe829235e329cd2617217' => __DIR__ . '/../..' . '/vendor-static/guzzlehttp/guzzle/src/functions_include.php',
         'bec47d8cabb65f363f596b618b5c88f1' => __DIR__ . '/../..' . '/vendor-static/guzzlehttp/psr7/src/functions_include.php',
         '78a17a9a31b6b6b1779c3591d4be31bc' => __DIR__ . '/../..' . '/vendor-static/guzzlehttp/promises/src/functions_include.php',
+        'bdf7221e1fb5502b1bd6098f75e68bc4' => __DIR__ . '/../..' . '/vendor-static/illuminate/support/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -92,7 +92,7 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         'I' => 
         array (
             'Invoker\\' => 8,
-            'Illuminate\\Support\\' => 19,
+            'Illuminate\\Support6\\' => 20,
             'Illuminate\\Database\\' => 20,
             'Illuminate\\Contracts\\' => 21,
             'Illuminate\\Container\\' => 21,
@@ -288,9 +288,9 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         array (
             0 => __DIR__ . '/..' . '/php-di/invoker/src',
         ),
-        'Illuminate\\Support\\' => 
+        'Illuminate\\Support6\\' => 
         array (
-            0 => __DIR__ . '/..' . '/illuminate/support',
+            0 => __DIR__ . '/../..' . '/vendor-static/illuminate/support',
         ),
         'Illuminate\\Database\\' => 
         array (

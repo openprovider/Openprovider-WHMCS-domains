@@ -2,7 +2,7 @@
 
 namespace Illuminate\Database\Schema;
 
-use Illuminate\Support\Fluent;
+use Illuminate\Support6\Fluent;
 
 /**
  * @method ForeignKeyDefinition references(string|array $columns) Specify the referenced column(s)

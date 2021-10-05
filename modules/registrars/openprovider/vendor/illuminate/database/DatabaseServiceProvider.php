@@ -9,7 +9,7 @@ use Illuminate\Database\Connectors\ConnectionFactory;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\QueueEntityResolver;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support6\ServiceProvider;
 
 class DatabaseServiceProvider extends ServiceProvider
 {

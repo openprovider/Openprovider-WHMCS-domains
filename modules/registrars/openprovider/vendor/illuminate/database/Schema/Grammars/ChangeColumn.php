@@ -8,7 +8,7 @@ use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Fluent;
+use Illuminate\Support6\Fluent;
 use RuntimeException;
 
 class ChangeColumn
@@ -18,7 +18,7 @@ class ChangeColumn
      *
      * @param  \Illuminate\Database\Schema\Grammars\Grammar  $grammar
      * @param  \Illuminate\Database\Schema\Blueprint  $blueprint
-     * @param  \Illuminate\Support\Fluent  $command
+     * @param  \Illuminate\Support6\Fluent  $command
      * @param  \Illuminate\Database\Connection  $connection
      * @return array
      *
@@ -97,7 +97,7 @@ class ChangeColumn
      * Get the Doctrine column instance for a column change.
      *
      * @param  \Doctrine\DBAL\Schema\Table  $table
-     * @param  \Illuminate\Support\Fluent  $fluent
+     * @param  \Illuminate\Support6\Fluent  $fluent
      * @return \Doctrine\DBAL\Schema\Column
      */
     protected static function getDoctrineColumn(Table $table, Fluent $fluent)
@@ -110,7 +110,7 @@ class ChangeColumn
     /**
      * Get the Doctrine column change options.
      *
-     * @param  \Illuminate\Support\Fluent  $fluent
+     * @param  \Illuminate\Support6\Fluent  $fluent
      * @return array
      */
     protected static function getDoctrineColumnChangeOptions(Fluent $fluent)

@@ -3,9 +3,9 @@
 namespace Illuminate\Database;
 
 use Illuminate\Database\Connectors\ConnectionFactory;
-use Illuminate\Support\Arr;
-use Illuminate\Support\ConfigurationUrlParser;
-use Illuminate\Support\Str;
+use Illuminate\Support6\Arr;
+use Illuminate\Support6\ConfigurationUrlParser;
+use Illuminate\Support6\Str;
 use InvalidArgumentException;
 use PDO;
 
