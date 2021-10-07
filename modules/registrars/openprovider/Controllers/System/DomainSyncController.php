@@ -76,7 +76,7 @@ class DomainSyncController extends BaseController
 
             $domainOp = $this->apiHelper->getDomain($this->api_domain);
 
-            $expiration_date = (Carbon::createFromFormat('Y-m-d H:i:s', $domainOp['expirationDate'], 'Europe/Amsterdam'))
+            $expiration_date = (Carbon::createFromFormat('Y-m-d H:i:s', $domainOp['renewalDate'], 'Europe/Amsterdam'))
                 ->toDateString();
 
             if(in_array($domainOp['status'], self::DOMAIN_STATUSES_ACTIVE)) {
