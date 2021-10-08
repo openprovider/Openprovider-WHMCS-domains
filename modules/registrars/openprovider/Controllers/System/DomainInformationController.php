@@ -52,7 +52,9 @@ class DomainInformationController extends BaseController
      * Get the nameservers.
      *
      * @param $params
+     *
      * @return array
+     *
      * @throws \Exception
      */
     function get($params)
