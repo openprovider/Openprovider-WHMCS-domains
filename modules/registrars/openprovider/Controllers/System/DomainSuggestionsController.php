@@ -82,13 +82,14 @@ class DomainSuggestionsController extends BaseController
             $searchResult->setStatus($status);
 
             if($params['OpenproviderPremium'] == true && isset($item['premium'])) {
+                $premiumPriceArgs = [];
                 $searchResult->setPremiumDomain(true);
 
-                $args['domain']['name']      = $domain_sld;
-                $args['domain']['extension'] = $domain_tld;
-                $args['operation']           = 'create';
+                $premiumPriceArgs['domainName']      = $domain_sld;
+                $premiumPriceArgs['domainExtension'] = $domain_tld;
+                $premiumPriceArgs['operation']       = 'create';
 
-                $createPricingResponse = $this->apiClient->call('retrievePriceDomainRequest', $args);
+                $createPricingResponse = $this->apiClient->call('retrievePriceDomainRequest', $premiumPriceArgs);
                 if (!$createPricingResponse->isSuccess()) {
                     continue;
                 }
