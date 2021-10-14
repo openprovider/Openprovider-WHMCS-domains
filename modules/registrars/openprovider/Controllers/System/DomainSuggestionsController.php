@@ -21,9 +21,6 @@ class DomainSuggestionsController extends BaseController
 {
     private const SUGGESTION_DOMAIN_NAME_COUNT = 9;
 
-    private const SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_LIVE = 1;
-    private const SUGGESTION_DOMAINS_COUNT_FROM_PLACEMENT_PLUS_CTE = 10;
-
     /**
      * @var ResultsList
      */
@@ -81,8 +78,10 @@ class DomainSuggestionsController extends BaseController
             $domain_tld = $item['tld'];
             $searchResult = new SearchResult($domain_sld, $domain_tld);
 
-            if($params['OpenproviderPremium'] == true && isset($item['premium']) && $item['status'] == 'free') {
-                $status = SearchResult::STATUS_NOT_REGISTERED;
+            $status = SearchResult::STATUS_NOT_REGISTERED;
+            $searchResult->setStatus($status);
+
+            if($params['OpenproviderPremium'] == true && isset($item['premium'])) {
                 $searchResult->setPremiumDomain(true);
 
                 $args['domain']['name']      = $domain_sld;
@@ -96,29 +95,14 @@ class DomainSuggestionsController extends BaseController
 
                 $createPricing = $createPricingResponse->getData();
 
-                $args['operation'] = 'transfer';
-                $transferPricingResponse  = $this->apiClient->call('retrievePriceDomainRequest', $args);
-                if (!$transferPricingResponse->isSuccess()) {
-                    continue;
-                }
-
-                $transferPricing = $transferPricingResponse->getData();
-
                 // Retrieve the pricing
                 $searchResult->setPremiumCostPricing(
                     array(
                         'register'  => $createPricing['price']['reseller']['price'],
-                        'renew'     =>  $transferPricing['price']['reseller']['price'],
                         'CurrencyCode' => $createPricing['price']['reseller']['currency'],
                     )
                 );
-            } elseif($item['status'] == 'free') {
-                $status = SearchResult::STATUS_NOT_REGISTERED;
-            } else {
-                $status = SearchResult::STATUS_REGISTERED;
             }
-
-            $searchResult->setStatus($status);
 
             $this->resultsList->append($searchResult);
         }
