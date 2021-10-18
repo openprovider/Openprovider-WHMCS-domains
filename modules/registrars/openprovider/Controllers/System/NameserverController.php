@@ -64,8 +64,14 @@ class NameserverController extends BaseController
             'extension' => $params['original']['domainObj']->getTopLevel(),
         ));
 
-        $nameServers = \OpenProvider\API\APITools::createNameserversArray($params);
-        $this->apiHelper->saveDomainNameservers($domain, $nameServers);
+        try {
+            $nameServers = \OpenProvider\API\APITools::createNameserversArray($params);
+            $this->apiHelper->saveDomainNameservers($domain, $nameServers);
+        } catch (Exception $e) {
+            return [
+                'error' => $e->getMessage()
+            ];
+        }
 
         return 'success';
     }
@@ -94,10 +100,18 @@ class NameserverController extends BaseController
 
         if (($nameServer->name == '.' . $params['sld'] . '.' . $params['tld']) || !$nameServer->ip)
         {
-            throw new Exception('You must enter all required fields');
+            return [
+                'error' => 'You must enter all required fields'
+            ];
         }
 
-        $this->apiHelper->createNameserver($nameServer);
+        try {
+            $this->apiHelper->createNameserver($nameServer);
+        } catch (Exception $e) {
+            return [
+                'error' => $e->getMessage()
+            ];
+        }
 
         return 'success';
     }
