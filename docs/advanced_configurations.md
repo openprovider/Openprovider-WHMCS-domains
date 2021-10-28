@@ -42,10 +42,3 @@ Advanced configurations can be found in the file `/modules/registrars/openprovid
 |domainProcessingLimit| integer: 200 | The maximum amount of domains to process in each cron run. |
 |sendEmptyActivityEmail| boolean: false | Set to true to send a report even when nothing has been updated in a cron run. |
 |maxRegistrationPeriod| integer: 1 | Max number of years for registration domains. |
-
-### Placement plus settings 
-
-|Parameter Name|Value type and default value|Purpose|
-| :------------------------------ | :----------------------------------------- | :----------------------------------------------------------- |
-|placementPlusAccount| string: '' | Account from placement plus to get suggested domain names from this service |
-|placementPlusPassword| string: '' | Password from Account |

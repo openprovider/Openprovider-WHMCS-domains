@@ -38,10 +38,6 @@ return [
     // before activating automatic trustee activation.
     'requestTrusteeService' => [],
 
-    // The placement+ credentials
-    'placementPlusAccount'  => '',
-    'placementPlusPassword' => '',
-
     // maxRegistrationPeriod
     'maxRegistrationPeriod' => 1,
 

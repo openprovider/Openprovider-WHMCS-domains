@@ -2,8 +2,6 @@
 
 namespace OpenProvider\API;
 
-use OpenProvider\PlacementPlus;
-
 /**
  * Class Request
  * OpenProvider Registrar module
@@ -18,11 +16,6 @@ class Request
     protected $username;
     protected $password;
     protected $client;
-
-    /**
-     * @var PlacementPlus
-     */
-    protected $placementplus;
 
     public function __construct()
     {
@@ -58,22 +51,6 @@ class Request
             $dom->createTextNode(mb_convert_encoding($initiator, \OpenProvider\API\APIConfig::$encoding))
         );
         $credentialsElement->appendChild($clientElement);
-
-        if ($this->placementplus) {
-            $placementplusInputElement = $dom->createElement('placementplusinput');
-            $placementplusInputElement->appendChild(
-                $dom->createTextNode(mb_convert_encoding($this->placementplus->input, \OpenProvider\API\APIConfig::$encoding))
-            );
-            $credentialsElement->appendChild($placementplusInputElement);
-
-            $placementplusOutputElement = $dom->createElement('placementplusoutput');
-            $placementplusOutputElement->appendChild(
-                $dom->createTextNode(mb_convert_encoding($this->placementplus->output, \OpenProvider\API\APIConfig::$encoding))
-            );
-            $credentialsElement->appendChild($placementplusOutputElement);
-
-            $this->clearPlacementPlus();
-        }
 
         $rootElement = $dom->createElement('openXML');
         $rootElement->appendChild($credentialsElement);
@@ -111,15 +88,5 @@ class Request
         $this->password = isset($args["password"]) ? $args["password"] : null;
 
         return $this;
-    }
-
-    public function setPlacementPlus(PlacementPlus $placementplus)
-    {
-        $this->placementplus = $placementplus;
-    }
-
-    public function clearPlacementPlus()
-    {
-        $this->placementplus = null;
     }
 }
