@@ -9,7 +9,7 @@ Note: loading the TLD prices still requires some time to process after running t
 ### Using SSH
 1. Log in using SSH to your server.
 2. Navigate to `modules/registrars/openprovider/cron`
-3. Execute `php -d max_execution_time=0 DownloadTldPrices.php`
+3. Execute `php -d max_execution_time=0 -d memory_limit=256M DownloadTldPrices.php`
 
 ### Using Cron
 The cron method can be used when you do not have SSH access. Once the cron has been executed, you may want to either remove the cron task, since it is a memory intensive task for your WHMCS server.
