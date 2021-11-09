@@ -15,16 +15,22 @@ class Logger extends AbstractLogger
      */
     public function log($level, $message, $context = []): void
     {
+        $replaceVars = isset($context['request']['password']) ? [
+            $context['request']['password'],
+            htmlentities($context['request']['password'])
+        ] : [];
+
+        if (isset($context['response']['data']['token'])) {
+            array_push($replaceVars,$context['response']['data']['token']);
+        }
+
         logModuleCall(
             self::MODULE_NAME,
             $message,
             json_encode($context['request']),
             json_encode($context['response']),
             null,
-            isset($context['request']['password']) ? [
-                $context['request']['password'],
-                htmlentities($context['request']['password'])
-            ] : []
+            $replaceVars
         );
     }
 }
