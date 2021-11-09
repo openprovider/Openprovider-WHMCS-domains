@@ -21,7 +21,7 @@ class Logger extends AbstractLogger
         ] : [];
 
         if (isset($context['response']['data']['token'])) {
-            array_push($replaceVars,$context['response']['data']['token']);
+            $replaceVars[] = $context['response']['data']['token'];
         }
 
         logModuleCall(
