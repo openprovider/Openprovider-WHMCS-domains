@@ -379,6 +379,26 @@ $additionaldomainfields[".nom.es"] = $additionaldomainfields[".es"];
 $additionaldomainfields[".edu.es"] = $additionaldomainfields[".es"];
 $additionaldomainfields[".org.es"] = $additionaldomainfields[".es"];
 
+// .SE
+$additionaldomainfields[".se"][] = array(
+    "Name" => "Owner type",
+    "op_dropdown_for_op_name" => "seIdentificationNumber",
+    "LangVar" => "seIdentificationType",
+    "Type" => "dropdown",
+    "Options" => "socialSecurityNumber|Private individual,companyRegistrationNumber|Legal Entity",
+    "Default" => "Private individual",
+);
+
+$additionaldomainfields['.se'][] = array(
+    'Name' => 'Identification number',
+    "LangVar"=> "seIdentificationNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "Required" => true,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "seIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
+);
+
 // .SG
 
 $additionaldomainfields[".sg"][] = array(
