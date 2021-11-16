@@ -2,6 +2,7 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
+use Carbon\Carbon;
 use OpenProvider\API\APIConfig;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\ResponseInterface;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Models\Registrar;
+use WHMCS\Database\Capsule;
 
 /**
  * Class ConfigController
@@ -62,7 +64,8 @@ class ConfigController extends BaseController
             $params['Username'] != $oldParams['Username'] ||
             $params['test_mode'] != $oldParams['test_mode']
         ) {
-            $this->session->remove('AUTH_TOKEN');
+            Capsule::table('reseller_tokens')->where('username', $oldParams['Username'])->delete();
+
         }
         // If we have some login data, let's try to login.
         $areCredentialsExist = isset($params['Password']) &&
@@ -179,7 +182,15 @@ class ConfigController extends BaseController
             Configuration::get('api_url') :
             Configuration::get('api_url_cte');
 
-        if ($this->session->has('AUTH_TOKEN')) {
+ $token_result = [];
+
+        if (Capsule::schema()->hasTable('reseller_tokens')) {
+            $token_result = Capsule::table('reseller_tokens')->where('username', $params['Username'])->orderBy('created_at', 'desc')->get();
+        } 
+
+        $expireTime = count($token_result) > 0 ? new Carbon($token_result[0]->expire_at) : null;
+
+        if (count($token_result) > 0 && Carbon::now()->diffInSeconds($expireTime, false) > 0) {
             $checkingTokenRequest = $this->checkRequest();
             if ($checkingTokenRequest->isSuccess()) {
                 return $configarray;
