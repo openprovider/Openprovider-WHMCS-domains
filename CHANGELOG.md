@@ -1,5 +1,17 @@
 # Changelog
 
+## v5.5
+
+###### Features and improvements
+
+- Allow end user to enter additional fields for domains .es(owner type/company registration number or identification number) and .it(company registration number/vat number/social security number). 
+- Enhanced module logs.
+
+###### Bugfixes
+
+- Improved authentication performance.
+- Improved language supportive with IPA(Phonetic) characters.
+
 ## v5.4
 
 ###### Features and improvements
