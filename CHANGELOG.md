@@ -1,5 +1,16 @@
 # Changelog
 
+## v5.5
+
+###### Features and improvements
+
+- Allow end user to enter additional fields for domain .es(owner type/company registration number or identification number). 
+- Enhanced module logs.
+
+###### Bugfixes
+
+- 
+
 ## v5.4
 
 ###### Features and improvements
