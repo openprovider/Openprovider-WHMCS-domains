@@ -37,7 +37,7 @@ if (function_exists('openprovider_additional_fields'))
 
 ![Screenshot_20210203_174612](docs/img/installation_guide.png)
 
-1. Enter the credentials for an API user.
+1. Enter the credentials for an API user. Ensure API access is enabled in the Openprovier control panel for the credentials you are using.
 2. Click **Save**
 3. Navigate to **Setup > Products/Services > Domain Pricing** and select Openprovider as registrar for the TLD which you want to sell via Openprovider
    ![Screenshot_20210203_180350](docs/img/select_TLD_registrar.png)
@@ -75,6 +75,7 @@ First Make sure that the currency that you are using to pay Openprovider is conf
 
 Openprovider’s premium DNS leverages Sectigo’s advanced DNS infrastructure to provide a single, integrated and easy to adopt solution which offers a 99.99% Uptime Guarantee and near real-time updates, features DDoS protection and blazing fast resolution. While our standard DNS service is sufficient for users who don’t have any special needs when it comes to DNS resolution, the premium DNS service can be an excellent service to your hosting services portfolio.
 
+- [Download the premium dns module](https://github.com/openprovider/openprovider-whmcs-premiumDNS/) from GitHub.
 - Copy the contents of `/modules/servers/openprovidersectigodns` to `<your-WHMCS-directory>/modules/servers/openprovidersectigodns`
 - Set up a product with the Openprovider-premiumDNS module (make sure to require a domain) and start selling. [See here for detailed setup instructions.](docs/premium_dns_product_setup.md) 
 - Note that there is no test environment and records created with the premium DNS module will be billed to your Openprovider account.
