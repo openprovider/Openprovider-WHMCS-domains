@@ -1,5 +1,7 @@
 <?php
 // Require any libraries needed for the module to function.
+
+use Carbon\Carbon;
 use OpenProvider\API\API;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\ApiInterface;
@@ -13,12 +15,14 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Models\Registrar;
+use WHMCS\Database\Capsule;
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/classes/idna_convert.class.php';
 
 const SESSION_EXPIRATION_LIFE_TIME = 300;
+const AUTH_TOKEN_EXPIRATION_LIFE_TIME = 2;
 
 /**
  * Configure and launch the system
@@ -77,15 +81,48 @@ function openprovider_bind_required_classes($launcher)
         $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter, $idn);
         $client->getConfiguration()->setHost($host);
 
-        if (!$session->has('AUTH_TOKEN')) {
+        $tokenResult = null;
+
+        if (Capsule::schema()->hasTable('reseller_tokens')) {
+            $tokenResult = Capsule::table('reseller_tokens')->where('username', $params['Username'])->orderBy('created_at', 'desc')->first();
+        } else {
+            Capsule::schema()->create(
+                'reseller_tokens',
+                function ($table) {
+                    /** @var \Illuminate\Database\Schema\Blueprint $table */
+                    $table->increments('id');
+                    $table->string('username');
+                    $table->string('token');
+                    $table->string('expire_at');
+                    $table->string('created_at');
+                }
+            );
+        }
+
+        $expireTime = $tokenResult ? new Carbon($tokenResult->expire_at) : false;
+        $isAlive = $expireTime && Carbon::now()->diffInSeconds($expireTime, false) > 0;
+
+        $token = "";
+        if ($isAlive) {
+            $token = $tokenResult->token;
+        } else {
             $token = $client->call('generateAuthTokenRequest', [
                 'username' => $params['Username'],
                 'password' => $params['Password']
             ])->getData()['token'];
-            $session->set('AUTH_TOKEN', $token);
+
+            Capsule::table('reseller_tokens')->where('username', $params['Username'])->delete();
+
+            Capsule::table('reseller_tokens')->insert([
+                'username' => $params['Username'],
+                'token' => $token,
+                'expire_at' => Carbon::now()->addDays(AUTH_TOKEN_EXPIRATION_LIFE_TIME)->toDateTimeString(),
+                'created_at' => Carbon::now()->toDateTimeString()
+            ]);
+
             $session->getMetadataBag()->stampNew(SESSION_EXPIRATION_LIFE_TIME);
         }
-        $client->getConfiguration()->setToken($session->get('AUTH_TOKEN') ?? '');
+        $client->getConfiguration()->setToken($token);
 
         return $client;
     });
@@ -109,7 +146,7 @@ function openprovider_bind_required_classes($launcher)
         return $c->get(XmlApiAdapter::class);
     });
 
-    $launcher->set(ApiHelper::class, function(ContainerInterface $c) {
+    $launcher->set(ApiHelper::class, function (ContainerInterface $c) {
         $apiClient = $c->get(ApiInterface::class);
         return new ApiHelper($apiClient);
     });

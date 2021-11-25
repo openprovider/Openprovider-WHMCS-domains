@@ -2,6 +2,7 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
+use Carbon\Carbon;
 use OpenProvider\API\APIConfig;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\ResponseInterface;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Models\Registrar;
+use WHMCS\Database\Capsule;
 
 /**
  * Class ConfigController
@@ -62,7 +64,7 @@ class ConfigController extends BaseController
             $params['Username'] != $oldParams['Username'] ||
             $params['test_mode'] != $oldParams['test_mode']
         ) {
-            $this->session->remove('AUTH_TOKEN');
+            Capsule::table('reseller_tokens')->where('username', $oldParams['Username'])->delete();
         }
         // If we have some login data, let's try to login.
         $areCredentialsExist = isset($params['Password']) &&
@@ -98,7 +100,7 @@ class ConfigController extends BaseController
             }
         }
 
-        return array ($configarray, $params);
+        return array($configarray, $params);
     }
 
     /**
@@ -108,36 +110,36 @@ class ConfigController extends BaseController
      */
     public function getConfigArray()
     {
-            $configs = [];
+        $configs = [];
 
-            $configs["version"] = [
-                "FriendlyName"  => "Module Version",
-                "Type"          => "text",
-                "Description"   => APIConfig::getModuleVersion() . "<style>input[name='version']{display: none;}</style>",
-            ];
+        $configs["version"] = [
+            "FriendlyName"  => "Module Version",
+            "Type"          => "text",
+            "Description"   => APIConfig::getModuleVersion() . "<style>input[name='version']{display: none;}</style>",
+        ];
 
-            $configs["Username"] = [
-                "FriendlyName"  => "Username",
-                "Type"          => "text",
-                "Size"          => "20",
-                "Description"   => "Openprovider login",
-            ];
+        $configs["Username"] = [
+            "FriendlyName"  => "Username",
+            "Type"          => "text",
+            "Size"          => "20",
+            "Description"   => "Openprovider login",
+        ];
 
-            $configs["Password"] = [
-                "FriendlyName"  => "Password",
-                "Type"          => "password",
-                "Size"          => "20",
-                "Description"   => "Openprovider password",
-            ];
+        $configs["Password"] = [
+            "FriendlyName"  => "Password",
+            "Type"          => "password",
+            "Size"          => "20",
+            "Description"   => "Openprovider password",
+        ];
 
-            $configs["test_mode"] = [
-                "FriendlyName"  => "Enable Openprovider Test mode",
-                "Type"          => "yesno",
-                "Description"   => "Choose this option if you are using CTE credentials and want to connect to the test API.",
-                "Default"       => "no"
-            ];
+        $configs["test_mode"] = [
+            "FriendlyName"  => "Enable Openprovider Test mode",
+            "Type"          => "yesno",
+            "Description"   => "Choose this option if you are using CTE credentials and want to connect to the test API.",
+            "Default"       => "no"
+        ];
 
-            return $configs;
+        return $configs;
     }
 
     /**
@@ -168,7 +170,7 @@ class ConfigController extends BaseController
         $firstArray[] = $loginFailed;
 
         //warn user that login failed at the end.
-//        $configarray['loginFailed'] = $loginFailed;
+        //        $configarray['loginFailed'] = $loginFailed;
 
         return array_merge($firstArray, $configarray);
     }
@@ -179,7 +181,17 @@ class ConfigController extends BaseController
             Configuration::get('api_url') :
             Configuration::get('api_url_cte');
 
-        if ($this->session->has('AUTH_TOKEN')) {
+
+        $tokenResult = null;
+
+        if (Capsule::schema()->hasTable('reseller_tokens')) {
+            $tokenResult = Capsule::table('reseller_tokens')->where('username', $params['Username'])->orderBy('created_at', 'desc')->first();
+        }
+
+        $expireTime = $tokenResult ? new Carbon($tokenResult->expire_at) : false;
+        $isAlive = $expireTime && Carbon::now()->diffInSeconds($expireTime, false) > 0;
+
+        if ($isAlive) {
             $checkingTokenRequest = $this->checkRequest();
             if ($checkingTokenRequest->isSuccess()) {
                 return $configarray;
