@@ -99,11 +99,11 @@ function openprovider_bind_required_classes($launcher)
             );
         }
 
-        $token = "";
-        $expireTime = is_null($tokenResult) ? false : new Carbon($tokenResult->expire_at);
-        $isExpired = $expireTime ? Carbon::now()->diffInSeconds($expireTime, false) < 0 : true;
+        $expireTime = $tokenResult ? new Carbon($tokenResult->expire_at) : false;
+        $isAlive = $expireTime && Carbon::now()->diffInSeconds($expireTime, false) > 0;
 
-        if (!is_null($tokenResult) && $expireTime && !$isExpired) {
+        $token = "";
+        if ($isAlive) {
             $token = $tokenResult->token;
         } else {
             $token = $client->call('generateAuthTokenRequest', [

@@ -188,10 +188,10 @@ class ConfigController extends BaseController
             $tokenResult = Capsule::table('reseller_tokens')->where('username', $params['Username'])->orderBy('created_at', 'desc')->first();
         }
 
-        $expireTime = is_null($tokenResult) ? false : new Carbon($tokenResult->expire_at);
-        $isExpired = $expireTime ? Carbon::now()->diffInSeconds($expireTime, false) < 0 : true;
+        $expireTime = $tokenResult ? new Carbon($tokenResult->expire_at) : false;
+        $isAlive = $expireTime && Carbon::now()->diffInSeconds($expireTime, false) > 0;
 
-        if (!is_null($tokenResult) && $expireTime && !$isExpired) {
+        if ($isAlive) {
             $checkingTokenRequest = $this->checkRequest();
             if ($checkingTokenRequest->isSuccess()) {
                 return $configarray;
