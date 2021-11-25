@@ -4,7 +4,6 @@
 use Carbon\Carbon;
 use OpenProvider\API\API;
 use OpenProvider\API\ApiHelper;
-use OpenProvider\WhmcsRegistrar\Constants\Constants;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\XmlApiAdapter;
 use OpenProvider\Logger;
@@ -23,6 +22,7 @@ require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/classes/idna_convert.class.php';
 
 const SESSION_EXPIRATION_LIFE_TIME = 300;
+const AUTH_TOKEN_EXPIRATION_LIFE_TIME = 2;
 
 /**
  * Configure and launch the system
@@ -116,7 +116,7 @@ function openprovider_bind_required_classes($launcher)
             Capsule::table('reseller_tokens')->insert([
                 'username' => $params['Username'],
                 'token' => $token,
-                'expire_at' => Constants::getAuthTokenExpirationTimeFromNow(),
+                'expire_at' => Carbon::now()->addDays(AUTH_TOKEN_EXPIRATION_LIFE_TIME)->toDateTimeString(),
                 'created_at' => Carbon::now()->toDateTimeString()
             ]);
 
