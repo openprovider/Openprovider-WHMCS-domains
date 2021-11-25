@@ -4,6 +4,7 @@
 use Carbon\Carbon;
 use OpenProvider\API\API;
 use OpenProvider\API\ApiHelper;
+use OpenProvider\WhmcsRegistrar\Constants\Constants;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\XmlApiAdapter;
 use OpenProvider\Logger;
@@ -115,7 +116,7 @@ function openprovider_bind_required_classes($launcher)
             Capsule::table('reseller_tokens')->insert([
                 'username' => $params['Username'],
                 'token' => $token,
-                'expire_at' => Carbon::now()->addDays(2)->toDateTimeString(),
+                'expire_at' => Constants::getAuthTokenExpirationTimeFromNow(),
                 'created_at' => Carbon::now()->toDateTimeString()
             ]);
 
