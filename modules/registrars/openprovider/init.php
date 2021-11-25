@@ -80,10 +80,10 @@ function openprovider_bind_required_classes($launcher)
         $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter, $idn);
         $client->getConfiguration()->setHost($host);
 
-        $token_result = [];
+        $tokenResult = null;
 
         if (Capsule::schema()->hasTable('reseller_tokens')) {
-            $token_result = Capsule::table('reseller_tokens')->where('username', $params['Username'])->orderBy('created_at', 'desc')->get();
+            $tokenResult = Capsule::table('reseller_tokens')->where('username', $params['Username'])->orderBy('created_at', 'desc')->first();
         } else {
             Capsule::schema()->create(
                 'reseller_tokens',
@@ -99,10 +99,11 @@ function openprovider_bind_required_classes($launcher)
         }
 
         $token = "";
-        $expireTime = count($token_result) > 0 ? new Carbon($token_result[0]->expire_at) : null;
+        $expireTime = is_null($tokenResult) ? false : new Carbon($tokenResult->expire_at);
+        $isExpired = $expireTime ? Carbon::now()->diffInSeconds($expireTime, false) < 0 : true;
 
-        if (count($token_result) > 0 && Carbon::now()->diffInSeconds($expireTime, false) > 0) {
-            $token = $token_result[0]->token;
+        if (!is_null($tokenResult) && $expireTime && !$isExpired) {
+            $token = $tokenResult->token;
         } else {
             $token = $client->call('generateAuthTokenRequest', [
                 'username' => $params['Username'],
@@ -111,18 +112,12 @@ function openprovider_bind_required_classes($launcher)
 
             Capsule::table('reseller_tokens')->where('username', $params['Username'])->delete();
 
-            Capsule::connection()->transaction(
-                function ($connectionManager) use ($token, $params) {
-                    $connectionManager->table('reseller_tokens')->insert(
-                        [
-                            'username' => $params['Username'],
-                            'token' => $token,
-                            'expire_at' => Carbon::now()->addDays(2)->toDateTimeString(),
-                            'created_at' => Carbon::now()->toDateTimeString()
-                        ]
-                    );
-                }
-            );
+            Capsule::table('reseller_tokens')->insert([
+                'username' => $params['Username'],
+                'token' => $token,
+                'expire_at' => Carbon::now()->addDays(2)->toDateTimeString(),
+                'created_at' => Carbon::now()->toDateTimeString()
+            ]);
 
             $session->getMetadataBag()->stampNew(SESSION_EXPIRATION_LIFE_TIME);
         }

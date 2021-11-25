@@ -65,7 +65,6 @@ class ConfigController extends BaseController
             $params['test_mode'] != $oldParams['test_mode']
         ) {
             Capsule::table('reseller_tokens')->where('username', $oldParams['Username'])->delete();
-
         }
         // If we have some login data, let's try to login.
         $areCredentialsExist = isset($params['Password']) &&
@@ -101,7 +100,7 @@ class ConfigController extends BaseController
             }
         }
 
-        return array ($configarray, $params);
+        return array($configarray, $params);
     }
 
     /**
@@ -111,36 +110,36 @@ class ConfigController extends BaseController
      */
     public function getConfigArray()
     {
-            $configs = [];
+        $configs = [];
 
-            $configs["version"] = [
-                "FriendlyName"  => "Module Version",
-                "Type"          => "text",
-                "Description"   => APIConfig::getModuleVersion() . "<style>input[name='version']{display: none;}</style>",
-            ];
+        $configs["version"] = [
+            "FriendlyName"  => "Module Version",
+            "Type"          => "text",
+            "Description"   => APIConfig::getModuleVersion() . "<style>input[name='version']{display: none;}</style>",
+        ];
 
-            $configs["Username"] = [
-                "FriendlyName"  => "Username",
-                "Type"          => "text",
-                "Size"          => "20",
-                "Description"   => "Openprovider login",
-            ];
+        $configs["Username"] = [
+            "FriendlyName"  => "Username",
+            "Type"          => "text",
+            "Size"          => "20",
+            "Description"   => "Openprovider login",
+        ];
 
-            $configs["Password"] = [
-                "FriendlyName"  => "Password",
-                "Type"          => "password",
-                "Size"          => "20",
-                "Description"   => "Openprovider password",
-            ];
+        $configs["Password"] = [
+            "FriendlyName"  => "Password",
+            "Type"          => "password",
+            "Size"          => "20",
+            "Description"   => "Openprovider password",
+        ];
 
-            $configs["test_mode"] = [
-                "FriendlyName"  => "Enable Openprovider Test mode",
-                "Type"          => "yesno",
-                "Description"   => "Choose this option if you are using CTE credentials and want to connect to the test API.",
-                "Default"       => "no"
-            ];
+        $configs["test_mode"] = [
+            "FriendlyName"  => "Enable Openprovider Test mode",
+            "Type"          => "yesno",
+            "Description"   => "Choose this option if you are using CTE credentials and want to connect to the test API.",
+            "Default"       => "no"
+        ];
 
-            return $configs;
+        return $configs;
     }
 
     /**
@@ -171,7 +170,7 @@ class ConfigController extends BaseController
         $firstArray[] = $loginFailed;
 
         //warn user that login failed at the end.
-//        $configarray['loginFailed'] = $loginFailed;
+        //        $configarray['loginFailed'] = $loginFailed;
 
         return array_merge($firstArray, $configarray);
     }
@@ -182,15 +181,17 @@ class ConfigController extends BaseController
             Configuration::get('api_url') :
             Configuration::get('api_url_cte');
 
- $token_result = [];
+
+        $tokenResult = null;
 
         if (Capsule::schema()->hasTable('reseller_tokens')) {
-            $token_result = Capsule::table('reseller_tokens')->where('username', $params['Username'])->orderBy('created_at', 'desc')->get();
-        } 
+            $tokenResult = Capsule::table('reseller_tokens')->where('username', $params['Username'])->orderBy('created_at', 'desc')->first();
+        }
 
-        $expireTime = count($token_result) > 0 ? new Carbon($token_result[0]->expire_at) : null;
+        $expireTime = is_null($tokenResult) ? false : new Carbon($tokenResult->expire_at);
+        $isExpired = $expireTime ? Carbon::now()->diffInSeconds($expireTime, false) < 0 : true;
 
-        if (count($token_result) > 0 && Carbon::now()->diffInSeconds($expireTime, false) > 0) {
+        if (!is_null($tokenResult) && $expireTime && !$isExpired) {
             $checkingTokenRequest = $this->checkRequest();
             if ($checkingTokenRequest->isSuccess()) {
                 return $configarray;
