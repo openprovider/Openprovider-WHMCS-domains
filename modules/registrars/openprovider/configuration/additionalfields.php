@@ -145,27 +145,27 @@ $additionaldomainfields['.it'][] = array(
     "Size" => "30",
     "Required" => false,
     "op_location" => "customerAdditionalData",
-    "op_name"  => "itIdentificationNumber"
+    "op_name"  => "companyRegistrationNumber"
 );
 
 $additionaldomainfields['.it'][] = array(
     'Name' => 'Company VAT number',
-    "LangVar"=> "itVat",
+    "LangVar"=> "vat",
     "Type" => "text",
     "Size" => "30",
     "Required" => false,
-    "op_location" => "customerAdditionalData",
-    "op_name"  => "itVat"
+    "op_location" => "customer",
+    "op_name"  => "vat"
 );
 
 $additionaldomainfields['.it'][] = array(
     'Name' => 'Individual Codice Fiscale',
-    "LangVar"=> "itSocialSecurityNumber",
+    "LangVar"=> "socialSecurityNumber",
     "Type" => "text",
     "Size" => "30",
     "Required" => false,
     "op_location" => "customerAdditionalData",
-    "op_name"  => "itSocialSecurityNumber"
+    "op_name"  => "socialSecurityNumber"
 );
 
 
