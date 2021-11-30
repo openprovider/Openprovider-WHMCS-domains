@@ -105,24 +105,27 @@ function openprovider_bind_required_classes($launcher)
         $token = "";
         if ($isAlive) {
             $token = $tokenResult->token;
+            $client->getConfiguration()->setToken($token);
         } else {
+            Capsule::table('reseller_tokens')->where('username', $params['Username'])->delete();
+
             $token = $client->call('generateAuthTokenRequest', [
                 'username' => $params['Username'],
                 'password' => $params['Password']
             ])->getData()['token'];
 
-            Capsule::table('reseller_tokens')->where('username', $params['Username'])->delete();
+            if ($token) {
+                Capsule::table('reseller_tokens')->insert([
+                    'username' => $params['Username'],
+                    'token' => $token,
+                    'expire_at' => Carbon::now()->addDays(AUTH_TOKEN_EXPIRATION_LIFE_TIME)->toDateTimeString(),
+                    'created_at' => Carbon::now()->toDateTimeString()
+                ]);
 
-            Capsule::table('reseller_tokens')->insert([
-                'username' => $params['Username'],
-                'token' => $token,
-                'expire_at' => Carbon::now()->addDays(AUTH_TOKEN_EXPIRATION_LIFE_TIME)->toDateTimeString(),
-                'created_at' => Carbon::now()->toDateTimeString()
-            ]);
-
-            $session->getMetadataBag()->stampNew(SESSION_EXPIRATION_LIFE_TIME);
+                $session->getMetadataBag()->stampNew(SESSION_EXPIRATION_LIFE_TIME);
+                $client->getConfiguration()->setToken($token);
+            }
         }
-        $client->getConfiguration()->setToken($token);
 
         return $client;
     });
