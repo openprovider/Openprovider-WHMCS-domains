@@ -53,14 +53,13 @@ function openprovider_RegisterDomain($params)
 }
 
 /**
- * Add extra buttons to admin registrar commands.
+ * Add extra buttons to admin registrar commands (Sync).
  *
  * @param type $params
  * @return type
  */
 function openprovider_AdminCustomButtonArray()
 {
-    # This function can define additional functions your module supports, and then the function is defined below
     $buttonarray = array(
         "Sync" => "Sync",
     );
