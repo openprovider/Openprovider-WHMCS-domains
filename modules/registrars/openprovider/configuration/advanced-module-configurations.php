@@ -41,6 +41,6 @@ return [
     // maxRegistrationPeriod
     'maxRegistrationPeriod' => 1,
 
-    // enable domains registration .es
+    // enable advanced additional data management for .es and .pt domain registrations    
     'idnumbermod' => false,
 ];
