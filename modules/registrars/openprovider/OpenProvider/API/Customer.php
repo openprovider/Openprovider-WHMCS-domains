@@ -264,9 +264,9 @@ class Customer
             }
         }
 
-        if (isset($_SESSION['contactsession'])) {
+        if (isset($_SESSION['contactsession']) && Capsule::schema()->hasTable('mod_contactsAdditional')) {
             $contactsNew = json_decode($_SESSION['contactsession'], true);
-            if (Capsule::schema()->hasTable('mod_contactsAdditional') && $contactsNew[$prefix] != null && $contactsNew[$prefix][0] == 'c') {
+            if ($contactsNew[$prefix] != null && $contactsNew[$prefix][0] == 'c') {
                 $contactid = substr($contactsNew[$prefix], 1);
                 $idn = Capsule::table('mod_contactsAdditional')
                     ->where("contact_id", "=", $contactid)
