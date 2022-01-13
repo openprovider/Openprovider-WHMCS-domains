@@ -22,7 +22,7 @@ require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/classes/idna_convert.class.php';
 
 const SESSION_EXPIRATION_LIFE_TIME = 300;
-const AUTH_TOKEN_EXPIRATION_LIFE_TIME = 2;
+const AUTH_TOKEN_EXPIRATION_LIFE_TIME = 1;
 
 /**
  * Configure and launch the system
