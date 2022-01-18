@@ -31,10 +31,12 @@ class ClientAreaFooterController
                     DB::updateOrCreateContact($Cord, $contactid, $id_Type);
                     unset($_SESSION['Contact_Pending_Update']);
                 }
-
-                $idn = Capsule::table(DatabaseTable::ModContactsAdditional)
-                    ->where("contact_id", "=", $contactid)
-                    ->first();
+                
+                $idn = Capsule::schema()->hasTable('mod_contactsAdditional') ?
+                Capsule::table(DatabaseTable::ModContactsAdditional)
+                  ->where("contact_id", "=", $contactid)
+                  ->first()
+                  : null;
 
                 if ($idn->contact_id) {
                     $type   = $idn->identification_type;
