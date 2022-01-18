@@ -11,7 +11,7 @@ class DB
     {
         try {
             return Capsule::schema()->hasTable($tableName);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -44,7 +44,7 @@ class DB
     public static function updateOrCreateContact($cord, $contactid, $id_type)
     {
         $idn = Capsule::schema()->hasTable(DatabaseTable::ModContactsAdditional) ?
-        Capsule::table(DatabaseTable::ModContactsAdditional)
+            Capsule::table(DatabaseTable::ModContactsAdditional)
             ->where("contact_id", "=", $contactid)
             ->first()
             : null;
@@ -61,27 +61,25 @@ class DB
                     );
 
                 $msg = "Updated {$updatedUserCount} Contact";
-
             } catch (\Exception $e) {
                 $msg = "I couldn't update Contact Company or Individual ID: . {$e->getMessage()}";
             }
         } else {
             try {
-                if(!Capsule::schema()->hasTable(DatabaseTable::ModContactsAdditional)){
-                   DB::verifyContactstables();
+                if (!Capsule::schema()->hasTable(DatabaseTable::ModContactsAdditional)) {
+                    DB::verifyContactstables();
                 }
-                    Capsule::table(DatabaseTable::ModContactsAdditional)->insert(
-                        [
-                            'contact_id'            => $contactid,
-                            'identification_number' => $cord,
-                            'identification_type'   => $id_type,
-                        ]
-                    );
-    
-                    $msg = "Updated {$updatedUserCount} Contact";
+                Capsule::table(DatabaseTable::ModContactsAdditional)->insert(
+                    [
+                        'contact_id'            => $contactid,
+                        'identification_number' => $cord,
+                        'identification_type'   => $id_type,
+                    ]
+                );
 
+                $msg = "Updated {$updatedUserCount} Contact";
             } catch (\Exception $e) {
-            $msg = "Uh oh! I was unable to update Contacts Company or Individual ID, but I was able to rollback. {$e->getMessage()}";
+                $msg = "Uh oh! I was unable to update Contacts Company or Individual ID, but I was able to rollback. {$e->getMessage()}";
             }
         }
     }
