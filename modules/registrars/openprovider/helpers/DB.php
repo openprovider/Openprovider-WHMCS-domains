@@ -68,16 +68,7 @@ class DB
         } else {
             try {
                 if(!Capsule::schema()->hasTable(DatabaseTable::ModContactsAdditional)){
-                    Capsule::schema()
-                    ->create(
-                        DatabaseTable::ModContactsAdditional,
-                        function ($table) {
-                            $table->increments('id');
-                            $table->integer('contact_id');
-                            $table->text('identification_type');
-                            $table->text('identification_number');
-                        }
-                    );
+                   DB::verifyContactstables();
                 }
                     Capsule::table(DatabaseTable::ModContactsAdditional)->insert(
                         [
