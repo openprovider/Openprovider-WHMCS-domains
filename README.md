@@ -33,13 +33,13 @@ if (function_exists('openprovider_additional_fields'))
 - [Optional] Upload `<Module directory>/modules/addons/openprovider` to `<WHMCS directory>/modules/addons`
 ## Basic Configurations
 
-- Navigate to **Setup > Products/Services > Domain Registrars** and activate Openprovider. 
+- Navigate to **Configuration >> System Settings >> Domain Registrars** and activate Openprovider. 
 
 ![Screenshot_20210203_174612](docs/img/installation_guide.png)
 
 1. Enter the credentials for an API user. Ensure API access is enabled in the Openprovier control panel for the credentials you are using.
 2. Click **Save**
-3. Navigate to **Setup > Products/Services > Domain Pricing** and select Openprovider as registrar for the TLD which you want to sell via Openprovider
+3. Navigate to **Configuration >> System Settings >> Domain Pricing** and select Openprovider as registrar for the TLD which you want to sell via Openprovider
    ![Screenshot_20210203_180350](docs/img/select_TLD_registrar.png)
 
 That's all you need to do to get started selling domains from Openprovider! Additional configurations can be found below.
