@@ -19,7 +19,7 @@ Set the cron job to run in 5 minutes from your current time. In this example, we
 DON'T FORGOT TO DELETE THE CRON ONCE IT HAS RUN.
 
 ```
-15 13 * * php -d max_execution_time=0 modules/registrars/openprovider/cron/DownloadTldPrices.php
+15 13 * * * php -d max_execution_time=0 modules/registrars/openprovider/cron/DownloadTldPrices.php
 ```
 
 _Replace php with the correct path if needed_
