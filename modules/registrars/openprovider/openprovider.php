@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenProvider Registrar module
  *
@@ -7,27 +8,24 @@
 
 use \OpenProvider\WhmcsRegistrar\src\Configuration;
 
-if (!defined("WHMCS"))
-{
+if (!defined("WHMCS")) {
     die("This file cannot be accessed directly");
 }
 
-require_once( __DIR__ . '/init.php');
+require_once(__DIR__ . '/init.php');
 
-require_once __DIR__.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'idna_convert.class.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'classes' . DIRECTORY_SEPARATOR . 'idna_convert.class.php';
 
 /**
  * Autoload
  * @param type $class_name
  */
 
-spl_autoload_register(function ($className)
-{
+spl_autoload_register(function ($className) {
     $className  =   implode(DIRECTORY_SEPARATOR, explode('\\', $className));
 
-    if(file_exists((__DIR__).DIRECTORY_SEPARATOR.$className.'.php'))
-    {
-        require_once (__DIR__).DIRECTORY_SEPARATOR.$className.'.php';
+    if (file_exists((__DIR__) . DIRECTORY_SEPARATOR . $className . '.php')) {
+        require_once (__DIR__) . DIRECTORY_SEPARATOR . $className . '.php';
     }
 });
 
@@ -52,6 +50,21 @@ function openprovider_getConfigArray($params = array())
 function openprovider_RegisterDomain($params)
 {
     return openprovider_registrar_launch_decorator('registerDomain', $params);
+}
+
+/**
+ * Add extra buttons to admin registrar commands (Sync).
+ *
+ * @param type $params
+ * @return type
+ */
+function openprovider_AdminCustomButtonArray()
+{
+    $buttonarray = array(
+        "Sync" => "Sync",
+    );
+
+    return $buttonarray;
 }
 
 /**
@@ -213,7 +226,7 @@ function openprovider_GetEPPCode($params)
  * @param type $params
  * @return array|string
  */
-    function openprovider_RegisterNameserver($params)
+function openprovider_RegisterNameserver($params)
 {
     return openprovider_registrar_launch_decorator('registerNameserver', $params);
 }
