@@ -2,7 +2,7 @@
 
 
 
-WHMCS uses a straightforward paradigm for collecting additional domain information or additional contact information when registering domains. The usual case is for additional data to be provided at at the domain creation stage by the end user. That additional data is connected with the WHMCS domain object and if domain registration is triggered by WHMCS, this additional data is used by the registrar module, in this case, Openprovider. 
+WHMCS uses a straightforward paradigm for collecting additional domain information or additional contact information when registering domains. The usual case is for additional data to be provided at the domain creation stage by the end user. That additional data is connected with the WHMCS domain object and if domain registration is triggered by WHMCS, this additional data is used by the registrar module, in this case, Openprovider. 
 
 While this method works in in the simplest case, it fails in cases where the end user wants to change the additional data after the domain has already been registered. In this case, the end user must contact the WHMCS administrator, who must update the data in the Openprovider control panel. 
 
