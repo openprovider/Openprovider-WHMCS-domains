@@ -11,6 +11,7 @@
 
 - Improved authentication performance.
 - Improved language supportive with IPA(Phonetic) characters.
+- Fixed table missing error in customer page
 
 ## v5.5
 
