@@ -65,7 +65,7 @@ That's all you need to do to get started selling domains from Openprovider! Addi
 
 ### Enable premium domains
 
-First Make sure that the currency that you are using to pay Openprovider is configured in **Setup > Payments > Currencies** (and click on **Update Exchange Rate**). Otherwise WHMCS will not use premium fee correctly, potentially meaning that your client will pay significantly less for the domain.
+First make sure that the currency that you are using to pay Openprovider is configured in **Configuration >> System Settings >> Currencies (prior to WHMCS 8.0, Setup >> Payments >> Currencies)** and click on **Update Exchange Rate**. Otherwise WHMCS will not use premium fee correctly, potentially meaning that your client will pay significantly less for the domain.
 
 1. Enable **Support premium domains**
 2. Configure premium pricing and margins
