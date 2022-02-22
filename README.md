@@ -90,7 +90,7 @@ If you plan on allowing your end users to edit their own DNS records, and want t
 
 - Upload the contents of `<Module directory>/custom-pages` to the top level of your WHMCS folder i.e. `<your WHMCS directory>/`
 - Navigate to the **target client profile > domains** select the desired domain and under **management tools** activate **"DNS management"** 
-![image-20210203184624766](docs/img/activate DNS management.png)
+<img src="docs/img/DNS Management.png" style="zoom: 67%;" />
 - The below option will appear in the domain details page of the chosen domain
 
 <img src="docs/img/DNSSEC management.png" alt="Screenshot_20210203_183243" style="zoom: 67%;" />
