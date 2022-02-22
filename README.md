@@ -89,7 +89,7 @@ If you plan on allowing your end users to edit their own DNS records, and want t
 ### Allow end users to edit DNSSEC records
 
 - Upload the contents of `<Module directory>/custom-pages` to the top level of your WHMCS folder i.e. `<your WHMCS directory>/`
-- Navigate to the **target client profile > domains** select the desired domain and under **management tools** activate **"DNS management"** 
+- Navigate to the **target client profile > domains** select the desired domain and under **Management Tools** activate **"DNS Management"** 
 <img src="docs/img/DNS Management.png" style="zoom: 67%;" />
 - The below option will appear in the domain details page of the chosen domain
 
