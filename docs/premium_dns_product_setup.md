@@ -22,7 +22,7 @@ The Premium DNS module can be used with domains from any registrar, not only dom
 Download the files from our [github repository](https://github.com/openprovider/OP-WHMCS7) 
 
 - Copy the contents of `/modules/registrars/openprovider` to `<your WHMCS directory>/modules/registrars/openprovider`
-- Copy the contents of `/modules/servers/openprovidersectigodns` to `<your WHMCS directory>/modules/servers/openprovidersectigodns`
+- Copy the contents of `/modules/servers/openproviderpremiumdns` to `<your WHMCS directory>/modules/servers/openproviderpremiumdns`
 - Activate the Openprovider Registrar module in WHMCS. You don’t need to enter credentials unless you are selling Openprovider domains as well
 
 ![img](img/activate_module)    
