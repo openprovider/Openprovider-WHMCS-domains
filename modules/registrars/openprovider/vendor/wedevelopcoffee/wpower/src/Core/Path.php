@@ -32,6 +32,11 @@ class Path
      */
     public function getDocRoot ()
     {
+        if(defined('ROOTDIR'))
+        {
+            return ROOTDIR;
+        }
+        
         global $customadminpath;
 
         if(defined('ROOTDIR'))
