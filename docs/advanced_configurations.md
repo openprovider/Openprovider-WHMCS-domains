@@ -16,7 +16,7 @@ Advanced configurations can be found in the file `/modules/registrars/openprovid
 | dnsTemplate                     | string: ""(empty string)                   | Indicate the DNS template which you would like to use for all domains created via the Openprovider module. [The Openprovider Knowledge base describes how to create a template](https://support.openprovider.eu/hc/en-us/articles/216648688-How-to-use-DNS-templates) |
 | useNewDnsManagerFeature         | boolean: false                             | Set to true to enable the Openprovider [single domain DNS panel](https://support.openprovider.eu/hc/en-us/articles/360014539999-Single-Domain-DNS-panel) for your customers who you have given the right to edit DNS zones for their domain. |
 | requestTrusteeService           | array: ["ba","co.uk"]                      | Indicates which TLDs will automatically have the trustee option selected upon registration. |
-| idnumbermod                     | boolean                                    | Indicates whether to use the [advanced additional data handling for .es and .pt domains](/advanced_additional_data.md) |
+| idnumbermod                     | boolean                                    | Indicates whether to use the [advanced additional data handling for .es and .pt domains](/docs/advanced_additional_data.md) |
 
 
 
