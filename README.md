@@ -27,6 +27,7 @@ Features
 - If you do not have the file ` <your WHMCS directory>/resources/domains/additionalfields.php` then add the example version from `resources/domains/additionalfields.php`
   - Otherwise add the following lines to the top of your `additionalfields.php` file. : 
 ```
+<?php
 if (function_exists('openprovider_additional_fields'))
     $additionaldomainfields = openprovider_additional_fields();
 ```
