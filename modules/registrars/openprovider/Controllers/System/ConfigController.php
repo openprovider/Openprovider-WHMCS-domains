@@ -7,6 +7,7 @@ use OpenProvider\API\APIConfig;
 use OpenProvider\API\ApiInterface;
 use OpenProvider\API\ResponseInterface;
 use OpenProvider\WhmcsRegistrar\enums\OpenproviderErrorType;
+use OpenProvider\WhmcsRegistrar\helpers\Cache;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use Symfony\Component\HttpFoundation\Session\Session;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -227,6 +228,10 @@ class ConfigController extends BaseController
      */
     private function checkRequest(): ResponseInterface
     {
+        if(Cache::has('op_check_request')) {
+            return Cache::get('op_check_request');
+        }
+
         $args = [];
         if ($this->apiClient->getConfiguration()->getHost() == Configuration::get('api_url')) {
             $commandToCheckAccess = 'searchPromoMessageRequest';
@@ -235,6 +240,7 @@ class ConfigController extends BaseController
             $args['limit'] = 1;
         }
 
-        return $this->apiClient->call($commandToCheckAccess, $args);
+        $data = $this->apiClient->call($commandToCheckAccess, $args);
+        return Cache::set('op_check_request', $data);
     }
 }
