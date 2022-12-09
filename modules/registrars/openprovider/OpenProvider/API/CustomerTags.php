@@ -29,7 +29,7 @@ class CustomerTags extends \OpenProvider\API\AutoloadConstructor
      */
     public function setTags($tags = array())
     {
-        if (!count($tags) || empty($tags))
+        if (!count((array)$tags) || empty($tags))
             $this->tags = [];
 
         $this->tags = array_map(function ($tag) {
@@ -37,7 +37,7 @@ class CustomerTags extends \OpenProvider\API\AutoloadConstructor
                 'key'   => 'customer',
                 'value' => $tag,
             ];
-        }, $tags);
+        }, (array)$tags);
     }
 
     /**
