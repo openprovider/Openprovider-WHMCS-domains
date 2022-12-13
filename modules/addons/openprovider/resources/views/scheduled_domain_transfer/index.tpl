@@ -11,7 +11,7 @@
         {/if}
 
 
-        {if count($scheduled_domain_transfers) == 0 }
+        {if $scheduled_domain_transfers == null or count($scheduled_domain_transfers) == 0}
             {$LANG.no_scheduled_domain_transfers}
         {else}
             <div class="pull-right" style="margin-bottom:10px;">
