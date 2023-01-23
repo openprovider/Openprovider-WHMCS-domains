@@ -10,7 +10,7 @@ class ResultsList
 {
     public $result;
 
-    public function append($append)
+    public function append($append): void
     {
         $this->result[] = $append;
     }
