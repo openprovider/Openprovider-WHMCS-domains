@@ -93,7 +93,7 @@ class AdditionalFields
                     foreach($this->distAdditionalFields[$tld] as $whmcsField)
                     {
                         // Only remove fields that are not in the Registrars field.
-                        if(!isset($tmpRegistrarFields[$whmcsField['Name']]))
+                        if(!empty($whmcsField['Name']) && !isset($tmpRegistrarFields[$whmcsField['Name']]))
                         {
                             $removeField = [];
                             $removeField['Name']    = $whmcsField['Name'];
