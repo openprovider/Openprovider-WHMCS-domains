@@ -47,7 +47,7 @@ class DomainSuggestionsController extends BaseController
      * @return ResultsList
      * @throws Exception
      */
-    public function get($params): ResultsList
+    public function get($params)
     {
         $args = [
             'name' => $params['searchTerm'],
