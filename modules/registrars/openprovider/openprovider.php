@@ -338,7 +338,7 @@ function openprovider_ResendIRTPVerificationEmail(array $params)
  * @param string $level
  * @return mixed
  */
-function openprovider_registrar_launch_decorator(string $route, array $params = [], string $level = 'system')
+function openprovider_registrar_launch_decorator(string $route, array $params = [], string $level = 'system'): mixed
 {
     if (isset($params['original'])) {
         $modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
