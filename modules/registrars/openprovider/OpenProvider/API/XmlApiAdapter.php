@@ -22,6 +22,7 @@ class XmlApiAdapter implements ApiInterface
      */
     public function __construct(API $xmlApi)
     {
+
         $this->xmlApi = $xmlApi;
 
         $this->configuration = new ApiConfiguration();
@@ -34,6 +35,8 @@ class XmlApiAdapter implements ApiInterface
      */
     public function call(string $cmd, array $args = []): ResponseInterface
     {
+
+      
         $response = new Response();
         $this->setXmlApiConfig();
         try {
@@ -65,6 +68,7 @@ class XmlApiAdapter implements ApiInterface
      */
     private function setXmlApiConfig(): void
     {
+
         $params = [
             'Username' => $this->configuration->getUserName(),
             'Password' => $this->configuration->getPassword(),

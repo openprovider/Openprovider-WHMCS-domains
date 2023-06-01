@@ -129,6 +129,7 @@ class AuthApi
     public function login($body)
     {
         list($response) = $this->loginWithHttpInfo($body);
+
         return $response;
     }
 
@@ -146,6 +147,7 @@ class AuthApi
     public function loginWithHttpInfo($body)
     {
         $request = $this->loginRequest($body);
+      
 
         try {
             $options = $this->createHttpClientOption();

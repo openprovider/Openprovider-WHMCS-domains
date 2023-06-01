@@ -45,6 +45,7 @@ class API
         else
             $this->url = Configuration::get('api_url');
 
+
         $this->request->setAuth(array(
             'username' => $params["Username"],
             'password' => $params["Password"],
@@ -72,6 +73,7 @@ class API
 
     public function sendRequest($requestCommand, $args = null)
     {
+
         // prepare request
         $this->request->setCommand($requestCommand);
 
@@ -87,6 +89,7 @@ class API
             // idn
             if (isset($args['domain']['name']) && isset($args['domain']['extension']))
             {
+
                 // UTF-8 encoding
                 if (!preg_match('//u', $args['domain']['name']))
                 {
@@ -95,6 +98,7 @@ class API
 
                 $args['domain']['name'] = $idn->encode($args['domain']['name']);
             }
+            
             elseif (isset ($args['namePattern']))
             {
                 $namePatternArr = explode('.', $args['namePattern'], 2);
@@ -119,12 +123,14 @@ class API
 
                 $args['name'] = $idn->encode($args['name']);
             }
-
+                
             $this->request->setArgs($args);
         }
 
+
         // send request
         $result = $this->process($this->request);
+
 
         $resultValue = $result->getValue();
 
@@ -162,6 +168,7 @@ class API
         }
 
         $postValues = $r->getRaw();
+      
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

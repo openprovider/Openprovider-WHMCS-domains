@@ -35,7 +35,9 @@ class APITools
             
             $nsParts = explode('/', $ns);
             $nsName = trim($nsParts[0]);
-            $nsIp = empty($nsParts[1]) ? null : trim($nsParts[1]);
+            // $nsIp = empty($nsParts[1]) ? null : trim($nsParts[1]);
+
+            $nsIp = empty($nsParts[1]) ? gethostbyname($nsName) : trim($nsParts[1]);
 
             if (empty($nsIp))
             {

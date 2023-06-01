@@ -6,7 +6,7 @@ return [
     'api_url_cte'                       => 'http://api.sandbox.openprovider.nl:8480',
 
     //  Default: false, boolean - Set to true to allow support for premium domains
-    'OpenproviderPremium'               => false,
+    'OpenproviderPremium'               => true,
     //  Default: true,  boolean - Set to true to Require Openprovider DNS servers for DNS management
     'require_op_dns_servers'            => false,
     //  Default: '',    string -Enter TLDs split by a comma ("nl,eu,be") The module will alway try to renew TLDs in this list as soon as transfer is completed. This is useful for TLDs which don't include an automatic renewal with domain transfer. Note that this will incur a cost in your Openprovider account

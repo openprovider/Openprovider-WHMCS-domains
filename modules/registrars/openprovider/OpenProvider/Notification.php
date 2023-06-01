@@ -114,6 +114,7 @@ class Notification
      */
 	public static function log($activity, $data, $moduleLog = false)
     {
+
         /**
          * Log module call.
          *

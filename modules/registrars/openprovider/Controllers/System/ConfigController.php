@@ -52,6 +52,13 @@ class ConfigController extends BaseController
      */
     public function getConfig($params)
     {
+
+        // echo"<pre>";
+        // // print_r( $route);
+        // // echo"<br>";
+        // print_r( $params);
+        // echo"</pre>";
+        // die("dsdsdf");
         // Get the basic data.
         $configarray = $this->getConfigArray();
 

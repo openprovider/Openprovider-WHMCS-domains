@@ -28,7 +28,6 @@ spl_autoload_register(function ($className) {
         require_once (__DIR__) . DIRECTORY_SEPARATOR . $className . '.php';
     }
 });
-
 /**
  * Get the configuration.
  *
@@ -37,6 +36,7 @@ spl_autoload_register(function ($className) {
  */
 function openprovider_getConfigArray($params = array())
 {
+
     return openprovider_registrar_launch_decorator('config', $params);
 }
 
@@ -49,6 +49,7 @@ function openprovider_getConfigArray($params = array())
  */
 function openprovider_RegisterDomain($params)
 {
+
     return openprovider_registrar_launch_decorator('registerDomain', $params);
 }
 
@@ -186,6 +187,8 @@ function openprovider_RequestDelete($params)
  */
 function openprovider_RenewDomain($params)
 {
+
+
     return openprovider_registrar_launch_decorator('renewDomain', $params);
 }
 
@@ -281,6 +284,7 @@ function openprovider_Sync($params)
  */
 function openprovider_GetTldPricing(array $params)
 {
+
     return openprovider_registrar_launch_decorator('getTldPricing', $params);
 }
 
@@ -340,13 +344,15 @@ function openprovider_ResendIRTPVerificationEmail(array $params)
  */
 function openprovider_registrar_launch_decorator(string $route, $params = [], $level = 'system')
 {
+
     $modifiedParams = array_merge($params, Configuration::getParams());
-    $modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
+
+    $modifiedParams['original'] = array_merge(empty($params['original']) ? [] : $params['original'], Configuration::getParams());
+
 
     $core = openprovider_registrar_core($level);
     $launch = $core->launch();
 
     $core->launcher = openprovider_bind_required_classes($core->launcher);
-
     return $launch->output($modifiedParams, $route);
 }

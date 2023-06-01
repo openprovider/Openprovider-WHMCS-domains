@@ -88,6 +88,7 @@ class ApiV1 implements ApiInterface
         try {
             $apiClass = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_CLASS);
             $apiMethod = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_METHOD);
+           
         } catch (\Exception $e) {
             $response = $this->failedResponse($response, $e->getMessage(), $e->getCode());
             $this->log($cmd, $args, $response);
@@ -102,7 +103,7 @@ class ApiV1 implements ApiInterface
         if ($this->apiConfiguration->getToken()) {
             $service->getConfig()->setAccessToken($this->apiConfiguration->getToken());
         }
-
+    
         try {
             $requestParameters = $this->paramsCreator->createParameters($args, $service, $apiMethod);
             $reply = $service->$apiMethod(...$requestParameters);
@@ -117,11 +118,12 @@ class ApiV1 implements ApiInterface
                 $responseData['code'] ?? $e->getCode()
             );
             $this->log($cmd, $args, $response);
-
+            
             return $response;
         }
 
         $data = $this->serializer->normalize($reply->getData());
+   
         $response = $this->successResponse($response, $data);
 
         $this->log($cmd, $args, $response);

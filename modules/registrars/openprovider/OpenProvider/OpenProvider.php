@@ -33,12 +33,14 @@ class OpenProvider
 	 **/
 	public function __construct($params = null)
 	{
+
 		// Get the registrar setting
     	if($params == null)
             $params = (new Registrar())->getRegistrarData()['openprovider'];
 
 		$this->api      =   new \OpenProvider\API\API();
 		$this->api->setParams($params);
+
 	}
 
 	/**
@@ -49,6 +51,7 @@ class OpenProvider
 	 **/
 	public function domain($domain)
 	{
+
 		$domain_sld = explode('.', $domain)[0];
         $domain_tld = substr(str_replace($domain_sld, '', $domain), 1);
 
@@ -67,6 +70,7 @@ class OpenProvider
 	 **/
 	public function toggle_autorenew($domain, $opInfo)
 	{
+
 		// Check if we should auto renew or use the default settings
 	    if($domain->donotrenew == 0)
 	        $auto_renew = 'default';
@@ -98,6 +102,7 @@ class OpenProvider
      **/
     public function toggle_whois_protection($w_domain, \OpenProvider\API\Domain $domain, $opInfo)
     {
+		
         // Check if we should auto renew or use the default settings
         // Note: the settings are in reverse since WHMCS updates the table after this operation.
         if($w_domain->idprotection == 1)

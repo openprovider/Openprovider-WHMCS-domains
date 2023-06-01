@@ -29,6 +29,7 @@ class RenewDomainController extends BaseController
      */
     public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper)
     {
+
         parent::__construct($core);
 
         $this->apiHelper = $apiHelper;
@@ -37,7 +38,10 @@ class RenewDomainController extends BaseController
 
     public function renew($params)
     {
+        // die("sadd");
+
         // Prepare the renewal
+
         $this->domain->load(array(
             'name' => $params['original']['domainObj']->getSecondLevel(),
             'extension' => $params['original']['domainObj']->getTopLevel()

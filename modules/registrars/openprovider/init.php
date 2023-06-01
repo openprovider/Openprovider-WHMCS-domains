@@ -49,6 +49,7 @@ function openprovider_registrar_core($level = 'hooks')
 
 function openprovider_bind_required_classes($launcher)
 {
+
     $params = (new Registrar())->getRegistrarData()['openprovider'];
 
     $host = $params['test_mode'] == 'on' ?
@@ -98,7 +99,7 @@ function openprovider_bind_required_classes($launcher)
                 }
             );
         }
-
+        
         $expireTime = $tokenResult ? new Carbon($tokenResult->expire_at) : false;
         $isAlive = $expireTime && Carbon::now()->diffInSeconds($expireTime, false) > 0;
 
@@ -139,6 +140,7 @@ function openprovider_bind_required_classes($launcher)
         $client->getConfiguration()->setHost($host);
 
         return $client;
+      
     });
 
     $launcher->set(ApiInterface::class, function (ContainerInterface $c) use ($useApiV1) {
@@ -148,7 +150,7 @@ function openprovider_bind_required_classes($launcher)
 
         return $c->get(XmlApiAdapter::class);
     });
-
+ 
     $launcher->set(ApiHelper::class, function (ContainerInterface $c) {
         $apiClient = $c->get(ApiInterface::class);
         return new ApiHelper($apiClient);

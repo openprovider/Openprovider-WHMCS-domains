@@ -36,6 +36,7 @@ class CheckAvailabilityController  extends BaseController
         parent::__construct($core);
 
         $this->apiClient = $apiClient;
+
         $this->domain = $domain;
 
         /**
@@ -73,6 +74,8 @@ class CheckAvailabilityController  extends BaseController
         $statusResponse =  $this->apiClient->call('checkDomainRequest', [
                 "domains" => $domains
             ]);
+
+
         if (!$statusResponse->isSuccess()) {
             if ($statusResponse->getcode() == 307) {
                 // OP response: "Your domain request contains an invalid extension!"
