@@ -12,7 +12,7 @@ if (!defined("WHMCS")) {
 require_once(__DIR__ .'/init.php');
 
 openprovider_addon_launch()
-    ->hooks();
+->hooks();
 
 $core = openprovider_addon_core('admin');
 $core->launch();

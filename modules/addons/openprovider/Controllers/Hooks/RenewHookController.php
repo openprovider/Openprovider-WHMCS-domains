@@ -62,13 +62,12 @@ class RenewHookController extends BasePermissionController
     {
         // Get the domain details
         $domain = $this->capsule->table('tbldomains')
-            ->find($params['params']['domainid']);
-
+        ->find($params['params']['domainid']);
         if ($this->checkIsNotOpenprovider($domain) == false) // It is an openprovider domain. Skip this one.
         {
             return true;
         }
-
+        
         // Check if the domain is scheduled for a transfer.
         if ($this->checkScheduledTransferAtOpenprovider($domain) == true) {
             // Calculate the new +/- expiry date
