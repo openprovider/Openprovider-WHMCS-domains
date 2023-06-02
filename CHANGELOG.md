@@ -1,5 +1,9 @@
 # Changelog
 
+## v5.7.0
+- Fully compatible with PHP 8.1
+- Bug fixes and improvements
+
 ## v5.6
 
 ###### Features and improvements
