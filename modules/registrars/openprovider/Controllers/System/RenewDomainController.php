@@ -78,9 +78,13 @@ class RenewDomainController extends BaseController
 
             return [];
         }
+        
+        
 
         // We did not have a true isInRedemptionGracePeriod or isInGracePeriod. Fall back on the legacy code
         // for older WHMCS versions.
+        
+        
 
         try
         {
@@ -88,9 +92,26 @@ class RenewDomainController extends BaseController
                 $this->apiHelper->renewDomain($domainOp['id'], $period);
             } elseif ((new Carbon($domainOp['softQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
                 $this->apiHelper->restoreDomain($domainOp['id']);
+            }
+            
+//            else {
+//                // This only happens when the isInRedemptionGracePeriod was not true.
+//                throw new Exception("Domain has expired and additional costs may be applied. Please check the domain in your reseller control panel", 1);
+//            }
+
+        } catch (\Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
+        
+        try
+        {
+            if(!$domainOp['hardQuarantineExpiryDate']) {
+                $this->apiHelper->renewDomain($domainOp['id'], $period);
+            } elseif ((new Carbon($domainOp['hardQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
+                $this->apiHelper->restoreDomain($domainOp['id']);
             } else {
                 // This only happens when the isInRedemptionGracePeriod was not true.
-                throw new Exception("Domain has expired and additional costs may be applied. Please check the domain in your reseller control panel", 1);
+                throw new Exception("Domain has been deleted Please check the domain in your reseller control panel", 1);
             }
 
         } catch (\Exception $e) {
