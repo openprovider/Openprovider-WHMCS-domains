@@ -115,10 +115,22 @@ class ContactController extends BaseController
 
         if (isset($params['contactdetails'])) {
             $contactDetails = &$params['contactdetails'];
+            
+            //Fix for United Kingdom
+            foreach($contactDetails as $key => $contact)
+            {
+                if($contact['Country'] == "United Kingdom" || $contact['Country'] == "UK" )
+                {
+                    $contactDetails[$key]['Country'] = "GB";
+                }   
+            }
+            //End
             array_walk($contactDetails, function (&$contact) use ($userTag) {
                 $contact['tags'] = $userTag;
             });
         }
+        
+    
 
         try
         {

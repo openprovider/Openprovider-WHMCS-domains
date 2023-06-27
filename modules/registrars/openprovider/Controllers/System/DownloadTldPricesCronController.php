@@ -41,6 +41,7 @@ class DownloadTldPricesCronController extends BaseController
         $extensionResponse = $this->apiClient->call('searchExtensionRequest', [
             'withPrice' => true,
         ]);
+                
         if (!$extensionResponse->isSuccess()) {
             return ['error' => 'This error occurred: ' . $extensionResponse->getMessage()];
         }

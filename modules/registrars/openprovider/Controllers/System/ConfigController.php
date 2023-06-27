@@ -154,8 +154,9 @@ class ConfigController extends BaseController
     {
         $loginFailed = [
             'FriendlyName' => '<b><strong style="color:Tomato;">Login Unsuccessful:</strong></b>',
+            'Description' => "<b><strong style='color:#ff6347;'>$error</strong></b>"
         ];
-        $loginFailed['Description'] = "<b><strong style='color:#ff6347;'>$error</strong></b>";
+
         switch ($error) {
             case self::ERROR_INCORRECT_CREDENTIALS:
             case self::ERROR_NOT_SIGNED_AGREEMENT:

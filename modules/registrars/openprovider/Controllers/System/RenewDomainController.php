@@ -37,6 +37,7 @@ class RenewDomainController extends BaseController
 
     public function renew($params)
     {
+        
         // Prepare the renewal
         $this->domain->load(array(
             'name' => $params['original']['domainObj']->getSecondLevel(),

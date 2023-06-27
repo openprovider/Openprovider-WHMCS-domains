@@ -55,7 +55,7 @@ final class Message
      *
      * @return string|null
      */
-    public static function bodySummary(MessageInterface $message, $truncateAt = 120)
+    public static function bodySummary(MessageInterface $message, $truncateAt = 20000)
     {
         $body = $message->getBody();
 

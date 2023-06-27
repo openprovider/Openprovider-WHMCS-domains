@@ -75,6 +75,8 @@ class AdditionalFields
         $additionalField = [];
         foreach($this->registrarAdditionalFields as $tld => $fields)
         {
+            
+            
             $tmpRegistrarFields = [];
             // Only override TLDs that belong to this registrar.
             if(isset($this->registrarTlds[$tld]))
@@ -89,9 +91,18 @@ class AdditionalFields
                 // Remove the distributed fields.
                 if(isset($this->distAdditionalFields[$tld]))
                 {
+                    
                     // Disable the additional fields.
                     foreach($this->distAdditionalFields[$tld] as $whmcsField)
                     {
+                        
+                        if(!is_array($whmcsField))
+                        {
+                            $name = $whmcsField;
+                            $whmcsField = array();
+                            $whmcsField['Name'] = $name;
+                        }
+                        
                         // Only remove fields that are not in the Registrars field.
                         if(!isset($tmpRegistrarFields[$whmcsField['Name']]))
                         {

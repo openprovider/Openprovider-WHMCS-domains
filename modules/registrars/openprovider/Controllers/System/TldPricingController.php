@@ -32,6 +32,11 @@ Check if you downloaded the tld prices from your Openprovider live account, beca
      */
     public function get($params)
     {
+        //Fix for Importing Pricing
+        ini_set('memory_limit', '256M');
+        ini_set('max_execution_time', 0 );
+        
+        
         // Perform API call to retrieve extension information
         // A connection error should return a simple array with error key and message
         // return ['error' => 'This error occurred',];

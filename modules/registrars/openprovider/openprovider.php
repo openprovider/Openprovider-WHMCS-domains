@@ -7,6 +7,8 @@
  */
 
 use \OpenProvider\WhmcsRegistrar\src\Configuration;
+use WHMCS\Exception\Module\InvalidConfiguration;
+
 
 if (!defined("WHMCS")) {
     die("This file cannot be accessed directly");
@@ -49,7 +51,10 @@ function openprovider_getConfigArray($params = array())
  */
 function openprovider_RegisterDomain($params)
 {
+    
     return openprovider_registrar_launch_decorator('registerDomain', $params);
+    
+    
 }
 
 /**
@@ -329,6 +334,61 @@ function openprovider_ResendIRTPVerificationEmail(array $params)
     return openprovider_registrar_launch_decorator('resendIRTPVerificationEmail', $params);
 }
 
+
+
+
+ 
+function openprovider_config_validate($params) {
+    
+
+    $username = $params['Username'];
+    $password = $params['Password'];
+    $test = $params['test_mode'];
+    $ip = $_SERVER['SERVER_ADDR'];
+    
+    $valid = false;
+  
+    if($test == 'on')
+    {
+        $env = 'Sandbox';
+        $url = 'http://api.sandbox.openprovider.nl:8480/v1beta/auth/login';    
+    }
+    else
+    {
+        $env = 'Production';
+        $url = 'https://api.openprovider.eu/v1beta/auth/login';
+    }
+    
+    
+    $data = array(
+        "username" => $username,
+        "password" => $password,
+        "ip" => "0.0.0.0",
+    );
+    
+    
+    $encodedData = json_encode($data);
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt( $curl, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $encodedData);
+    $result = curl_exec($curl);
+    curl_close($curl);
+    $response = json_decode($result);
+    
+    if($response->data->token && $response->data->reseller_id)
+    {
+        $valid = true;
+    }
+    
+    if (!$valid) {
+        throw new InvalidConfiguration("Credentials are Invalid for $env Environment");
+    }
+}
+
+
 /**
  * Decorator for merge configuration params with static params from
  * \OpenProvider\WhmcsRegistrar\src\Configuration class
@@ -340,15 +400,25 @@ function openprovider_ResendIRTPVerificationEmail(array $params)
  */
 function openprovider_registrar_launch_decorator(string $route, $params = [], $level = 'system')
 {
+    
+    if($route == 'DownloadTldPricesCron')
+    {
+        $modifiedParams =  Configuration::getParams();
+        $modifiedParams['original'] = Configuration::getParams();
 
-    $modifiedParams = array_merge($params, Configuration::getParams());
+    }
+    else
+    {
+        $modifiedParams = array_merge($params, Configuration::getParams());
+        $modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
 
-    $modifiedParams['original'] = array_merge(empty($params['original']) ? [] : $params['original'], Configuration::getParams());
-
-
+        
+    }
+    
     $core = openprovider_registrar_core($level);
     $launch = $core->launch();
 
     $core->launcher = openprovider_bind_required_classes($core->launcher);
+
     return $launch->output($modifiedParams, $route);
 }

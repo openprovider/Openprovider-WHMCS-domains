@@ -86,8 +86,9 @@ class AdditionalFields
 
         include($this->path->getModulePath().'/configuration/additionalfields.php');
 
+        
         // Set the additional fields of OpenProvider
-        $this->WAdditionalFields->setRegistrarAdditionalFields($additionaldomainfields);
+        $this->WAdditionalFields->setRegistrarAdditionalFields($additionaldomainfields);       
 
         // Return the data.
         return $this->WAdditionalFields->getFilteredAdditionalFields();
@@ -110,11 +111,14 @@ class AdditionalFields
         // Prepare return data
         $foundAdditionalFields = [];
 
+        
         // Check if there are any additional fields.
         if(isset($additionalFields[$domainExtension]))
         {
             // Ignore idn script or not.
             $idn = new idna_convert();
+                        
+            
             if($params['sld'].'.'.$params['tld'] == $idn->encode($params['sld'].'.'.$params['tld']) 
                 && strpos($params['sld'].'.'.$params['tld'], 'xn--') === false)
             {
@@ -123,6 +127,9 @@ class AdditionalFields
 
             $this->ceAdditionalData->setTld($domain->extension);
 
+            
+            
+            
             /**
              * op_name                  Fieldname with OP
              * op_explode               The explode delimiter.
@@ -134,6 +141,8 @@ class AdditionalFields
             // Loop through all fields to find a decision master.
             foreach($additionalFields[$domainExtension] as $key => $field)
             {
+                
+
                 if(isset($field['op_dropdown_for_op_name']))
                 {
                     // Set the name for the dynamic field.
