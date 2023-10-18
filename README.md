@@ -1,7 +1,7 @@
 # Domain Module for WHMCS 8.6
 
 ## Not Actively Maintained
-This domain registration module is compatible with WHMCS version 8.6 and PHP 7.4. 
+This domain registration module is compatible with WHMCS versions up to 8.6 and PHP 7.4. 
 
 Currently, the module is not actively maintained by Openprovider. Pull requests will be reviewed, and potentially merged, but users are encouraged to fork and develop the current module to meet their needs.
 
