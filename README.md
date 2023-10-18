@@ -1,5 +1,11 @@
-# Domain Module for WHMCS 8+
+# Domain Module for WHMCS 8.6
 
+## Not Actively Maintained
+This domain registration module is compatible with WHMCS version 8.6 and PHP 7.4. 
+
+Currently, the module is not actively maintained by Openprovider. Pull requests will be reviewed, and potentially merged, but users are encouraged to fork and develop the current module to meet their needs.
+
+## Introduction
 The Openprovider WHMCS module integrates conveniently with your [Openprovider account](https://rcp.openprovider.eu/registration.php#/registration), allowing you to automate many domain provisioning and management tasks, such as registration, renewal, deletion, and updates to contact details.
 
 The module keeps domain expiration dates and auto renew settings synchronized between your WHMCS installation and Openprovider account, making sure the correct domains get renewed each day.
