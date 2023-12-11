@@ -400,7 +400,7 @@ function _parse_request_uri($path, array $headers)
  *
  * @deprecated get_message_body_summary will be removed in guzzlehttp/psr7:2.0. Use Message::bodySummary instead.
  */
-function get_message_body_summary(MessageInterface $message, $truncateAt = 120)
+function get_message_body_summary(MessageInterface $message, $truncateAt = 500)
 {
     return Message::bodySummary($message, $truncateAt);
 }
