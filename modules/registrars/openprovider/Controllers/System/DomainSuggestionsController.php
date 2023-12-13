@@ -60,7 +60,7 @@ class DomainSuggestionsController extends BaseController
 
         $args['sensitive'] = isset($suggestionSettings['sensitive']) && $suggestionSettings['sensitive'] == 'on';
 
-        if (isset($suggestionSettings['suggestTlds']) && count($suggestionSettings['suggestTlds']) > 0) {
+        if (isset($suggestionSettings['suggestTlds']) && !empty($suggestionSettings['suggestTlds'])) {
             $args['tlds'] = array_map(function ($tld) {
                 return mb_substr($tld, 1);
             }, explode(',', $suggestionSettings['suggestTlds']));
@@ -81,7 +81,7 @@ class DomainSuggestionsController extends BaseController
             $status = SearchResult::STATUS_NOT_REGISTERED;
             $searchResult->setStatus($status);
 
-            if($params['OpenproviderPremium'] == true && isset($item['premium'])) {
+            if ($params['OpenproviderPremium'] == true && isset($item['premium'])) {
                 $premiumPriceArgs = [];
                 $searchResult->setPremiumDomain(true);
 
