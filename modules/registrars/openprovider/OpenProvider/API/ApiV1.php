@@ -9,6 +9,9 @@ use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
+use Carbon\Carbon;
+use WHMCS\Database\Capsule;
+
 class ApiV1 implements ApiInterface
 {
     /**
@@ -57,8 +60,7 @@ class ApiV1 implements ApiInterface
         LoggerInterface $logger,
         CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter,
         \idna_convert $idn
-    )
-    {
+    ) {
         $this->camelCaseToSnakeCaseNameConverter = $camelCaseToSnakeCaseNameConverter;
         $this->logger = $logger;
         $this->serializer = new Serializer([new ObjectNormalizer()]);
@@ -108,8 +110,8 @@ class ApiV1 implements ApiInterface
             $reply = $service->$apiMethod(...$requestParameters);
         } catch (\Exception $e) {
             $responseData = $this->serializer->normalize(
-                    json_decode(substr($e->getMessage(), strpos($e->getMessage(), 'response:') + strlen('response:')))
-                ) ?? $e->getMessage();
+                json_decode(substr($e->getMessage(), strpos($e->getMessage(), 'response:') + strlen('response:')))
+            ) ?? $e->getMessage();
 
             $response = $this->failedResponse(
                 $response,
@@ -121,12 +123,63 @@ class ApiV1 implements ApiInterface
             return $response;
         }
 
+        if (isset($reply['warnings'])) {
+            $this->add_warning($reply['warnings'], $cmd);
+        }
+
         $data = $this->serializer->normalize($reply->getData());
         $response = $this->successResponse($response, $data);
-
         $this->log($cmd, $args, $response);
 
         return $response;
+    }
+
+    /**
+     * @param string $warning
+     * @param string $cmd
+     */
+    private function add_warning($warning, $cmd)
+    {
+        $title = $cmd;
+        $description = "";
+        $jsonArray = json_decode($warning, true);
+        if ($jsonArray !== null) {
+            $index = 1;
+            // Iterate through each object in the array
+            foreach ($jsonArray as $obj) {
+                // Check if 'desc' and 'data' keys exist in the object
+                // if (isset($obj['desc'])) {
+                //     $description .= $obj['desc'] . "\n";
+                // }
+                if (isset($obj['data'])) {
+                    $description .= "Warning " . $index . ": " . $obj['data'] . "\n";
+                    $index += 1;
+                }
+            }
+        }
+        $this->add_todo($title, $description);
+    }
+
+    /**
+     * Create New To-do item
+     * @param $title
+     * @param $description
+     */
+    private function add_todo($title, $description)
+    {
+        $today = Carbon::now();
+        $tomorrow = $today->addDay();
+
+        $todo = [
+            'date' => $today,
+            'title' => $title,
+            'description' => $description,
+            'admin' => 0,
+            'status' => 'Pending',
+            'duedate' => $tomorrow
+        ];
+
+        Capsule::table('tbltodolist')->insert($todo);
     }
 
     /**
