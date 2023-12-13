@@ -70,8 +70,7 @@ class DomainController extends BaseController
         ApiHelper $apiHelper,
         ApiInterface $apiClient,
         idna_convert $idn
-    )
-    {
+    ) {
         parent::__construct($core);
 
         $this->domain           = $domain;
@@ -101,8 +100,59 @@ class DomainController extends BaseController
             $domain->extension = $params['tld'];
             $domain->name      = $params['sld'];
 
-            // Prepare the nameservers
-            $nameServers = APITools::createNameserversArray($params);
+            $nameServers = array();
+            if ($params['test_mode'] == 'on') {
+                $myNameServerList = $this->apiHelper->getNameserverList();
+                for ($i = 1; $i <= 5; $i++) {
+                    $ns = $params["ns{$i}"];
+                    if (!$ns) {
+                        continue;
+                    }
+                    $nsParts = explode('/', $ns);
+                    $nsName = trim($nsParts[0]);
+                    $nsIp = empty($nsParts[1]) ? null : trim($nsParts[1]);
+
+                    //Try to get IP from $myNameServerList
+                    if (empty($nsIp) && !empty($myNameServerList)) {
+                        foreach ($myNameServerList as $myNameServer) {
+                            if ($myNameServer->name == $nsName) {
+                                $nsIp = $myNameServer->ip;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Try to get IP from gethostbyName
+                    if (empty($nsIp)) {
+                        $nsIp = gethostbyname($nsName);
+                    }
+
+                    // Try to get IP from XML APIs
+                    if (empty($nsIp)) {
+                        $api = new \OpenProvider\API\API();
+                        $api->setParams($params);
+                        $searchResult = $api->sendRequest('searchNsRequest', array(
+                            'pattern' => $nsName,
+                        ));
+
+                        if ($searchResult['total'] > 0) {
+                            $nsIp = $searchResult['results'][0]['ip'];
+                        }
+                    }
+
+                    $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
+                        'name'  =>  $nsName,
+                        'ip'    =>  $nsIp
+                    ));
+                }
+
+                if (count($nameServers) < 2) {
+                    throw new \Exception('You must enter minimum 2 nameservers');
+                }
+            } else {
+                //Prepare the nameservers - For Production APIs
+                $nameServers = APITools::createNameserversArray($params);
+            }
 
             $handle = $this->handle;
             $handle->setApiHelper($this->apiHelper);

@@ -130,7 +130,11 @@ class CommandMapping
             self::COMMAND_MAP_CLASS => ZoneServiceApi::class,
         ],
 
-        // Nameservers
+        // Nameservers        
+        'listNsRequest' => [
+            self::COMMAND_MAP_METHOD => 'listNameservers',
+            self::COMMAND_MAP_CLASS => NameserverServiceApi::class,
+        ],
         'createNsRequest' => [
             self::COMMAND_MAP_METHOD => 'createNameserver',
             self::COMMAND_MAP_CLASS => NameserverServiceApi::class,
