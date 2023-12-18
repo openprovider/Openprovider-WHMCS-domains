@@ -103,6 +103,7 @@ class DomainController extends BaseController
             $nameServers = array();
             if ($params['test_mode'] == 'on') {
                 $myNameServerList = $this->apiHelper->getNameserverList();
+                $defaultNsCount = 0;
                 for ($i = 1; $i <= 5; $i++) {
                     $ns = $params["ns{$i}"];
                     if (!$ns) {
@@ -125,30 +126,43 @@ class DomainController extends BaseController
                     // Try to get IP from gethostbyName
                     if (empty($nsIp)) {
                         $nsIp = gethostbyname($nsName);
-                    }
-
-                    // Try to get IP from XML APIs
-                    if (empty($nsIp)) {
-                        $api = new \OpenProvider\API\API();
-                        $api->setParams($params);
-                        $searchResult = $api->sendRequest('searchNsRequest', array(
-                            'pattern' => $nsName,
-                        ));
-
-                        if ($searchResult['total'] > 0) {
-                            $nsIp = $searchResult['results'][0]['ip'];
+                        if (!filter_var($nsIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+                            $nsIp = "";
                         }
                     }
 
-                    $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
-                        'name'  =>  $nsName,
-                        'ip'    =>  $nsIp
-                    ));
+                    // Change the nameserver with default OP nameservers
+                    if (empty($nsIp)) {                        
+                        if ($defaultNsCount == 0){
+                            $nsName = "ns1.openprovider.nl";
+                            $nsIp = gethostbyname($nsName);
+                            $defaultNsCount += 1;
+                        }
+                        else if($defaultNsCount == 1){
+                            $nsName = "ns2.openprovider.be";
+                            $nsIp = gethostbyname($nsName);
+                            $defaultNsCount += 1;
+                        }
+                    }
+
+                    if(!empty($nsIp) && !empty($nsName)){
+                        $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
+                            'name'  =>  $nsName,
+                            'ip'    =>  $nsIp
+                        ));
+                    }
+                }
+
+                //Show warnings if changed to default nameservers
+                if($defaultNsCount != 0){
+                    $warnHTML = '<div class="alert alert-danger"><strong>Warning!</strong><br>Some of your given nameservers are not authorized. Registered with Openprovider default nameservers..</div>';
+                    echo $warnHTML;
                 }
 
                 if (count($nameServers) < 2) {
                     throw new \Exception('You must enter minimum 2 nameservers');
                 }
+                
             } else {
                 //Prepare the nameservers - For Production APIs
                 $nameServers = APITools::createNameserversArray($params);
