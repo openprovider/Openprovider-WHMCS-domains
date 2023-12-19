@@ -123,8 +123,9 @@ class ApiV1 implements ApiInterface
             return $response;
         }
 
+
         if (isset($reply['warnings'])) {
-            $this->add_warning($reply['warnings'], $cmd);
+            $this->add_warning($reply['warnings'], $cmd, $args);
         }
 
         $data = $this->serializer->normalize($reply->getData());
@@ -135,29 +136,30 @@ class ApiV1 implements ApiInterface
     }
 
     /**
-     * @param string $warning
+     * @param array $warnings
      * @param string $cmd
      */
-    private function add_warning($warning, $cmd)
+    private function add_warning($warnings, $cmd, $args)
     {
-        $title = $cmd;
+        $title = "Warning: ";
         $description = "";
-        $jsonArray = json_decode($warning, true);
-        if ($jsonArray !== null) {
-            $index = 1;
-            // Iterate through each object in the array
-            foreach ($jsonArray as $obj) {
-                // Check if 'desc' and 'data' keys exist in the object
-                // if (isset($obj['desc'])) {
-                //     $description .= $obj['desc'] . "\n";
-                // }
-                if (isset($obj['data'])) {
-                    $description .= "Warning " . $index . ": " . $obj['data'] . "\n";
-                    $index += 1;
-                }
+        $index = 1;
+        foreach ($warnings as $warn) {
+            if ($warn['code'] != 0) {
+                $description .= "Warning " . $index . ":" . "\nCode: " . $warn["code"] . "\nDescription: " . $warn["desc"]  . "\nData: " . $warn["data"] . "\n";
             }
         }
-        $this->add_todo($title, $description);
+        $cmd = preg_replace('/(?<!\s)([A-Z])/', ' $1', $cmd); // Insert space before capital letters
+        $cmd = ucwords($cmd); // Capitalize words
+        $title = $title . $cmd . " Command.";
+        if (isset($args['domain']['name']) && isset($args['domain']['extension'])) {
+            $domainName = $args['domain']['name'];
+            $extension = $args['domain']['extension'];
+            $title = $title . " Domain: " . $domainName . "." . $extension;
+        }
+        if (!empty($description) && !empty($title)) {
+            $this->add_todo($title, $description);
+        }
     }
 
     /**
