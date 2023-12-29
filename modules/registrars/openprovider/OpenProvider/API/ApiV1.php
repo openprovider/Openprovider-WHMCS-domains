@@ -171,6 +171,22 @@ class ApiV1 implements ApiInterface
             ],
         ];
 
+        // Check if Message contains both "Invalid" and "country code" phrases
+        if (
+            strpos($response->getMessage(), "Invalid") !== false &&
+            strpos($response->getMessage(), "country code") !== false
+        ) {
+            $logInfo = [
+                'request' => $request,
+                'response' => [
+                    'code' => $response->getCode(),
+                    'message' => "Invalid country code! List of supported country codes: https://support.openprovider.eu/hc/en-us/articles/13344317042450-Supported-country-codes-for-registration",
+                    'total' => $response->getTotal(),
+                    'data' => $response->getData(),
+                ],
+            ];          
+        }
+
         $this->logger->info($cmd, $logInfo);
     }
 
