@@ -57,8 +57,7 @@ class ApiV1 implements ApiInterface
         LoggerInterface $logger,
         CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter,
         \idna_convert $idn
-    )
-    {
+    ) {
         $this->camelCaseToSnakeCaseNameConverter = $camelCaseToSnakeCaseNameConverter;
         $this->logger = $logger;
         $this->serializer = new Serializer([new ObjectNormalizer()]);
@@ -108,8 +107,8 @@ class ApiV1 implements ApiInterface
             $reply = $service->$apiMethod(...$requestParameters);
         } catch (\Exception $e) {
             $responseData = $this->serializer->normalize(
-                    json_decode(substr($e->getMessage(), strpos($e->getMessage(), 'response:') + strlen('response:')))
-                ) ?? $e->getMessage();
+                json_decode(substr($e->getMessage(), strpos($e->getMessage(), 'response:') + strlen('response:')))
+            ) ?? $e->getMessage();
 
             $response = $this->failedResponse(
                 $response,
@@ -171,6 +170,18 @@ class ApiV1 implements ApiInterface
             ],
         ];
 
+        if ($response->getTotal() > 1000) {
+            $logInfo = [
+                'request' => $request,
+                'response' => [
+                    'code' => $response->getCode(),
+                    'message' => "data is not displayed in the log due to the total being greater than 1000.",
+                    'total' => $response->getTotal(),
+                    'data' => "",
+                ],
+            ];
+        }
+        
         $this->logger->info($cmd, $logInfo);
     }
 
