@@ -170,6 +170,7 @@ class ApiV1 implements ApiInterface
             ],
         ];
 
+        // Avoid data part of the log to be too big.
         if ($response->getTotal() > 1000) {
             $logInfo = [
                 'request' => $request,

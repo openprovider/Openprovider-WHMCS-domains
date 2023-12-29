@@ -16,10 +16,36 @@ class TldPriceCache
      */
     public function has()
     {
-        if(!@is_file($this->getLocation()))
+        $filePath = $this->getLocation();
+
+        //Download tld_cache.php if it doesn't exist or if it's older than 24 hours.
+        if (file_exists($filePath)) {
+            $timePeriodInMinutes = 1440; //Time period = 24 hours
+            $lastModifiedTime = filemtime($filePath); // Get the file's last modified time
+
+            $currentTime = time();
+            $diffMinutes = ($currentTime - $lastModifiedTime) / 60;
+            if ($diffMinutes > $timePeriodInMinutes) {
+                // Download tld_cache.php.
+                include('BaseCron.php');
+                $core = openprovider_registrar_core('system');
+                $launch = $core->launch();
+                $core->launcher = openprovider_bind_required_classes($core->launcher);
+                openprovider_registrar_launch_decorator('DownloadTldPricesCron');
+            }
+        } else {
+            // Download tld_cache.php.
+            include('BaseCron.php');
+            $core = openprovider_registrar_core('system');
+            $launch = $core->launch();
+            $core->launcher = openprovider_bind_required_classes($core->launcher);
+            openprovider_registrar_launch_decorator('DownloadTldPricesCron');
+        }
+
+        if (!@is_file($this->getLocation()))
             return false;
 
-        if(empty($this->get()))
+        if (empty($this->get()))
             return false;
 
         return true;
@@ -47,7 +73,7 @@ class TldPriceCache
         $json = json_encode($content);
         $file_content = "<?php exit('ACCESS DENIED');?>\n" . $json;
 
-        if(!file_put_contents($this->getLocation(), $file_content))
+        if (!file_put_contents($this->getLocation(), $file_content))
             throw new \Exception('Unable to write to ' . $this->getLocation());
 
         return true;
