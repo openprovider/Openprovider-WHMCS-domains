@@ -195,7 +195,7 @@ class ConfigController extends BaseController
 
         if ($isAlive) {
             //Check token is still valid for RCP API server
-            $checkingTokenRequest = $this->checkRequest();
+            $checkingTokenRequest = $this->openprovider_config_validate();
             if ($checkingTokenRequest->isSuccess()) {
                 return $configarray;
             } else if (
@@ -243,7 +243,7 @@ class ConfigController extends BaseController
      * Check token validity by API call
      * @return ResponseInterface
      */
-    private function checkRequest(): ResponseInterface
+    private function openprovider_config_validate(): ResponseInterface
     {
         if (Cache::has('op_check_request')) {
             return Cache::get('op_check_request');
