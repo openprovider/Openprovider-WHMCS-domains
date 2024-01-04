@@ -195,8 +195,9 @@ class ConfigController extends BaseController
 
         if ($isAlive) {
             //Check token is still valid for RCP API server
-            $checkingTokenRequest = $this->openprovider_config_validate();
+            $checkingTokenRequest = $this->checkRequest();
             if ($checkingTokenRequest->isSuccess()) {
+                Cache::delete('op_auth_generate');
                 return $configarray;
             } else if (
                 $checkingTokenRequest->getCode() == OpenproviderErrorType::ResellerNotHaveAuthority ||
@@ -211,29 +212,35 @@ class ConfigController extends BaseController
         // if token doesn't valid (expired or changed) we try to get it from Openprovider
         $this->apiClient->getConfiguration()->setHost($differentHost);
 
-        $reply = $this->apiClient->call('generateAuthTokenRequest', [
-            'username' => $params['Username'],
-            'password' => $params['Password']
-        ]);
+        if (!Cache::has('op_auth_generate')) {
+            
+            $reply = $this->apiClient->call('generateAuthTokenRequest', [
+                'username' => $params['Username'],
+                'password' => $params['Password']
+            ]);
 
-        $replyData = $reply->getData();
+            Cache::set('op_auth_generate', $reply);
 
-        if (isset($replyData['token']) && $replyData['token']) {
-            $token = $replyData['token'];
-            if ($token) {
-                Capsule::table('reseller_tokens')->where('username', $params['Username'])->delete();
-                Capsule::table('reseller_tokens')->insert([
-                    'username' => $params['Username'],
-                    'token' => $token,
-                    'expire_at' => Carbon::now()->addDays(AUTH_TOKEN_EXPIRATION_LIFE_TIME)->toDateTimeString(),
-                    'created_at' => Carbon::now()->toDateTimeString()
-                ]);
-                $this->session->getMetadataBag()->stampNew(SESSION_EXPIRATION_LIFE_TIME);
-                $this->apiClient->getConfiguration()->setToken($token);
-                return $configarray;
+            $replyData = $reply->getData();
+
+            if (isset($replyData['token']) && $replyData['token']) {
+                $token = $replyData['token'];
+                if ($token) {
+                    Capsule::table('reseller_tokens')->where('username', $params['Username'])->delete();
+
+                    Capsule::table('reseller_tokens')->insert([
+                        'username' => $params['Username'],
+                        'token' => $token,
+                        'expire_at' => Carbon::now()->addDays(AUTH_TOKEN_EXPIRATION_LIFE_TIME)->toDateTimeString(),
+                        'created_at' => Carbon::now()->toDateTimeString()
+                    ]);
+                    $this->session->getMetadataBag()->stampNew(SESSION_EXPIRATION_LIFE_TIME);
+                    $this->apiClient->getConfiguration()->setToken($token);
+                    return $configarray;
+                }
+
+                return $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
             }
-
-            return $this->generateLoginError($configarray, self::ERROR_INCORRECT_INVIRONMENT);
         }
 
         return $this->generateLoginError($configarray, self::ERROR_INCORRECT_CREDENTIALS);
@@ -243,12 +250,12 @@ class ConfigController extends BaseController
      * Check token validity by API call
      * @return ResponseInterface
      */
-    private function openprovider_config_validate(): ResponseInterface
+    private function checkRequest(): ResponseInterface
     {
+
         if (Cache::has('op_check_request')) {
             return Cache::get('op_check_request');
         }
-
         $args = [];
         if ($this->apiClient->getConfiguration()->getHost() == Configuration::get('api_url')) {
             $commandToCheckAccess = 'searchPromoMessageRequest';
@@ -258,6 +265,7 @@ class ConfigController extends BaseController
         }
 
         $data = $this->apiClient->call($commandToCheckAccess, $args);
+
         return Cache::set('op_check_request', $data);
     }
 }
