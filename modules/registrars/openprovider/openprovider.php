@@ -341,7 +341,12 @@ function openprovider_ResendIRTPVerificationEmail(array $params)
 function openprovider_registrar_launch_decorator(string $route, $params = [], $level = 'system')
 {
     $modifiedParams = array_merge($params, Configuration::getParams());
-    $modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
+    //$modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
+    if (isset($params['original'])) {
+        $modifiedParams['original'] = array_merge($params['original'], Configuration::getParams());
+    } else {
+        $modifiedParams['original'] = Configuration::getParams();
+    }
 
     $core = openprovider_registrar_core($level);
     $launch = $core->launch();
