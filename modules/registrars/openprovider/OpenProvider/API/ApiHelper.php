@@ -5,6 +5,7 @@ namespace OpenProvider\API;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
+use OpenProvider\WhmcsHelpers\Domain as DomainWHMCS;
 
 class ApiHelper
 {
@@ -41,10 +42,26 @@ class ApiHelper
         ];
 
         $args = array_merge($args, $additionalArgs);
+        $domainName = $domain->name . "." . $domain->extension;
         $domain = $this->buildResponse($this->apiClient->call('searchDomainRequest', $args));
 
         if (!is_null($domain['results'][0])) {
             return $domain['results'][0];
+        }
+
+        // Update status in WHMCS DB as Cancelled if domain does not exist in given OP account
+        $domainId = DomainWHMCS::getDomainId($domainName);
+        if($domainId >= 0)
+        {
+            $command = 'UpdateClientDomain';
+            $postData = array(
+                'domainid' => $domainId,
+                'status' => 'Cancelled',
+            );
+            //$adminUsername = 'ADMIN_USERNAME'; // Optional for WHMCS 7.2 and later
+
+            $results = localAPI($command, $postData);
+            logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':'Cancelled'}",$results, null, null);
         }
 
         throw new \Exception('Domain does not exist in Openprovider!');
