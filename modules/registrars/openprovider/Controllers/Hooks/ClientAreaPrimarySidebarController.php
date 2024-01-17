@@ -62,7 +62,11 @@ jQuery( document ).ready(function() {
 
     private function addDNSSECMenuItem($primarySidebar)
     {
-        if(!file_exists($GLOBALS['whmcsAppConfig']->getRootDir() . self::DNSSEC_PAGE_NAME)){
+        // Check if dnssec.php file exists in the root directory
+        if(
+            !file_exists($GLOBALS['whmcsAppConfig']->getRootDir() . self::DNSSEC_PAGE_NAME) ||
+            empty(file_get_contents($GLOBALS['whmcsAppConfig']->getRootDir() . self::DNSSEC_PAGE_NAME))
+        ){
             $source_location = $GLOBALS['whmcsAppConfig']->getRootDir()."/modules/addons/openprovider/custom-pages" . self::DNSSEC_PAGE_NAME;
             $destination_location = $GLOBALS['whmcsAppConfig']->getRootDir() . self::DNSSEC_PAGE_NAME;
             // Attempt to copy dnssec.php file into the root file
