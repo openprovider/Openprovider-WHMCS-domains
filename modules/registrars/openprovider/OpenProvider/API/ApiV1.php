@@ -123,9 +123,8 @@ class ApiV1 implements ApiInterface
             return $response;
         }
 
-
         if (isset($reply['warnings'])) {
-            $this->add_warning($reply['warnings'], $cmd, $args);
+            $this->addWarning($reply['warnings'], $cmd, $args);
         }
 
         $data = $this->serializer->normalize($reply->getData());
@@ -138,27 +137,32 @@ class ApiV1 implements ApiInterface
     /**
      * @param array $warnings
      * @param string $cmd
+     * @param array $args
      */
-    private function add_warning($warnings, $cmd, $args)
+    private function addWarning($warnings, $cmd, $args)
     {
         $title = "Warning: ";
+        $cmd = preg_replace('/(?<!\s)([A-Z])/', ' $1', $cmd); // Insert space before capital letters
+        $cmd = ucwords($cmd); // Capitalize words
+        $title = "{$title}:{$cmd} Command.";
+
+        if (isset($args['domain'])) {
+            $domainName = $args['domain']['name'] ?? null;
+            $extension = $args['domain']['extension'] ?? null;
+            $title = "{$title} Domain: {$domainName}.{$extension}";
+        }
+
         $description = "";
         $index = 1;
         foreach ($warnings as $warn) {
             if ($warn['code'] != 0) {
-                $description .= "Warning " . $index . ":" . "\nCode: " . $warn["code"] . "\nDescription: " . $warn["desc"]  . "\nData: " . $warn["data"] . "\n";
+                $description .= "Warning {$index}:\nCode: {$warn["code"]} \nDescription: {$warn["desc"]} \nData: {$warn["data"]}\n";
+                $index++;
             }
         }
-        $cmd = preg_replace('/(?<!\s)([A-Z])/', ' $1', $cmd); // Insert space before capital letters
-        $cmd = ucwords($cmd); // Capitalize words
-        $title = $title . $cmd . " Command.";
-        if (isset($args['domain']['name']) && isset($args['domain']['extension'])) {
-            $domainName = $args['domain']['name'];
-            $extension = $args['domain']['extension'];
-            $title = $title . " Domain: " . $domainName . "." . $extension;
-        }
+
         if (!empty($description) && !empty($title)) {
-            $this->add_todo($title, $description);
+            $this->addToDo($title, $description);
         }
     }
 
@@ -167,18 +171,16 @@ class ApiV1 implements ApiInterface
      * @param $title
      * @param $description
      */
-    private function add_todo($title, $description)
+    private function addToDo($title, $description)
     {
         $today = Carbon::now();
-        $tomorrow = $today->addDay();
-
         $todo = [
-            'date' => $today,
+            'date' => Carbon::now(),
             'title' => $title,
             'description' => $description,
             'admin' => 0,
             'status' => 'Pending',
-            'duedate' => $tomorrow
+            'duedate' => $today->addDay()
         ];
 
         Capsule::table('tbltodolist')->insert($todo);
