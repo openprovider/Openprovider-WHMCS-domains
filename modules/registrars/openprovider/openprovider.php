@@ -338,7 +338,6 @@ function openprovider_config_validate($params)
     $testMode = $params['test_mode'];
     $resourcePath = '/v1beta/auth/login'; //Resource path to login API
 
-    $valid = false;
     $baseUrl = Configuration::get('api_url');
     $env = 'Production';
 
@@ -365,10 +364,7 @@ function openprovider_config_validate($params)
     $result = curl_exec($curl);
     curl_close($curl);
     $response = json_decode($result);
-    if ($response->data->token && $response->data->reseller_id) {
-        $valid = true;
-    }
-    if (!$valid) {
+    if (!$response->data->token || !$response->data->reseller_id) {
         throw new InvalidConfiguration("Credentials are Invalid for $env Environment");
     }
 }
