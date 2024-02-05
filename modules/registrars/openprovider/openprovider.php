@@ -335,26 +335,25 @@ function openprovider_config_validate($params)
 {
     $username = $params['Username'];
     $password = $params['Password'];
-    $test = $params['test_mode'];
-    $ip = $_SERVER['SERVER_ADDR'];
+    $testMode = $params['test_mode'];
+    $resourcePath = '/v1beta/auth/login'; //Resource path to login API
 
     $valid = false;
+    $baseUrl = Configuration::get('api_url');
+    $env = 'Production';
 
-    if ($test == 'on') {
+    if ($testMode == 'on') {
         $env = 'Sandbox';
-        $url = 'http://api.sandbox.openprovider.nl:8480/v1beta/auth/login';
-    } else {
-        $env = 'Production';
-        $url = 'https://api.openprovider.eu/v1beta/auth/login';
+        $baseUrl = Configuration::get('api_url_cte');
     }
 
+    $url = "{$baseUrl}{$resourcePath}"; 
 
     $data = array(
         "username" => $username,
         "password" => $password,
         "ip" => "0.0.0.0",
     );
-
 
     $encodedData = json_encode($data);
     $curl = curl_init($url);
