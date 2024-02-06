@@ -60,7 +60,7 @@ class DomainSuggestionsController extends BaseController
 
         $args['sensitive'] = isset($suggestionSettings['sensitive']) && $suggestionSettings['sensitive'] == 'on';
 
-        if (isset($suggestionSettings['suggestTlds']) && !empty($suggestionSettings['suggestTlds'])) {
+        if (!empty($suggestionSettings['suggestTlds'])) {
             $args['tlds'] = array_map(function ($tld) {
                 return mb_substr($tld, 1);
             }, explode(',', $suggestionSettings['suggestTlds']));
