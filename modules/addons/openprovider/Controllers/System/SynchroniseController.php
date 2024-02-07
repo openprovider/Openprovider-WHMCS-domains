@@ -87,6 +87,7 @@ class SynchroniseController extends BaseController
 
         if(empty($openprovider_scheduled_transfers))
         {
+            echo "No domains scheduled for transfers at Openprovider.\n";
             $this->printDebug('No domains scheduled for transfers at Openprovider.');
             return;
         }
@@ -118,10 +119,14 @@ class SynchroniseController extends BaseController
 
         $found_domains = $this->openProvider->api->searchDomain($filters)['results'];
 
-        if(!is_null($found_domains) && count($found_domains) == 1000) {
-            $new_offset = $offset + $limit;
-            $found_domains = $found_domains + $this->getOpenproviderScheduledTransfers($new_offset, $limit);
+        if(!is_array($found_domains)){
+            return $found_domains;
         }
+
+        if (!is_null($found_domains) && count($found_domains) == 1000) {
+            $new_offset = $offset + $limit;
+            $found_domains = array_merge($found_domains, $this->getOpenproviderScheduledTransfers($new_offset, $limit));
+        } 
 
         return $found_domains;
     }
@@ -257,6 +262,7 @@ New expiry date: ' . $scheduled_domain_renewal->new_expiry_date;
 
         if(count($scheduled_domain_transfers) == 0)
         {
+            echo "Import Completed.\n";
             $this->printDebug('Done');
             // Nothing was found.
             return true;
