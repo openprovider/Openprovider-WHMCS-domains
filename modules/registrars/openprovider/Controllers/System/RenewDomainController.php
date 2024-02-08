@@ -53,11 +53,9 @@ class RenewDomainController extends BaseController
         }
 
         // If isInGracePeriod is true, renew the domain.
-        if(isset($params['isInGracePeriod']) && $params['isInGracePeriod'] == true)
-        {
-            try
-            {
-                $this->apiHelper->renewDomain($domainOp['id'], $period);
+        if (isset($params['isInGracePeriod']) && $params['isInGracePeriod'] == true) {
+            try {
+                $this->apiHelper->restoreDomain($domainOp['id']);
             } catch (\Exception $e) {
                 return ['error' => $e->getMessage()];
             }
@@ -66,10 +64,8 @@ class RenewDomainController extends BaseController
         }
 
         // If isInRedemptionGracePeriod is true, restore the domain.
-        if(isset($params['isInRedemptionGracePeriod']) && $params['isInRedemptionGracePeriod'] == true)
-        {
-            try
-            {
+        if (isset($params['isInRedemptionGracePeriod']) && $params['isInRedemptionGracePeriod'] == true) {
+            try {
                 $this->apiHelper->restoreDomain($domainOp['id']);
             } catch (\Exception $e) {
                 return ['error' => $e->getMessage()];
@@ -81,9 +77,8 @@ class RenewDomainController extends BaseController
         // We did not have a true isInRedemptionGracePeriod or isInGracePeriod. Fall back on the legacy code
         // for older WHMCS versions.
 
-        try
-        {
-            if(!$domainOp['softQuarantineExpiryDate']) {
+        try {
+            if (!$domainOp['softQuarantineExpiryDate']) {
                 $this->apiHelper->renewDomain($domainOp['id'], $period);
             } elseif ((new Carbon($domainOp['softQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
                 $this->apiHelper->restoreDomain($domainOp['id']);
@@ -91,7 +86,6 @@ class RenewDomainController extends BaseController
                 // This only happens when the isInRedemptionGracePeriod was not true.
                 throw new Exception("Domain has expired and additional costs may be applied. Please check the domain in your reseller control panel", 1);
             }
-
         } catch (\Exception $e) {
             return ['error' => $e->getMessage()];
         }
