@@ -4,6 +4,7 @@ namespace OpenProvider\WhmcsRegistrar\src;
 
 use Exception;
 
+
 /**
  * Class TldPriceCache
  * @package OpenProvider\WhmcsRegistrar
@@ -14,32 +15,21 @@ class TldPriceCache
      * Check if the file exists.
      * @return bool
      */
-    public function has()
+    public function has($params)
     {
         $filePath = $this->getLocation();
+        $timePeriodInMinutes = 1440; // 24 hours
 
-        //Download tld_cache.php if it doesn't exist or if it's older than 24 hours.
         if (file_exists($filePath)) {
-            $timePeriodInMinutes = 1440; //Time period = 24 hours
-            $lastModifiedTime = filemtime($filePath); // Get the file's last modified time
-
+            $lastModifiedTime = filemtime($filePath);
             $currentTime = time();
             $diffMinutes = ($currentTime - $lastModifiedTime) / 60;
+
             if ($diffMinutes > $timePeriodInMinutes) {
-                // Download tld_cache.php.
-                include('BaseCron.php');
-                $core = openprovider_registrar_core('system');
-                $launch = $core->launch();
-                $core->launcher = openprovider_bind_required_classes($core->launcher);
-                openprovider_registrar_launch_decorator('DownloadTldPricesCron');
+                $this->downloadTldCache($params);
             }
         } else {
-            // Download tld_cache.php.
-            include('BaseCron.php');
-            $core = openprovider_registrar_core('system');
-            $launch = $core->launch();
-            $core->launcher = openprovider_bind_required_classes($core->launcher);
-            openprovider_registrar_launch_decorator('DownloadTldPricesCron');
+            $this->downloadTldCache($params);
         }
 
         if (!@is_file($this->getLocation()))
@@ -49,6 +39,17 @@ class TldPriceCache
             return false;
 
         return true;
+    }
+
+    /**
+     * Download the tld_cache.php file.
+     */
+    protected function downloadTldCache($params)
+    {
+        $api = new \OpenProvider\API\API();
+        $api->setParams($params);
+        $extensionResponse = $api->getTldsAndPricing();
+        $this->write($extensionResponse);
     }
 
     /**
@@ -73,8 +74,23 @@ class TldPriceCache
         $json = json_encode($content);
         $file_content = "<?php exit('ACCESS DENIED');?>\n" . $json;
 
-        if (!file_put_contents($this->getLocation(), $file_content))
-            throw new \Exception('Unable to write to ' . $this->getLocation());
+        // if (!file_put_contents($this->getLocation(), $file_content))
+        //     throw new \Exception('Unable to write to ' . $this->getLocation());
+
+        try {
+            $fp = fopen($this->getLocation(),'w');
+            if($fp === false){
+                $errMsg = 'ERROR: Error occurred while writing the file. Unable to write to ' . $this->getLocation();
+                logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);
+                throw new \Exception($errMsg);
+            }
+            fwrite($fp,$file_content);
+            fclose($fp);
+        } catch (\Exception $e) {
+            $errMsg = 'ERROR: Error occurred while writing the file. Unable to write to ' . $this->getLocation();
+            logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);
+            throw new \Exception($errMsg);    
+        }       
 
         return true;
     }
@@ -89,3 +105,4 @@ class TldPriceCache
         return $location;
     }
 }
+
