@@ -119,6 +119,7 @@ class SynchroniseController extends BaseController
 
         $found_domains = $this->openProvider->api->searchDomain($filters)['results'];
 
+        //If reseller does not have scheduled transferring domains, $found_domains would be an empty string.
         if(!is_array($found_domains)){
             return $found_domains;
         }
