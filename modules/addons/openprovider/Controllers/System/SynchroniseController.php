@@ -87,7 +87,6 @@ class SynchroniseController extends BaseController
 
         if(empty($openprovider_scheduled_transfers))
         {
-            echo "No domains scheduled for transfers at Openprovider.\n";
             $this->printDebug('No domains scheduled for transfers at Openprovider.');
             return;
         }
@@ -263,7 +262,6 @@ New expiry date: ' . $scheduled_domain_renewal->new_expiry_date;
 
         if(count($scheduled_domain_transfers) == 0)
         {
-            echo "Import Completed.\n";
             $this->printDebug('Done');
             // Nothing was found.
             return true;
