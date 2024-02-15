@@ -173,8 +173,7 @@ class ApiV1 implements ApiInterface
 
         // Check if Message contains both "Invalid" and "country code" phrases
         if (
-            strpos($response->getMessage(), "Invalid") !== false &&
-            strpos($response->getMessage(), "country code") !== false
+            strpos($response->getMessage(), "Invalid country code") !== false
         ) {
             $logInfo = [
                 'request' => $request,
