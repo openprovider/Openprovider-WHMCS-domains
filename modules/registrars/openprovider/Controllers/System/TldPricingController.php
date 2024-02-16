@@ -72,7 +72,7 @@ Check if you downloaded the tld prices from your Openprovider live account, beca
         }catch(\Exception $e){
             $errMsg = "ERROR: Importing pricing failed. Unable to set memory limit and max execution time for importing pricing. Please increase the memory limit and max execution time in your WHMCS installation.";
             logModuleCall('openprovider', 'insufficient_memory_issue', null, $errMsg, null, null);
-            throw new \Exception('If this fails, it is likely that your WHMCS installation does not support a long execution time and maximum memory limit. <a href="https://github.com/openprovider/OP-WHMCS7/blob/master/docs/TLD_Pricing_sync_Utility.md" target="_blank">Check the manual to run the cron command instead</a>.');
+            throw new \Exception("Error occurred importing TLD prices automatically. The script needs memory_limit=>256M and max_execution_time=>300 to automatically import TLD prices. Please increase the PHP 'memory_limit' and 'max_execution_time' for your WHMCS installation and re-try. Verify values from: Utilities > System > PHP Info");
         }
         
 

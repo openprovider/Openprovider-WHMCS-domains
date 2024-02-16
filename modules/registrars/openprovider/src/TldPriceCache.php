@@ -80,14 +80,14 @@ class TldPriceCache
         try {
             $fp = fopen($this->getLocation(),'w');
             if($fp === false){
-                $errMsg = 'ERROR: Error occurred while writing the file. Unable to write to ' . $this->getLocation();
+                $errMsg = "ERROR: Error occurred while writing the file. Unable to write to {$this->getLocation()}. Please review file/folder permissions and ensure fopen(), fwrite() functions are allowed";
                 logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);
-                throw new \Exception($errMsg);
+                throw new \Exception($errMsg);   
             }
             fwrite($fp,$file_content);
             fclose($fp);
         } catch (\Exception $e) {
-            $errMsg = 'ERROR: Error occurred while writing the file. Unable to write to ' . $this->getLocation();
+            $errMsg = "ERROR: Error occurred while writing the file. Unable to write to {$this->getLocation()}. Please review file/folder permissions and ensure fopen(), fwrite() functions are allowed";
             logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);
             throw new \Exception($errMsg);    
         }       
