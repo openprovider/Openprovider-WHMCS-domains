@@ -1,6 +1,8 @@
 # Domain Module for WHMCS 8.x
 
-**Please note that this is a beta version of the Openprovider domain registrar module (compatible with PHP 8.1 and WHMCS 8.8.0, latest stable release) which is still undergoing final testing before its official release. If you notice any bugs or lack of functionality or
+**Please note that this is a beta version of the Openprovider domain registrar module (compatible with PHP 8.1 and WHMCS 8.8.0, latest stable release) which is still undergoing final testing before its official release.**
+
+**If you notice any bugs or lack of functionality or
 other problems, please report it to [Openprovider Support team](https://support.openprovider.eu/hc/en-us/articles/360001674667-Contact-Openprovider-Support) immediately with all details (reseller_id, error details, screenshots, WHMCS, PHP version details, etc.) so that we can rectify issues accordingly. Your help in this regard is greatly appreciated!** 
 
 ## Introduction
@@ -133,9 +135,15 @@ Various options exist for managing domain renewals. A detailed explanation of yo
 
 ### Troubleshooting
 
-If there are any connectivity issues with Openprovider, or domain operations from WHMCS are not working/showing errors, the first troubleshooting step should be to enable module logging, reproduce the issue/error and review the System Module Debug Log. Navigate to **Configuration > System Logs > Module Log** (prior to WHMCS 8.0, **Utilities > Logs**)​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved. Please refer to WHMCS documentations: [Troubleshooting Module Problems](https://docs.whmcs.com/Troubleshooting_Module_Problems) and [System Logs](https://docs.whmcs.com/System_Logs)
+If there are any connectivity issues with Openprovider, or domain operations from WHMCS are not working/showing errors, the first troubleshooting step should be to enable module logging, reproduce the issue/error and review the System Module Debug Log. 
+
+Navigate to **Configuration > System Logs > Module Log** (prior to WHMCS 8.0, **Utilities > Logs**)​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved. 
 
 ![alt text](https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/0769a7bc-ebbe-4724-b2a5-b99182a127f5 "Troubleshooting")
+
+Please refer to WHMCS documentations: [Troubleshooting Module Problems](https://docs.whmcs.com/Troubleshooting_Module_Problems) and [System Logs](https://docs.whmcs.com/System_Logs)
+
+Important: Only enable module logging for troubleshooting or testing purposes. At all other times, make certain that you set Module Logging to Off.
 
 ### FAQ
 
