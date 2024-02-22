@@ -1,26 +1,28 @@
-# Domain Module for WHMCS 8.6
+# Domain Module for WHMCS 8.x
 
-## Not Actively Maintained
-This domain registration module is compatible with WHMCS versions up to 8.6 and PHP 7.4. 
-
-Currently, the module is not actively maintained by Openprovider. Pull requests will be reviewed, and potentially merged, but users are encouraged to fork and develop the current module to meet their needs.
+**Please note that this is a beta version of the Openprovider domain registrar module (compatible with PHP 8.1 and WHMCS 8.8.0, latest stable release) which is still undergoing final testing before its official release. If you notice any bugs or lack of functionality or
+other problems, please report it to [Openprovider Support team](https://support.openprovider.eu/hc/en-us/articles/360001674667-Contact-Openprovider-Support) immediately with all details (reseller_id, error details, screenshots, WHMCS, PHP version details, etc.) so that we can rectify issues accordingly. Your help in this regard is greatly appreciated!** 
 
 ## Introduction
-The Openprovider WHMCS module integrates conveniently with your [Openprovider account](https://rcp.openprovider.eu/registration.php#/registration), allowing you to automate many domain provisioning and management tasks, such as registration, renewal, deletion, and updates to contact details.
+The Openprovider WHMCS module integrates conveniently with your [Openprovider account](https://cp.openprovider.eu/signup), allowing you to automate domain provisioning and management tasks, such as registration, renewal, deletion, updates to contact details, etc.
 
-The module keeps domain expiration dates and auto renew settings synchronized between your WHMCS installation and Openprovider account, making sure the correct domains get renewed each day.
+The module keeps domain expiration dates, status and auto renew settings synchronized (on all Pending Transfer, Pending Registration, and Active status domains) between your WHMCS installation and Openprovider account, making sure the correct domains get renewed each day.
 
 Additionally, the module allows you to use the Openprovider API to check for domain availability, increasing performance over the default domain availability check. 
 
 Features
 
-- Domain registrations and transfers
+- Domain registrations, renewals and transfers
 - Domain updates
+- TLD Price Sync
 - Domain availability lookup service
 - Domain name spinning service
-- Extended Synchronization of domain data
+- Domain Sync using WHMCS native cron
 - Domain status synchronization reports
 - Renew domains upon transfer completion
+- DNSSEC management
+- DNS management (Openprovider Standard DNS)
+- Nameserver management (for domains registered through Openprovider)
 
 
 
@@ -40,11 +42,10 @@ if (function_exists('openprovider_additional_fields'))
 - [Optional] Upload `<Module directory>/modules/addons/openprovider` to `<WHMCS directory>/modules/addons`
 ## Basic Configurations
 
-- Navigate to **Configuration >> System Settings >> Domain Registrars** and activate Openprovider. 
+- Navigate to **Configuration >> System Settings >> Domain Registrars** and activate Openprovider module. 
+<img src="https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/961562e4-7ea1-4caa-9b25-038cf9e2dfee" style="zoom: 40%;" />
 
-![Screenshot_20210203_174612](docs/img/installation_guide.png)
-
-1. Enter the credentials for an API user. Ensure API access is enabled in the Openprovier control panel for the credentials you are using.
+1. Enter API credentials (username and password, not hash) of your user. Ensure API access is enabled in the Openprovier control panel for the credentials you are using. Please refer to [this KB article](https://support.openprovider.eu/hc/en-us/articles/360015453220-How-to-enable-API-access) if API is not enabled already.
 2. Click **Save**
 3. Navigate to **Configuration >> System Settings >> Domain Pricing** and select Openprovider as registrar for the TLD which you want to sell via Openprovider
    ![Screenshot_20210203_180350](docs/img/select_TLD_registrar.png)
@@ -57,20 +58,23 @@ That's all you need to do to get started selling domains from Openprovider! Addi
 
 
 
-# Optional and Advanced configurations
+# Advanced configurations
 
-### Import prices
+### Import Domain prices
 
 - [Import and sync TLD prices from Openprovider](docs/TLD_Pricing_sync_Utility.md)  
 
 ### Lookup provider and domain name spinning
 
-- Click "change" to Choose Openprovider as the lookup provider
-![Screenshot_20210203_180725](docs/img/lookup_provider.png) <img src="docs/img/lookup_provider2.png" alt="Screenshot_20210203_181056" style="zoom: 50%;" />
+- Navigate to **Configuration > System Settings > Domain Pricing** or, prior to WHMCS 8.0, **Setup > Products/Services > Domain Pricing**
+- Under **Lookup Provider** Click **Change** to Choose Openprovider as the lookup provider
+<img width="400" alt="image" src="https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/026a1002-1214-4318-8341-18ce354e1607">
+
+<img src="docs/img/lookup_provider2.png" alt="Screenshot_20210203_181056" style="zoom: 40%;" />
 
 - Choose "configure" to select namespinning options
 
-### Enable premium domains
+### Enable premium domains (optional)
 
 First make sure that the currency that you are using to pay Openprovider is configured in **Configuration >> System Settings >> Currencies (prior to WHMCS 8.0, Setup >> Payments >> Currencies)** and click on **Update Exchange Rate**. Otherwise WHMCS will not use premium fee correctly, potentially meaning that your client will pay significantly less for the domain.
 
@@ -78,14 +82,6 @@ First make sure that the currency that you are using to pay Openprovider is conf
 2. Configure premium pricing and margins
 3. In the Advanced configuration file of the module ( `/modules/registrars/openprovider/configuration/advanced-module-configurations.php`) find the parameter "OpenproviderPremium" and set to **true**
 
-### Start selling Premium DNS service
-
-Openprovider’s premium DNS leverages Sectigo’s advanced DNS infrastructure to provide a single, integrated and easy to adopt solution which offers a 99.99% Uptime Guarantee and near real-time updates, features DDoS protection and blazing fast resolution. While our standard DNS service is sufficient for users who don’t have any special needs when it comes to DNS resolution, the premium DNS service can be an excellent service to your hosting services portfolio.
-
-- [Download the premium dns module](https://github.com/openprovider/openprovider-whmcs-premiumDNS/) from GitHub.
-- Copy the contents of `/modules/servers/openproviderpremiumdns` to `<your-WHMCS-directory>/modules/servers/openproviderpremiumdns`
-- Set up a product with the Openprovider-premiumDNS module (make sure to require a domain) and start selling. [See here for detailed setup instructions.](docs/premium_dns_product_setup.md) 
-- Note that there is no test environment and records created with the premium DNS module will be billed to your Openprovider account.
 
 ### Allow additional DNS records
 
@@ -137,13 +133,13 @@ Various options exist for managing domain renewals. A detailed explanation of yo
 
 ### Troubleshooting
 
-If there are any connectivity issues with Openprovider, or API commands are not working for some reason, the first troubleshooting step should be to look at the API logs. Navigate to **Utilities > Logs > Module Logs** ​or `<WHMCS directory>/admin/systemmodulelog.php`​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved.
+If there are any connectivity issues with Openprovider, or domain operations from WHMCS are not working/showing errors, the first troubleshooting step should be to enable module logging, reproduce the issue/error and review the System Module Debug Log. Navigate to **Configuration > System Logs > Module Log** (prior to WHMCS 8.0, **Utilities > Logs**)​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved. Please refer to WHMCS documentations: [Troubleshooting Module Problems](https://docs.whmcs.com/Troubleshooting_Module_Problems) and [System Logs](https://docs.whmcs.com/System_Logs)
 
-![alt text](http://pic001.filehostserver.eu/116668.png "Troubleshooting")\
+![alt text](https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/0769a7bc-ebbe-4724-b2a5-b99182a127f5 "Troubleshooting")
 
 ### FAQ
 
-Common issues and solutions for them can be found [here](https://support.openprovider.eu/hc/en-us/articles/360009201193).
+Common issues and solutions for them can be found [here](https://support.openprovider.eu/hc/en-us/articles/360009201193-WHMCS-Frequently-asked-questions).
 
 
 ### [DEPRECATED] Configure the Openprovider cron sync
