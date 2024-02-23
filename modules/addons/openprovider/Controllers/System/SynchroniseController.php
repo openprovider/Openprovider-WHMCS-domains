@@ -118,10 +118,15 @@ class SynchroniseController extends BaseController
 
         $found_domains = $this->openProvider->api->searchDomain($filters)['results'];
 
-        if(!is_null($found_domains) && count($found_domains) == 1000) {
-            $new_offset = $offset + $limit;
-            $found_domains = $found_domains + $this->getOpenproviderScheduledTransfers($new_offset, $limit);
+        //If reseller does not have scheduled transferring domains, $found_domains would be an empty string.
+        if(!is_array($found_domains)){
+            return $found_domains;
         }
+
+        if (!is_null($found_domains) && count($found_domains) == 1000) {
+            $new_offset = $offset + $limit;
+            $found_domains = array_merge($found_domains, $this->getOpenproviderScheduledTransfers($new_offset, $limit));
+        } 
 
         return $found_domains;
     }
