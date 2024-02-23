@@ -9,6 +9,9 @@ use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
+use Carbon\Carbon;
+use WHMCS\Database\Capsule;
+
 class ApiV1 implements ApiInterface
 {
     /**
@@ -57,8 +60,7 @@ class ApiV1 implements ApiInterface
         LoggerInterface $logger,
         CamelCaseToSnakeCaseNameConverter $camelCaseToSnakeCaseNameConverter,
         \idna_convert $idn
-    )
-    {
+    ) {
         $this->camelCaseToSnakeCaseNameConverter = $camelCaseToSnakeCaseNameConverter;
         $this->logger = $logger;
         $this->serializer = new Serializer([new ObjectNormalizer()]);
@@ -108,8 +110,8 @@ class ApiV1 implements ApiInterface
             $reply = $service->$apiMethod(...$requestParameters);
         } catch (\Exception $e) {
             $responseData = $this->serializer->normalize(
-                    json_decode(substr($e->getMessage(), strpos($e->getMessage(), 'response:') + strlen('response:')))
-                ) ?? $e->getMessage();
+                json_decode(substr($e->getMessage(), strpos($e->getMessage(), 'response:') + strlen('response:')))
+            ) ?? $e->getMessage();
 
             $response = $this->failedResponse(
                 $response,
@@ -121,12 +123,67 @@ class ApiV1 implements ApiInterface
             return $response;
         }
 
+        if (isset($reply['warnings'])) {
+            $this->addWarning($reply['warnings'], $cmd, $args);
+        }
+
         $data = $this->serializer->normalize($reply->getData());
         $response = $this->successResponse($response, $data);
-
         $this->log($cmd, $args, $response);
 
         return $response;
+    }
+
+    /**
+     * @param array $warnings
+     * @param string $cmd
+     * @param array $args
+     */
+    private function addWarning($warnings, $cmd, $args)
+    {
+        $title = "Warning: ";
+        $cmd = preg_replace('/(?<!\s)([A-Z])/', ' $1', $cmd); // Insert space before capital letters
+        $cmd = ucwords($cmd); // Capitalize words
+        $title = "{$title}:{$cmd} Command.";
+
+        if (isset($args['domain'])) {
+            $domainName = $args['domain']['name'] ?? null;
+            $extension = $args['domain']['extension'] ?? null;
+            $title = "{$title} Domain: {$domainName}.{$extension}";
+        }
+
+        $description = "";
+        $index = 1;
+        foreach ($warnings as $warn) {
+            if ($warn['code'] != 0) {
+                $description .= "Warning {$index}:\nCode: {$warn["code"]} \nDescription: {$warn["desc"]} \nData: {$warn["data"]}\n";
+                $index++;
+            }
+        }
+
+        if (!empty($description) && !empty($title)) {
+            $this->addToDo($title, $description);
+        }
+    }
+
+    /**
+     * Create New To-do item
+     * @param $title
+     * @param $description
+     */
+    private function addToDo($title, $description)
+    {
+        $today = Carbon::now();
+        $todo = [
+            'date' => Carbon::now(),
+            'title' => $title,
+            'description' => $description,
+            'admin' => 0,
+            'status' => 'Pending',
+            'duedate' => $today->addDay()
+        ];
+
+        Capsule::table('tbltodolist')->insert($todo);
     }
 
     /**
