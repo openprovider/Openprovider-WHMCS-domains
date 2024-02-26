@@ -71,7 +71,7 @@ jQuery( document ).ready(function() {
             $destination_location = $GLOBALS['whmcsAppConfig']->getRootDir() . self::DNSSEC_PAGE_NAME;
             // Attempt to copy dnssec.php file into the root file
             if (!copy($source_location, $destination_location)) {
-                logModuleCall('openprovider', 'copydnssecfile', null, "DNSSEC page error! Fail to add dnssec.php to root directory. Please manually upload the contents of '<Module directory>/registrars/openprovider/custom-pages' to the top level of your WHMCS folder i.e. '<your WHMCS directory>/'" , null, null);
+                logModuleCall('openprovider', 'copydnssecfile', null, "DNSSEC page error! Failed to add dnssec.php to root directory. Please manually upload the contents of '<Module directory>/registrars/openprovider/custom-pages' to the top level of your WHMCS folder i.e. '<your WHMCS directory>/'" , null, null);
             }
         }
         
