@@ -26,7 +26,7 @@ class APITools
         // }
 
         if ($params['test_mode'] == 'on' && $apiHelper != null) {
-            $myNameServerList = $apiHelper->getNameserverList();
+            
             for ($i = 1; $i <= 5; $i++) {
                 $ns = $params["ns{$i}"];
                 if (!$ns) {
@@ -36,8 +36,9 @@ class APITools
                 $nsName = trim($nsParts[0]);
                 $nsIp = empty($nsParts[1]) ? null : trim($nsParts[1]);
 
-                //Try to get IP from $myNameServerList
-                if (empty($nsIp) && !empty($myNameServerList)) {
+                //Try to get IP from searchNsRequest in REST API
+                if (empty($nsIp)) {
+                    $myNameServerList = $apiHelper->getNameserverList($nsName);
                     foreach ($myNameServerList as $myNameServer) {
                         if ($myNameServer->name == $nsName) {
                             $nsIp = $myNameServer->ip;
@@ -53,7 +54,7 @@ class APITools
                         $nsIp = "";
                         throw new \Exception("Invalid nameserver name: {$nsName}");
                     }
-                }
+                }                
 
                 if (!empty($nsIp) && !empty($nsName)) {
                     $nameServers[] = new \OpenProvider\API\DomainNameServer(array(

@@ -297,20 +297,30 @@ class ApiHelper
     /**
      * @return array
      */
-    public function getNameserverList(): array
+    public function getNameserverList(string $nameServerName = ""): array
     {
         $nameServers = array();
         $args = [];
-        $data = $this->apiClient->call('listNsRequest', $args)->getData();
-        $result = $data['results'];
-
-        foreach ($result as $item) {
-            if (isset($item['ip']) && isset($item['name'])) {
-                $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
-                    'name'  =>  $item['name'],
-                    'ip'    =>  $item['ip']
-                ));
+        if (empty($nameServerName)) {
+            $data = $this->apiClient->call('listNsRequest', $args)->getData();
+            $result = $data['results'];
+            foreach ($result as $item) {
+                if (isset($item['ip']) && isset($item['name'])) {
+                    $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
+                        'name'  =>  $item['name'],
+                        'ip'    =>  $item['ip']
+                    ));
+                }
             }
+        } else {
+            $args = [
+                'name' => $nameServerName,
+            ];
+            $data = $this->apiClient->call('searchNsRequest', $args)->getData();
+            $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
+                'name'  =>  $data['name'],
+                'ip'    =>  $data['ip']
+            ));
         }
 
         return $nameServers;
