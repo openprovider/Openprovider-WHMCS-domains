@@ -93,12 +93,13 @@ If you plan on allowing your end users to edit their own DNS records, and want t
 
 ### Allow end users to edit DNSSEC records
 
-- Upload the contents of `<Module directory>/custom-pages` to the top level of your WHMCS folder i.e. `<your WHMCS directory>/`
 - Navigate to the **target client profile > domains** select the desired domain and under **Management Tools** activate **"DNS Management"** 
 <img src="docs/img/DNS Management.png" style="zoom: 67%;" />
 - The below option will appear in the domain details page of the chosen domain
 
 <img src="docs/img/DNSSEC management.png" alt="Screenshot_20210203_183243" style="zoom: 67%;" />
+
+- If you experience any difficulty accessing the DNSSEC page, please upload the contents of `<Module directory>/registrars/openprovider/custom-pages` to the top level of your WHMCS folder (i.e. `<your WHMCS directory>/`) 
 
 ### Configure TLDs which don't allow locking (.nl, .be, .eu, .es)
 
