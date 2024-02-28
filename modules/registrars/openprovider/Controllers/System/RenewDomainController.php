@@ -66,7 +66,9 @@ class RenewDomainController extends BaseController
         // If isInRedemptionGracePeriod is true, restore the domain.
         if (isset($params['isInRedemptionGracePeriod']) && $params['isInRedemptionGracePeriod'] == true) {
             try {
-                $this->apiHelper->restoreDomain($domainOp['id']);
+                if ($domainOp['hardQuarantineExpiryDate'] && (new Carbon($domainOp['hardQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
+                    return ['error' => "Domain is past the grace period and additional costs may be applied. Please check the domain in your reseller control panel for more information"];
+                }
             } catch (\Exception $e) {
                 return ['error' => $e->getMessage()];
             }
