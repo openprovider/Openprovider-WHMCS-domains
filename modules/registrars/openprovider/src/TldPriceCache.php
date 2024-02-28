@@ -17,20 +17,7 @@ class TldPriceCache
      */
     public function has($params)
     {
-        $filePath = $this->getLocation();
-        $timePeriodInMinutes = 1440; // 24 hours
-
-        if (file_exists($filePath)) {
-            $lastModifiedTime = filemtime($filePath);
-            $currentTime = time();
-            $diffMinutes = ($currentTime - $lastModifiedTime) / 60;
-
-            if ($diffMinutes > $timePeriodInMinutes) {
-                $this->downloadTldCache($params);
-            }
-        } else {
-            $this->downloadTldCache($params);
-        }
+        $this->downloadTldCache($params);
 
         if (!@is_file($this->getLocation()))
             return false;
@@ -46,10 +33,29 @@ class TldPriceCache
      */
     protected function downloadTldCache($params)
     {
-        $api = new \OpenProvider\API\API();
-        $api->setParams($params);
-        $extensionResponse = $api->getTldsAndPricing();
-        $this->write($extensionResponse);
+        $filePath = $this->getLocation();
+        $timePeriodInMinutes = 1440; // 24 hours
+
+        if (file_exists($filePath)) {
+            $lastModifiedTime = filemtime($filePath);
+            $currentTime = time();
+            $diffMinutes = ($currentTime - $lastModifiedTime) / 60;
+
+            if ($diffMinutes > $timePeriodInMinutes) {
+                $api = new \OpenProvider\API\API();
+                $api->setParams($params);
+                $extensionResponse = $api->getTldsAndPricing();
+                $this->write($extensionResponse);
+                return;
+            }
+            return;
+        } else {
+            $api = new \OpenProvider\API\API();
+            $api->setParams($params);
+            $extensionResponse = $api->getTldsAndPricing();
+            $this->write($extensionResponse);
+            return;
+        }        
     }
 
     /**
