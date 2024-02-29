@@ -136,7 +136,7 @@ class ConfigController extends BaseController
         $configs["test_mode"] = [
             "FriendlyName"  => "Enable Openprovider Test mode",
             "Type"          => "yesno",
-            "Description"   => "Choose this option if you are using CTE credentials and want to connect to the test API.",
+            "Description"   => "Choose this option if you are using Openprovider <a href='https://support.openprovider.eu/hc/en-us/articles/8095671860114-Sandbox-Testing-Environment' target='_blank'>Sandbox credentials</a> and want to test the module operations.",
             "Default"       => "no"
         ];
 
