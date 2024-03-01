@@ -31,7 +31,7 @@ class TldPriceCache
     /**
      * Download the tld_cache.php file.
      */
-    protected function downloadTldCache($params)
+    protected function downloadTldCache($params): void
     {
         $filePath = $this->getLocation();
         $timePeriodInMinutes = 1440; // 24 hours
@@ -83,18 +83,19 @@ class TldPriceCache
         // if (!file_put_contents($this->getLocation(), $file_content))
         //     throw new \Exception('Unable to write to ' . $this->getLocation());
 
-        try {
-            $fp = fopen($this->getLocation(),'w');
-            if($fp === false){
-                $errMsg = "ERROR: Error occurred while writing the file. Unable to write to {$this->getLocation()}. Please review file/folder permissions and ensure fopen(), fwrite() functions are allowed";
-                logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);
-                throw new \Exception($errMsg);   
-            }
+        $fp = fopen($this->getLocation(),'w');
+        if($fp === false){
+            $errMsg = "ERROR: Error occurred while writing the file. Unable to write to {$this->getLocation()}. Please review file/folder permissions and ensure fopen(), fwrite() functions are allowed";
+            logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);            
+            throw new \Exception($errMsg);   
+        }
+        
+        try {            
             fwrite($fp,$file_content);
             fclose($fp);
         } catch (\Exception $e) {
             $errMsg = "ERROR: Error occurred while writing the file. Unable to write to {$this->getLocation()}. Please review file/folder permissions and ensure fopen(), fwrite() functions are allowed";
-            logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);
+            logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);            
             throw new \Exception($errMsg);    
         }       
 

@@ -55,8 +55,10 @@ Check if you downloaded the tld prices from your Openprovider live account, beca
     public function get($params)
     {
         //Try to set memory limit and max execution time
-        try{
+        try {
             $currentMemoryLimitStr = ini_get('memory_limit');
+            $currentExecutionTime = ini_get('max_execution_time');
+
             $currentMemoryLimitBytes = $this->convertShorthandToBytes($currentMemoryLimitStr);
 
             // Compare in bytes
@@ -65,13 +67,13 @@ Check if you downloaded the tld prices from your Openprovider live account, beca
             if ($currentMemoryLimitBytes < $minRequiredBytes) {
                 ini_set('memory_limit', '256M');
             } 
-            $currentExecutionTime = ini_get('max_execution_time');
+            
             if($currentExecutionTime < 300){
                 ini_set('max_execution_time', 300);
             }
-        }catch(\Exception $e){
+        } catch(\Exception $e) {            
             $errMsg = "ERROR: Importing pricing failed. Unable to set memory limit and max execution time for importing pricing. Please increase the memory limit and max execution time in your WHMCS installation.";
-            logModuleCall('openprovider', 'insufficient_memory_issue', null, $errMsg, null, null);
+            logModuleCall('openprovider', 'insufficient_memory_issue', null, $errMsg, null, null);            
             throw new \Exception("Error occurred importing TLD prices automatically. The script needs memory_limit=>256M and max_execution_time=>300 to automatically import TLD prices. Please increase the PHP 'memory_limit' and 'max_execution_time' for your WHMCS installation and re-try. Verify values from: Utilities > System > PHP Info");
         }
         
