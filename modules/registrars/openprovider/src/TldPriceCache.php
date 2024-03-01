@@ -85,21 +85,21 @@ class TldPriceCache
         // if (!file_put_contents($this->getLocation(), $file_content))
         //     throw new \Exception('Unable to write to ' . $this->getLocation());
 
-        $fp = fopen($this->getLocation(),'w');
-        if($fp === false){
+        $fp = fopen($this->getLocation(), 'w');
+        if ($fp === false) {
             $errMsg = "ERROR: Error occurred while writing the file. Unable to write to {$this->getLocation()}. Please review file/folder permissions and ensure fopen(), fwrite() functions are allowed";
-            logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);            
-            throw new \Exception($errMsg);   
+            logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);
+            throw new \Exception($errMsg);
         }
-        
-        try {            
-            fwrite($fp,$file_content);
+
+        if (fwrite($fp, $file_content) === false) {
             fclose($fp);
-        } catch (\Exception $e) {
             $errMsg = "ERROR: Error occurred while writing the file. Unable to write to {$this->getLocation()}. Please review file/folder permissions and ensure fopen(), fwrite() functions are allowed";
-            logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);            
-            throw new \Exception($errMsg);    
-        }       
+            logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);
+            throw new \Exception($errMsg);
+        }
+
+        fclose($fp);
 
         return true;
     }
