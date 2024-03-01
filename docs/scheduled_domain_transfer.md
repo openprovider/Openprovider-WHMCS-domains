@@ -28,6 +28,12 @@ A todo task is created in WHMCS. A manual transfer is required.
 `php modules/addons/openprovider/cron/Synchronise.php`
 4. The addon will start fetching all transfers from now on
 
+## Troublehooting
+Include **--debug** option in the command to see logs for troubleshooting purposes. 
+
+`php modules/addons/openprovider/cron/Synchronise.php --debug`
+
+
 ## FAQ
 
 ### What happens if my customer disables the autorenewal?
