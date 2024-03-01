@@ -180,24 +180,28 @@ class API
         $errno = curl_errno($ch);
         $this->error = curl_error($ch);
 
-        // log message
-        logModuleCall(
-            'OpenProvider NL',
-            $r->getCommand(),
-            array(
-                'postValues' => $postValues,
-            ),
-            array(
-                'curlResponse' => $ret,
-                'curlErrNo'    => $errno,
-                'errorMessage' => $this->error,
-            ),
-            null,
-            array(
-                $this->password,
-                htmlentities($this->password)
-            )
-        );
+        // Bypass log message for searchExtensionRequest since the response is too long
+        if($r->getCommand() != "searchExtensionRequest"){
+            // log message
+            logModuleCall(
+                'OpenProvider NL',
+                $r->getCommand(),
+                array(
+                    'postValues' => $postValues,
+                ),
+                array(
+                    'curlResponse' => $ret,
+                    'curlErrNo'    => $errno,
+                    'errorMessage' => $this->error,
+                ),
+                null,
+                array(
+                    $this->password,
+                    htmlentities($this->password)
+                )
+            );
+        }
+        
 
         if (!$ret)
         {

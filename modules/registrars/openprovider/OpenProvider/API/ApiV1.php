@@ -210,7 +210,7 @@ class ApiV1 implements ApiInterface
 
         return $result;
     }
-
+  
     /**
      * @param string $cmd
      * @param array $request
@@ -228,18 +228,32 @@ class ApiV1 implements ApiInterface
             ],
         ];
 
-        // Check if Message contains "Invalid country code" phrases
-        if (
-            strpos($response->getMessage(), "Invalid country code") !== false
-        ) {
+
+        // Avoid data part of the log to be too big.
+        if ($response->getTotal() > 1000) {
             $logInfo = [
                 'request' => $request,
                 'response' => [
                     'code' => $response->getCode(),
-                    'message' => "Invalid country code! List of supported country codes: https://support.openprovider.eu/hc/en-us/articles/13344317042450-Supported-country-codes-for-registration",
+                    'message' => "data is not displayed in the log due to the total being greater than 1000.",
                     'total' => $response->getTotal(),
-                    'data' => $response->getData(),
+                    'data' => "",
                 ],
+            ];
+         }
+        
+
+        // Check if Message contains "Invalid country code" phrases
+        if (
+            strpos($response->getMessage(), "Invalid country code") !== false
+        ) {
+             $logInfo = [
+                'request' => $request,
+                'response' => [
+                  'message' => "Invalid country code! List of supported country codes: https://support.openprovider.eu/hc/en-us/articles/13344317042450-Supported-country-codes-for-registration",
+                  'total' => $response->getTotal(),
+                  'data' => $response->getData(),
+              ],
             ];          
         }
 

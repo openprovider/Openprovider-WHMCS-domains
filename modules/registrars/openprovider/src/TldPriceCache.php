@@ -4,6 +4,7 @@ namespace OpenProvider\WhmcsRegistrar\src;
 
 use Exception;
 
+
 /**
  * Class TldPriceCache
  * @package OpenProvider\WhmcsRegistrar
@@ -14,15 +15,49 @@ class TldPriceCache
      * Check if the file exists.
      * @return bool
      */
-    public function has()
+    public function has($params = null)
     {
-        if(!@is_file($this->getLocation()))
+        if($params != null){
+            $this->downloadTldCache($params);
+        }         
+
+        if (!@is_file($this->getLocation()))
             return false;
 
-        if(empty($this->get()))
+        if (empty($this->get()))
             return false;
 
         return true;
+    }
+
+    /**
+     * Download the tld_cache.php file.
+     */
+    protected function downloadTldCache($params): void
+    {
+        $filePath = $this->getLocation();
+        $timePeriodInMinutes = 1440; // 24 hours
+
+        if (file_exists($filePath)) {
+            $lastModifiedTime = filemtime($filePath);
+            $currentTime = time();
+            $diffMinutes = ($currentTime - $lastModifiedTime) / 60;
+
+            if ($diffMinutes > $timePeriodInMinutes) {
+                $api = new \OpenProvider\API\API();
+                $api->setParams($params);
+                $extensionResponse = $api->getTldsAndPricing();
+                $this->write($extensionResponse);
+                return;
+            }
+            return;
+        } else {
+            $api = new \OpenProvider\API\API();
+            $api->setParams($params);
+            $extensionResponse = $api->getTldsAndPricing();
+            $this->write($extensionResponse);
+            return;
+        }        
     }
 
     /**
@@ -47,8 +82,24 @@ class TldPriceCache
         $json = json_encode($content);
         $file_content = "<?php exit('ACCESS DENIED');?>\n" . $json;
 
-        if(!file_put_contents($this->getLocation(), $file_content))
-            throw new \Exception('Unable to write to ' . $this->getLocation());
+        // if (!file_put_contents($this->getLocation(), $file_content))
+        //     throw new \Exception('Unable to write to ' . $this->getLocation());
+
+        $fp = fopen($this->getLocation(), 'w');
+        if ($fp === false) {
+            $errMsg = "ERROR: Error occurred while writing the file. Unable to write to {$this->getLocation()}. Please review file/folder permissions and ensure fopen(), fwrite() functions are allowed";
+            logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);
+            throw new \Exception($errMsg);
+        }
+
+        if (fwrite($fp, $file_content) === false) {
+            fclose($fp);
+            $errMsg = "ERROR: Error occurred while writing the file. Unable to write to {$this->getLocation()}. Please review file/folder permissions and ensure fopen(), fwrite() functions are allowed";
+            logModuleCall('openprovider', 'file_writing_error', null, $errMsg, null, null);
+            throw new \Exception($errMsg);
+        }
+
+        fclose($fp);
 
         return true;
     }
@@ -63,3 +114,4 @@ class TldPriceCache
         return $location;
     }
 }
+
