@@ -52,5 +52,24 @@ class Domain
 		}
 	}
 
+	public static function getDomainId($domainName)
+	{
+		try {
+			$domain = Capsule::table('tbldomains')
+				->where('domain', $domainName)
+				->first();
+
+			if ($domain) {
+				return $domain->id;
+			}
+			
+			return null;			
+		} catch (\Exception $e) {
+			logModuleCall("WHMCS DB", 'get_domain_id', "{domain: $domainName}", $e->getMessage(), $domainName);
+			
+			return null; 
+		}
+	}
+
 
 } // END class Domain
