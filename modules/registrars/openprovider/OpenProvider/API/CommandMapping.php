@@ -131,6 +131,14 @@ class CommandMapping
         ],
 
         // Nameservers
+        'searchNsRequest' => [
+            self::COMMAND_MAP_METHOD => 'getNameserver',
+            self::COMMAND_MAP_CLASS => NameserverServiceApi::class,
+        ],      
+        'listNsRequest' => [
+            self::COMMAND_MAP_METHOD => 'listNameservers',
+            self::COMMAND_MAP_CLASS => NameserverServiceApi::class,
+        ],
         'createNsRequest' => [
             self::COMMAND_MAP_METHOD => 'createNameserver',
             self::COMMAND_MAP_CLASS => NameserverServiceApi::class,

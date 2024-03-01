@@ -62,7 +62,20 @@ jQuery( document ).ready(function() {
 
     private function addDNSSECMenuItem($primarySidebar)
     {
-        if (
+        // Check if dnssec.php file exists in the root directory
+        if(
+            !file_exists($GLOBALS['whmcsAppConfig']->getRootDir() . self::DNSSEC_PAGE_NAME) ||
+            empty(file_get_contents($GLOBALS['whmcsAppConfig']->getRootDir() . self::DNSSEC_PAGE_NAME))
+        ){
+            $source_location = $GLOBALS['whmcsAppConfig']->getRootDir()."/modules/registrars/openprovider/custom-pages" . self::DNSSEC_PAGE_NAME;
+            $destination_location = $GLOBALS['whmcsAppConfig']->getRootDir() . self::DNSSEC_PAGE_NAME;
+            // Attempt to copy dnssec.php file into the root file
+            if (!copy($source_location, $destination_location)) {
+                logModuleCall('openprovider', 'copydnssecfile', null, "DNSSEC page error! Failed to add dnssec.php to root directory. Please manually upload the contents of '<Module directory>/registrars/openprovider/custom-pages' to the top level of your WHMCS folder i.e. '<your WHMCS directory>/'" , null, null);
+            }
+        }
+        
+        if (            
             file_exists($GLOBALS['whmcsAppConfig']->getRootDir() . self::DNSSEC_PAGE_NAME) &&
             !is_null($primarySidebar->getChild('Domain Details Management'))
         ) {

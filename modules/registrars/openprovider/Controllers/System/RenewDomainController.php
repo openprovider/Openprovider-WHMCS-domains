@@ -55,7 +55,7 @@ class RenewDomainController extends BaseController
         // If isInGracePeriod is true, renew the domain.
         if (isset($params['isInGracePeriod']) && $params['isInGracePeriod'] == true) {
             try {
-                $this->apiHelper->renewDomain($domainOp['id'], $period);
+                $this->apiHelper->restoreDomain($domainOp['id']);
             } catch (\Exception $e) {
                 return ['error' => $e->getMessage()];
             }

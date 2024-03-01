@@ -56,7 +56,7 @@ class DomainRegistration extends \OpenProvider\API\AutoloadConstructor
      *
      * @var string
      */
-    public $autorenew       =   'off';
+    public $autorenew       =   'default';
     
     /**
      *

@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Models\Registrar;
 use WHMCS\Database\Capsule;
+use OpenProvider\WhmcsRegistrar\helpers\Cache;
 
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/helpers.php';
@@ -108,23 +109,29 @@ function openprovider_bind_required_classes($launcher)
             $client->getConfiguration()->setToken($token);
         } else {
             Capsule::table('reseller_tokens')->where('username', $params['Username'])->delete();
-
-            $token = $client->call('generateAuthTokenRequest', [
-                'username' => $params['Username'],
-                'password' => $params['Password']
-            ])->getData()['token'];
-
-            if ($token) {
-                Capsule::table('reseller_tokens')->insert([
+            
+            if (!Cache::has('op_auth_generate')) {    
+                $reply = $client->call('generateAuthTokenRequest', [
                     'username' => $params['Username'],
-                    'token' => $token,
-                    'expire_at' => Carbon::now()->addDays(AUTH_TOKEN_EXPIRATION_LIFE_TIME)->toDateTimeString(),
-                    'created_at' => Carbon::now()->toDateTimeString()
+                    'password' => $params['Password']
                 ]);
-
-                $session->getMetadataBag()->stampNew(SESSION_EXPIRATION_LIFE_TIME);
-                $client->getConfiguration()->setToken($token);
+    
+                Cache::set('op_auth_generate', $reply);
+                
+                $token = $reply->getData()['token']; 
+                if ($token) {
+                    Capsule::table('reseller_tokens')->insert([
+                        'username' => $params['Username'],
+                        'token' => $token,
+                        'expire_at' => Carbon::now()->addDays(AUTH_TOKEN_EXPIRATION_LIFE_TIME)->toDateTimeString(),
+                        'created_at' => Carbon::now()->toDateTimeString()
+                    ]);
+    
+                    $session->getMetadataBag()->stampNew(SESSION_EXPIRATION_LIFE_TIME);
+                    $client->getConfiguration()->setToken($token);
+                }
             }
+            
         }
 
         return $client;
