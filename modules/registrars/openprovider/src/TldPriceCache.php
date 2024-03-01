@@ -15,9 +15,11 @@ class TldPriceCache
      * Check if the file exists.
      * @return bool
      */
-    public function has($params)
+    public function has($params = null)
     {
-        $this->downloadTldCache($params);
+        if($params != null){
+            $this->downloadTldCache($params);
+        }         
 
         if (!@is_file($this->getLocation()))
             return false;
