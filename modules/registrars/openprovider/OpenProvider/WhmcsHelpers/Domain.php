@@ -62,10 +62,13 @@ class Domain
 			if ($domain) {
 				return $domain->id;
 			}
-			return -1;
+			
+			return null; 
+			
 		} catch (\Exception $e) {
 			logModuleCall("WHMCS DB", 'get_domain_id', "{domain: $domainName}", $e->getMessage(), $domainName);
-			return -1;
+			
+			return null; 
 		}
 	}
 

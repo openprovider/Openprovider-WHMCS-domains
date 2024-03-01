@@ -51,7 +51,7 @@ class ApiHelper
 
         // Update status in WHMCS DB as Cancelled if domain does not exist in given OP account
         $domainId = DomainWHMCS::getDomainId($domainName);
-        if($domainId >= 0)
+        if($domainId !== null)
         {
             $command = 'UpdateClientDomain';
             $postData = array(
