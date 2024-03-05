@@ -125,16 +125,32 @@ $(document).on('ready', function () {
         })
     }
 
-    function handleTurnOnDnssec(e) {
+    function handleTurnOnDnssec(e) {        
         e.preventDefault();
+        
+        $.ajax({
+            method: 'GET',
+            url: apiUrlTurnOnOffDnssec,
+            data: {
+                isDnssecEnabled: 1,
+                domainId: domainId,
+            }
+        }).done(function (reply) {
+            const data = JSON.parse(reply);
+            if (data.success) {
+                $('.dnssec-records-table').removeClass('hidden');
+                addNewRecordButton.removeClass('hidden');
+                $(this).addClass('hidden');                
+                turnOnDnssecButton.addClass('hidden');
+                turnOffDnssecButton.removeClass('hidden');
+                alertOnDnssecEnabled.removeClass('hidden');
+                alertOnDnssecDisabled.addClass('hidden');
 
-        $('.dnssec-records-table').removeClass('hidden');
-        addNewRecordButton.removeClass('hidden');
-        $(this).addClass('hidden');
-        turnOffDnssecButton.removeClass('hidden');
-
-        alertOnDnssecEnabled.removeClass('hidden');
-        alertOnDnssecDisabled.addClass('hidden');
+                renderTable(data.dnssecKeys);
+            } else {
+                showHideErrorMessage(data.message);
+            }
+        });
     }
 
     function handleTurnOffDnssec(e) {
