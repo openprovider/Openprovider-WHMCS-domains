@@ -125,7 +125,8 @@ $(document).on('ready', function () {
         })
     }
 
-    function handleTurnOnDnssec(e) {        
+    function handleTurnOnDnssec(e) {
+        turnOnDnssecButton.addClass('change-color');        
         e.preventDefault();
         
         $.ajax({
@@ -145,9 +146,11 @@ $(document).on('ready', function () {
                 turnOffDnssecButton.removeClass('hidden');
                 alertOnDnssecEnabled.removeClass('hidden');
                 alertOnDnssecDisabled.addClass('hidden');
+                turnOnDnssecButton.removeClass('change-color');
 
                 renderTable(data.dnssecKeys);
             } else {
+                turnOnDnssecButton.removeClass('change-color');
                 showHideErrorMessage(data.message);
             }
         });
