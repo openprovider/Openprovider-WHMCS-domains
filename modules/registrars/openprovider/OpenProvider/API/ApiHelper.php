@@ -43,25 +43,31 @@ class ApiHelper
 
         $args = array_merge($args, $additionalArgs);
         $domainName = $domain->name . "." . $domain->extension;
-        $domain = $this->buildResponse($this->apiClient->call('searchDomainRequest', $args));
+        $response = $this->apiClient->call('searchDomainRequest', $args);
+        $domain = $this->buildResponse($response);
 
         if (!is_null($domain['results'][0])) {
             return $domain['results'][0];
         }
 
-        // Update status in WHMCS DB as Cancelled if domain does not exist in given OP account
-        $domainId = DomainWHMCS::getDomainId($domainName);
-        if($domainId != null)
-        {
-            $command = 'UpdateClientDomain';
-            $postData = array(
-                'domainid' => $domainId,
-                'status' => 'Cancelled',
-            );
+        $responseCode = $response->getCode();
+        $responseMsg = $response->getMessage();
 
-            $results = localAPI($command, $postData);
-            logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':'Cancelled'}",$results, null, null);
-        }
+        if ($responseCode == 0 && is_null($domain['results']) && empty($responseMsg)) {
+            // Update status in WHMCS DB as Cancelled if domain does not exist in given OP account
+            $domainId = DomainWHMCS::getDomainId($domainName);
+            if($domainId != null)
+            {
+                $command = 'UpdateClientDomain';
+                $postData = array(
+                    'domainid' => $domainId,
+                    'status' => 'Cancelled',
+                );
+
+                $results = localAPI($command, $postData);
+                logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':'Cancelled'}",$results, null, null);
+            }
+        }        
 
         throw new \Exception('Domain does not exist in Openprovider!');
     }
