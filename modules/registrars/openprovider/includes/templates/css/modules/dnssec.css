@@ -25,3 +25,16 @@
 .hidden {
     display: none;
 }
+
+.change-color {
+    background-color: #e7e7e7;
+    color: black;
+    border: 2px solid #e7e7e7;
+}
+
+.change-color:hover {
+    background-color: #e7e7e7;
+    color: black;
+    cursor: not-allowed;
+    border: 2px solid #e7e7e7;
+}

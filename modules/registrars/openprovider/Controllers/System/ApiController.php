@@ -185,15 +185,27 @@ class ApiController extends BaseController
             'isDnssecEnabled' => (bool)$params['isDnssecEnabled'],
         ];
 
+        $dnssecKeys = [];
         try {
             $domainOp = $this->apiHelper->getDomain($domain);
             $this->apiHelper->updateDomain($domainOp['id'], $args);
+            $updatedDomainOP = $this->apiHelper->getDomain($domain);
+            if (isset($updatedDomainOP['dnssecKeys'])) {
+                foreach ($updatedDomainOP['dnssecKeys'] as $dnssec) {
+                    $dnssecKeys[] = [
+                        'flags'    => $dnssec['flags'],
+                        'alg'      => $dnssec['alg'],
+                        'protocol' => 3,
+                        'pubKey'   => $dnssec['pubKey'],
+                    ];
+                }
+            }
         } catch (\Exception $e) {
             ApiResponse::error(400, $e->getMessage());
             return;
         }
 
-        ApiResponse::success();
+        ApiResponse::success(['dnssecKeys' => $dnssecKeys]);
     }
 
     /**
