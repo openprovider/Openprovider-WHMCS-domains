@@ -18,6 +18,7 @@ $(document).on('ready', function () {
 
     const alertOnDnssecEnabled  = $('.dnssec-alert-on-enabled');
     const alertOnDnssecDisabled = $('.dnssec-alert-on-disabled');
+    const alertOnDnssecEnabledNew  = $('.dnssec-alert-on-enabled-new');
 
     const dnssecRecordsTable = $('table.dnssec-records-table');
 
@@ -78,6 +79,11 @@ $(document).on('ready', function () {
                 const data = JSON.parse(reply);
                 if (data.success) {
                     addNewRecordButton.removeClass('hidden');
+
+                    alertOnDnssecEnabled.addClass('hidden');
+                    alertOnDnssecDisabled.addClass('hidden');
+                    alertOnDnssecEnabledNew.removeClass('hidden');
+
                     renderTable(data.dnssecKeys);
                 } else {
                     showHideErrorMessage(data.message);
@@ -178,7 +184,7 @@ $(document).on('ready', function () {
 
                 alertOnDnssecEnabled.addClass('hidden');
                 alertOnDnssecDisabled.removeClass('hidden');
-            } else {
+            } else {                
                 showHideErrorMessage(data.message);
             }
         });
