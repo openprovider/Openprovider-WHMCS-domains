@@ -24,7 +24,10 @@ $(document).on('ready', function () {
 
     function handleAddNewRecord(e) {
         e.preventDefault();
+
+        alertOnDnssecEnabledNew.addClass('hidden');
         addNewRecordButton.addClass('hidden');
+        
         let dnsSecRecordTemplate = `
             <tr>
                 <td>
@@ -94,6 +97,9 @@ $(document).on('ready', function () {
 
     function handleDelete(e) {
         e.preventDefault();
+
+        alertOnDnssecEnabledNew.addClass('hidden');
+
         let row = $(this).parents('tr'),
             dnsSecRecordFlag = $(row).find('td').get(0).textContent,
             dnsSecRecordAlgorithm = $(row).find('td').get(1).textContent,
@@ -131,9 +137,11 @@ $(document).on('ready', function () {
         })
     }
 
-    function handleTurnOnDnssec(e) {
-        turnOnDnssecButton.addClass('change-color');        
+    function handleTurnOnDnssec(e) {      
         e.preventDefault();
+
+        turnOnDnssecButton.addClass('change-color');
+        alertOnDnssecEnabledNew.addClass('hidden');  
         
         $.ajax({
             method: 'GET',
@@ -164,6 +172,8 @@ $(document).on('ready', function () {
 
     function handleTurnOffDnssec(e) {
         e.preventDefault();
+
+        alertOnDnssecEnabledNew.addClass('hidden');
 
         $.ajax({
             method: 'GET',
