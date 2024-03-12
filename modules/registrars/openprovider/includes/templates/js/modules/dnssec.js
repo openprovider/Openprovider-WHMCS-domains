@@ -27,7 +27,7 @@ $(document).on('ready', function () {
 
         alertOnDnssecEnabledNew.addClass('hidden');
         addNewRecordButton.addClass('hidden');
-        
+
         let dnsSecRecordTemplate = `
             <tr>
                 <td>
@@ -83,9 +83,8 @@ $(document).on('ready', function () {
                 if (data.success) {
                     addNewRecordButton.removeClass('hidden');
 
-                    alertOnDnssecEnabled.addClass('hidden');
+                    alertOnDnssecEnabled.removeClass('hidden');
                     alertOnDnssecDisabled.addClass('hidden');
-                    alertOnDnssecEnabledNew.removeClass('hidden');
 
                     renderTable(data.dnssecKeys);
                 } else {
@@ -161,6 +160,11 @@ $(document).on('ready', function () {
                 alertOnDnssecEnabled.removeClass('hidden');
                 alertOnDnssecDisabled.addClass('hidden');
                 turnOnDnssecButton.removeClass('change-color');
+
+                if(!data.dnssecKeys.length){
+                    alertOnDnssecEnabled.addClass('hidden');
+                    alertOnDnssecEnabledNew.removeClass('hidden');
+                }
 
                 renderTable(data.dnssecKeys);
             } else {

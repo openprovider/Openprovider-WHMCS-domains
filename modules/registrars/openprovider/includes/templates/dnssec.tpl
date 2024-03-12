@@ -55,16 +55,11 @@
             {if $LANG.dnssec.alertdnssecactivated}
                 {$LANG.dnssec.alertdnssecactivated}
             {else}
-                {if $dnssecKey['pubKey']}
-                    DNSSEC is active for this domain. If you deactivate DNSSEC, all existing keys will be deleted from this domain.
-                {else}
-                    DNSSEC has not been activated yet. Please add a new DNSSEC record and save to activate DNSSEC.
-                {/if}   
-                
+                DNSSEC is active for this domain. If you deactivate DNSSEC, all existing keys will be deleted from this domain.                
             {/if}
         </div>
         <div class="dnssec-alert-on-enabled-new alert alert-warning hidden">
-            DNSSEC is active for this domain. If you deactivate DNSSEC, all existing keys will be deleted from this domain.
+            DNSSEC has not been activated yet. Please add a new DNSSEC record and save to activate DNSSEC.
         </div>
     {/if}
 
