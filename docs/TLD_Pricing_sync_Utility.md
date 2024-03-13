@@ -14,7 +14,10 @@ Verify PHP values for your WHMCS installation from: **Utilities > System > PHP I
 ## How does this work?
 You can access this feature at **Utilities > Registrar TLD Sync > Click on the Openprovider logo**. This will automatically download TLD prices from Openprovider via API and store them in file tld_cache.php if your WHMCS environment permits (PHP values and file permissions). 
 
-Note: Loading the TLD prices requires some time to process after clicking on the Openprovider logo. WHMCS requires a significant amount of time to process all 1500+ TLDs. The speed depends on how fast your server is as well as your browser. 
+**Important**: 
+* Loading the TLD prices requires some time to process after clicking on the Openprovider logo. WHMCS requires a significant amount of time to process all 1500+ TLDs. The speed depends on how fast your server is as well as your browser.
+* If tld_cache.php file was updated in last 24 hours, cached prices will be loaded.
+* If you need to force update TLD prices, either rename/remove tld_cache.php (modules/registrars/openprovider/tld_cache.php) file or run the DownloadTldPrices.php (modules/registrars/openprovider/cron/DownloadTldPrices.php) script via SSH/Terminal or using cron as mentioned below.  
 
 ### Using SSH (only required if the above method doesn't work)
 1. Log in using SSH to your server.
