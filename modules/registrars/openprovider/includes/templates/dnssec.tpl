@@ -40,10 +40,10 @@
             {if $LANG.dnssec.alertdnssecactivated}
                 {$LANG.dnssec.alertdnssecactivated}
             {else}
-                DNSSEC is active for this domain. If you deactivate DNSSEC, all existing keys will be deleted from this domain.
+                DNSSEC is active for this domain. If you deactivate DNSSEC, all existing keys will be deleted from this domain.            
             {/if}
         </div>
-    {else}
+    {else}        
         <div class="dnssec-alert-on-disabled alert alert-warning">
             {if $LANG.dnssec.alertdnssecnotactivated}
                 {$LANG.dnssec.alertdnssecnotactivated}
@@ -55,8 +55,11 @@
             {if $LANG.dnssec.alertdnssecactivated}
                 {$LANG.dnssec.alertdnssecactivated}
             {else}
-                DNSSEC is active for this domain. If you deactivate DNSSEC, all existing keys will be deleted from this domain.
+                DNSSEC is active for this domain. If you deactivate DNSSEC, all existing keys will be deleted from this domain.                
             {/if}
+        </div>
+        <div class="dnssec-alert-on-enabled-new alert alert-warning hidden">
+            DNSSEC has not been activated yet. Please add a new DNSSEC record and save to activate DNSSEC.
         </div>
     {/if}
 
