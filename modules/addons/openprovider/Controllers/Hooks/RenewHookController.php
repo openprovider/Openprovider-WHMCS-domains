@@ -68,7 +68,7 @@ class RenewHookController extends BasePermissionController
         {
             //return true;
             return array(
-                'abortWithSuccess' => true,
+                'success' => true,
             );
         }
 
@@ -108,7 +108,7 @@ class RenewHookController extends BasePermissionController
 
         // return false;
         return array(
-            'abortWithError' => 'The domain is not scheduled for a transfer.',
+            'success' => true,
         );
     }
 
