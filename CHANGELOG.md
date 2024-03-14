@@ -7,7 +7,6 @@
 - Improved [TLD Price Sync](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/TLD_Pricing_sync_Utility.md)
 - Improved [DNSSEC management for end users](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/DNSSEC_for_clients.md)
 - Improved error reporting and logging (Module Log)
-- Improved handling of deleted and transferred out domains (mark as cancelled)
 - Improved Configuration Validation
 
 ###### Bugfixes
