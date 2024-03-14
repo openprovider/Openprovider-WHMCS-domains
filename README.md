@@ -1,6 +1,6 @@
 # Domain Module for WHMCS 8.x
 
-**Please note that this is a beta version of the Openprovider domain registrar module (compatible with PHP 8.1 and WHMCS 8.8.0, latest stable release) which is still undergoing final testing before its official release.**
+**Please note that this is a beta version of the Openprovider domain registrar module (compatible with PHP 8.1 and WHMCS 8.9.0, latest stable release) which is still undergoing final testing before its official release.**
 
 **If you notice any bugs or lack of functionality or
 other problems, please report it to [Openprovider Support team](https://support.openprovider.eu/hc/en-us/articles/360001674667-Contact-Openprovider-Support) immediately with all details (reseller_id, error details, screenshots, WHMCS, PHP version details, etc.) so that we can rectify issues accordingly. Your help in this regard is greatly appreciated!** 
