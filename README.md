@@ -139,13 +139,17 @@ Various options exist for managing domain renewals. A detailed explanation of yo
 
 ### Troubleshooting
 
-If there are any connectivity issues with Openprovider, or domain operations from WHMCS are not working/showing errors, the first troubleshooting step should be to enable module logging, reproduce the issue/error and review the System Module Debug Log. 
+If domain operations from WHMCS are not working or showing errors or if there is any connectivity issues with Openprovider or API errors, the first troubleshooting step should be to enable module logging, reproduce the issue/error and review the System Module Debug Log. 
 
-Navigate to **Configuration > System Logs > Module Log** (prior to WHMCS 8.0, **Utilities > Logs**)​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain some information about how the problem can be solved. 
+Navigate to **Configuration > System Logs > Module Log** (prior to WHMCS 8.0, **Utilities > Logs**)​ and you can find the raw API commands being sent and received by your WHMCS modules. The responses should contain additional information about the problem and how it can be solved. 
 
 ![alt text](https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/0769a7bc-ebbe-4724-b2a5-b99182a127f5 "Troubleshooting")
 
-Please refer to WHMCS documentations: [Troubleshooting Module Problems](https://docs.whmcs.com/Troubleshooting_Module_Problems) and [System Logs](https://docs.whmcs.com/System_Logs)
+If you have Openprovider addon installed and activated in your WHMCS, you should be able to download module and activity logs from **Addons** >> **Openprovider** >> click on the '**Download**' button.
+
+<img width="567" alt="image" src="https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/6dfd32cc-957b-4025-8309-c67ae4451051">
+
+For more details, please refer to WHMCS documentation: [Troubleshooting Module Problems](https://docs.whmcs.com/Troubleshooting_Module_Problems) and [System Logs](https://docs.whmcs.com/System_Logs)
 
 Important: Only enable module logging for troubleshooting or testing purposes. At all other times, make certain that you set Module Logging to Off.
 
