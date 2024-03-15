@@ -164,7 +164,7 @@ class ApiHelper
         foreach ($domainOp['nameServers'] as $ns) {
             $nameServers[] = $ns['name'] ?? $ns['ip'];
         }
-        
+
         return $nameServers;
     }
 
