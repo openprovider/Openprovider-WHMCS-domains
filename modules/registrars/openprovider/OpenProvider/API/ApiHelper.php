@@ -164,7 +164,7 @@ class ApiHelper
         foreach ($domainOp['nameServers'] as $ns) {
             $nameServers[] = $ns['name'] ?? $ns['ip'];
         }
-
+        
         return $nameServers;
     }
 
@@ -349,7 +349,7 @@ class ApiHelper
         $args = [
             'name' => $nameServer->name,
         ];
-        $nameServerOp = $this->apiClient->call('retrieveNsRequest', $args)->getData();
+        $nameServerOp = $this->apiClient->call('searchNsRequest', $args)->getData();
 
         if ($nameServerOp['ip'] != $currentIp) {
             throw new \Exception('Current IP Address is incorrect');
