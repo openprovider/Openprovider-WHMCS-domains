@@ -705,7 +705,7 @@ class API
         if ('modify' == $request)
         {
             // check current IP address
-            $retrieveResult = $this->sendRequest('retrieveNsRequest', $nameServer);
+            $retrieveResult = $this->sendRequest('searchNsRequest', $nameServer);
             if ($retrieveResult['ip'] != $currentIp)
             {
                 throw new \Exception('Current IP Address is incorrect');
