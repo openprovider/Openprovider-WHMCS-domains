@@ -2,7 +2,7 @@
 
 Current version of the domain registration module is compatible with WHMCS versions up to 8.6 and PHP 7.4. 
 
-**Update [23-02-2024]: We have formed a new in-house team for WHMCS module development and have resumed development of the Openprovider domain registrar module. Our current focus is on a list of critical issues and a few improvements. We expect to release the new version by the end of the first quarter of 2024.**
+**Update [18-03-2024]: Beta version of the new module with php 8.1 bug fixes and some improvements is available for testing. If you would like to participate in beta testing, please [contact our support team](https://support.openprovider.eu/hc/en-us/articles/360001674667-Contact-Openprovider-Support) or your account manager. General release of the new module version is planned for April 2024.**
 
 ## Introduction
 The Openprovider WHMCS module integrates conveniently with your [Openprovider account](https://cp.openprovider.eu/signup), allowing you to automate many domain provisioning and management tasks, such as registration, renewal, deletion, and updates to contact details.
