@@ -6,6 +6,8 @@ use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
 use OpenProvider\WhmcsHelpers\Domain as DomainWHMCS;
+use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
+use OpenProvider\API\Domain as API_DOMAIN;
 
 class ApiHelper
 {
@@ -40,7 +42,6 @@ class ApiHelper
             'extension'             => $domain->extension,
             'withVerificationEmail' => true,
         ];
-
         $args = array_merge($args, $additionalArgs);
         $domainName = $domain->name . "." . $domain->extension;
         $response = $this->apiClient->call('searchDomainRequest', $args);
@@ -53,23 +54,67 @@ class ApiHelper
         $responseCode = $response->getCode();
         $responseMsg = $response->getMessage();
 
-        if ($responseCode == 0 && is_null($domain['results']) && empty($responseMsg)) {
-            // Update status in WHMCS DB as Cancelled if domain does not exist in given OP account
+        if ($responseCode == 0 && is_null($domain['results']) && empty($responseMsg) && $domain) {
             $domainId = DomainWHMCS::getDomainId($domainName);
-            if($domainId != null)
-            {
-                $command = 'UpdateClientDomain';
-                $postData = array(
-                    'domainid' => $domainId,
-                    'status' => 'Cancelled',
-                );
-
-                $results = localAPI($command, $postData);
-                logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':'Cancelled'}",$results, null, null);
+            
+            if ($domainId != null) {
+                $status = "Cancelled";
+                $this->updateDomainStatusInWHMCS($status, $domainId);
             }
-        }        
-
+        }
+        
         throw new \Exception('Domain does not exist in Openprovider!');
+    }
+
+    /**
+     * Go through all Cancelled domains and check if they are active in Openprovider
+     * @return void
+     */
+    public function syncDomainCancelled(): void
+    {
+        $domainsList = DomainWHMCS::getAllCancelledDomain('openprovider');
+        
+        foreach ($domainsList as $domain) {
+            $op_domain_obj      = DomainFullNameToDomainObject::convert($domain->domain);
+            $args = [
+                'domainNamePattern'     => $op_domain_obj->name,
+                'extension'             => $op_domain_obj->extension,
+                'withVerificationEmail' => true,
+            ];
+            $domainObj = $this->buildResponse($this->apiClient->call('searchDomainRequest', $args));
+
+            if (!is_null($domainObj['results'][0])) {
+                $status = API_DOMAIN::convertOpStatusToWhmcs($domainObj['results'][0]['status']);
+                if ($status) {
+                    $this->updateDomainStatusInWHMCS($status, $domain->id);
+                } else {
+                    logModuleCall('openprovider', 'sync-cancelled-domain-error', "{'domain':$op_domain_obj->name,'extension':$$op_domain_obj->extension}", "Error: Can not resolve domain status", null, null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Update domain status in WHMCS DB
+     * @param string $status
+     * @param int $domainId
+     * @return void
+     */
+    private function updateDomainStatusInWHMCS(string $status, int $domainId): void
+    {
+        $command = 'UpdateClientDomain';
+        try {
+            $postData = array(
+                'domainid' => $domainId,
+                'status' => $status,
+            );
+
+            $results = localAPI($command, $postData);
+            logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':$status}", $results, null, null);
+            
+        } catch (\Exception $e) {
+            logModuleCall('WHMCS internal', $command, null, "Failed to update domain. id: " . $domainId . ", msg: " . $e->getMessage(), null, null);
+        }
     }
 
     /**

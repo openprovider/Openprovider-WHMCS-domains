@@ -3,6 +3,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks\Widgets;
 
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\XmlApiAdapter;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 /**
  * Show OP balance
@@ -65,7 +66,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
     </div>
 </div>";
             }
-        }
+        }        
 
         return [
             'balance' => $balance,
@@ -76,6 +77,24 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 
     public function generateOutput($data)
     {
+        $apiUrl = Configuration::getApiUrl('domain-status-update');
+        $customHTML = "\n </br></br>" .
+        "<div id=\"customSectionId\"> \n" .
+        "    <button type=\"button\" class=\"btn btn-default\" onclick=\"clickButton()\" id=\"customBtnId1\">Check Cancelled</button>\n" .
+        "</div> \n" .
+        "<script>\n" .
+        "function clickButton() {\n" .
+        "   $.ajax({\n" .
+        "        method: 'GET',\n" .
+        "        url: '" . $apiUrl . "',\n" .
+        "        data: {},\n" .
+        "    }).done(function (reply) {\n" .
+        "        // Handle success\n" .
+        "        document.getElementById('customBtnId1').style.backgroundColor = 'green';\n" .
+        "    });\n" .
+        "}\n" .
+        "</script>";
+        
         if(isset($data['error']))
         {
             return <<<EOF
@@ -83,6 +102,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
             <div style="color:red; font-weight: bold">
                 {$data['error']}
             </div>
+   
 </div>
 EOF;
         }
@@ -107,7 +127,9 @@ EOF;
             </div>
         </div>
     </div>
+    {$customHTML}
 </div>
 EOF;
     }
+
 }

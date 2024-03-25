@@ -197,6 +197,28 @@ class ApiController extends BaseController
     }
 
     /**
+     * Check incorrect cancellation in WHMCS DB
+     *
+     * @param array $params []
+     */
+    public function updateDomainStatus(array $params)
+    {
+        $currentUser = new CurrentUser();
+        if (!$currentUser->isAuthenticatedAdmin()) {
+            ApiResponse::error(400, 'You are have no authority to make this request.');
+            return;
+        }
+        try {
+            $this->apiHelper->syncDomainCancelled();
+        } catch (\Exception $e) {
+            ApiResponse::error(400, $e->getMessage());
+            return;
+        }
+        ApiResponse::success();
+    }
+
+
+    /**
      * Return array without duplicates dnssecKeys to save it in openprovider.
      *
      * @param array $dnssecKeys already existed keys

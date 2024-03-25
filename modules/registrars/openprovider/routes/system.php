@@ -58,6 +58,7 @@ return [
     'updateContactsTagApi'   => 'ApiController@updateContactsTag',
     'updateDnsSecRecordApi'  => 'ApiController@updateDnsSecRecord',
     'updateDnsSecEnabledApi' => 'ApiController@updateDnsSecEnabled',
+    'updateDomainStatusApi' => 'ApiController@updateDomainStatus',
 
     // customPages
     'showDnssecPage' => 'DnssecPageController@show',

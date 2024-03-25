@@ -62,14 +62,33 @@ class Domain
 			if ($domain) {
 				return $domain->id;
 			}
-			
+
 			return null;			
 		} catch (\Exception $e) {
 			logModuleCall("WHMCS DB", 'get_domain_id', "{domain: $domainName}", $e->getMessage(), $domainName);
-			
+
 			return null; 
 		}
 	}
 
+	public static function getAllCancelledDomain($registrar)
+	{
+		try {
+			$domains = Capsule::table('tbldomains')
+				->where('registrar', $registrar)
+				->where('status', "Cancelled")
+				->get();
+
+			if ($domains) {
+				return $domains;
+			}
+
+			return null;			
+		} catch (\Exception $e) {
+			logModuleCall("WHMCS DB", 'get_cancelled_domains', "{registrar: $registrar}", $e->getMessage(), $registrar);
+
+			return null; 
+		}
+	}
 
 } // END class Domain
