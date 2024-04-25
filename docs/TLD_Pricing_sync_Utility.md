@@ -12,7 +12,10 @@ Verify PHP values for your WHMCS installation from: **Utilities > System > PHP I
 ** Memory requirements vary depending upon the size and volume of activity in a WHMCS installation. Your exact requirements may differ.
 
 ## How does this work?
-You can access this feature at **Utilities > Registrar TLD Sync > Click on the Openprovider logo**. This will automatically download TLD prices from Openprovider via API and store them in file tld_cache.php if your WHMCS environment permits (PHP values and file permissions). 
+You can access this feature at **Utilities > Registrar TLD Sync > Click on the Openprovider logo**. This will automatically download TLD prices from Openprovider via API and store them in file tld_cache.php if your WHMCS environment permits (PHP values and file permissions).
+
+<img width="500" alt="image" src="https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/35739a5d-9bf5-44a8-97c2-9aa080e14f32">
+
 
 **Important**: 
 * Loading the TLD prices requires some time to process after clicking on the Openprovider logo. WHMCS requires a significant amount of time to process all 1500+ TLDs. The speed depends on how fast your server is as well as your browser.
