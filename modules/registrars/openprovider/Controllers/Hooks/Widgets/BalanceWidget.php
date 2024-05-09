@@ -81,19 +81,39 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
         $customHTML = "\n </br></br>" .
         "<div id=\"customSectionId\"> \n" .
         "    <button type=\"button\" class=\"btn btn-default\" onclick=\"clickButton()\" id=\"customBtnId1\">Check Cancelled</button>\n" .
+            "    <div id=\"loader\" style=\"display: none;\"></div>\n" . // Add a loader div
         "</div> \n" .
+            "<style>\n" .
+            "#loader {\n" .
+            "    border: 10px solid #f3f3f3;\n" .
+            "    border-radius: 50%;\n" .
+            "    border-top: 10px solid #3498db;\n" .
+            "    width: 60px;\n" .
+            "    height: 60px;\n" .
+            "    animation: spin 2s linear infinite;\n" .
+            "}\n" .
+            "@keyframes spin {\n" .
+            "    0% { transform: rotate(0deg); }\n" .
+            "    100% { transform: rotate(360deg); }\n" .
+            "}\n" .
+            "</style>\n" .
         "<script>\n" .
         "function clickButton() {\n" .
+            "   document.getElementById('customBtnId1').style.display = 'none';\n" . // Hide the button
+            "   document.getElementById('loader').style.display = 'block';\n" . // Show the loader
         "   $.ajax({\n" .
         "        method: 'GET',\n" .
         "        url: '" . $apiUrl . "',\n" .
         "        data: {},\n" .
         "    }).done(function (reply) {\n" .
         "        // Handle success\n" .
-        "        document.getElementById('customBtnId1').style.backgroundColor = 'green';\n" .
+            "        document.getElementById('customBtnId1').style.backgroundColor = '#90EE90';\n" . // Change the button color to light green
+            "        document.getElementById('loader').style.display = 'none';\n" . // Hide the loader
+            "        document.getElementById('customBtnId1').style.display = 'block';\n" . // Show the button again
         "    });\n" .
         "}\n" .
-        "</script>";
+        "</script>";        
+        
         
         if(isset($data['error']))
         {
