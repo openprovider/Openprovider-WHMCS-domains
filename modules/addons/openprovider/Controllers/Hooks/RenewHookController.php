@@ -95,10 +95,7 @@ class RenewHookController extends BasePermissionController
             try {
                 $openprovider_domain = $this->openProvider->api->modifyScheduledTransferDate($openprovider_api_domain, date("Y-m-d H:i:s"));
             } catch (\Exception $ex) {
-                // return false;
-                return array(
-                    'abortWithError' => $ex->getMessage(),
-                );
+                return false;
             }
 
             return array (
@@ -106,10 +103,7 @@ class RenewHookController extends BasePermissionController
             );
         }
 
-        // return false;
-        return array(
-            'success' => true,
-        );
+        return false;
     }
 
     /**
