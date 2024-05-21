@@ -13,6 +13,7 @@ $_ADDONLANG['supportDownloadSupportFileBody'] = 'The support file contains the f
 
 $_ADDONLANG['supportDownloadSupportButton'] = 'Download';
 $_ADDONLANG['supportZipExtensionWarning'] = 'The PHP zip extension is not installed. This extension is required to gather all required data. <a href="http://php.net/manual/en/zip.installation.php" target="_blank">Installation guide</a>';
+$_ADDONLANG['moduleLogWarning'] = 'The module log is empty. To troubleshoot, please retry the failing operation. This will generate API request and response entries in the log. Please refer to <a href="https://docs.whmcs.com/Troubleshooting_Module_Problems" target="_blank">Troubleshooting Module Problems</a>';
 
 
 $_ADDONLANG['scheduled_domain_transfers_title'] = 'Scheduled domain transfers';
