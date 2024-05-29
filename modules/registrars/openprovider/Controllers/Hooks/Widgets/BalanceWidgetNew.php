@@ -1,18 +1,19 @@
 <?php
-namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks\Widgets;
 
-use OpenProvider\API\ApiHelper;
-use OpenProvider\API\XmlApiAdapter;
+namespace WHMCS\Module\Widget;
+
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 /**
- * Show OP balance
+ * Activity Widget.
  *
- * @see https://developers.whmcs.com/addon-modules/admin-dashboard-widgets/
+ *
+ * @copyright Copyright (c) WHMCS Limited 2005-2021
+ * @license https://www.whmcs.com/eula/ WHMCS Eula
  */
-class BalanceWidget extends \WHMCS\Module\AbstractWidget
+class BalanceWidgetNew extends \WHMCS\Module\AbstractWidget
 {
-    protected $title = 'OpenProvider';
+    protected $title = 'OpenProvider New';
     protected $description = '';
     protected $weight = 150;
     protected $columns = 1;
@@ -20,53 +21,39 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
     protected $cacheExpiry = 120;
     protected $requiredPermission = '';
 
-    /**
-     * @var ApiHelper
-     */
-    private $apiHelper;
-    /**
-     * @var XmlApiAdapter
-     */
-    private $xmlApiAdapter;
-
-    public function __construct(ApiHelper $apiHelper, XmlApiAdapter $xmlApiAdapter)
-    {
-        $this->apiHelper = $apiHelper;
-        $this->xmlApiAdapter = $xmlApiAdapter;
-    }
-
     public function getData()
     {
-        try {
-            $resellerResponse = $this->apiHelper->getReseller();
-            $balance = $resellerResponse['balance'];
+        $core = openprovider_registrar_core();
+        $core->launch();
+        $launcher = openprovider_bind_required_classes($core->launcher);
 
-        } catch ( \Exception $e)
-        {
+        $apiHelper = $launcher->get(\OpenProvider\API\ApiHelper::class);
+
+        try {
+            $resellerResponse = $apiHelper->getReseller();
+            $balance = $resellerResponse['balance'];
+        } catch (\Exception $e) {
             return ['error' => 'The Openprovider module could not be loaded, please check that an API connection can be established and that the login details are correct.'];
         }
 
         $html = '';
         try {
             // Get the update message.
-            $messages = $this->apiHelper->getPromoMessages();
-        } catch ( \Exception $e)
-        {
+            $messages = $apiHelper->getPromoMessages();
+        } catch (\Exception $e) {
             // Do nothing.
         }
 
         $domainsTotal = $resellerResponse['statistics']['domain']['total'];
 
-        if(isset($messages['results']))
-        {
-            foreach($messages['results'] as $message)
-            {
+        if (isset($messages['results'])) {
+            foreach ($messages['results'] as $message) {
                 $html .= "<div class=\"row\">
     <div class=\"col-sm-12\">" . $message['html'] . "
     </div>
 </div>";
             }
-        }        
+        }
 
         return [
             'balance' => $balance,
@@ -79,10 +66,10 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
     {
         $apiUrl = Configuration::getApiUrl('domain-status-update');
         $customHTML = "\n </br></br>" .
-        "<div id=\"customSectionId\"> \n" .
-        "    <button type=\"button\" class=\"btn btn-default\" onclick=\"clickButton()\" id=\"customBtnId1\">Check Cancelled</button>\n" .
+            "<div id=\"customSectionId\"> \n" .
+            "    <button type=\"button\" class=\"btn btn-default\" onclick=\"clickButton()\" id=\"customBtnId1\">Check Cancelled</button>\n" .
             "    <div id=\"loader\" style=\"display: none;\"></div>\n" . // Add a loader div
-        "</div> \n" .
+            "</div> \n" .
             "<style>\n" .
             "#loader {\n" .
             "    border: 10px solid #f3f3f3;\n" .
@@ -97,26 +84,25 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
             "    100% { transform: rotate(360deg); }\n" .
             "}\n" .
             "</style>\n" .
-        "<script>\n" .
-        "function clickButton() {\n" .
+            "<script>\n" .
+            "function clickButton() {\n" .
             "   document.getElementById('customBtnId1').style.display = 'none';\n" . // Hide the button
             "   document.getElementById('loader').style.display = 'block';\n" . // Show the loader
-        "   $.ajax({\n" .
-        "        method: 'GET',\n" .
-        "        url: '" . $apiUrl . "',\n" .
-        "        data: {},\n" .
-        "    }).done(function (reply) {\n" .
-        "        // Handle success\n" .
+            "   $.ajax({\n" .
+            "        method: 'GET',\n" .
+            "        url: '" . $apiUrl . "',\n" .
+            "        data: {},\n" .
+            "    }).done(function (reply) {\n" .
+            "        // Handle success\n" .
             "        document.getElementById('customBtnId1').style.backgroundColor = '#90EE90';\n" . // Change the button color to light green
             "        document.getElementById('loader').style.display = 'none';\n" . // Hide the loader
             "        document.getElementById('customBtnId1').style.display = 'block';\n" . // Show the button again
-        "    });\n" .
-        "}\n" .
-        "</script>";        
-        
-        
-        if(isset($data['error']))
-        {
+            "    });\n" .
+            "}\n" .
+            "</script>";
+
+
+        if (isset($data['error'])) {
             return <<<EOF
 <div class="widget-content-padded">
             <div style="color:red; font-weight: bold">
@@ -127,7 +113,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 EOF;
         }
 
-        if($data['balance'] <= 100)
+        if ($data['balance'] <= 100)
             $balance_css = 'color-red';
 
         return <<<EOF
@@ -151,5 +137,4 @@ EOF;
 </div>
 EOF;
     }
-
 }
