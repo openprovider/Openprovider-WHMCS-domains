@@ -2,7 +2,7 @@
 
 ## v5.8.0
 
-### Features and improvements
+###### Features and improvements
 - **Improved [TLD Price Sync](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/TLD_Pricing_sync_Utility.md)** - Fetch TLD prices with a single click from WHMCS. If prices were fetched via within last 24 hours, we will use the downloaded prices to speed up the operation.
 - **Improved [DNSSEC management for end users](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/DNSSEC_for_clients.md)** - Manually copying contents from 'custom-pages' to root folder is no longer required if your hosting environment permits. Made it easier to manage DNSSEC.
 - **Improved error reporting and logging** - Errors will be shown in WHMCS without restrictions. New informative error messages added for some scenarios.
@@ -11,7 +11,7 @@
 - **New**: [To-Do List](https://docs.whmcs.com/admins/admin-tools/#to-do-list) items creation for domain operation warnings in success response.
 
 
-### Bugfixes
+###### Bugfixes
 - Fixed known PHP 8.1 compatibility issues (Renewal, double-renewal, TLD sync, cron, additional fields, whois lookup, domain suggestions
 - Fixed errors getting truncated
 - Fixed duplicate handle creation on contact update
@@ -42,19 +42,18 @@
 - Allow end user to enter additional fields for domain .es(owner type/company registration number or identification number). 
 - Enhanced module logs.
 
-###### Bugfixes
-
-- 
-
 ## v5.4
 
 ###### Features and improvements
 
-- 
+- Improves activation logic for DNSSEC management
+- Improves sidebar logic for DNSSEC and makes adding translations simpler
+- Improves TLD price download script with more verbose error reporting
 
 ###### Bugfixes
 
-- 
+- Fixes issue where transfers would sometimes fail because of missing DNS zones
+- Fixes issue which would cause domain pricing sync to sometimes fail
 
 ## v5.3
 
