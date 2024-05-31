@@ -1,21 +1,26 @@
 # Changelog
 
-## v5.8
+## v5.8.0
 
-###### Features and improvements
+### Features and improvements
+- **Improved [TLD Price Sync](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/TLD_Pricing_sync_Utility.md)** - Fetch TLD prices with a single click from WHMCS. If prices were fetched via within last 24 hours, we will use the downloaded prices to speed up the operation.
+- **Improved [DNSSEC management for end users](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/DNSSEC_for_clients.md)** - Manually copying contents from 'custom-pages' to root folder is no longer required if your hosting environment permits. Made it easier to manage DNSSEC.
+- **Improved error reporting and logging** - Errors will be shown in WHMCS without restrictions. New informative error messages added for some scenarios.
+- **Improved Configuration Validation** - The module now uses WHMCS recommended `_config_validate` function to check whether the credentials and environment are correct.
+- **Auto-renew** - Domains will be created with auto-renew value "default" (will inherit reseller account settings)
+- **New**: [To-Do List](https://docs.whmcs.com/admins/admin-tools/#to-do-list) items creation for domain operation warnings in success response.
 
-- Improved [TLD Price Sync](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/TLD_Pricing_sync_Utility.md)
-- Improved [DNSSEC management for end users](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/DNSSEC_for_clients.md)
-- Improved error reporting and logging (Module Log)
-- Improved Configuration Validation
 
-###### Bugfixes
-
-- Fixed known PHP 8.1 compatibility issues
+### Bugfixes
+- Fixed known PHP 8.1 compatibility issues (Renewal, double-renewal, TLD sync, cron, additional fields, whois lookup, domain suggestions
 - Fixed errors getting truncated
 - Fixed duplicate handle creation on contact update
 - Fixed XML parse error for domain registration in Sandbox
 - Fixed error renewing domains in Grace Period (Error: This domain already exists in Openprovider but NOT active)
+- Fixed Scheduled Domain Transfer sync script
+- Fixed nameserver IP update problem from WHMCS client area (Error: Field apiClass not found into command mapping!)
+- Fixed balance widget (can't close or hide)
+- Fixed domain renewal conflict when using other registrar modules
 
 ## v5.6
 
