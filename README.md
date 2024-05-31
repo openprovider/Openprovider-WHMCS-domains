@@ -1,9 +1,9 @@
 # Domain Module for WHMCS 8.x
 
-**Please note that this is a beta version of the Openprovider domain registrar module (compatible with PHP 8.1 and WHMCS 8.9.0, latest stable release) which is still undergoing final testing before its official release.**
+**This new version of Openprovider domain module is compatible with WHMCS versions up to 8.10.1 and PHP 8.1.**
 
 **If you notice any bugs or lack of functionality or
-other problems, please report it to [Openprovider Support team](https://support.openprovider.eu/hc/en-us/articles/360001674667-Contact-Openprovider-Support) immediately with all details (reseller_id, error details, screenshots, WHMCS, PHP version details, etc.) so that we can rectify issues accordingly. Your help in this regard is greatly appreciated!** 
+other problems, please report it to [Openprovider Support team](https://support.openprovider.eu/hc/en-us/articles/360001674667-Contact-Openprovider-Support) immediately with all available details (reseller_id, error details, [module logs](https://github.com/openprovider/Openprovider-WHMCS-domains/tree/version-8?tab=readme-ov-file#troubleshooting), WHMCS & PHP & web server version details and screenshot(s)/screen record if possible) so that we can rectify issues accordingly. The more details you can provide about issues, the faster we can reproduce and investigate it for a resolution. Your help in this regard is greatly appreciated!** 
 
 ## Introduction
 The Openprovider WHMCS module integrates conveniently with your [Openprovider account](https://cp.openprovider.eu/signup), allowing you to automate domain provisioning and management tasks, such as registration, renewal, deletion, updates to contact details, etc.
@@ -100,7 +100,7 @@ If you plan on allowing your end users to edit their own DNS records, and want t
 <img src="docs/img/DNSSEC management.png" alt="Screenshot_20210203_183243" style="zoom: 67%;" />
 
 - **Notes**:
-  -  If you experience any difficulty accessing the DNSSEC page, please manually upload/copy the contents of `<Module directory>/registrars/openprovider/custom-pages` (dnssec.php file) to the top level of your WHMCS folder (i.e. `<your WHMCS directory>/`)
+  -  If you experience any difficulty accessing the DNSSEC page, please check if file 'dnssec.php' exists in your WHMCS directory. If the file doesn't exist, please manually upload/copy the contents of `<Module directory>/registrars/openprovider/custom-pages` (dnssec.php file) to the top level of your WHMCS folder (i.e. `<your WHMCS directory>/`)
   -  If you see the menu option as "**dnssectabname**" as shown in the screenshot below, copy the folder `<Module directory>/lang/overrides` to `<your WHMCS directory>/lang/` folder. 
  <img width="567" alt="image" src="https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/c4bf574c-2b2f-4367-bb6e-789578535564">
 
