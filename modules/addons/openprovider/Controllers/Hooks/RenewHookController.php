@@ -66,7 +66,10 @@ class RenewHookController extends BasePermissionController
 
         if ($this->checkIsNotOpenprovider($domain) == false) // It is an openprovider domain. Skip this one.
         {
-            return true;
+            //return true;
+            return array(
+                'success' => true,
+            );
         }
 
         // Check if the domain is scheduled for a transfer.

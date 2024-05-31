@@ -53,4 +53,14 @@ class Cache
     {
         return self::$cache;
     }
+
+    /**
+     * Removed the cached item.
+     * @param $key
+     */
+    public static function delete($key)
+    {
+        unset(self::$cache[$key]);
+        return;
+    }
 }

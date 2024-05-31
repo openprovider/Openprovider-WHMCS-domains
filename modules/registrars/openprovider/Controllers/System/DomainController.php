@@ -70,8 +70,7 @@ class DomainController extends BaseController
         ApiHelper $apiHelper,
         ApiInterface $apiClient,
         idna_convert $idn
-    )
-    {
+    ) {
         parent::__construct($core);
 
         $this->domain           = $domain;
@@ -102,7 +101,7 @@ class DomainController extends BaseController
             $domain->name      = $params['sld'];
 
             // Prepare the nameservers
-            $nameServers = APITools::createNameserversArray($params);
+            $nameServers = APITools::createNameserversArray($params, $this->apiHelper);
 
             $handle = $this->handle;
             $handle->setApiHelper($this->apiHelper);
@@ -224,7 +223,7 @@ class DomainController extends BaseController
                 'extension' => $params['tld']
             ));
 
-            $nameServers = APITools::createNameserversArray($params);
+            $nameServers = APITools::createNameserversArray($params, $this->apiHelper);
 
             $handle = $this->handle;
             $handle->setApiHelper($this->apiHelper);

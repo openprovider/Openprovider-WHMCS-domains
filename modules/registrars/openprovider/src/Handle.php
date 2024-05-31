@@ -341,28 +341,25 @@ class Handle
         }
 
         if(
-            $this->customer->companyName == $opCustomer['companyName']  &&
-            $this->customer->name->initials == $opCustomer['name']['initials'] &&
-            $this->customer->name->firstName == $opCustomer['name']['firstName'] &&
-            $this->customer->name->lastName == $opCustomer['name']['lastName'] &&
-            $this->customer->gender == $opCustomer['gender'] &&
-            $this->customer->address->street == $opCustomer['address']['street'] &&
-            $this->customer->address->number == $opCustomer['address']['number'] &&
-            $this->customer->address->city == $opCustomer['address']['city'] &&
-            $this->customer->address->state == $opCustomer['address']['state'] &&
-            $this->customer->phone->countryCode == $opCustomer['phone']['countryCode'] &&
-            $this->customer->phone->areaCode == $opCustomer['phone']['areaCode'] &&
-            $this->customer->phone->subscriberNumber == $opCustomer['phone']['subscriberNumber'] &&
-            $this->customer->email == $opCustomer['email']
+            $this->customer->name->firstName == $opCustomer['First Name'] &&
+            $this->customer->name->lastName == $opCustomer['Last Name'] &&
+            $this->customer->companyName == $opCustomer['Company Name']  &&
+            $this->customer->address->street . ' ' . $this->customer->address->number . ' ' . $this->customer->address->suffix == $opCustomer['Address'] &&
+            $this->customer->address->city == $opCustomer['City'] &&
+            $this->customer->address->state == $opCustomer['State'] &&
+            $this->customer->address->country == $opCustomer['Country'] &&
+            $this->customer->address->zipcode == $opCustomer['Zip Code'] &&
+            $this->customer->phone->countryCode . '.' . $this->customer->phone->areaCode . $this->customer->phone->subscriberNumber == $opCustomer['Phone Number'] &&
+            $this->customer->email == $opCustomer['Email Address']
         )
         {
             return false;
         } elseif (
             //if name & company name are the same, then call modifyCustomerRequest only
-            $opCustomer['name']['firstName'] == $this->customer->name->firstName &&
-            $opCustomer['name']['lastName'] == $this->customer->name->lastName &&
-            $opCustomer['companyName'] == $this->customer->companyName &&
-            $this->model->isUsedByOtherDomains($params['domainid']) === false
+            $opCustomer['First Name'] == $this->customer->name->firstName &&
+            $opCustomer['Last Name'] == $this->customer->name->lastName &&
+            $opCustomer['Company Name'] == $this->customer->companyName
+            // && $this->model->isUsedByOtherDomains($params['domainid']) === false
         ) {
             return 'update';
         }

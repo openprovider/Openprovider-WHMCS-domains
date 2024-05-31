@@ -52,5 +52,4 @@ class Domain
 		}
 	}
 
-
 } // END class Domain

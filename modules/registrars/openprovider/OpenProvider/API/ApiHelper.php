@@ -46,7 +46,7 @@ class ApiHelper
         if (!is_null($domain['results'][0])) {
             return $domain['results'][0];
         }
-
+        
         throw new \Exception('Domain does not exist in Openprovider!');
     }
 
@@ -77,7 +77,7 @@ class ApiHelper
 
         $result = $this->buildResponse($this->apiClient->call('createDomainRequest', $args));
 
-        if($domainRegistration->dnsmanagement) {
+        if ($domainRegistration->dnsmanagement) {
             try {
                 $zoneResult = $this->getDns($domainRegistration->domain);
             } catch (\Exception $e) {
@@ -87,7 +87,8 @@ class ApiHelper
             if (empty($zoneResult)) {
                 try {
                     $this->createDnsRecords($domainRegistration->domain, []);
-                } catch (\Exception $e) {}
+                } catch (\Exception $e) {
+                }
             }
         }
 
@@ -232,14 +233,13 @@ class ApiHelper
     public function toggleAutorenewDomain(DomainModel $domainModel, array $domainOp)
     {
         // Check if we should auto renew or use the default settings
-        if($domainModel->donotrenew == 0)
+        if ($domainModel->donotrenew == 0)
             $auto_renew = 'default';
         else
             $auto_renew = 'off';
 
         // Check if openprovider has the same data
-        if($domainModel['autorenew'] != $auto_renew)
-        {
+        if ($domainModel['autorenew'] != $auto_renew) {
             $args = [
                 'autorenew' => $auto_renew,
             ];
@@ -295,6 +295,38 @@ class ApiHelper
     }
 
     /**
+     * @return array
+     */
+    public function getNameserverList(string $nameServerName = ""): array
+    {
+        $nameServers = array();
+        $args = [];
+        if (empty($nameServerName)) {
+            $data = $this->apiClient->call('listNsRequest', $args)->getData();
+            $result = $data['results'];
+            foreach ($result as $item) {
+                if (isset($item['ip']) && isset($item['name'])) {
+                    $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
+                        'name'  =>  $item['name'],
+                        'ip'    =>  $item['ip']
+                    ));
+                }
+            }
+        } else {
+            $args = [
+                'name' => $nameServerName,
+            ];
+            $data = $this->apiClient->call('searchNsRequest', $args)->getData();
+            $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
+                'name'  =>  $data['name'],
+                'ip'    =>  $data['ip']
+            ));
+        }
+
+        return $nameServers;
+    }
+
+    /**
      * @param DomainNameServer $nameServer
      * @return array
      * @throws \Exception
@@ -317,7 +349,7 @@ class ApiHelper
         $args = [
             'name' => $nameServer->name,
         ];
-        $nameServerOp = $this->apiClient->call('retrieveNsRequest', $args)->getData();
+        $nameServerOp = $this->apiClient->call('searchNsRequest', $args)->getData();
 
         if ($nameServerOp['ip'] != $currentIp) {
             throw new \Exception('Current IP Address is incorrect');
@@ -407,7 +439,8 @@ class ApiHelper
         try {
             $this->apiClient->call('deleteZoneDnsRequest', $args);
         } catch (\Exception $e) {
-            if ($e->getCode() != 872 ||
+            if (
+                $e->getCode() != 872 ||
                 strpos('Zone specified is not found', $e->getMessage()) === false
             ) {
                 throw new \Exception($e->getMessage(), $e->getCode());

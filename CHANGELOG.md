@@ -1,5 +1,22 @@
 # Changelog
 
+## v5.8
+
+###### Features and improvements
+
+- Improved [TLD Price Sync](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/TLD_Pricing_sync_Utility.md)
+- Improved [DNSSEC management for end users](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/DNSSEC_for_clients.md)
+- Improved error reporting and logging (Module Log)
+- Improved Configuration Validation
+
+###### Bugfixes
+
+- Fixed known PHP 8.1 compatibility issues
+- Fixed errors getting truncated
+- Fixed duplicate handle creation on contact update
+- Fixed XML parse error for domain registration in Sandbox
+- Fixed error renewing domains in Grace Period (Error: This domain already exists in Openprovider but NOT active)
+
 ## v5.6
 
 ###### Features and improvements

@@ -65,7 +65,7 @@ class NameserverController extends BaseController
         ));
 
         try {
-            $nameServers = \OpenProvider\API\APITools::createNameserversArray($params);
+            $nameServers = \OpenProvider\API\APITools::createNameserversArray($params,$this->apiHelper);
             $this->apiHelper->saveDomainNameservers($domain, $nameServers);
         } catch (Exception $e) {
             return [

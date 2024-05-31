@@ -1,13 +1,13 @@
 <?php
-namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks\Widgets;
 
-use OpenProvider\API\ApiHelper;
-use OpenProvider\API\XmlApiAdapter;
+namespace WHMCS\Module\Widget;
+
+
 
 /**
  * Show OP balance
- *
- * @see https://developers.whmcs.com/addon-modules/admin-dashboard-widgets/
+ * 
+ * //Need move this file into /modules/widgets folder
  */
 class BalanceWidget extends \WHMCS\Module\AbstractWidget
 {
@@ -19,59 +19,61 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
     protected $cacheExpiry = 120;
     protected $requiredPermission = '';
 
-    /**
-     * @var ApiHelper
-     */
-    private $apiHelper;
-    /**
-     * @var XmlApiAdapter
-     */
-    private $xmlApiAdapter;
-
-    public function __construct(ApiHelper $apiHelper, XmlApiAdapter $xmlApiAdapter)
-    {
-        $this->apiHelper = $apiHelper;
-        $this->xmlApiAdapter = $xmlApiAdapter;
-    }
-
     public function getData()
     {
-        try {
-            $resellerResponse = $this->apiHelper->getReseller();
-            $balance = $resellerResponse['balance'];
+        $command = 'GetRegistrars';
+        $postData = array();
+        $results = localAPI($command, $postData);
 
-        } catch ( \Exception $e)
-        {
-            return ['error' => 'The Openprovider module could not be loaded, please check that an API connection can be established and that the login details are correct.'];
-        }
-
-        $html = '';
-        try {
-            // Get the update message.
-            $messages = $this->apiHelper->getPromoMessages();
-        } catch ( \Exception $e)
-        {
-            // Do nothing.
-        }
-
-        $domainsTotal = $resellerResponse['statistics']['domain']['total'];
-
-        if(isset($messages['results']))
-        {
-            foreach($messages['results'] as $message)
-            {
-                $html .= "<div class=\"row\">
-    <div class=\"col-sm-12\">" . $message['html'] . "
-    </div>
-</div>";
+        if ($results['status'] == 'success') {
+            $isOpenproviderActive = false;
+            foreach ($results['registrars'] as $registrar) {
+                if ($registrar['module'] === 'openprovider') {
+                    $isOpenproviderActive = true;
+                    break;
+                }
             }
-        }
 
-        return [
-            'balance' => $balance,
-            'domainsTotal' => $domainsTotal,
-            'html' => $html
-        ];
+            if ($isOpenproviderActive) {
+                try {
+                    $core = openprovider_registrar_core();
+                    $core->launch();
+                    $launcher = openprovider_bind_required_classes($core->launcher);
+
+                    $apiHelper = $launcher->get(\OpenProvider\API\ApiHelper::class);
+                    $resellerResponse = $apiHelper->getReseller();
+                    $balance = $resellerResponse['balance'];
+                } catch (\Exception $e) {
+                    return ['error' => 'The Openprovider module could not be loaded, please check that an API connection can be established and that the login details are correct.'];
+                }
+
+                $html = '';
+                try {
+                    // Get the update message.
+                    $messages = $apiHelper->getPromoMessages();
+                } catch (\Exception $e) {
+                    // Do nothing.
+                }
+
+                $domainsTotal = $resellerResponse['statistics']['domain']['total'];
+
+                if (isset($messages['results'])) {
+                    foreach ($messages['results'] as $message) {
+                        $html .= "<div class=\"row\">
+            <div class=\"col-sm-12\">" . $message['html'] . "
+            </div>
+        </div>";
+                    }
+                }
+
+                return [
+                    'balance' => $balance,
+                    'domainsTotal' => $domainsTotal,
+                    'html' => $html
+                ];
+            }
+        } 
+        return ['error' => "The Openprovider module could not be found, please ensure that you have <a href='https://support.openprovider.eu/hc/en-us/articles/360012991620-Install-and-configure-Openprovider-module-in-WHMCS-8-X'>installed and activated the Openprovider domain registrar module</a>"];
     }
 
     public function generateOutput($data)

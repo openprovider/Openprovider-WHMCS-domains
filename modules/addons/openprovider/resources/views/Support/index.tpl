@@ -12,7 +12,22 @@
 			<div class="alert alert-danger" role="alert">{$LANG.supportZipExtensionWarning}</div>
 			<input class="btn btn-primary" type="button" value="{$LANG.supportDownloadSupportButton}" disabled>
 		{else}
-			<a class="btn btn-primary" href="{get_route route='supportDownload'}" role="button" target="_blank">{$LANG.supportDownloadSupportButton}</a>
+		<div id='alert' class="alert alert-danger" role="alert" style="display: none;">{$LANG.moduleLogWarning}</div>
+		<a id='downloadLink' class="btn btn-primary" href="{get_route route='supportDownload'}" role="button" target="_blank" style="display: none;" >{$LANG.supportDownloadSupportButton}</a>
+			<script>
+				document.addEventListener('DOMContentLoaded', function() {
+					fetch("{get_route route='supportDownload'}").then(response => {
+						if (response.status == 200) {
+							document.getElementById('downloadLink').style.display = 'inline';
+							document.getElementById('alert').style.display = 'none';
+
+						} else {
+							document.getElementById('downloadLink').style.display = 'none';
+							document.getElementById('alert').style.display = 'block';
+						}
+					});
+				});
+			</script>
 		{/if}
 	</div>
 </div>

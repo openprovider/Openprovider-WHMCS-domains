@@ -18,12 +18,16 @@ $(document).on('ready', function () {
 
     const alertOnDnssecEnabled  = $('.dnssec-alert-on-enabled');
     const alertOnDnssecDisabled = $('.dnssec-alert-on-disabled');
+    const alertOnDnssecEnabledNew  = $('.dnssec-alert-on-enabled-new');
 
     const dnssecRecordsTable = $('table.dnssec-records-table');
 
     function handleAddNewRecord(e) {
         e.preventDefault();
+
+        alertOnDnssecEnabledNew.addClass('hidden');
         addNewRecordButton.addClass('hidden');
+
         let dnsSecRecordTemplate = `
             <tr>
                 <td>
@@ -78,6 +82,10 @@ $(document).on('ready', function () {
                 const data = JSON.parse(reply);
                 if (data.success) {
                     addNewRecordButton.removeClass('hidden');
+
+                    alertOnDnssecEnabled.removeClass('hidden');
+                    alertOnDnssecDisabled.addClass('hidden');
+
                     renderTable(data.dnssecKeys);
                 } else {
                     showHideErrorMessage(data.message);
@@ -88,6 +96,9 @@ $(document).on('ready', function () {
 
     function handleDelete(e) {
         e.preventDefault();
+
+        alertOnDnssecEnabledNew.addClass('hidden');
+
         let row = $(this).parents('tr'),
             dnsSecRecordFlag = $(row).find('td').get(0).textContent,
             dnsSecRecordAlgorithm = $(row).find('td').get(1).textContent,
@@ -125,20 +136,48 @@ $(document).on('ready', function () {
         })
     }
 
-    function handleTurnOnDnssec(e) {
+    function handleTurnOnDnssec(e) {      
         e.preventDefault();
 
-        $('.dnssec-records-table').removeClass('hidden');
-        addNewRecordButton.removeClass('hidden');
-        $(this).addClass('hidden');
-        turnOffDnssecButton.removeClass('hidden');
+        turnOnDnssecButton.addClass('change-color');
+        alertOnDnssecEnabledNew.addClass('hidden');  
+        
+        $.ajax({
+            method: 'GET',
+            url: apiUrlTurnOnOffDnssec,
+            data: {
+                isDnssecEnabled: 1,
+                domainId: domainId,
+            }
+        }).done(function (reply) {
+            const data = JSON.parse(reply);
+            if (data.success) {
+                $('.dnssec-records-table').removeClass('hidden');
+                addNewRecordButton.removeClass('hidden');
+                $(this).addClass('hidden');                
+                turnOnDnssecButton.addClass('hidden');
+                turnOffDnssecButton.removeClass('hidden');
+                alertOnDnssecEnabled.removeClass('hidden');
+                alertOnDnssecDisabled.addClass('hidden');
+                turnOnDnssecButton.removeClass('change-color');
 
-        alertOnDnssecEnabled.removeClass('hidden');
-        alertOnDnssecDisabled.addClass('hidden');
+                if(!data.dnssecKeys.length){
+                    alertOnDnssecEnabled.addClass('hidden');
+                    alertOnDnssecEnabledNew.removeClass('hidden');
+                }
+
+                renderTable(data.dnssecKeys);
+            } else {
+                turnOnDnssecButton.removeClass('change-color');
+                showHideErrorMessage(data.message);
+            }
+        });
     }
 
     function handleTurnOffDnssec(e) {
         e.preventDefault();
+
+        alertOnDnssecEnabledNew.addClass('hidden');
 
         $.ajax({
             method: 'GET',
@@ -159,7 +198,7 @@ $(document).on('ready', function () {
 
                 alertOnDnssecEnabled.addClass('hidden');
                 alertOnDnssecDisabled.removeClass('hidden');
-            } else {
+            } else {                
                 showHideErrorMessage(data.message);
             }
         });
