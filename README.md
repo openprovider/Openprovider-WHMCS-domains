@@ -46,11 +46,17 @@ if (function_exists('openprovider_additional_fields'))
 ## Basic Configurations
 
 - Navigate to **Configuration >> System Settings >> Domain Registrars** and activate Openprovider module. 
-<img src="https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/961562e4-7ea1-4caa-9b25-038cf9e2dfee" style="zoom: 40%;" />
+![Screenshot 2024-05-31 150913](https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/afbb212d-6177-4f75-be07-ad9aec30107b)
+
 
 1. Enter API credentials (username and password, not hash) of your user. Ensure API access is enabled in the Openprovier control panel for the credentials you are using. Please refer to [this KB article](https://support.openprovider.eu/hc/en-us/articles/360015453220-How-to-enable-API-access) if API is not enabled already.
-2. Click **Save**
-3. Navigate to **Configuration >> System Settings >> Domain Pricing** and select Openprovider as registrar for the TLD which you want to sell via Openprovider
+2. Click **Save**.
+3. Navigate to **Utilities > Registrar TLD Sync** and click on the Openprovider logo to fetch list of domain extensions and pricing information, configure margin, Automatic Registration, etc. For more details, please refer to [Registrar TLD Sync](https://docs.whmcs.com/domains/pricing-and-configuration/registrar-pricing-sync/).
+
+![image](https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/0368a759-9c30-491e-922b-4fb7cafebc54)
+
+ 
+4. Navigate to **Configuration >> System Settings >> Domain Pricing** and select Openprovider as registrar for the TLDs which you want to sell via Openprovider
    ![Screenshot_20210203_180350](docs/img/select_TLD_registrar.png)
 
 That's all you need to do to get started selling domains from Openprovider! Additional configurations can be found below.
@@ -62,10 +68,6 @@ That's all you need to do to get started selling domains from Openprovider! Addi
 
 
 # Advanced configurations
-
-### Import Domain prices
-
-- [Import and sync TLD prices from Openprovider](docs/TLD_Pricing_sync_Utility.md)  
 
 ### Lookup provider and domain name spinning
 
