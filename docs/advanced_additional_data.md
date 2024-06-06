@@ -1,4 +1,4 @@
-# Advanced VAT and ID number handling for .es and .pt
+# Advanced additional data handling for extensions like .es, .pt, .us, .it, .se, .nu, etc.
 
 
 
@@ -6,17 +6,17 @@ WHMCS uses a straightforward paradigm for collecting additional domain informati
 
 While this method works in in the simplest case, it fails in cases where the end user wants to change the additional data after the domain has already been registered. In this case, the end user must contact the WHMCS administrator, who must update the data in the Openprovider control panel. 
 
-In the case of .es and .pt domains, the end user must supply some form of tax id, whether they are a corporate entity or private individual. The advanced option for  .es and .pt domains allows this particular piece of data to be tied directly to the end user object in WHMCS, and when the domain
+In the case of .pt domains, the end user must supply some form of tax id, whether they are a corporate entity or private individual. The advanced additional fields option for domains allows the additional data to be tied directly to the end user object in WHMCS. This enables the end user to update additional data by navigating to the "Contact information" of the domain details page after a domain is registered. 
 
 #### Activating the feature
 
-- Navigate to the advanced configuration file `modules/registrars/openprovider/configuration/advanced-module-configurations.php` and set the  value to `true` 
-- For the desired TLD (one or both of .es and .pt) set the registrar in WHMCS to "Openprovider"
+- Navigate to the advanced configuration file `modules/registrars/openprovider/configuration/advanced-module-configurations.php` and set the value to `true` 
+- For the desired TLD (.es, .pt, .us, .it, .se, .nu, etc.) set the registrar in WHMCS to "Openprovider"
 - Ensure that the Openprovider `openprovider_additional_fields()` function has been correctly installed according to the README
 
 #### Creating a domain with additional domain data
 
-- When the end user tries to create an .es or .pt domain they will have the option to choose `Tipo de identificación`which can either be `DNI (Si es un particular)` or `CIF (Si es una empresa)` note that the names of these values cane be changed in the file `modules/registrars/openprovider/configuration/additionalfields.php`
+- When the end user tries to create an .es domain they will have the option to choose `Tipo de identificación`which can either be `DNI (Si es un particular)` or `CIF (Si es una empresa)` note that the names of these values cane be changed in the file `modules/registrars/openprovider/configuration/additionalfields.php`
 
 ![registration-view](img/additional-data-advanced-handling-01.png)
 
