@@ -18,7 +18,7 @@ You can access this feature at **Utilities > Registrar TLD Sync > Click on the O
 
 
 **Important**: 
-* Loading the TLD prices requires some time to process after clicking on the Openprovider logo. WHMCS requires a significant amount of time to process all 1500+ TLDs. The speed depends on how fast your server is as well as your browser.
+* Loading the TLD prices requires some time to process after clicking on the Openprovider logo. WHMCS requires a significant amount of time to process all 1900+ TLDs. The speed depends on how fast your server is as well as your browser.
 * If tld_cache.php file was updated in last 24 hours, cached prices will be loaded.
 * If you need to force update TLD prices, either rename/remove tld_cache.php (modules/registrars/openprovider/tld_cache.php) file or run the DownloadTldPrices.php (modules/registrars/openprovider/cron/DownloadTldPrices.php) script via SSH/Terminal or using cron as mentioned below.  
 
