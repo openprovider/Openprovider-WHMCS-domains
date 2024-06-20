@@ -103,6 +103,13 @@ jQuery( document ).ready(function() {
                 ->setUri("dnssec.php?domainid={$domainId}")
                 ->setClass($dnssecItemClass)
                 ->setOrder(100);
+
+            $primarySidebar->getChild('Domain Details Management')
+                ->addChild('DNSSEC2')
+                ->setLabel(\Lang::trans('dnssectabnamenNew'))
+                ->setUri("index.php?m=openprovider&domainid={$domainId}") //index.php?m=openprovider&domainid=1
+                ->setClass($dnssecItemClass)
+                ->setOrder(100);
         }
     }
 }

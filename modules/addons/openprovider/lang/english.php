@@ -23,3 +23,19 @@ $_ADDONLANG['scheduled_domain_transfers_show_all_domains'] = 'Show all scheduled
 $_ADDONLANG['scheduled_domain_transfers_show_scheduled_only_domains'] = 'Show only scheduled domain transfers';
 
 $_ADDONLANG['no_scheduled_domain_transfers'] = 'There are no domain transfers scheduled.';
+
+
+$_ADDONLANG['dnssectabname'] = 'DNSSEC Management';
+$_ADDONLANG['dnssec']['pagename']  = 'DNSSEC Records';
+$_ADDONLANG['dnssec']['tablename'] = 'Manage DNSSEC Records';
+$_ADDONLANG['dnssec']['activatednssecbutton']   = 'Activate DNSSEC';
+$_ADDONLANG['dnssec']['deactivatednssecbutton'] = 'Deactivate DNSSEC';
+$_ADDONLANG['dnssec']['alertdnssecnotactivated'] = 'DNSSEC is not active on this domain.';
+$_ADDONLANG['dnssec']['alertdnssecactivated']     = 'DNSSEC is active for this domain. If you deactivate DNSSEC, all existing keys will be deleted from this domain.';
+$_ADDONLANG['dnssec']['tableheaderflags']       = 'Flags';
+$_ADDONLANG['dnssec']['tableheaderalgorithms']  = 'Algorithm';
+$_ADDONLANG['dnssec']['tableheaderpublickeys'] = 'Public key';
+$_ADDONLANG['dnssec']['tableheaderactions']     = 'Actions';
+$_ADDONLANG['dnssec']['tablebuttonactiondelete'] = 'Delete';
+$_ADDONLANG['dnssec']['tablebuttonactionsave']   = 'Save';
+$_ADDONLANG['dnssec']['buttonadddnssecrecord'] = 'Add A New DNSSEC Record';

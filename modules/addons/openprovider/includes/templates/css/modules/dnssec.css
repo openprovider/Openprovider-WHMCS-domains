@@ -1,0 +1,40 @@
+.mt--25 {
+    margin-top: 25px;
+}
+
+.d-flex {
+    display: -webkit-box!important;
+    display: -ms-flexbox!important;
+    display: flex!important;
+}
+
+.ml-auto, .mx-auto {
+    margin-left: auto!important;
+}
+
+.align-items-center {
+    -webkit-box-align: center!important;
+    -ms-flex-align: center!important;
+    align-items: center!important;
+}
+
+.break-word {
+    word-break: break-word;
+}
+
+.hidden {
+    display: none;
+}
+
+.change-color {
+    background-color: #e7e7e7;
+    color: black;
+    border: 2px solid #e7e7e7;
+}
+
+.change-color:hover {
+    background-color: #e7e7e7;
+    color: black;
+    cursor: not-allowed;
+    border: 2px solid #e7e7e7;
+}
