@@ -7,6 +7,7 @@ use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use WHMCS\Database\Capsule;
 use WeDevelopCoffee\wPower\Models\Domain;
 use Openprovider\Api\Rest\Client\Domain\Api\DomainServiceApi;
+use OpenProvider\WhmcsRegistrar\helpers\Cache;
 
 /**
  * Class DomainController
@@ -129,14 +130,25 @@ class DomainLockingEnabledController
     {
         try {
             $op_domain_obj = DomainFullNameToDomainObject::convert($domain->domain);
+            $lockable_state = Cache::get($op_domain_obj->extension);
 
-            $op_domain = $this->apiHelper->getDomain($op_domain_obj);
-
-            if (($op_domain['isLockable'] ?? false)) {
-                return true;
+            if (!isset($lockable_state)) {
+                $op_domain = $this->apiHelper->getDomain($op_domain_obj);
+                if (($op_domain['isLockable'] ?? false)) {
+                    Cache::set($op_domain['domain']['extension'], true);
+                    return true;
+                } else {
+                    Cache::set($op_domain['domain']['extension'], false);
+                    return false;
+                }
+            } else {
+                if ($lockable_state) {
+                    return true;
+                }
             }
         } catch (\Exception $e) {
         }
+
         return false;
     }
 }
