@@ -138,8 +138,9 @@ $(document).on('ready', function () {
 
     function handleTurnOnDnssec(e) {      
         e.preventDefault();
-
-        turnOnDnssecButton.addClass('change-color');
+        const spinner  = $('.dnssec-spinner');
+        turnOnDnssecButton.addClass('hidden');
+        spinner.removeClass('hidden');
         alertOnDnssecEnabledNew.addClass('hidden');  
         
         $.ajax({
@@ -152,14 +153,15 @@ $(document).on('ready', function () {
         }).done(function (reply) {
             const data = JSON.parse(reply);
             if (data.success) {
+                spinner.addClass('hidden');
                 $('.dnssec-records-table').removeClass('hidden');
                 addNewRecordButton.removeClass('hidden');
                 $(this).addClass('hidden');                
-                turnOnDnssecButton.addClass('hidden');
+                //turnOnDnssecButton.addClass('hidden');
                 turnOffDnssecButton.removeClass('hidden');
                 alertOnDnssecEnabled.removeClass('hidden');
                 alertOnDnssecDisabled.addClass('hidden');
-                turnOnDnssecButton.removeClass('change-color');
+                //turnOnDnssecButton.removeClass('change-color');
 
                 if(!data.dnssecKeys.length){
                     alertOnDnssecEnabled.addClass('hidden');
@@ -168,7 +170,8 @@ $(document).on('ready', function () {
 
                 renderTable(data.dnssecKeys);
             } else {
-                turnOnDnssecButton.removeClass('change-color');
+                spinner.addClass('hidden');
+                turnOnDnssecButton.removeClass('hidden');
                 showHideErrorMessage(data.message);
             }
         });
