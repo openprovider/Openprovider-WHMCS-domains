@@ -223,6 +223,23 @@ class API
         return new \OpenProvider\API\Reply($ret);
     }
 
+    //Download from google drive and save to given path
+    public function downloadPHPfile($downloadURL, $savePath)
+    {
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $downloadURL);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            file_put_contents($savePath, $response);
+        } catch (\Exception $e) {
+            throw new \Exception('Error downloading file: ' . $e->getMessage());
+        }
+    }
+
     /**
      *
      * @param array $createHandleArray
