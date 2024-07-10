@@ -60,9 +60,11 @@ class SupportController extends ViewBaseController {
     {
         $date = $this->carbon->today()->subDays(30);
 
+        $outputActivityLog = "";
         // Fetch activity logs
-        $outputActivityLog = $this->getActivityLog($date);
+        $outputActivityLog = $this->getActivityLog($date, $outputActivityLog);
 
+        $outputModuleLog = "";
         // Fetch module logs
         $outputModuleLog = $this->getModuleLog($date, $outputModuleLog);
 
@@ -113,7 +115,7 @@ EOF;
      * @param static $date
      * @param $outputActivityLog
      */
-    public function getActivityLog( $date): string
+    public function getActivityLog( $date, $outputActivityLog): string
     {
         $activityLogs = $this->capsule->table('tblactivitylog')
             ->where('date', '>=', $date)
