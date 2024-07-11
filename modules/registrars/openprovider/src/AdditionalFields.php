@@ -182,7 +182,7 @@ class AdditionalFields
                         
                 }
                 elseif($field['Type']  == 'tickbox' && $value == 'on')
-                    $value = 1;
+                    $value = "1";
 
                 if($field['op_location'] == 'customerExtensionAdditionalData' && isset($params['additionalfields'][$field['Name']]))
                 {
