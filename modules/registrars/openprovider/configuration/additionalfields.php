@@ -369,8 +369,6 @@ $additionaldomainfields[".es"][] = array(
     "op_name" => "esAnnexAcceptance"
 );
 
-// domainAdditionalData - Invalid request
-
 // All .ES SLDs
 $additionaldomainfields[".com.es"] = $additionaldomainfields[".es"];
 $additionaldomainfields[".nom.es"] = $additionaldomainfields[".es"];
