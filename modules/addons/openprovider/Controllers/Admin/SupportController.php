@@ -60,13 +60,11 @@ class SupportController extends ViewBaseController {
     {
         $date = $this->carbon->today()->subDays(30);
 
-        $outputActivityLog = "";
         // Fetch activity logs
-        $outputActivityLog = $this->getActivityLog($date, $outputActivityLog);
+        $outputActivityLog = $this->getActivityLog($date);
 
-        $outputModuleLog = "";
         // Fetch module logs
-        $outputModuleLog = $this->getModuleLog($date, $outputModuleLog);
+        $outputModuleLog = $this->getModuleLog($date);
 
         // Send the file
         $this->generateDownload($outputActivityLog, $outputModuleLog);
@@ -77,7 +75,7 @@ class SupportController extends ViewBaseController {
      * @param $outputModuleLog
      * @return string
      */
-    public function getModuleLog( $date, $outputModuleLog): string
+    public function getModuleLog( $date, $outputModuleLog = ""): string
     {
         $moduleLogs = $this->capsule->table('tblmodulelog')
             ->where('date', '>=', $date)
@@ -115,7 +113,7 @@ EOF;
      * @param static $date
      * @param $outputActivityLog
      */
-    public function getActivityLog( $date, $outputActivityLog): string
+    public function getActivityLog( $date, $outputActivityLog = ""): string
     {
         $activityLogs = $this->capsule->table('tblactivitylog')
             ->where('date', '>=', $date)
