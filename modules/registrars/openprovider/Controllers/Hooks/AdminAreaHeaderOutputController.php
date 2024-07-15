@@ -30,7 +30,7 @@ class AdminAreaHeaderOutputController
             }
 
             if($isTestMode){
-                $return = '<div class="alert alert-danger global-admin-warning"> <i class="far fa-exclamation-triangle fa-fw"></i> <b>Prices in the Sandbox environment are for reference only and may differ from actual domain prices in the production environment.</b></div>';
+                $return = '<div class="alert alert-danger global-admin-warning"> <i class="far fa-exclamation-triangle fa-fw"></i> <b>Prices in the Sandbox environment are for reference only and may differ from actual domain prices in the production environment. Please ensure to re-run TLD Sync when switching to production environment ("Enable Openprovider Test mode" is unchecked).</b></div>';
                 return $return;
             }
             
