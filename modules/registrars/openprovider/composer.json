@@ -20,13 +20,15 @@
         "openprovider/rest-client-php": "dev-v1beta",
         "symfony/serializer": "^5.2",
         "psr/log": "^1.1",
-        "symfony/property-access": "^5.2"
+        "symfony/property-access": "^5.2",
+        "guzzlehttp/psr7": "^1.7"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7",
+        "phpunit/phpunit": "^9.5",
         "mockery/mockery": "^1.0",
         "php-mock/php-mock-mockery": "^1.2",
-        "illuminate/database": "6.20.*"
+        "illuminate/database": "6.20.*",
+        "phpdocumentor/reflection-docblock": "^5.4"
     },
     "repositories": [
         {

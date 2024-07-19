@@ -17,6 +17,7 @@ use phpDocumentor\Reflection\DocBlock\Description;
 use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
 use phpDocumentor\Reflection\Types\Context as TypeContext;
 use Webmozart\Assert\Assert;
+
 use function preg_match;
 
 /**
@@ -24,8 +25,7 @@ use function preg_match;
  */
 final class Since extends BaseTag implements Factory\StaticMethod
 {
-    /** @var string */
-    protected $name = 'since';
+    protected string $name = 'since';
 
     /**
      * PCRE regular expression matching a version vector.
@@ -44,7 +44,7 @@ final class Since extends BaseTag implements Factory\StaticMethod
     )';
 
     /** @var string|null The version vector. */
-    private $version;
+    private ?string $version = null;
 
     public function __construct(?string $version = null, ?Description $description = null)
     {
@@ -58,7 +58,7 @@ final class Since extends BaseTag implements Factory\StaticMethod
         ?string $body,
         ?DescriptionFactory $descriptionFactory = null,
         ?TypeContext $context = null
-    ) : ?self {
+    ): ?self {
         if (empty($body)) {
             return new static();
         }
@@ -79,7 +79,7 @@ final class Since extends BaseTag implements Factory\StaticMethod
     /**
      * Gets the version section of the tag.
      */
-    public function getVersion() : ?string
+    public function getVersion(): ?string
     {
         return $this->version;
     }
@@ -87,7 +87,7 @@ final class Since extends BaseTag implements Factory\StaticMethod
     /**
      * Returns a string representation for this tag.
      */
-    public function __toString() : string
+    public function __toString(): string
     {
         if ($this->description) {
             $description = $this->description->render();
