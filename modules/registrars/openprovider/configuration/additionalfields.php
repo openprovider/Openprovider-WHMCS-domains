@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Configuration fields
  * OpenProvider Registrar module
@@ -140,7 +141,7 @@ $additionaldomainfields['.pt'][] = array(
 // it
 $additionaldomainfields['.it'][] = array(
     'Name' => 'Company Registration Number',
-    "LangVar"=> "itCompanyRegistrationNumber",
+    "LangVar" => "itCompanyRegistrationNumber",
     "Type" => "text",
     "Size" => "30",
     "Required" => false,
@@ -150,7 +151,7 @@ $additionaldomainfields['.it'][] = array(
 
 $additionaldomainfields['.it'][] = array(
     'Name' => 'Company VAT number',
-    "LangVar"=> "vat",
+    "LangVar" => "vat",
     "Type" => "text",
     "Size" => "30",
     "Required" => false,
@@ -160,7 +161,7 @@ $additionaldomainfields['.it'][] = array(
 
 $additionaldomainfields['.it'][] = array(
     'Name' => 'Individual Codice Fiscale',
-    "LangVar"=> "socialSecurityNumber",
+    "LangVar" => "socialSecurityNumber",
     "Type" => "text",
     "Size" => "30",
     "Required" => false,
@@ -359,11 +360,30 @@ $additionaldomainfields['.es'][] = array(
     "op_name"  => "esIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
 
+$additionaldomainfields[".es"][] = array(
+    "Name" => 'I agree with <a href="https://www.red.es/es" target="_blank">red.es</a> rules and accept the terms and conditions - <a href="https://drive.google.com/file/d/1LJMdRZwlbplF1HakqOg0ry09z6FR5IXW/edit" target="_blank">ANNEX 3 Policy</a>',
+    "LangVar" => "esRegistrantAnnex3Acceptance",
+    "Type" => "tickbox",
+    "Required" => false,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "esAnnexAcceptance"
+);
+
 // All .ES SLDs
 $additionaldomainfields[".com.es"] = $additionaldomainfields[".es"];
 $additionaldomainfields[".nom.es"] = $additionaldomainfields[".es"];
 $additionaldomainfields[".edu.es"] = $additionaldomainfields[".es"];
 $additionaldomainfields[".org.es"] = $additionaldomainfields[".es"];
+
+//.ae
+$additionaldomainfields[".ae"][] = array(
+    "Name" => "By registering this domain name, I acknowledges and accepts the .ae registration agreement",
+    "LangVar" => "aeAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "aeAcceptance"
+);
 
 // .SE
 $additionaldomainfields[".se"][] = array(
@@ -377,7 +397,7 @@ $additionaldomainfields[".se"][] = array(
 
 $additionaldomainfields['.se'][] = array(
     'Name' => 'Identification number',
-    "LangVar"=> "seIdentificationNumber",
+    "LangVar" => "seIdentificationNumber",
     "Type" => "text",
     "Size" => "30",
     "Required" => true,
