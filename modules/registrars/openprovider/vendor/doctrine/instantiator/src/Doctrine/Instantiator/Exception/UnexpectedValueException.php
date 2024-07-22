@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Instantiator\Exception;
 
 use Exception;
@@ -14,33 +16,35 @@ use function sprintf;
 class UnexpectedValueException extends BaseUnexpectedValueException implements ExceptionInterface
 {
     /**
-     * @template T of object
      * @phpstan-param ReflectionClass<T> $reflectionClass
+     *
+     * @template T of object
      */
     public static function fromSerializationTriggeredException(
         ReflectionClass $reflectionClass,
-        Exception $exception
+        Exception $exception,
     ): self {
         return new self(
             sprintf(
                 'An exception was raised while trying to instantiate an instance of "%s" via un-serialization',
-                $reflectionClass->getName()
+                $reflectionClass->getName(),
             ),
             0,
-            $exception
+            $exception,
         );
     }
 
     /**
-     * @template T of object
      * @phpstan-param ReflectionClass<T> $reflectionClass
+     *
+     * @template T of object
      */
     public static function fromUncleanUnSerialization(
         ReflectionClass $reflectionClass,
         string $errorString,
         int $errorCode,
         string $errorFile,
-        int $errorLine
+        int $errorLine,
     ): self {
         return new self(
             sprintf(
@@ -48,10 +52,10 @@ class UnexpectedValueException extends BaseUnexpectedValueException implements E
                 . 'in file "%s" at line "%d"',
                 $reflectionClass->getName(),
                 $errorFile,
-                $errorLine
+                $errorLine,
             ),
             0,
-            new Exception($errorString, $errorCode)
+            new Exception($errorString, $errorCode),
         );
     }
 }

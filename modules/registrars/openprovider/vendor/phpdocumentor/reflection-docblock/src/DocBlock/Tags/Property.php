@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace phpDocumentor\Reflection\DocBlock\Tags;
 
+use Doctrine\Deprecations\Deprecation;
 use phpDocumentor\Reflection\DocBlock\Description;
 use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
 use phpDocumentor\Reflection\Type;
@@ -20,11 +21,13 @@ use phpDocumentor\Reflection\TypeResolver;
 use phpDocumentor\Reflection\Types\Context as TypeContext;
 use phpDocumentor\Reflection\Utils;
 use Webmozart\Assert\Assert;
+
 use function array_shift;
 use function array_unshift;
 use function implode;
 use function strpos;
 use function substr;
+
 use const PREG_SPLIT_DELIM_CAPTURE;
 
 /**
@@ -32,8 +35,7 @@ use const PREG_SPLIT_DELIM_CAPTURE;
  */
 final class Property extends TagWithType implements Factory\StaticMethod
 {
-    /** @var string|null */
-    protected $variableName;
+    protected ?string $variableName = null;
 
     public function __construct(?string $variableName, ?Type $type = null, ?Description $description = null)
     {
@@ -45,12 +47,23 @@ final class Property extends TagWithType implements Factory\StaticMethod
         $this->description  = $description;
     }
 
+    /**
+     * @deprecated Create using static factory is deprecated,
+     *  this method should not be called directly by library consumers
+     */
     public static function create(
         string $body,
         ?TypeResolver $typeResolver = null,
         ?DescriptionFactory $descriptionFactory = null,
         ?TypeContext $context = null
-    ) : self {
+    ): self {
+        Deprecation::triggerIfCalledFromOutside(
+            'phpdocumentor/reflection-docblock',
+            'https://github.com/phpDocumentor/ReflectionDocBlock/issues/361',
+            'Create using static factory is deprecated, this method should not be called directly
+             by library consumers',
+        );
+
         Assert::stringNotEmpty($body);
         Assert::notNull($typeResolver);
         Assert::notNull($descriptionFactory);
@@ -88,7 +101,7 @@ final class Property extends TagWithType implements Factory\StaticMethod
     /**
      * Returns the variable's name.
      */
-    public function getVariableName() : ?string
+    public function getVariableName(): ?string
     {
         return $this->variableName;
     }
@@ -96,7 +109,7 @@ final class Property extends TagWithType implements Factory\StaticMethod
     /**
      * Returns a string representation for this tag.
      */
-    public function __toString() : string
+    public function __toString(): string
     {
         if ($this->description) {
             $description = $this->description->render();

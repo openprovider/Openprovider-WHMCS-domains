@@ -18,7 +18,11 @@ class TldPriceCache
     public function has($params = null)
     {
         if($params != null){
-            $this->downloadTldCache($params);
+            if (isset($params['test_mode']) && $params['test_mode'] == 'on') {
+                $this->downloadTldCacheFromDrive($params);
+            } else {
+                $this->downloadTldCache($params);
+            }
         }         
 
         if (!@is_file($this->getLocation()))
@@ -28,6 +32,36 @@ class TldPriceCache
             return false;
 
         return true;
+    }
+
+    /**
+     * Download the tld_cache.php file from google drive - For Sandbox Environment.
+     */
+    protected function downloadTldCacheFromDrive($params): void
+    {
+        $filePath = $this->getLocation();
+        $timePeriodInMinutes = 1440; // 24 hours
+
+        $fileId = '1M5rIlqtYgIfm34J7JczY_4ZsK7XLFDG0'; //https://drive.google.com/file/d/1M5rIlqtYgIfm34J7JczY_4ZsK7XLFDG0/view?usp=sharing
+        $fileDownloadURL = 'https://drive.google.com/uc?export=download&id=' . $fileId;
+        $fileSavePath = $this->getLocation();
+
+        if (file_exists($filePath)) {
+            $lastModifiedTime = filemtime($filePath);
+            $currentTime = time();
+            $diffMinutes = ($currentTime - $lastModifiedTime) / 60;
+
+            if ($diffMinutes > $timePeriodInMinutes) {
+                $api = new \OpenProvider\API\API();
+                $api->downloadPHPfile($fileDownloadURL, $fileSavePath);
+                return;
+            }
+            return;
+        } else {
+            $api = new \OpenProvider\API\API();
+            $api->downloadPHPfile($fileDownloadURL, $fileSavePath);
+            return;
+        }
     }
 
     /**
