@@ -42,8 +42,7 @@ class TldPriceCache
         $filePath = $this->getLocation();
         $timePeriodInMinutes = 1440; // 24 hours
 
-        $fileId = '1M5rIlqtYgIfm34J7JczY_4ZsK7XLFDG0'; //https://drive.google.com/file/d/1M5rIlqtYgIfm34J7JczY_4ZsK7XLFDG0/view?usp=sharing
-        $fileDownloadURL = 'https://drive.google.com/uc?export=download&id=' . $fileId;
+        $fileDownloadURL = "http://openprovider-whmcs-lab-dev.nl/downloads/tld_cache.php";
         $fileSavePath = $this->getLocation();
 
         if (file_exists($filePath)) {
