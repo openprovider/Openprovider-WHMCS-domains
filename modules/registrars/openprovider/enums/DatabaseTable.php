@@ -33,4 +33,6 @@ class DatabaseTable
     const Configuration = 'tblconfiguration';
 
     const Hosting = 'tblhosting';
+
+    const OPDomains = 'tblopdomains';
 }

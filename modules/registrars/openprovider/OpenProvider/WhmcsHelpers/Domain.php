@@ -1,5 +1,8 @@
 <?php
 namespace OpenProvider\WhmcsHelpers;
+
+use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
+use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
 use WHMCS\Database\Capsule,
 	OpenProvider\WhmcsHelpers\Schemes\DomainSyncScheme,
 	Carbon\Carbon;
@@ -90,5 +93,40 @@ class Domain
 			return null; 
 		}
 	}
+
+	//Store OP domain ID
+    public static function storeDomainId($whmcsId, $opId, $domainName)
+    {
+        if (!DBHelper::checkTableExist(DatabaseTable::OPDomains)) {
+            try {
+                Capsule::schema()
+                    ->create(
+                        DatabaseTable::OPDomains,
+                        function ($table) {
+                            $table->increments('id');
+                            $table->bigInteger('opid');
+                            $table->bigInteger('whmcsid');
+                            $table->string('domain');
+                            $table->timestamps();
+                        }
+                    );
+            } catch (\Exception $e) {}
+        }
+
+        $domain = Capsule::table(DatabaseTable::OPDomains)
+                    ->where('opid', $opId)
+                    ->first();
+
+        if ($domain == null) {
+            try {
+                Capsule::table(DatabaseTable::OPDomains)
+                    ->updateOrInsert( 
+                        ['opid' => $opId],
+                        ['whmcsid' => $whmcsId, 'domain' => $domainName, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]                 
+                    );
+            } catch (\Exception $e) {}
+        }
+        
+    }
 
 } // END class Domain

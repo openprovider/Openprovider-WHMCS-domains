@@ -48,6 +48,12 @@ class ApiHelper
         $domain = $this->buildResponse($response);
 
         if (!is_null($domain['results'][0])) {
+            
+            // Store OP domain id in WHMCS
+            $whmcsId = DomainWHMCS::getDomainId($domainName);
+            $opId = $domain['results'][0]['id'];
+            DomainWHMCS::storeDomainId($whmcsId, $opId,$domainName);
+            
             return $domain['results'][0];
         }
 
@@ -159,6 +165,13 @@ class ApiHelper
             }
         }
 
+        // Store OP domain id in WHMCS
+        $whmcsId = DomainWHMCS::getDomainId($domainRegistration->domain->getFullName());
+        if(isset($result['id']) && $result['id'] != null) {
+            $opId = $result['id'];
+            DomainWHMCS::storeDomainId($whmcsId, $opId,$domainRegistration->domain->getFullName());
+        }
+
         return $result;
     }
 
@@ -171,7 +184,9 @@ class ApiHelper
     {
         $args = $this->serializer->normalize($domainTransfer);
 
-        return $this->buildResponse($this->apiClient->call('transferDomainRequest', $args));
+        $result = $this->buildResponse($this->apiClient->call('transferDomainRequest', $args));
+
+        return $result;
     }
 
     /**
