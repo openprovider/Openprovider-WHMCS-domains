@@ -93,7 +93,14 @@ Check if you downloaded the tld prices from your Openprovider live account, beca
 
         $advancedConfigurationMaxPeriod = Configuration::getOrDefault('maxRegistrationPeriod', 5);
 
+        $testModeTLDs = Configuration::get('test_mode_tlds');
+
         foreach ($extensionData['results'] as $extension) {
+        
+            if((isset($params['test_mode']) && $params['test_mode'] == 'on') && !in_array($extension['name'],$testModeTLDs)) {
+                continue;                
+            }
+            
             if (!isset($extension['prices']) || is_null($extension['prices'])) {
                 throw new \Exception(self::ERROR_MESSAGE_IF_TLDS_WITHOUT_PRICES);
             }

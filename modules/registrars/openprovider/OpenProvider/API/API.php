@@ -38,12 +38,18 @@ class API
      * @param $params
      * @param int $debug
      */
-    public function setParams($params, $debug = 0)
+    public function setParams($params, $debug = 0, $isTestTLD = false)
     {
-        if(isset($params['test_mode']) && $params['test_mode'] == 'on')
+        if(isset($params['test_mode']) && $params['test_mode'] == 'on'){
             $this->url = Configuration::get('api_url_cte');
-        else
+        }            
+        else{
             $this->url = Configuration::get('api_url');
+        }           
+        
+        if ($isTestTLD) {
+            $this->url = Configuration::get('api_url_sandbox');
+        }
 
         $this->request->setAuth(array(
             'username' => $params["Username"],
@@ -179,6 +185,9 @@ class API
 
         $errno = curl_errno($ch);
         $this->error = curl_error($ch);
+
+        //Log request
+        logModuleCall('Test123', 'extension', $this->url, $postValues, null, null);
 
         // Bypass log message for searchExtensionRequest since the response is too long
         if($r->getCommand() != "searchExtensionRequest"){
