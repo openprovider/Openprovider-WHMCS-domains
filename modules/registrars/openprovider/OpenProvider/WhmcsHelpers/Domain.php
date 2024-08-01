@@ -68,7 +68,7 @@ class Domain
 
 			return null;			
 		} catch (\Exception $e) {
-			logModuleCall("WHMCS DB", 'get_domain_id', "{domain: $domainName}", $e->getMessage(), $domainName);
+			logModuleCall('WHMCS DB', 'get_domain_id', '{domain: $domainName}', $e->getMessage(), $domainName);
 
 			return null; 
 		}
@@ -79,7 +79,7 @@ class Domain
 		try {
 			$domains = Capsule::table('tbldomains')
 				->where('registrar', $registrar)
-				->where('status', "Cancelled")
+				->where('status', 'Cancelled')
 				->get();
 
 			if ($domains) {
@@ -88,7 +88,7 @@ class Domain
 
 			return null;			
 		} catch (\Exception $e) {
-			logModuleCall("WHMCS DB", 'get_cancelled_domains', "{registrar: $registrar}", $e->getMessage(), $registrar);
+			logModuleCall('WHMCS DB', 'get_cancelled_domains', '{registrar: $registrar}', $e->getMessage(), $registrar);
 
 			return null; 
 		}
@@ -114,7 +114,7 @@ class Domain
         }
 
         $domain = Capsule::table(DatabaseTable::OPDomains)
-                    ->where('opid', $opId)
+                    ->where('domain', $domainName)
                     ->first();
 
         if ($domain == null) {
@@ -124,9 +124,39 @@ class Domain
                         ['opid' => $opId],
                         ['whmcsid' => $whmcsId, 'domain' => $domainName, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]                 
                     );
+				return;
             } catch (\Exception $e) {}
         }
-        
+
+		if($domain->opid != $opId) {
+			try {
+				Capsule::table(DatabaseTable::OPDomains)
+					->where('domain', $domainName)
+					->update(
+						['opid' => $opId, 'updated_at' => Carbon::now(), 'whmcsid' => $whmcsId]
+					);
+				return;
+			} catch (\Exception $e) {}
+		}        
     }
+
+	//Get OP domain ID
+	public static function getOpenproviderId($domainName)
+	{
+		try {
+			$domain = Capsule::table(DatabaseTable::OPDomains)
+				->where('domain', $domainName)
+				->first();
+
+			if ($domain) {
+				return $domain->opid;
+			}
+
+			return null;			
+		} catch (\Exception $e) {
+			logModuleCall('WHMCS DB', 'get_domain_op_id', '{domain: $domainName}', $e->getMessage(), $domainName);
+			return null; 
+		}
+	}
 
 } // END class Domain

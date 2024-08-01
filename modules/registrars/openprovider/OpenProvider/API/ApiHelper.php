@@ -47,25 +47,26 @@ class ApiHelper
         $response = $this->apiClient->call('searchDomainRequest', $args);
         $domain = $this->buildResponse($response);
 
-        if (!is_null($domain['results'][0])) {
-            
+        if (!is_null($domain['results'][0])) {            
             // Store OP domain id in WHMCS
             $whmcsId = DomainWHMCS::getDomainId($domainName);
             $opId = $domain['results'][0]['id'];
-            DomainWHMCS::storeDomainId($whmcsId, $opId,$domainName);
+            DomainWHMCS::storeDomainId($whmcsId, $opId,$domainName);            
             
             return $domain['results'][0];
         }
 
-        $responseCode = $response->getCode();
-        $responseMsg = $response->getMessage();
+        //Check if domain is transferred to another account
+        $openproviderId = DomainWHMCS::getOpenproviderId($domainName);
+        $openproviderHelper = new \OpenProvider\OpenProvider();
+        $isTransferred = $openproviderHelper->check_transferred_status($openproviderId);
 
-        if ($responseCode == 0 && is_null($domain['results']) && empty($responseMsg) && $domain) {
-            $domainId = DomainWHMCS::getDomainId($domainName);
-            
+        if($isTransferred) {
+            $domainId = DomainWHMCS::getDomainId($domainName);            
             if ($domainId != null) {
-                $status = "Cancelled";
+                $status = 'Transferred Away';
                 $this->updateDomainStatusInWHMCS($status, $domainId);
+                throw new \Exception('Domain does not exist in Openprovider! Mark as Transferred Away in WHMCS');
             }
         }
         

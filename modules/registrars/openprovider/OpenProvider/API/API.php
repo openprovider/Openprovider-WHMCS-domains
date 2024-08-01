@@ -173,9 +173,7 @@ class API
         curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-        $ret = curl_exec($ch);
-
-
+        $ret = curl_exec($ch);     
 
         $errno = curl_errno($ch);
         $this->error = curl_error($ch);
@@ -754,6 +752,20 @@ class API
         );
 
         return $this->sendRequest('modifyDomainRequest', $args);
+    }
+
+    public function getLastMutation($domainId)
+    {
+        $args = array
+        (
+            'limit'     =>  1,
+            'objectId' =>  $domainId,
+            'objectType' =>  'domain',
+            'orderBy' =>  'id',
+            'order' =>  'desc',
+        );
+
+        return $this->sendRequest('searchMsgQueueRequest', $args);
     }
 
     /**
