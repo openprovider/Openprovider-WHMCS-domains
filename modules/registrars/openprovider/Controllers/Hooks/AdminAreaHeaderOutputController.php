@@ -14,12 +14,12 @@ class AdminAreaHeaderOutputController
         }
 
         $testMode = false;
-        $rows = Capsule::table('tblregistrars')->get();
+        $allRegistrars = Capsule::table('tblregistrars')->get();
 
-        foreach ($rows as $row) {
-            $registrar = $row->registrar;
-            $setting = $row->setting;
-            $value = decrypt($row->value);
+        foreach ($allRegistrars as $oneRegistrar) {
+            $registrar = $oneRegistrar->registrar;
+            $setting = $oneRegistrar->setting;
+            $value = decrypt($oneRegistrar->value);
 
             if ($registrar == 'openprovider' && $setting == 'test_mode') {
                 if ($value == 'on') {
