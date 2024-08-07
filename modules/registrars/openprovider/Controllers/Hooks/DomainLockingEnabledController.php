@@ -13,28 +13,16 @@ use OpenProvider\WhmcsRegistrar\helpers\Cache;
  * Class DomainController
  * OpenProvider Registrar module
  *
- * @copyright Copyright (c) Openprovider 2018
+ * @copyright Copyright (c) Openprovider 2024
  */
 class DomainLockingEnabledController
 {
-
-    /**
-     * @var ApiHelper
-     */
-    private $apiHelper;
-    /**
-     * @var Domain
-     */
-    private $domain;
-
     /**
      * DomainController constructor.
      * @param ApiHelper $apiHelper
      */
-    public function __construct(ApiHelper $apiHelper, Domain $domain)
+    public function __construct(private ApiHelper $apiHelper, private Domain $domain)
     {
-        $this->apiHelper = $apiHelper;
-        $this->domain = $domain;
     }
 
     public function handleDomainLockingClientArea($vars)
