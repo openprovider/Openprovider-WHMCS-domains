@@ -181,7 +181,7 @@ class API
         $this->error = curl_error($ch);
 
         // Bypass log message for searchExtensionRequest since the response is too long
-        if($r->getCommand() != "searchExtensionRequest"){
+        if($r->getCommand() != "searchExtensionRequest" && $r->getCommand() != "searchMsgQueueRequest"){
             // log message
             logModuleCall(
                 'OpenProvider NL',
@@ -754,6 +754,20 @@ class API
         );
 
         return $this->sendRequest('modifyDomainRequest', $args);
+    }
+
+    public function getLastMutation($domainId)
+    {
+        $args = array
+        (
+            'limit'     =>  1,
+            'objectId' =>  $domainId,
+            'objectType' =>  'domain',
+            'orderBy' =>  'id',
+            'order' =>  'desc',
+        );
+
+        return $this->sendRequest('searchMsgQueueRequest', $args);
     }
 
     /**

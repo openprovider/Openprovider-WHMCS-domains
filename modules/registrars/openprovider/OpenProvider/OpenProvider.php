@@ -26,6 +26,13 @@ class OpenProvider
 	public $domain;
 
 	/**
+	 * The test mode
+	 *
+	 * @var boolean
+	 **/
+	public $isTestMode;
+
+	/**
 	 * Launch the OpenProvider class.
 	 *
 	 * @param  string $params *optional*. The registrar data.
@@ -39,6 +46,12 @@ class OpenProvider
 
 		$this->api      =   new \OpenProvider\API\API();
 		$this->api->setParams($params);
+
+		// Set the test mode
+		if ($params['test_mode'] == 'on')
+			$this->isTestMode = true;
+		else
+			$this->isTestMode = false;
 	}
 
 	/**
@@ -123,6 +136,32 @@ class OpenProvider
 
         return 'correct';
     }
+
+	/**
+	 * Get the domain info from OpenProvider mutation check XML API
+	 * Return true if it is transferred domain. Else return false.
+	 * @return boolean
+	 * */
+	public function check_transferred_status($domainId)
+	{
+		if ($domainId == null) {
+			return false;
+		}
+
+		if ($this->isTestMode) {
+			return false;
+		}
+
+		$result = $this->api->getLastMutation($domainId);
+		if (isset($result['total']) && $result['total'] > 0) {
+			if (isset($result['results'][0]['data']['action']) && $result['results'][0]['data']['action'] == 'outgoing_transfer') {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 
 
 

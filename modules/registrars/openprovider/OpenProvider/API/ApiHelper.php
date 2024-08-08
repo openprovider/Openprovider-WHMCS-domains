@@ -4,6 +4,7 @@ namespace OpenProvider\API;
 
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use OpenProvider\WhmcsHelpers\Domain as DomainWHMCS;
 use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
 
 class ApiHelper
@@ -41,14 +42,53 @@ class ApiHelper
         ];
 
         $args = array_merge($args, $additionalArgs);
+        $domainName = $domain->name . "." . $domain->extension;
         $domain = $this->buildResponse($this->apiClient->call('searchDomainRequest', $args));
 
         if (!is_null($domain['results'][0])) {
+            $whmcsId = DomainWHMCS::getDomainId($domainName);
+            $opId = $domain['results'][0]['id'];
+            DomainWHMCS::storeDomainId($whmcsId, $opId,$domainName);  
             return $domain['results'][0];
+        }
+
+        $openproviderId = DomainWHMCS::getOpenproviderId($domainName);
+        $openproviderHelper = new \OpenProvider\OpenProvider();
+        $isTransferred = $openproviderHelper->check_transferred_status($openproviderId);
+
+        if($isTransferred) {
+            $domainId = DomainWHMCS::getDomainId($domainName);            
+            if ($domainId != null) {
+                $status = 'Transferred Away';
+                $this->updateDomainStatusInWHMCS($status, $domainId);
+                throw new \Exception('Domain does not exist in Openprovider! Mark as Transferred Away in WHMCS');
+            }
         }
         
         throw new \Exception('Domain does not exist in Openprovider!');
     }
+
+    /**
+     * Update domain status in WHMCS DB
+     * @param string $status
+     * @param int $domainId
+     * @return void
+     */
+    private function updateDomainStatusInWHMCS(string $status, int $domainId): void
+    {
+        $command = 'UpdateClientDomain';
+        try {
+            $postData = array(
+                'domainid' => $domainId,
+                'status' => $status,
+            );
+            $results = localAPI($command, $postData);
+            logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':$status}", $results, null, null);
+        } catch (\Exception $e) {
+            logModuleCall('WHMCS internal', $command, null, "Failed to update domain. id: " . $domainId . ", msg: " . $e->getMessage(), null, null);
+        }
+    }
+
 
     /**
      * @param int $id
@@ -90,6 +130,13 @@ class ApiHelper
                 } catch (\Exception $e) {
                 }
             }
+        }
+
+        // Store OP domain id in WHMCS
+        $whmcsId = DomainWHMCS::getDomainId($domainRegistration->domain->getFullName());
+        if(isset($result['id']) && $result['id'] != null) {
+            $opId = $result['id'];
+            DomainWHMCS::storeDomainId($whmcsId, $opId,$domainRegistration->domain->getFullName());
         }
 
         return $result;
