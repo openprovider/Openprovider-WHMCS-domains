@@ -26,7 +26,7 @@ class DomainLockingEnabledController
      */
     public function __construct(private ApiHelper $apiHelper, private Domain $domain) {}
 
-    public function handleDomainLockingClientArea($vars)
+    public function handleDomainLockingClientArea(array $vars): string
     {
         $id = null;
 
@@ -70,7 +70,7 @@ class DomainLockingEnabledController
             </script>';
     }
 
-    public function handleDomainLockingClientSidebar(\WHMCS\View\Menu\Item $primarySidebar)
+    public function handleDomainLockingClientSidebar(\WHMCS\View\Menu\Item $primarySidebar): ?string
     {
         $id = $_REQUEST['id'] ?? ($_REQUEST['domainid'] ?? null);
         if (!$id) {
@@ -90,9 +90,11 @@ class DomainLockingEnabledController
         if (!is_null($primarySidebar->getChild('Domain Details Management'))) {
             $primarySidebar->getChild('Domain Details Management')->removeChild('Registrar Lock Status');
         }
+
+        return null;
     }
 
-    public function handleDomainLockingAdminArea()
+    public function handleDomainLockingAdminArea(): string
     {
         if (basename($_SERVER['PHP_SELF'] ?? (($_SERVER['SCRIPT_NAME'] ?? $_SERVER['SCRIPT_FILENAME']) ?? '')) !== "clientsdomains.php") {
             return "";
@@ -119,7 +121,7 @@ class DomainLockingEnabledController
         </script>';
     }
 
-    private function isDomainLockingEnabled($domain)
+    private function isDomainLockingEnabled(Domain $domain): bool
     {
         try {
             $op_domain_obj = DomainFullNameToDomainObject::convert($domain->domain);
