@@ -17,17 +17,22 @@ use OpenProvider\WhmcsRegistrar\helpers\Cache;
  */
 class DomainLockingEnabledController
 {
+
+    const REGISTRAR_OPENPROVIDER = 'openprovider';
+
     /**
      * DomainController constructor.
      * @param ApiHelper $apiHelper
      */
-    public function __construct(private ApiHelper $apiHelper, private Domain $domain)
-    {
-    }
+    public function __construct(private ApiHelper $apiHelper, private Domain $domain) {}
 
     public function handleDomainLockingClientArea($vars)
     {
-        $id = $vars['domain']->id ?? null;
+        $id = null;
+
+        if (isset($vars['domain'])) {
+            $id = $vars['domain']->id ?? null;
+        }
 
         if (!$id) {
             return "";
@@ -36,7 +41,7 @@ class DomainLockingEnabledController
         $domain = $this->domain->find($id);
 
         // Check if OpenProvider is the provider
-        if (!$domain || $domain->registrar !== "openprovider") {
+        if (!$domain || $domain->registrar !== self::REGISTRAR_OPENPROVIDER) {
             return "";
         }
 
@@ -74,7 +79,7 @@ class DomainLockingEnabledController
         // Get the domain details
         $domain = $this->domain->find($id);
         // Check if OpenProvider is the provider
-        if (!$domain || $domain->registrar !== "openprovider") {
+        if (!$domain || $domain->registrar !== self::REGISTRAR_OPENPROVIDER) {
             return "";
         }
 
@@ -99,7 +104,7 @@ class DomainLockingEnabledController
         // Get the domain details
         $domain = $this->domain->find($id);
         // Check if OpenProvider is the provider
-        if (!$domain || $domain->registrar !== "openprovider") {
+        if (!$domain || $domain->registrar !== self::REGISTRAR_OPENPROVIDER) {
             return "";
         }
 
@@ -130,9 +135,7 @@ class DomainLockingEnabledController
                     return false;
                 }
             } else {
-                if ($lockable_state) {
-                    return true;
-                }
+                return $lockable_state;
             }
         } catch (\Exception $e) {
         }
