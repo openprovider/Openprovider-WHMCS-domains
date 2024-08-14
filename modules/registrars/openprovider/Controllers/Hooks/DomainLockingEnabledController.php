@@ -53,7 +53,6 @@ class DomainLockingEnabledController
                 <script>
                 document.addEventListener("DOMContentLoaded", function() {
                     var tabReglockListItem = document.querySelector(\'a[href="#tabReglock"]\');
-                    console.log(document.querySelector(\'a[href="#tabReglock"]\').parentElement);
                     if (tabReglockListItem) {
                         tabReglockListItem.parentElement.style.display = \'none\';
                     }
