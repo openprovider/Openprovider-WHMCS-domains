@@ -3,8 +3,8 @@
 return [
     //Openprovider Production and CTE API endpoints
     'api_url'                           => 'https://api.openprovider.eu',
-    'api_url_cte'                       => 'http://api.sandbox.openprovider.nl:8480',
-    'api_url_sandbox'                   => 'https://api.sandbox.openprovider.nl/',
+    'restapi_url_sandbox'               => 'http://api.sandbox.openprovider.nl:8480',
+    'xmlapi_url_sandbox'                => 'https://api.sandbox.openprovider.nl/',
 
     //  Default: false, boolean - Set to true to allow support for premium domains
     'OpenproviderPremium'               => false,

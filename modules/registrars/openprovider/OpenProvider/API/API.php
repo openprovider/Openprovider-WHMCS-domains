@@ -41,14 +41,14 @@ class API
     public function setParams($params, $debug = 0, $isTestTLD = false)
     {
         if(isset($params['test_mode']) && $params['test_mode'] == 'on'){
-            $this->url = Configuration::get('api_url_cte');
+            $this->url = Configuration::get('restapi_url_sandbox');
         }            
         else{
             $this->url = Configuration::get('api_url');
         }           
         
         if ($isTestTLD) {
-            $this->url = Configuration::get('api_url_sandbox');
+            $this->url = Configuration::get('xmlapi_url_sandbox');
         }
 
         $this->request->setAuth(array(
