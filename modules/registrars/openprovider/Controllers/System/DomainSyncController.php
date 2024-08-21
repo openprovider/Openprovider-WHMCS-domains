@@ -80,13 +80,6 @@ class DomainSyncController extends BaseController
                 ->toDateString();
 
             if(in_array($domainOp['status'], self::DOMAIN_STATUSES_ACTIVE)) {
-                // auto renew on or not? -> WHMCS is leading.
-                if($setting['syncAutoRenewSetting'] == true)
-                    $this->process_auto_renew($domainOp);
-
-                // Identity protection or not? -> WHMCS is leading.
-                if($setting['syncIdentityProtectionToggle'] == true)
-                    $this->process_identity_protection($domainOp);
 
                 return [
                     'expirydate' => $expiration_date, // Format: YYYY-MM-DD
