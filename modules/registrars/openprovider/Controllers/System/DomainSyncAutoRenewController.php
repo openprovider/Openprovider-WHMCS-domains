@@ -40,7 +40,6 @@ class DomainSyncAutoRenewController extends BaseController
      */
     public function __construct(Core $core, api_domain $api_domain, Domain $domain, ApiHelper $apiHelper)
     {
-        var_dump('DomainSyncController');die;
         parent::__construct($core);
 
         $this->api_domain = $api_domain;
