@@ -16,7 +16,7 @@ use WeDevelopCoffee\wPower\Models\Domain;
  * Class TransferSyncController
  * @package OpenProvider\WhmcsRegistrar\Controllers\System
  */
-class DomainSyncController extends BaseController
+class DomainSyncAutoRenewController extends BaseController
 {
     const DOMAIN_STATUSES_ACTIVE = ['ACT'];
     const DOMAIN_STATUSES_INACTIVE = ['REQ', 'PEN', 'SCH'];
@@ -40,6 +40,7 @@ class DomainSyncController extends BaseController
      */
     public function __construct(Core $core, api_domain $api_domain, Domain $domain, ApiHelper $apiHelper)
     {
+        var_dump('DomainSyncController');die;
         parent::__construct($core);
 
         $this->api_domain = $api_domain;
@@ -129,4 +130,59 @@ class DomainSyncController extends BaseController
         return [];
     }
 
+    /**
+     * Process the Domain autorenew setting
+     *
+     * @return void
+     * @throws \Exception
+     */
+    private function process_auto_renew($domainOp)
+    {
+        $result = $this->apiHelper->toggleAutorenewDomain($this->domain, $domainOp);
+
+        if($result != 'correct')
+        {
+            /**
+             * Log the activity data
+             */
+            $activity_data = [
+                'id'            => $this->domain->id,
+                'domain'        => $this->domain->domain,
+                'old_setting'   => $result['old_setting'],
+                'new_setting'   => $result['new_setting'],
+            ];
+
+            Activity::log('update_autorenew_setting', $activity_data);
+        }
+    }
+
+    /**
+     * Process the Domain identity protection setting
+     *
+     * @return void
+     **/
+    private function process_identity_protection($domainOp)
+    {
+        try {
+            $result = $this->apiHelper->toggleWhoisProtection($this->domain, $domainOp);
+
+        } catch (\Exception $e) {
+            \logModuleCall('OpenProvider', 'Save identity toggle', $this->domain->domain, [$this->domain->domain, @$domainOp], $e->getMessage(), [$params['Password']]);
+        }
+
+        if($result != 'correct')
+        {
+            /**
+             * Log the activity data
+             */
+            $activity_data = [
+                'id'            => $this->domain->id,
+                'domain'        => $this->domain->domain,
+                'old_setting'   => $result['old_setting'],
+                'new_setting'   => $result['new_setting'],
+            ];
+
+            Activity::log('update_identity_protection_setting', $activity_data);
+        }
+    }
 }
