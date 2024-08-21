@@ -62,6 +62,7 @@ function openprovider_RegisterDomain($params)
 function openprovider_AdminCustomButtonArray()
 {
     $buttonarray = array(
+        "Auto-renew Sync" => "AutoRenewSync",
         "Sync" => "Sync",
     );
 
@@ -264,14 +265,25 @@ function openprovider_TransferSync($params)
 }
 
 /**
- * Mock a domain synchronisation.
+ * Mock a domain AutoRenew synchronisation.
  *
  * @param $params
  * @return array
  */
-function openprovider_Sync($params)
+function openprovider_AutoRenewSync($params)
 {
-    return openprovider_registrar_launch_decorator('domainSync', $params);
+    return openprovider_registrar_launch_decorator('domainSyncAutoRenew', $params);
+}
+
+/**
+ * Domain synchronisation.
+ *
+ * @param $params
+ * @return array
+ */
+function openprovider_Sync($paramsArray)
+{   
+    return openprovider_registrar_launch_decorator('domainSync', $paramsArray);
 }
 
 /**
