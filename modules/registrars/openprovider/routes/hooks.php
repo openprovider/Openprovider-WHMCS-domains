@@ -112,4 +112,9 @@ return [
         'priority' => 1,
         'controller' => 'DomainLockingEnabledController@handleDomainLockingAdminArea',
     ],
+    [
+        'hookPoint' => 'AdminAreaHeaderOutput',
+        'priority'  => 1,
+        'controller'=> 'AdminAreaHeaderOutputController@output',
+    ],
 ];
