@@ -155,7 +155,7 @@ class ApiV1 implements ApiInterface
         $description = "";
         $index = 1;
         foreach ($warnings as $warn) {
-            if ($warn['code'] != 0) {
+            if ($warn['code'] != 0 && $warn['code'] != 250) {
                 $description .= "Warning {$index}:\nCode: {$warn["code"]} \nDescription: {$warn["desc"]} \nData: {$warn["data"]}\n";
                 $index++;
             }
