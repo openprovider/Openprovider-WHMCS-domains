@@ -94,7 +94,6 @@ class DomainSyncAutoRenew
      **/
     public function __construct(ApiHelper $apiHelper, \idna_convert $idn, $limit = false)
     {
-        var_dump('DomainSyncAutoRenew');die;
         $this->apiHelper = $apiHelper;
         $this->idn = $idn;
         // Check if there are domains missing from the DomainSyncAutoRenew table
@@ -372,7 +371,7 @@ class DomainSyncAutoRenew
      **/
     private function process_domain_status($status = null)
     {
-        if($status == 'Cancelled' || $status == 'Expired' || $status == 'Transferred Away')
+        if($status === 'Cancelled' || $status === 'Expired' || $status === 'Transferred Away')
         {
             // Nothing to do.
             if($this->objectDomain->status == $status)
@@ -405,7 +404,6 @@ class DomainSyncAutoRenew
                     if($this->objectDomain->check_renew_domain_setting_upon_completed_transfer() == true)
                     {
                         $this->apiHelper->renewDomain($this->op_domain['id'], $this->objectDomain->registrationperiod);
-
                         // Fetch updated information
                         $this->op_domain             =    $this->apiHelper->getDomain($this->op_domain_obj);
                     }
@@ -513,6 +511,7 @@ class DomainSyncAutoRenew
             return true;
         } catch (\Exception $e) {
             return false;
+
         }
     }
 

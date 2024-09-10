@@ -371,7 +371,7 @@ class DomainSync
      **/
     private function process_domain_status($status = null)
     {
-        if($status == 'Cancelled' || $status == 'Expired' || $status == 'Transferred Away')
+        if($status === 'Cancelled' || $status === 'Expired' || $status === 'Transferred Away')
         {
             // Nothing to do.
             if($this->objectDomain->status == $status)
