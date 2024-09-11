@@ -12,6 +12,7 @@ use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\Domain as api_domain;
 use OpenProvider\WhmcsRegistrar\helpers\Cache;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 /**
  * Class DomainInformationController
@@ -95,9 +96,14 @@ class DomainInformationController extends BaseController
         $response['tld']                    = $op_domain['domain']['extension'];
         $response['nameservers']            = $this->getNameservers($op_domain['nameServers'] ?: []);
         $response['status']                 = api_domain::convertOpStatusToWhmcs($op_domain['status']);
-        $response['transferlock']           = $op_domain['isLocked'];
-        $response['expirydate']             = $op_domain['expirationDate'];
+        $response['transferlock']           = $op_domain['isLocked'];        
         $response['addons']['hasidprotect'] = $op_domain['isPrivateWhoisEnabled'];
+
+        if(Configuration::getOrDefault('renewalDateSync', true)) {
+            $response['expirydate']         = $op_domain['renewalDate'];
+        }else{
+            $response['expirydate']         = $op_domain['expirationDate'];
+        }
 
         if (!Cache::has($op_domain['domain']['extension'])) {
             if (($op_domain['isLockable'] ?? false)) {
