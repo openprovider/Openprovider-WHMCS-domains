@@ -3,6 +3,7 @@
 ## v5.8.0
 
 ###### Features and improvements
+
 - **Improved [TLD Price Sync](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/TLD_Pricing_sync_Utility.md)** - Fetch TLD prices with a single click from WHMCS. If prices were fetched via within last 24 hours, we will use the downloaded prices to speed up the operation.
 - **Improved [DNSSEC management for end users](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/DNSSEC_for_clients.md)** - Manually copying contents from 'custom-pages' to root folder is no longer required if your hosting environment permits. Made it easier to manage DNSSEC.
 - **Improved error reporting and logging** - Errors will be shown in WHMCS without restrictions. New informative error messages added for some scenarios.
@@ -10,8 +11,8 @@
 - **Auto-renew** - Domains will be created with auto-renew value "default" (will inherit reseller account settings)
 - **New**: [To-Do List](https://docs.whmcs.com/admins/admin-tools/#to-do-list) items creation for domain operation warnings in success response.
 
-
 ###### Bugfixes
+
 - Fixed known PHP 8.1 compatibility issues (Renewal, double-renewal, TLD sync, cron, additional fields, whois lookup, domain suggestions
 - Fixed errors getting truncated
 - Fixed duplicate handle creation on contact update
@@ -26,7 +27,7 @@
 
 ###### Features and improvements
 
-- Allow end user to enter additional fields for domain .it(company registration number/vat number/social security number). 
+- Allow end user to enter additional fields for domain .it(company registration number/vat number/social security number).
 - Enhanced module logs.
 
 ###### Bugfixes
@@ -39,7 +40,7 @@
 
 ###### Features and improvements
 
-- Allow end user to enter additional fields for domain .es(owner type/company registration number or identification number). 
+- Allow end user to enter additional fields for domain .es(owner type/company registration number or identification number).
 - Enhanced module logs.
 
 ## v5.4
@@ -59,7 +60,7 @@
 
 ###### Features and improvements
 
-- Allow end users and WHMCS administrators to update domain contact  details for .es domains, including the company / personal identification number
+- Allow end users and WHMCS administrators to update domain contact details for .es domains, including the company / personal identification number
 
 ###### Bugfixes
 
@@ -97,9 +98,9 @@
 ###### Features
 
 - Added support for Domain contact verification, for more information see the [WHMCS documentation](https://docs.whmcs.com/Domain_Contact_Verification)
-- [Support for tag management of clients](https://github.com/openprovider/OP-WHMCS7#allow-end-users-to-edit-dnssec-records)
+- [Support for tag management of clients](https://github.com/openprovider/Openprovider-WHMCS-domains#allow-end-users-to-edit-dnssec-records)
 - Simplified configuration page
-- [Allow end users to manage DNSSEC records](https://github.com/openprovider/OP-WHMCS7#allow-end-users-to-edit-dnssec-records)
+- [Allow end users to manage DNSSEC records](https://github.com/openprovider/Openprovider-WHMCS-domains#allow-end-users-to-edit-dnssec-records)
 - Refactored documentation
 
 ###### Bugfixes
@@ -116,6 +117,7 @@
 - [FEATURE] Adds support for assigning tags to specific clients, which allows the WHMCS administrator to send custom emails to the client and all of the client's contacts
 
 ## v3.3
+
 Notes:
 To improve DNS support, perform the actions are instructed in "Install the DNS management options". We have created a [request for WHMCS to make this easier. Please upvote this request here](https://requests.whmcs.com/topic/add-support-for-custom-dns-types).
 
@@ -135,7 +137,6 @@ To improve DNS support, perform the actions are instructed in "Install the DNS m
 - Bugfix: Removed the by WHMCS introduced field "Eurid Entity type" for .eu (#130)
 - Bugfix: Fixed addon activation (#119)
 - Bugfix: Domains in Pending transfer are skipped by DomainSync (#131)
-
 
 ## All previous versions to v3.0
 
