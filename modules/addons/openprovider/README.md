@@ -2,6 +2,11 @@
 
 The Openprovider WHMCS module enables some extra features for there users by activating Openprovide Addon module feature.
 
+## Installing Openprovider Addon module
+- Upload/copy `<Module directory>/modules/addons/openprovider to <WHMCS directory>/modules/addons`
+
+## Activating Openprovider Addon module
+
 Following steps describes how to activate Openprovider Addon module.
 
 1. Navigate to Configuration >> System Settings >> Addon Modules
