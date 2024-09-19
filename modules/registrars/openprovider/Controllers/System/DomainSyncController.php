@@ -6,6 +6,7 @@ use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WHMCS\Carbon;
+use OpenProvider\WhmcsHelpers\DomainSync;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\Domain as api_domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -21,12 +22,10 @@ class DomainSyncController extends BaseController
      * @var api_domain
      */
     private $api_domain;
-    
     /**
      * @var Domain
      */
     private $domain;
-    
     /**
      * @var ApiHelper
      */
