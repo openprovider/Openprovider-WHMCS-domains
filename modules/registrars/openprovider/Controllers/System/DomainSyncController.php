@@ -69,7 +69,7 @@ class DomainSyncController extends BaseController
             // save the status and expiry date
             $this->updateDomainStatusAndExpiry($status, $expiration_date, $params['domainid']);
             // Refresh the page to reflect the changes
-            header('Location: ' . $_SERVER['HTTP_REFERER']);
+            header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
             // Return the updated data
             return [
                 'expirydate' => $expiration_date, // Format: YYYY-MM-DD
