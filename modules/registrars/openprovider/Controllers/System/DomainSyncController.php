@@ -66,7 +66,8 @@ class DomainSyncController extends BaseController
 
             // Determine domain status based on OpenProvider data
             $status = $this->mapDomainStatus($domainOp['status']);
-
+            // save the status and expiry date
+            $this->saveStatus_expiryDate($status, $expiration_date, $params['domainid']);
             // Return the updated data
             return [
                 'expirydate' => $expiration_date, // Format: YYYY-MM-DD
@@ -80,7 +81,20 @@ class DomainSyncController extends BaseController
             ];
         }
     }
-
+    private function saveStatus_expiryDate($status, $expiry_date, $domainId){
+    $command = 'UpdateClientDomain';
+    try {
+        $postData = array(
+            'domainid' => $domainId,
+            'status' => $status,
+            'expirydate' => $expiry_date,
+        );
+        $results = localAPI($command, $postData);
+        logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':$status}", $results, null, null);
+    } catch (\Exception $e) {
+        logModuleCall('WHMCS internal', $command, null, "Failed to update domain. id: " . $domainId . ", msg: " . $e->getMessage(), null, null);
+    }
+    }
     /**
      * Map OpenProvider status to WHMCS status.
      *
