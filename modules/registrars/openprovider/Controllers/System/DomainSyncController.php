@@ -68,6 +68,8 @@ class DomainSyncController extends BaseController
             $status = $this->mapDomainStatus($domainOp['status']);
             // save the status and expiry date
             $this->updateDomainStatusAndExpiry($status, $expiration_date, $params['domainid']);
+            // Refresh the page to reflect the changes
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
             // Return the updated data
             return [
                 'expirydate' => $expiration_date, // Format: YYYY-MM-DD
@@ -80,8 +82,6 @@ class DomainSyncController extends BaseController
                 'error' =>  $ex->getMessage()
             ];
         }
-        header('Location: ' . $_SERVER['HTTP_REFERER']);
-        exit();
     }
     private function updateDomainStatusAndExpiry($status, $expiry_date, $domainId){
     $command = 'UpdateClientDomain';
