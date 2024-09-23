@@ -112,4 +112,9 @@ return [
         'priority' => 1,
         'controller' => 'DomainLockingEnabledController@handleDomainLockingAdminArea',
     ],
+    [
+        'hookPoint' => 'AdminClientDomainTabFields',
+        'priority' => 1,
+        'controller' => 'AdminClientDomainTabFieldsController@output',
+    ],
 ];

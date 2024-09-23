@@ -68,9 +68,6 @@ class DomainSyncController extends BaseController
             $status = $this->mapDomainStatus($domainOp['status']);
             // save the status and expiry date
             $this->updateDomainStatusAndExpiry($status, $expiration_date, $params['domainid']);
-            // Refresh the page to reflect the changes
-            header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-            // Return the updated data
             return [
                 'expirydate' => $expiration_date, // Format: YYYY-MM-DD
                 'active' => $status === 'Active',
