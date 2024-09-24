@@ -198,7 +198,7 @@ class SynchroniseController extends BaseController
                 // Update the registrar with to openprovider.
                 $domain =  $scheduled_domain_transfer->tbldomain;
                 $domain->registrar = 'openprovider';
-                $domain->expirydate = $openprovider_domain['expirationDate'];
+                $domain->expirydate = $openprovider_domain['renewalDate']; // Use renewal date as expiry date.
                 $domain->save();
 
                 //Log to the Activity log.
