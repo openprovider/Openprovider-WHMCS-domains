@@ -854,10 +854,52 @@ $additionaldomainfields[".law"][] = array(
 $additionaldomainfields[".fi"][] = array(
     "Name" => "Organisation Type",
     "LangVar" => "fiOrgType",
-    "Type" => "text",
+    "Type" => "dropdown",
     "Required" => true,
+    "Options" => "0 - Private person,1 - Company,2 - Corporation,3 - Institution,4 - Political party,5 - Township,6 - Government,7 - Public Community",
+    "op_explode" => ' -',
     "op_location" => "domainAdditionalData",
     "op_name" => "orgType"
+);
+
+$additionaldomainfields['.fi'][] = array(
+    'Name' => 'Company Registration Number',
+    "LangVar" => "fiCompanyRegistrationNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "Required" => false,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "companyRegistrationNumber"
+);
+
+$additionaldomainfields['.fi'][] = array(
+    'Name' => 'Passport/ID number for Individuals',
+    "LangVar" => "fiPassportNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "Required" => false,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "passportNumber"
+);
+
+$additionaldomainfields['.fi'][] = array(
+    'Name' => 'Social Security Number for Individuals',
+    "LangVar" => "fiSocialSecurityNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "Required" => false,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "socialSecurityNumber"
+);
+
+$additionaldomainfields['.fi'][] = array(
+    'Name' => 'Birthday for Foreign Private Individuals (YYYY-MM-DD)',
+    "LangVar" => "fiBirthDate",
+    "Type" => "text",
+    "Size" => "10",
+    "Required" => false,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "birthDate"
 );
 
 $additionaldomainfields['.nu'][] = array(

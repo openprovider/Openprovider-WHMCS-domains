@@ -343,7 +343,7 @@ function openprovider_config_validate($params)
 
     if ($testMode == 'on') {
         $env = 'Sandbox';
-        $baseUrl = Configuration::get('api_url_cte');
+        $baseUrl = Configuration::get('restapi_url_sandbox');
     }
 
     $url = "{$baseUrl}{$resourcePath}"; 

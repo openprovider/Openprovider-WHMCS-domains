@@ -53,7 +53,7 @@ function openprovider_bind_required_classes($launcher)
     $params = (new Registrar())->getRegistrarData()['openprovider'];
 
     $host = $params['test_mode'] == 'on' ?
-        Configuration::get('api_url_cte') :
+        Configuration::get('restapi_url_sandbox') :
         Configuration::get('api_url');
 
     $useApiV1 = true;

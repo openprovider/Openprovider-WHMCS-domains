@@ -38,12 +38,18 @@ class API
      * @param $params
      * @param int $debug
      */
-    public function setParams($params, $debug = 0)
+    public function setParams($params, $debug = 0, $isTestTLD = false)
     {
-        if(isset($params['test_mode']) && $params['test_mode'] == 'on')
-            $this->url = Configuration::get('api_url_cte');
-        else
+        if(isset($params['test_mode']) && $params['test_mode'] == 'on'){
+            $this->url = Configuration::get('restapi_url_sandbox');
+        }            
+        else{
             $this->url = Configuration::get('api_url');
+        }           
+        
+        if ($isTestTLD) {
+            $this->url = Configuration::get('xmlapi_url_sandbox');
+        }
 
         $this->request->setAuth(array(
             'username' => $params["Username"],
@@ -174,8 +180,6 @@ class API
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
         $ret = curl_exec($ch);
-
-
 
         $errno = curl_errno($ch);
         $this->error = curl_error($ch);
