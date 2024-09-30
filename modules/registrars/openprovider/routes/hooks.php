@@ -117,4 +117,9 @@ return [
         'priority'  => 1,
         'controller'=> 'AdminAreaHeaderOutputController@output',
     ],
+    [
+        'hookPoint' => 'AdminAreaHeaderOutput',
+        'priority'  => 1,
+        'controller'=> 'AdminAreaHeaderOutputController@output',
+    ],
 ];

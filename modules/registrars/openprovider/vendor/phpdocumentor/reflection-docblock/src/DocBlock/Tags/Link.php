@@ -24,11 +24,9 @@ use Webmozart\Assert\Assert;
  */
 final class Link extends BaseTag implements Factory\StaticMethod
 {
-    /** @var string */
-    protected $name = 'link';
+    protected string $name = 'link';
 
-    /** @var string */
-    private $link;
+    private string $link;
 
     /**
      * Initializes a link to a URL.
@@ -43,7 +41,7 @@ final class Link extends BaseTag implements Factory\StaticMethod
         string $body,
         ?DescriptionFactory $descriptionFactory = null,
         ?TypeContext $context = null
-    ) : self {
+    ): self {
         Assert::notNull($descriptionFactory);
 
         $parts = Utils::pregSplit('/\s+/Su', $body, 2);
@@ -55,7 +53,7 @@ final class Link extends BaseTag implements Factory\StaticMethod
     /**
      * Gets the link
      */
-    public function getLink() : string
+    public function getLink(): string
     {
         return $this->link;
     }
@@ -63,7 +61,7 @@ final class Link extends BaseTag implements Factory\StaticMethod
     /**
      * Returns a string representation for this tag.
      */
-    public function __toString() : string
+    public function __toString(): string
     {
         if ($this->description) {
             $description = $this->description->render();
@@ -71,7 +69,7 @@ final class Link extends BaseTag implements Factory\StaticMethod
             $description = '';
         }
 
-        $link = (string) $this->link;
+        $link = $this->link;
 
         return $link . ($description !== '' ? ($link !== '' ? ' ' : '') . $description : '');
     }

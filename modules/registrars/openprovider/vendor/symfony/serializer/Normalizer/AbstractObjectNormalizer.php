@@ -217,7 +217,7 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
     /**
      * Computes the normalization context merged with current one. Metadata always wins over global context, as more specific.
      */
-    private function getAttributeNormalizationContext($object, string $attribute, array $context): array
+    private function getAttributeNormalizationContext(object $object, string $attribute, array $context): array
     {
         if (null === $metadata = $this->getAttributeMetadata($object, $attribute)) {
             return $context;
@@ -273,11 +273,9 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
     /**
      * Gets and caches attributes for the given object, format and context.
      *
-     * @param object $object
-     *
      * @return string[]
      */
-    protected function getAttributes($object, ?string $format, array $context)
+    protected function getAttributes(object $object, ?string $format, array $context)
     {
         $class = $this->objectClassResolver ? ($this->objectClassResolver)($object) : \get_class($object);
         $key = $class.'-'.$context['cache_key'];
@@ -424,11 +422,17 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
             // if a value is meant to be a string, float, int or a boolean value from the serialized representation.
             // That's why we have to transform the values, if one of these non-string basic datatypes is expected.
             if (\is_string($data) && (XmlEncoder::FORMAT === $format || CsvEncoder::FORMAT === $format)) {
-                if ('' === $data && $type->isNullable() && \in_array($type->getBuiltinType(), [Type::BUILTIN_TYPE_BOOL, Type::BUILTIN_TYPE_INT, Type::BUILTIN_TYPE_FLOAT], true)) {
-                    return null;
+                if ('' === $data) {
+                    if (Type::BUILTIN_TYPE_ARRAY === $builtinType = $type->getBuiltinType()) {
+                        return [];
+                    }
+
+                    if ($type->isNullable() && \in_array($builtinType, [Type::BUILTIN_TYPE_BOOL, Type::BUILTIN_TYPE_INT, Type::BUILTIN_TYPE_FLOAT], true)) {
+                        return null;
+                    }
                 }
 
-                switch ($type->getBuiltinType()) {
+                switch ($builtinType ?? $type->getBuiltinType()) {
                     case Type::BUILTIN_TYPE_BOOL:
                         // according to https://www.w3.org/TR/xmlschema-2/#boolean, valid representations are "false", "true", "0" and "1"
                         if ('false' === $data || '0' === $data) {
@@ -470,7 +474,7 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
                 $builtinType = Type::BUILTIN_TYPE_OBJECT;
                 $class = $collectionValueType->getClassName().'[]';
 
-                if (null !== $collectionKeyType = $type->getCollectionKeyTypes()) {
+                if (\count($collectionKeyType = $type->getCollectionKeyTypes()) > 0) {
                     [$context['key_type']] = $collectionKeyType;
                 }
             } elseif ($type->isCollection() && \count($collectionValueType = $type->getCollectionValueTypes()) > 0 && Type::BUILTIN_TYPE_ARRAY === $collectionValueType[0]->getBuiltinType()) {
@@ -517,7 +521,7 @@ abstract class AbstractObjectNormalizer extends AbstractNormalizer
             // PHP's json_decode automatically converts Numbers without a decimal part to integers.
             // To circumvent this behavior, integers are converted to floats when denormalizing JSON based formats and when
             // a float is expected.
-            if (Type::BUILTIN_TYPE_FLOAT === $builtinType && \is_int($data) && false !== strpos($format, JsonEncoder::FORMAT)) {
+            if (Type::BUILTIN_TYPE_FLOAT === $builtinType && \is_int($data) && str_contains($format, JsonEncoder::FORMAT)) {
                 return (float) $data;
             }
 
