@@ -62,4 +62,7 @@ return [
 
     // customPages
     'showDnssecPage' => 'DnssecPageController@show',
+
+    //Import domain
+    'importDomainApi' => 'DomainInformationController@importDomain',
 ];

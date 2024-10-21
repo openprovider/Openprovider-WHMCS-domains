@@ -23,4 +23,7 @@ return [
     'cleanScheduledDomainTransfers' => 'ScheduledDomainTransferController@clean',
     'toggleFilterScheduledDomainTransfers' => 'ScheduledDomainTransferController@toggle',
 
+    // Bulk domain import
+    'bulkImportIndex' => 'BulkImportController@index',
+
 ];

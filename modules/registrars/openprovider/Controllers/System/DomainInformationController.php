@@ -13,7 +13,9 @@ use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\Domain as api_domain;
 use OpenProvider\WhmcsRegistrar\helpers\Cache;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
-
+use WHMCS\Authentication\CurrentUser;
+use OpenProvider\WhmcsHelpers\Domain as WHMCS_domain;
+use OpenProvider\WhmcsRegistrar\helpers\ApiResponse;
 /**
  * Class DomainInformationController
  */
@@ -242,5 +244,142 @@ class DomainInformationController extends BaseController
         $modulePath = $this->path->getModulePath() ?? __DIR__ . '/../../';
         $arrayFromFileExtractor = new ArrayFromFileExtractor($modulePath);
         return $arrayFromFileExtractor->extract(ArrayFromFileExtractor::PUNY_CODE_CC_TLDS_PATH);
+    }
+
+    public function importDomain($params)
+    {
+        try{
+            $currentUser        = new CurrentUser();
+            $authUser           = $currentUser->admin();
+            if (!$currentUser->isAuthenticatedAdmin()) {
+                return ApiResponse::error(400, 'You are have no authority to make this request.');
+            }
+
+            $userId             = $authUser->id;
+            $clientId           = $params["clientId"];
+            $paymentMethod      = $params["paymentMethod"];
+            $registrar          = $params["registrar"];
+            $domainListStr      = $params["domainList"]; //String of domains separate by new lines
+            
+            $domainList         = explode("\n", $domainListStr);
+            $validationResult   = $this->validateDomains($domainList);
+            $domains            = $validationResult["valid"];
+            $existingDomains    = $validationResult["existing"];     
+            
+
+            if(empty($domains) && !empty($existingDomains)){
+                return ApiResponse::error(400, 'No valid domains found. The following domains already exist in WHMCS: '.implode(", ", $existingDomains));
+            }
+
+            if(empty($domains)){
+                return ApiResponse::error(400, 'No valid domains found');
+            }
+
+            if(empty($clientId)){
+                return ApiResponse::error(400, 'No client found');
+            }
+
+            if(empty($paymentMethod)){
+                return ApiResponse::error(400, 'No payment method found');
+            }            
+
+            
+            $orderCreateResult     = $this->createOrder($clientId, $paymentMethod,$domains);
+
+            if($orderCreateResult["result"] == "success"){
+                $orderId           = $orderCreateResult["orderid"];
+                $orderAcceptResult = $this->acceptOrder($orderId, $registrar);
+                if($orderAcceptResult["result"] != "success"){
+                    logModuleCall('openprovider', 'bulk import', 'Order accept failed.', $orderAcceptResult, null,null);
+                    return ApiResponse::error(400, 'Order accept failed. Please manually accept the order. Order ID: '.$orderId);
+                }
+            }else{
+                logModuleCall('openprovider', 'bulk import', 'Order creation failed.', $orderCreateResult, null,null);
+                return ApiResponse::error(400, 'Order creation failed');
+            }
+
+            if(!empty($existingDomains)){
+                return ApiResponse::success(['message' => 'Domains imported successfully. The following domains already exist in WHMCS: '.implode(", ", $existingDomains)]);
+            }
+
+            return ApiResponse::success(['message' => 'Domains imported successfully']);
+        }catch(\Exception $e){
+            logModuleCall('openprovider', 'bulk import', 'Domain import failed.', $e->getMessage(), null,null);
+            return ApiResponse::error(400, 'Domain import failed. Please check the module logs for more details');
+        }
+    }
+
+    // Create Order by WHMCS Internal API
+    private function createOrder($clientId, $paymentMethod, $domains): array
+    {
+        $domainTypes= array_map(function($domain){
+            return "transfer";
+        }, $domains);
+
+        $command    = 'AddOrder';
+        $postData   = array(
+            'clientid'      => $clientId,
+            'paymentmethod' => $paymentMethod,
+            'domain'        => $domains,
+            'domaintype'    => $domainTypes,
+            'noinvoice'     => 1,
+            'noinvoiceemail'=> 1,
+            'noemail'       => 1,
+        );
+
+        $results    = localAPI($command, $postData);
+        return $results;
+    }
+
+    // Accept Order by WHMCS Internal API
+    private function acceptOrder($orderId, $registrar): array
+    {
+        $command    = 'AcceptOrder';
+        $postData   = array(
+            'orderid' => $orderId,
+        );
+        if(!empty($registrar)){
+            $postData['registrar'] = $registrar;
+        }
+        $results    = localAPI($command, $postData);
+        return $results;
+    }
+
+    // Validate an array of domain names.
+    private function validateDomains($domains) 
+    {
+        // Regex to match valid domain names (standard domain structure)
+        $domainPattern = '/^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/';
+        
+        $validDomains = [];
+        $invalidDomains = [];
+        $existingDomains = [];
+
+        foreach ($domains as $domain) {
+            // Trim any surrounding whitespace
+            $domain = trim($domain);
+            
+            // Check if the domain matches the regex pattern
+            if (preg_match($domainPattern, $domain) && !empty($domain)) {
+                //try to get WHMCS ID
+                $whmcsId = WHMCS_domain::getDomainId($domain);
+                if($whmcsId == null){
+                    $validDomains[] = $domain;
+                }else{
+                    $existingDomains[] = $domain;
+                }
+            } else {
+                $invalidDomains[] = $domain;
+            }
+        }
+
+        if(!empty($invalidDomains)){
+            logModuleCall('openprovider', 'bulk import', 'Invalid domains found', $invalidDomains, null, null);
+        }
+
+        return [
+            "valid" => $validDomains,
+            "existing" => $existingDomains
+        ];
     }
 }

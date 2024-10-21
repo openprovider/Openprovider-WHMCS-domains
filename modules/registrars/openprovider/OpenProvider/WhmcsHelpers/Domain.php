@@ -3,6 +3,7 @@ namespace OpenProvider\WhmcsHelpers;
 use WHMCS\Database\Capsule,
 	OpenProvider\WhmcsHelpers\Schemes\DomainSyncScheme,
 	Carbon\Carbon;
+use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 
 /**
  * Helper for domain data.
@@ -49,6 +50,23 @@ class Domain
 		} catch (\Exception $e) {
 		    // Some kind of error occured, let's log the data.
 			logModuleCall($registrar, 'update_domain_data', null, $e->getMessage(), $update_domain_data);
+		}
+	}
+
+	//Get WHMCS domain ID
+	public static function getDomainId($domainName)
+	{
+		try {
+			$domain = Capsule::table(DatabaseTable::Domains)
+				->where('domain', $domainName)
+				->first();
+			if ($domain) {
+				return $domain->id;
+			}
+			return null;			
+		} catch (\Exception $e) {
+			logModuleCall('WHMCS DB', 'get_domain_id', '{domain: '.$domainName.'}', $e->getMessage(), $domainName);
+			return null; 
 		}
 	}
 

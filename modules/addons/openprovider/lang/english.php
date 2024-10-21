@@ -23,3 +23,6 @@ $_ADDONLANG['scheduled_domain_transfers_show_all_domains'] = 'Show all scheduled
 $_ADDONLANG['scheduled_domain_transfers_show_scheduled_only_domains'] = 'Show only scheduled domain transfers';
 
 $_ADDONLANG['no_scheduled_domain_transfers'] = 'There are no domain transfers scheduled.';
+
+$_ADDONLANG['bulk_import_title'] = 'Bulk Domain Import - Addon Module';
+$_ADDONLANG['bulk_import_button'] = 'Import';
