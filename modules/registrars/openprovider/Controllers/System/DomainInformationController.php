@@ -16,6 +16,7 @@ use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WHMCS\Authentication\CurrentUser;
 use OpenProvider\WhmcsHelpers\Domain as WHMCS_domain;
 use OpenProvider\WhmcsRegistrar\helpers\ApiResponse;
+use OpenProvider\WhmcsRegistrar\enums\WHMCSApiActionType;
 /**
  * Class DomainInformationController
  */
@@ -316,7 +317,7 @@ class DomainInformationController extends BaseController
             return "transfer";
         }, $domains);
 
-        $command    = 'AddOrder';
+        $command    = WHMCSApiActionType::AddOrder;
         $postData   = array(
             'clientid'      => $clientId,
             'paymentmethod' => $paymentMethod,
@@ -334,7 +335,7 @@ class DomainInformationController extends BaseController
     // Accept Order by WHMCS Internal API
     private function acceptOrder($orderId, $registrar): array
     {
-        $command    = 'AcceptOrder';
+        $command    = WHMCSApiActionType::AcceptOrder;
         $postData   = array(
             'orderid' => $orderId,
         );
@@ -376,6 +377,9 @@ class DomainInformationController extends BaseController
         if(!empty($invalidDomains)){
             logModuleCall('openprovider', 'bulk import', 'Invalid domains found', $invalidDomains, null, null);
         }
+
+        //Remove duplicates in valid domains
+        $validDomains = array_unique($validDomains);
 
         return [
             "valid" => $validDomains,

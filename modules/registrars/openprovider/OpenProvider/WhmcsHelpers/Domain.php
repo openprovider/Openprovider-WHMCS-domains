@@ -69,5 +69,4 @@ class Domain
 			return null; 
 		}
 	}
-
 } // END class Domain

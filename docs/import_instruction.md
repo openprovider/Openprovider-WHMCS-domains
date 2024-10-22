@@ -30,3 +30,28 @@ This file placed here: ```<module-folder>/import/domain-import-config.php```
  - DEFAULT_PAYMENT_METHOD => Default payment method
  - NEXT_DUE_DATE_OFFSET_FROM_EXPIRY_DATE => Offset days to next due date from expiration date
  - CURRENCY_CODE => Currency code to set domain pricing
+
+
+# Bulk Domain Import Module
+
+Now, Openprovider has included bulk domain import interfaces for your convenience. Using these user interfaces, you can import domains in bulk form by selecting a client and payment method. Also, you can import other registrar domains to WHMCS side without selecting resgistrar.
+
+## Instructions
+
+- Enable Openprovider add-on module. 
+- Enable module log (for troubleshooting purposes) 
+- Go to "Bulk Import" tab in Openprovider add-on page
+- Enter your domains seperated by newlines (Openprovider recommend 100 domains at a time)
+- Select Client, and Payment method
+- Selecting a registrar is not required. (if you select "Openprovider" as the registrar, Domain sync will be executed after importing)
+- Click "Import" button to import domains.
+
+## Possible Errors
+- You are have no authority to make this request. (solution: make sure you have correctly login to WHMCS) 
+- No valid domains found. (soultion: make sure you have entered domains with correct format)
+- Order creation failed (please refer Module log to get more details)
+- Order accept failed (please refer Module log to get more details)
+- Domains already exsist in WHMCS
+
+
+If you have encountered an error, please refer Module log to get more details.

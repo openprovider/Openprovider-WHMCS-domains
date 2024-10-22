@@ -7,7 +7,7 @@ use WeDevelopCoffee\wPower\Validator\Validator;
 use WeDevelopCoffee\wPower\View\View;
 use WHMCS\Database\Capsule;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
-
+use OpenProvider\WhmcsRegistrar\enums\WHMCSApiActionType;
 
 /**
  * Client controller dispatcher.
@@ -36,14 +36,12 @@ class BulkImportController extends ViewBaseController {
     }
 
     /**
-     * Show an index with all the domains.
+     * Show an index with domain import form.
      * 
      * @return string
      */
-    public function index($params, $notification = '')
+    public function index($params)
     {
-        //$module_link = $this->view->getRoute(['route' => 'bulkImportIndex']);
-
         $clients     = $this->getClients();
         $client_list = [
             ['value' => '', 'name' => 'Select Client']
@@ -69,9 +67,9 @@ class BulkImportController extends ViewBaseController {
         
         return $this->view('bulk_domain_import/index', 
             [
-                'LANG' => $params['_lang'],
-                'client_list' => $client_list,
-                'payment_methods' => $payment_methods,
+                'LANG'                => $params['_lang'],
+                'client_list'         => $client_list,
+                'payment_methods'     => $payment_methods,
                 'apiUrlImportDomains' => $apiUrlImportDomains,
             ]
         );
@@ -80,22 +78,18 @@ class BulkImportController extends ViewBaseController {
     // Accept Order by WHMCS Internal API
     private function getClients(): array
     {        
-        $command  = 'GetClients';
+        $command  = WHMCSApiActionType::GetClients;
         $postData = array();
         $results  = localAPI($command, $postData);     
         return $results;
     }
 
-    // Accept Order by WHMCS Internal API
+    // Get Payment Methods by WHMCS Internal API
     private function getPaymentMethods(): array
     {        
-        $command  = 'GetPaymentMethods';
+        $command  = WHMCSApiActionType::GetPaymentMethods;
         $postData = array();
         $results  = localAPI($command, $postData);       
         return $results;
     }
-
-
-
-
 }

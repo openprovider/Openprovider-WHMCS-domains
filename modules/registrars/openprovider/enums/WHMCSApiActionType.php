@@ -8,6 +8,10 @@ class WHMCSApiActionType
 {
     // Clients
     const AddClient = 'AddClient';
+    const GetClients = 'GetClients';
+
+    // PaymentMethods
+    const GetPaymentMethods = 'GetPaymentMethods';
 
     // Contacts
     const AddContact    = 'AddContact';
