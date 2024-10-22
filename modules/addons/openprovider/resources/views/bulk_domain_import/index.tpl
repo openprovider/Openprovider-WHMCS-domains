@@ -52,12 +52,12 @@
         <div class="form-group">
             <input id="submitButton" class="btn btn-primary" type="button" value="{$LANG.bulk_import_button}">
         </div>
+        <p>(if you select "Openprovider" as the registrar, Domain sync will be executed after importing)</p>
 
         <!-- Success and Error Messages -->
         <div id="successMessage" style="display:none; text-align:center; color: green;"></div>
         <div id="errorMessage" style="display:none; text-align:center; color: red;"></div>
-
-        <p>(if you select "Openprovider" as the registrar, Domain sync will be executed after importing)</p>
+        
     </div>
 </div>
 

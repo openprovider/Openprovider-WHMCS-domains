@@ -17,6 +17,9 @@ use WHMCS\Authentication\CurrentUser;
 use OpenProvider\WhmcsHelpers\Domain as WHMCS_domain;
 use OpenProvider\WhmcsRegistrar\helpers\ApiResponse;
 use OpenProvider\WhmcsRegistrar\enums\WHMCSApiActionType;
+use WeDevelopCoffee\wPower\Models\Domain as model_domain;
+use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
+
 /**
  * Class DomainInformationController
  */
@@ -40,11 +43,15 @@ class DomainInformationController extends BaseController
      * @var Path
      */
     private $path;
+    /**
+     * @var model_domain
+     */
+    private $model_domain;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, api_domain $api_domain, ApiInterface $apiClient, ApiHelper $apiHelper, Path $path)
+    public function __construct(Core $core, api_domain $api_domain, model_domain $model_domain, ApiInterface $apiClient, ApiHelper $apiHelper, Path $path)
     {
         parent::__construct($core);
 
@@ -52,6 +59,7 @@ class DomainInformationController extends BaseController
         $this->apiHelper = $apiHelper;
         $this->api_domain = $api_domain;
         $this->path = $path;
+        $this->model_domain = $model_domain;
     }
 
     /**
@@ -299,11 +307,34 @@ class DomainInformationController extends BaseController
                 return ApiResponse::error(400, 'Order creation failed');
             }
 
-            if(!empty($existingDomains)){
-                return ApiResponse::success(['message' => 'Domains imported successfully. The following domains already exist in WHMCS: '.implode(", ", $existingDomains)]);
+            $syncedFailedDomains = [];
+            if($registrar == "openprovider"){
+                foreach($domains as $domainName){
+                    $domainId = WHMCS_domain::getDomainId($domainName);
+                    if($domainId != null){
+                        $result = $this->syncDomainById($domainId);
+                        if(!$result){
+                            $syncedFailedDomains[] = $domainName;
+                        }
+                    }
+                }
             }
 
-            return ApiResponse::success(['message' => 'Domains imported successfully']);
+            if(!empty($existingDomains) && empty($syncedFailedDomains)){
+                return ApiResponse::success(['message' => 'Domains imported successfully. The following domains already exist in WHMCS: '.implode(", ", $existingDomains)]);
+            }
+            else if(!empty($existingDomains) && !empty($syncedFailedDomains)){
+                return ApiResponse::success(['message' => 'Domains imported successfully. The following domains already exist in WHMCS: '.implode(", ", $existingDomains).'. The following domains failed to sync: '.implode(", ", $syncedFailedDomains)]);
+            }
+            else if(empty($existingDomains) && !empty($syncedFailedDomains)){
+                return ApiResponse::success(['message' => 'Domains imported successfully. The following domains failed to sync: '.implode(", ", $syncedFailedDomains)]);
+            }
+
+            if($registrar == "openprovider"){
+                return ApiResponse::success(['message' => 'Domains imported successfully. All domains synced successfully']);
+            }
+
+            return ApiResponse::success(['message' => 'Domains imported successfully.']);
         }catch(\Exception $e){
             logModuleCall('openprovider', 'bulk import', 'Domain import failed.', $e->getMessage(), null,null);
             return ApiResponse::error(400, 'Domain import failed. Please check the module logs for more details');
@@ -352,8 +383,8 @@ class DomainInformationController extends BaseController
         // Regex to match valid domain names (standard domain structure)
         $domainPattern = '/^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/';
         
-        $validDomains = [];
-        $invalidDomains = [];
+        $validDomains    = [];
+        $invalidDomains  = [];
         $existingDomains = [];
 
         foreach ($domains as $domain) {
@@ -382,8 +413,63 @@ class DomainInformationController extends BaseController
         $validDomains = array_unique($validDomains);
 
         return [
-            "valid" => $validDomains,
+            "valid"    => $validDomains,
             "existing" => $existingDomains
         ];
     }
+
+    private function syncDomainById($domainId)
+    {
+        // Find the domain in WHMCS
+        $this->model_domain = $this->model_domain->find($domainId);
+
+        try {
+            $this->api_domain = DomainFullNameToDomainObject::convert($this->model_domain->domain);
+            $domainOp         = $this->apiHelper->getDomain($this->api_domain);
+            $expiration_date  = Carbon::createFromFormat('Y-m-d H:i:s', $domainOp['renewalDate'], 'Europe/Amsterdam')->toDateString();
+            $status           = $this->mapDomainStatus($domainOp['status']);
+            $result           = $this->updateDomainStatusAndExpiry($status, $expiration_date, $domainId);
+            
+            if($result["result"] != "success"){
+                logModuleCall('openprovider', 'bulk import - update domain', "Failed to sync domain. domainId: ".$domainId, $result, null, null);
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $ex) {
+            logModuleCall('openprovider', 'bulk import - sync domain', 'Failed to Sync domain', "domainId: " . $domainId . ", msg: " . $ex->getMessage(), null, null);
+            return false;
+        }
+    }
+
+    /**
+     * Map OpenProvider status to WHMCS status.
+     *
+     * @param string $opStatus
+     * @return string
+     */
+    private function mapDomainStatus($opStatus)
+    {
+        if (in_array($opStatus, ['ACT'])) {
+            return 'Active';
+        } elseif (in_array($opStatus, ['FAI', 'DEL'])) {
+            return 'Cancelled';
+        } elseif ($opStatus === 'TRAN') {
+            return 'Transferred Away';
+        } else {
+            return 'Inactive';
+        }
+    }
+
+    private function updateDomainStatusAndExpiry($status, $expiry_date, $domainId)
+    {
+        $command  = WHMCSApiActionType::UpdateClientDomain;
+        $postData = array(
+            'domainid'   => $domainId,
+            'status'     => $status,
+            'expirydate' => $expiry_date,
+        );
+        $results = localAPI($command, $postData);
+        return $results;
+    }     
 }

@@ -9,6 +9,7 @@ class WHMCSApiActionType
     // Clients
     const AddClient = 'AddClient';
     const GetClients = 'GetClients';
+    const UpdateClientDomain = 'UpdateClientDomain';
 
     // PaymentMethods
     const GetPaymentMethods = 'GetPaymentMethods';
