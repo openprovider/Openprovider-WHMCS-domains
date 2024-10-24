@@ -273,14 +273,23 @@ class DomainInformationController extends BaseController
             $domainList         = explode("\n", $domainListStr);
             $validationResult   = $this->validateDomains($domainList);
             $domains            = $validationResult["valid"];
-            $existingDomains    = $validationResult["existing"];     
+            $existingDomains    = $validationResult["existing"];
+            $invalidDomains     = $validationResult["invalid"];     
             
 
-            if(empty($domains) && !empty($existingDomains)){
-                return ApiResponse::error(400, 'No valid domains found. The following domains already exist in WHMCS: '.implode(", ", $existingDomains));
+            if(empty($domains) && !empty($existingDomains) && !empty($invalidDomains)){
+                $responseMessage = 'No valid domains found. The following domains already exist in WHMCS: '.implode(", ", $existingDomains).'. The following domains are invalid: '.implode(", ", $invalidDomains); 
+                return ApiResponse::error(400, $responseMessage);
             }
-
-            if(empty($domains)){
+            else if(empty($domains) && !empty($existingDomains)){
+                $responseMessage = 'No valid domains found. The following domains already exist in WHMCS: '.implode(", ", $existingDomains);
+                return ApiResponse::error(400, $responseMessage);
+            }
+            else if(empty($domains) && !empty($invalidDomains)){
+                $responseMessage = 'No valid domains found. The following domains are invalid: '.implode(", ", $invalidDomains);
+                return ApiResponse::error(400, $responseMessage);
+            }
+            else if(empty($domains) && empty($existingDomains) && empty($invalidDomains)){
                 return ApiResponse::error(400, 'No valid domains found');
             }
 
@@ -290,8 +299,7 @@ class DomainInformationController extends BaseController
 
             if(empty($paymentMethod)){
                 return ApiResponse::error(400, 'No payment method found');
-            }            
-
+            }
             
             $orderCreateResult     = $this->createOrder($clientId, $paymentMethod,$domains);
 
@@ -300,14 +308,15 @@ class DomainInformationController extends BaseController
                 $orderAcceptResult = $this->acceptOrder($orderId, $registrar);
                 if($orderAcceptResult["result"] != "success"){
                     logModuleCall('openprovider', 'bulk import', 'Order accept failed.', $orderAcceptResult, null,null);
-                    return ApiResponse::error(400, 'Order accept failed. Please manually accept the order. Order ID: '.$orderId);
+                    return ApiResponse::error(400, "Order accept failed. Message: ".$orderAcceptResult["message"]." Please manually accept the order. Order ID: ".$orderId.". Please check the module logs for more details");
                 }
             }else{
                 logModuleCall('openprovider', 'bulk import', 'Order creation failed.', $orderCreateResult, null,null);
-                return ApiResponse::error(400, 'Order creation failed');
+                return ApiResponse::error(400, "Order creation failed. Message: ".$orderCreateResult["message"].". Please check the module logs for more details");
             }
 
-            $syncedFailedDomains = [];
+            $importedDomainsCount = count($domains);
+            $syncedFailedDomains  = [];
             if($registrar == "openprovider"){
                 foreach($domains as $domainName){
                     $domainId = WHMCS_domain::getDomainId($domainName);
@@ -320,21 +329,29 @@ class DomainInformationController extends BaseController
                 }
             }
 
-            if(!empty($existingDomains) && empty($syncedFailedDomains)){
-                return ApiResponse::success(['message' => 'Domains imported successfully. The following domains already exist in WHMCS: '.implode(", ", $existingDomains)]);
-            }
-            else if(!empty($existingDomains) && !empty($syncedFailedDomains)){
-                return ApiResponse::success(['message' => 'Domains imported successfully. The following domains already exist in WHMCS: '.implode(", ", $existingDomains).'. The following domains failed to sync: '.implode(", ", $syncedFailedDomains)]);
-            }
-            else if(empty($existingDomains) && !empty($syncedFailedDomains)){
-                return ApiResponse::success(['message' => 'Domains imported successfully. The following domains failed to sync: '.implode(", ", $syncedFailedDomains)]);
+            $invalidDomainsStr = '';
+            if(!empty($invalidDomains)){
+                $invalidDomainsStr = 'The following domains are invalid: '.implode(", ", $invalidDomains);
             }
 
-            if($registrar == "openprovider"){
-                return ApiResponse::success(['message' => 'Domains imported successfully. All domains synced successfully']);
+            $existingDomainsStr = '';
+            if(!empty($existingDomains)){
+                $existingDomainsStr = 'The following domains already exist in WHMCS: '.implode(", ", $existingDomains);
             }
 
-            return ApiResponse::success(['message' => 'Domains imported successfully.']);
+            $syncedFailedDomainsStr = '';
+            if(!empty($syncedFailedDomains)){
+                $syncedFailedDomainsStr = 'The following domains failed to sync: '.implode(", ", $syncedFailedDomains);
+            }
+
+            return ApiResponse::success(
+                [
+                    'message'             => $importedDomainsCount. ' domains imported successfully.',
+                    'existingDomains'     => $existingDomainsStr,
+                    'invalidDomains'      => $invalidDomainsStr,
+                    'syncedFailedDomains' => $syncedFailedDomainsStr
+                ]
+            );
         }catch(\Exception $e){
             logModuleCall('openprovider', 'bulk import', 'Domain import failed.', $e->getMessage(), null,null);
             return ApiResponse::error(400, 'Domain import failed. Please check the module logs for more details');
@@ -414,10 +431,12 @@ class DomainInformationController extends BaseController
 
         return [
             "valid"    => $validDomains,
-            "existing" => $existingDomains
+            "existing" => $existingDomains,
+            "invalid"  => $invalidDomains
         ];
     }
 
+    // Sync domain by domain ID
     private function syncDomainById($domainId)
     {
         // Find the domain in WHMCS
@@ -437,17 +456,12 @@ class DomainInformationController extends BaseController
 
             return true;
         } catch (\Exception $ex) {
-            logModuleCall('openprovider', 'bulk import - sync domain', 'Failed to Sync domain', "domainId: " . $domainId . ", msg: " . $ex->getMessage(), null, null);
+            logModuleCall('openprovider', 'bulk import - sync domain', 'Failed to sync domain', "domainId: " . $domainId . ", msg: " . $ex->getMessage(), null, null);
             return false;
         }
     }
 
-    /**
-     * Map OpenProvider status to WHMCS status.
-     *
-     * @param string $opStatus
-     * @return string
-     */
+    // Map OpenProvider status to WHMCS status.
     private function mapDomainStatus($opStatus)
     {
         if (in_array($opStatus, ['ACT'])) {
@@ -461,6 +475,7 @@ class DomainInformationController extends BaseController
         }
     }
 
+    // Update domain status and expiry date by WHMCS Internal API
     private function updateDomainStatusAndExpiry($status, $expiry_date, $domainId)
     {
         $command  = WHMCSApiActionType::UpdateClientDomain;

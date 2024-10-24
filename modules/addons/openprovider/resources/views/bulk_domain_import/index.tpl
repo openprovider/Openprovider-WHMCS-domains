@@ -55,8 +55,11 @@
         <p>(if you select "Openprovider" as the registrar, Domain sync will be executed after importing)</p>
 
         <!-- Success and Error Messages -->
-        <div id="successMessage" style="display:none; text-align:center; color: green;"></div>
-        <div id="errorMessage" style="display:none; text-align:center; color: red;"></div>
+        <div id="successMessage" style="display:none; text-align:left; color: green;"></div>
+        <div id="existingDomain" style="display:none; text-align:left; color: orange;"></div>
+        <div id="invalidDomain" style="display:none; text-align:left; color: red;"></div>
+        <div id="syncFailedDomain" style="display:none; text-align:left; color: red;"></div>
+        <div id="errorMessage" style="display:none; text-align:left; color: red;"></div>
         
     </div>
 </div>
@@ -119,6 +122,9 @@
                             // Hide the submit button and show the success message
                             $('#submitButton').hide();
                             $('#successMessage').text(jsonResponse.message).show();
+                            $('#existingDomain').text(jsonResponse.existingDomains).show();
+                            $('#invalidDomain').text(jsonResponse.invalidDomains).show();
+                            $('#syncFailedDomain').text(jsonResponse.syncedFailedDomains).show();
                         } else {
                             // Show the error message and keep the submit button
                             $('#errorMessage').text(jsonResponse.message).show();
