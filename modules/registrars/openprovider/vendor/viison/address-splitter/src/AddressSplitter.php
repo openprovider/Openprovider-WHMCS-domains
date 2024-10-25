@@ -216,74 +216,31 @@ class AddressSplitter
         )';
 
         $regex = '
-            /\A\s*
-            (?: #########################################################################
-                # Option A: [<Addition to address 1>] <House number> <Street name>      #
-                # [<Addition to address 2>]                                             #
-                #########################################################################
-                (?:(?P<A_Addition_to_address_1>.*?),\s*)? # Addition to address 1
-                (?: ' . $houseNumberPrefixes . ' \s*)?
-                (?P<A_House_number_match>
-                     (?P<A_House_number_base>
-                        \pN+(\s+\d+\/\d+)?
-                     )
-                     (?:
-                        \s*[\-\/\.]?\s*
-                        (?P<A_House_number_extension>(?:[a-zA-Z\pN]){1,2})
-                        \s+
-                     )?
-                )
-            \s*,?\s*
-                (?P<A_Street_name>(?:[a-zA-Z]\s*|\pN\pL{2,}\s\pL)\S[^,#]*?(?<!\s)) # Street name
-            \s*(?:(?:[,\/]|(?=\#))\s*(?!\s* ' . $houseNumberPrefixes . ')
-                (?P<A_Addition_to_address_2>(?!\s).*?))? # Addition to address 2
-            |   #########################################################################
-                # Option B: [<Addition to address 1>] <Street name> <House number>      #
-                # [<Addition to address 2>]                                             #
-                #########################################################################
-                (?:(?P<B_Addition_to_address_1>.*?),\s*(?=.*[,\/]))? # Addition to address 1
-                (?!\s* ' . $houseNumberPrefixes . ')
-                (?P<B_Street_name>[^0-9# ]\s*\S(?:[^,#](?!\b\pN+\s))*?(?<!\s)) # Street name
-            \s*[\/,]?\s*(?:\s ' . $houseNumberPrefixes . ')?\s*
-                (?P<B_House_number_match>
-                     (?P<B_House_number_base>
-                        \pN+
-                     )
-                     (?:
-                        # Match house numbers that are (optionally) amended
-                        # by a dash (e.g., 12-13) or slash (e.g., 12\/A):
-                        (?: \s*[\-\/]\s* )*
-                        (?P<B_House_number_extension>
-                            (?:
-                                # Do not match "care-of"-like additions as
-                                # house numbers:
-                                (?!' . $addition2Introducers .')
-                                \s*[\pL\pN]+
-                            )
-                            # Match any further slash- or dash-based house
-                            # number extensions:
-                            (?:
-                                # Do not match "care-of"-like additions as
-                                # house numbers:
-                                (?!' . $addition2Introducers .')
-                                # Match any (optionally space-separated)
-                                # additionals parts of house numbers after
-                                # slashes or dashes.
-                                \s* [\-\/] \s*
-                                [\pL\pN]+
-                            )*
-                        )
-                     )?
-                ) # House number
-                (?:
-                    (?:\s*[-,\/]|(?=\#)|\s)
-                    \s*
-                    (?!\s* ' . $houseNumberPrefixes . ' )
-                    \s*
-                    (?P<B_Addition_to_address_2>(?!\s).*?)
-                )?
-            )
-            \s*\Z/xu';
+        \A\s*
+        (?: #########################################################################
+            # Option A: [<Addition to address 1>] <House number> <Street name>      #
+            # [<Addition to address 2>]                                             #
+            #########################################################################
+            (?:(?P<A_Addition_to_address_1>.*?),\s*)? # Addition to address 1
+        (?:No\.\s*)?
+            (?P<A_House_number_1>\pN+[a-zA-Z]?(?:\s*[-\/\pP]\s*\pN+[a-zA-Z]?)*) # House number
+        | Suite\s*(?P<A_House_number_2>\pN+) # Suite number if present
+        \s*,?\s*
+            (?P<A_Street_name_1>(?:[a-zA-Z]\s*|\pN\pL{2,}\s\pL)\S[^,#]*?(?<!\s)) # Street name
+        \s*(?:(?:[,\/]|(?=\#))\s*(?!\s*No\.)
+            (?P<A_Addition_to_address_2>(?!\s).*?))? # Addition to address 2
+        |   #########################################################################
+            # Option B: [<Addition to address 1>] <Street name> <House number>      #
+            # [<Addition to address 2>]                                             #
+            #########################################################################
+            (?:(?P<B_Addition_to_address_1>.*?),\s*(?=.*[,\/]))? # Addition to address 1
+            (?!\s*No\.)(?P<B_Street_name>\S\s*\S(?:[^,#](?!\b\pN+\s))*?(?<!\s)) # House number
+        \s*[\/,]?\s*(?:\sNo\.)?\s+
+            (?P<B_House_number>\pN+\s*-?[a-zA-Z]?(?:\s*[-\/\pP]?\s*\pN+(?:\s*[\-a-zA-Z])?)*|[IVXLCDM]+(?!.*\b\pN+\b))(?<!\s) # Street name
+        \s*(?:(?:[,\/]|(?=\#)|\s)\s*(?!\s*No\.)\s*
+            (?P<B_Addition_to_address_2>(?!\s).*?))? # Addition to address 2
+        )
+        \s*\Z';
 
         $result = preg_match($regex, $address, $matches);
         if ($result === 0) {
