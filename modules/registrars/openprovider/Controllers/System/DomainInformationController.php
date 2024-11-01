@@ -418,7 +418,11 @@ class DomainInformationController extends BaseController
                     $existingDomains[] = $domain;
                 }
             } else {
-                $invalidDomains[] = $domain;
+                if ($this->isValidIDN($domain)) {
+                    $validDomains[] = $domain;
+                } else {
+                    $invalidDomains[] = $domain;
+                }                
             }
         }
 
@@ -486,5 +490,20 @@ class DomainInformationController extends BaseController
         );
         $results = localAPI($command, $postData);
         return $results;
-    }     
+    }
+    
+    // Check if the domain is a valid IDN
+    private function isValidIDN($domain) 
+    {
+        // Convert domain to ASCII using Punycode
+        $asciiDomain = idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46);
+
+        // If encoding is successful and the encoded domain has the 'xn--' prefix
+        if ($asciiDomain && strpos($asciiDomain, 'xn--') !== false) {
+            return true; 
+        }
+        
+        return false; 
+    }
+
 }

@@ -11,7 +11,7 @@
 
         <!-- Large input field for multiple inputs (new line separated) -->
         <div class="form-group">
-            <label for="domainInput">Enter Domains (separate by new lines):</label>
+            <label for="domainInput">Domain names (one for each line):</label>
             <textarea id="domainInput" name="domainInput" class="form-control" rows="10" placeholder="Enter each domain on a new line"></textarea>
             <span id="domainError" style="color: red; display: none;">Please enter at least one domain.</span>
         </div>
