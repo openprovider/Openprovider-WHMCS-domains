@@ -6,6 +6,7 @@ use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\Domain;
+use OpenProvider\API\API;
 
 /**
  * Class ConfigController
@@ -20,16 +21,21 @@ class NameserverController extends BaseController
      * @var ApiHelper
      */
     private $apiHelper;
+    /**
+     * @var API
+     */
+    private $API;
 
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper)
+    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper, API $API)
     {
         parent::__construct($core);
 
         $this->domain = $domain;
         $this->apiHelper = $apiHelper;
+        $this->API = $API;
     }
 
     /**
@@ -47,7 +53,32 @@ class NameserverController extends BaseController
      */
     function get($params)
     {
-        return [];
+        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+
+        try {
+            $api                =   $this->API;
+            $api->setParams($params);
+            $domain             =   $this->domain;
+            $domain->load(array(
+                'name' => $params['sld'],
+                'extension' => $params['tld']
+            ));
+            $nameservers = $api->getNameservers($domain);
+            $return = array();
+            $i = 1;
+
+            foreach ($nameservers as $ns) {
+                $return['ns' . $i] = $ns;
+                $i++;
+            }
+
+            return $return;
+        } catch (\Exception $e) {
+            return array(
+                'error' => $e->getMessage(),
+            );
+        }
     }
 
     /**
