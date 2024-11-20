@@ -214,33 +214,12 @@ class AddressSplitter
 
             # }}}
         )';
-
-        $regex = '
-        \A\s*
-        (?: #########################################################################
-            # Option A: [<Addition to address 1>] <House number> <Street name>      #
-            # [<Addition to address 2>]                                             #
-            #########################################################################
-            (?:(?P<A_Addition_to_address_1>.*?),\s*)? # Addition to address 1
-        (?:No\.\s*)?
-            (?P<A_House_number_1>\pN+[a-zA-Z]?(?:\s*[-\/\pP]\s*\pN+[a-zA-Z]?)*) # House number
-        | Suite\s*(?P<A_House_number_2>\pN+) # Suite number if present
-        \s*,?\s*
-            (?P<A_Street_name_1>(?:[a-zA-Z]\s*|\pN\pL{2,}\s\pL)\S[^,#]*?(?<!\s)) # Street name
-        \s*(?:(?:[,\/]|(?=\#))\s*(?!\s*No\.)
-            (?P<A_Addition_to_address_2>(?!\s).*?))? # Addition to address 2
-        |   #########################################################################
-            # Option B: [<Addition to address 1>] <Street name> <House number>      #
-            # [<Addition to address 2>]                                             #
-            #########################################################################
-            (?:(?P<B_Addition_to_address_1>.*?),\s*(?=.*[,\/]))? # Addition to address 1
-            (?!\s*No\.)(?P<B_Street_name>\S\s*\S(?:[^,#](?!\b\pN+\s))*?(?<!\s)) # House number
-        \s*[\/,]?\s*(?:\sNo\.)?\s+
-            (?P<B_House_number>\pN+\s*-?[a-zA-Z]?(?:\s*[-\/\pP]?\s*\pN+(?:\s*[\-a-zA-Z])?)*|[IVXLCDM]+(?!.*\b\pN+\b))(?<!\s) # Street name
-        \s*(?:(?:[,\/]|(?=\#)|\s)\s*(?!\s*No\.)\s*
-            (?P<B_Addition_to_address_2>(?!\s).*?))? # Addition to address 2
-        )
-        \s*\Z';
+        $regex =  '/
+        (?P<C_House_number>\d+)\s+                     # House number
+        (?P<C_Street_name>(?:[a-zA-Z]+\s?)+?)\s       # Street name
+        (?P<C_Addition_to_address_2>.+)?              # Addition to address 2
+        \s*\Z # Trim white spaces at the end
+    /xu';
 
         $result = preg_match($regex, $address, $matches);
         if ($result === 0) {
@@ -249,28 +228,19 @@ class AddressSplitter
             throw new \RuntimeException(sprintf('Error occurred while trying to split address \'%s\'', $address));
         }
 
-        if (!empty($matches['A_Street_name'])) {
+        if (!empty($matches['C_Street_name'])) {
             return array(
-                'additionToAddress1' => $matches['A_Addition_to_address_1'],
-                'streetName' => $matches['A_Street_name'],
-                'houseNumber' => $matches['A_House_number_match'],
+                'additionToAddress1' => $matches['C_Addition_to_address_1'],
+                'streetName' => $matches['C_Street_name'],
+                'houseNumber' => $matches['C_House_number'],
                 'houseNumberParts' => array(
-                    'base' => $matches['A_House_number_base'],
-                    'extension' => isset($matches['A_House_number_extension']) ? trim($matches['A_House_number_extension']) : ''
+                    'base' => $matches['C_House_number'],
+                    'extension' => ''
                 ),
-                'additionToAddress2' => (isset($matches['A_Addition_to_address_2'])) ? $matches['A_Addition_to_address_2'] : ''
+                'additionToAddress2' => isset($matches['C_Addition_to_address_2']) ? $matches['C_Addition_to_address_2'] : ''
             );
         } else {
-            return array(
-                'additionToAddress1' => $matches['B_Addition_to_address_1'],
-                'streetName' => $matches['B_Street_name'],
-                'houseNumber' => $matches['B_House_number_match'],
-                'houseNumberParts' => array(
-                    'base' => $matches['B_House_number_base'],
-                    'extension' => isset($matches['B_House_number_extension']) ? trim($matches['B_House_number_extension']) : ''
-                ),
-                'additionToAddress2' => isset($matches['B_Addition_to_address_2']) ? $matches['B_Addition_to_address_2'] : ''
-            );
+            throw new SplittingException(SplittingException::CODE_ADDRESS_SPLITTING_ERROR, $address);
         }
     }
 
