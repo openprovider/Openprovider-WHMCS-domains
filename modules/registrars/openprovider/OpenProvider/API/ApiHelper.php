@@ -61,17 +61,21 @@ class ApiHelper
             'id'     => $id,
         ];
 
-        $result = $this->buildResponse($this->apiClient->call('getEPPCodeRequest', $args));
+        $result = '';
 
-        if (isset($result['authCode'])) {
-            return $result['authCode'];
+        try {
+            $result = $this->buildResponse($this->apiClient->call('getEPPCodeRequest', $args));
+
+            if (isset($result['authCode'])) {
+                return $result['authCode'];
+            }
+
+            if (isset($result['message']) && $result['message'] != "") {
+                throw new \Exception($result['message']);
+            }
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage(), $e->getCode());
         }
-
-        if (isset($result['message']) && $result['message'] != "") {
-            throw new \Exception($result['message']);
-        }
-
-        throw new \Exception('An unknown error occurred.');
     }
 
     /**
