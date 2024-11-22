@@ -52,6 +52,30 @@ class ApiHelper
 
     /**
      * @param int $id
+     * @return string
+     * @throws \Exception
+     */
+    public function getEPPCode(int $id): string
+    {
+        $args = [
+            'id'     => $id,
+        ];
+
+        $result = $this->buildResponse($this->apiClient->call('getEPPCodeRequest', $args));
+
+        if (isset($result['authCode'])) {
+            return $result['authCode'];
+        }
+
+        if (isset($result['message']) && $result['message'] != "") {
+            throw new \Exception($result['message']);
+        }
+
+        throw new \Exception('An unknown error occurred.');
+    }
+
+    /**
+     * @param int $id
      * @param array $data
      * @return array
      * @throws \Exception
