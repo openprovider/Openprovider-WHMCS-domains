@@ -36,11 +36,17 @@ spl_autoload_register(function ($className) {
  * @param array $params
  * @return mixed
  */
-function openprovider_getConfigArray($params = array())
+function openprovider_getConfigArray(array $params = [])
 {
-    return openprovider_registrar_launch_decorator('config', $params);
-}
+    static $openprovider_config = [];
 
+    if (!empty($openprovider_config)) {
+        return $openprovider_config;
+    }
+
+    $openprovider_config = openprovider_registrar_launch_decorator('config', $params);
+    return $openprovider_config;
+}
 
 /**
  * Register the domain.
@@ -346,7 +352,7 @@ function openprovider_config_validate($params)
         $baseUrl = Configuration::get('api_url_cte');
     }
 
-    $url = "{$baseUrl}{$resourcePath}"; 
+    $url = "{$baseUrl}{$resourcePath}";
 
     $data = array(
         "username" => $username,

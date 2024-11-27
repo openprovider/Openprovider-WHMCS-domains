@@ -67,12 +67,17 @@ class ConfigController extends BaseController
         ) {
             Capsule::table('reseller_tokens')->where('username', $oldParams['Username'])->delete();
         }
+
         // If we have some login data, let's try to login.
-        $areCredentialsExist = isset($params['Password']) &&
-            isset($params['Username']) &&
-            !empty($params['Password']) &&
-            !empty($params['Username']);
-        if ($areCredentialsExist) {
+        if ( isset($params['Password'])
+            && isset($params['Username'])
+            && !empty($params['Password'])
+            && !empty($params['Username'])
+            && isset($_GET['action'])
+            && $_GET['action'] == 'save'
+            && isset($_GET['module'])
+            && $_GET['module'] == 'openprovider'
+        ) {
             $configarray = $this->checkCredentials($configarray, $params);
         }
 
@@ -213,7 +218,7 @@ class ConfigController extends BaseController
         $this->apiClient->getConfiguration()->setHost($differentHost);
 
         if (!Cache::has('op_auth_generate')) {
-            
+
             $reply = $this->apiClient->call('generateAuthTokenRequest', [
                 'username' => $params['Username'],
                 'password' => $params['Password']
