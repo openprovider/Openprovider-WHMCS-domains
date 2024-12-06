@@ -84,6 +84,10 @@ jQuery( document ).ready(function() {
                 ->where('id', $domainId)
                 ->select('status', 'dnsmanagement', 'domain')
                 ->first();
+            
+            if ($isDomainEnabled->dnsmanagement != 1){
+                return;
+            }
 
             $domain = DomainFullNameToDomainObject::convert($isDomainEnabled->domain);
             try {
