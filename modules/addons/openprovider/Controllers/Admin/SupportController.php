@@ -65,6 +65,11 @@ class SupportController extends ViewBaseController {
 
         // Fetch module logs
         $outputModuleLog = $this->getModuleLog($date);
+        if (empty($outputModuleLog)) {
+            http_response_code(204);
+            echo 'The module.log is empty. There is no data to download.';
+            exit;
+        }
 
         // Send the file
         $this->generateDownload($outputActivityLog, $outputModuleLog);
