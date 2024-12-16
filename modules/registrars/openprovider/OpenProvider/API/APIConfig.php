@@ -11,7 +11,7 @@ namespace OpenProvider\API;
 
 class APIConfig
 {
-    static public $moduleVersion     = 'whmcs-5.8.1-beta';
+    static public $moduleVersion     = 'whmcs-5.9.0-beta';
     static public $supportedDnsTypes = array('A', 'AAAA', 'CAA', 'CNAME', 'MX', 'SPF', 'SSHFP', 'SRV', 'TLSA', 'TXT');
     static public $dnsRecordTtl      = 86400;
     static public $dnsRecordPriority = 10;
