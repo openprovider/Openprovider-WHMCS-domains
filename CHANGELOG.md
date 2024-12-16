@@ -1,5 +1,27 @@
 # Changelog
 
+## v5.9.0-beta
+
+###### Features and improvements
+- [Experimental] Bash scripts for one step installation and upgrade of the module. Run the installation/upgrade script in 'scripts' folder via SSH or Terminal as hosting user.
+- Per domain sync button in WHMCS Admin area.
+- Open new DNS manager in a new tab ( "useNewDnsManagerFeature" => true in advanced-module-configurations.php)
+- Module version and update check button in Openprovider widget.
+- Updated "jquery" (to address: CVE-2019-11358), "phpunit", "phpdocumentor", and "guzzlehttp" packages.
+- Renewal date sync to WHMCS with WHMCS native domain sync. This will avoid mismatch in dates due to renewal offset.
+- Progress indicator for DNSSEC activation and deactivation in WHMCS client area.
+- Support for .fi, .ae and .es (.es ANNEX III registrant Acceptance) additional fields.
+- Disabled domain locking warning in client area for TLDs that do not support locking - .nl, .eu, etc.
+- Improvement in loading time by switching LocalAPI call to the $CONFIG global.
+- Addon module readme file updated.
+- Nameserver validation for registrations, transfers and nameserver changes from WHMCS.
+- Generate auth code on clicking 'Get EPP Code' button in WHMCS if domain auth code is empty.
+
+###### Bugfixes
+- To-Do list item creation for warning code 250.
+- Long error logging entry in Activity Log when module log is empty (WHMCS Addon Module).
+- TLD Import & Pricing Sync with Sandbox credentials.
+
 ## v5.8.0
 
 ###### Features and improvements
