@@ -30,7 +30,9 @@ When a domain expires in Openprovider, depending on the TLD, it can be put into 
 2. When the end-user pays an invoice to renew a domain, the WHMCS next due date will increment one year. 
 3. No renewal commands are sent to Openprovider from WHMCS via the module.
 
-**Important**: If a client doesn't pay the renewal invoice before expiry date, the domain's status in WHMCS will cycle from Active to Grace >> Redemption >> Expired, even though it was auto-renewed at Openprovider. To trigger the updating of the domain status and expiry date, the invoice would need to be paid in WHMCS, the renewal command successfully sent to your registrar and successfully processed.
+**Important**: If a client doesn't pay the renewal invoice before expiry date, the domain's status in WHMCS will cycle from Active to Grace >> Redemption >> Expired, even though it was auto-renewed at Openprovider.
+
+To trigger the updating of the domain status and expiry date, the invoice would need to be paid in WHMCS, the renewal command successfully sent to your registrar and successfully processed.
 
 **Scenario 3. Not recommended!**
 
