@@ -122,35 +122,6 @@ class RenewHookController extends BasePermissionController
 
     /**
      * Check if a domain transfer is scheduled with Openprovider.
-     * @param $domain
-     * @return boolean
-     */
-    protected function checkOnlyScheduledTransferAtOpenprovider($domain)
-    {
-        // First, find the domain in the local list.
-        try {
-            $scheduled_domain_transfer = $this->scheduledDomainTransfer->where(
-                'domain',
-                $domain->domain
-            )->firstOrFail();
-
-            // SCH means scheduled transfer.
-            if ($scheduled_domain_transfer->status == 'SCH') {
-                return true;
-            } else // The domain does exist with Openprovider but is not scheduled for a transfer.
-            {
-                return false;
-            }
-        } catch (ModelNotFoundException $e) {
-            // Nothing was found.
-            return false;
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if a domain transfer is scheduled with Openprovider.
      * If so, record the renewal and prevent that the renewal is
      * being executed at the original provider.
      * @param $domain
@@ -247,13 +218,8 @@ class RenewHookController extends BasePermissionController
                 // There was no scheduled transfer tracked. This is all good.
             }
         } elseif ($renewal_action == 'enable') {
-            $isScheduledTransfer = $this->checkOnlyScheduledTransferAtOpenprovider($domain);
-            if ($isScheduledTransfer) {
-                $this->add_todo(
-                    'The autorenewal for ' . $domain->domain . ' has been enabled. Reschedule the transfer with Openprovider.',
+            $this->add_todo('The autorenewal for ' . $domain->domain . ' has been enabled. Reschedule the transfer with Openprovider.',
                 'Reschedule the transfer in case this domain was supposed to get transferred.');
-            }
-            
         }
 
         return true;
