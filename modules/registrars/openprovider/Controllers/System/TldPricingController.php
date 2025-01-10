@@ -82,26 +82,32 @@ Check if you downloaded the tld prices from your Openprovider live account, beca
         // Perform API call to retrieve extension information
         // A connection error should return a simple array with error key and message
         // return ['error' => 'This error occurred',];
-
+       
         $tldPriceCache = new TldPriceCache();
-
+        
         if (!$tldPriceCache->has($params))
-            throw new \Exception('The cron for downloading the TLD prices was not run yet. You can run the prices download manually here. If this fails, it is likely that your WHMCS installation does not support a long execution time. <a href="https://github.com/openprovider/Openprovider-WHMCS-domains/blob/master/docs/TLD_Pricing_sync_Utility.md" target="_blank">Check the manual to run the cron command instead</a>.');
-
-        $extensionData = $tldPriceCache->get();
-
-        $results = new ResultsList;
-
-        $advancedConfigurationMaxPeriod = Configuration::getOrDefault('maxRegistrationPeriod', 5);
-
-        $testModeTLDs = Configuration::get('test_mode_tlds');
-
-        foreach ($extensionData['results'] as $extension) {
+        throw new \Exception('The cron for downloading the TLD prices was not run yet. You can run the prices download manually here. If this fails, it is likely that your WHMCS installation does not support a long execution time. <a href="https://github.com/openprovider/Openprovider-WHMCS-domains/blob/master/docs/TLD_Pricing_sync_Utility.md" target="_blank">Check the manual to run the cron command instead</a>.');
+    
+    $extensionData = $tldPriceCache->get();
+    
+   $results = new ResultsList;
+    
+    $advancedConfigurationMaxPeriod = Configuration::getOrDefault('maxRegistrationPeriod', 5);
+    
+    $testModeTLDs = Configuration::get('test_mode_tlds');
+    
+    $specificTLD = $params['specificTLD'] ?? null;
+    foreach ($extensionData['results'] as $extension) {
+            
         
             if((isset($params['test_mode']) && $params['test_mode'] == 'on') && !in_array($extension['name'],$testModeTLDs)) {
                 continue;                
             }
-            
+
+            if ($specificTLD !== null && strtolower($extension['name']) !== strtolower($specificTLD)) {
+                continue;
+            }
+
             if (!isset($extension['prices']) || is_null($extension['prices'])) {
                 throw new \Exception(self::ERROR_MESSAGE_IF_TLDS_WITHOUT_PRICES);
             }

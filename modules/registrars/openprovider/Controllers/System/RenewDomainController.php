@@ -8,6 +8,7 @@ use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\Domain;
+use OpenProvider\WhmcsRegistrar\Controllers\System\TldPricingController;
 
 /**
  * Class RenewDomainController
@@ -52,6 +53,8 @@ class RenewDomainController extends BaseController
             throw new \Exception("Domain not found in openprovider.", 1);
         }
 
+        $renewPrice= $this->checkRenewPrice($domain->extension);
+
         // If isInGracePeriod is true, renew the domain.
         if (isset($params['isInGracePeriod']) && $params['isInGracePeriod'] == true) {
             try {
@@ -66,7 +69,10 @@ class RenewDomainController extends BaseController
         // If isInRedemptionGracePeriod is true, restore the domain.
         if (isset($params['isInRedemptionGracePeriod']) && $params['isInRedemptionGracePeriod'] == true) {
             try {
-                if ($domainOp['hardQuarantineExpiryDate'] && (new Carbon($domainOp['hardQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
+                if((float)$renewPrice['redemptionFeePrice'] === 0.0){
+                    $this->apiHelper->renewDomain($domainOp['id'], $period);
+                }
+                elseif ($domainOp['hardQuarantineExpiryDate'] && (new Carbon($domainOp['hardQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
                     return ['error' => "Domain is past the grace period and additional costs may be applied. Please check the domain in your reseller control panel for more information"];
                 }
             } catch (\Exception $e) {
@@ -97,4 +103,35 @@ class RenewDomainController extends BaseController
 
         return [];
     }
+
+     /**
+     * Check the redemption fee for a specific TLD.
+     *
+     * @param array $params Parameters including the TLD to check.
+     * @return array Returns the redemption fee details or an error message.
+     */
+    public function checkRenewPrice($tld){
+        $core = new Core();
+        $tldPricingController = new TldPricingController($core);
+
+        $params = [
+            'specificTLD' => $tld,
+        ];
+        
+        try{
+            $results = $tldPricingController->get($params);
+
+            foreach ($results as $item) {
+                return [
+                    'tld' => $item->getExtension(),
+                    'redemptionFeePrice' => $item->getRedemptionFeePrice(),
+                    'currency' => $item->getCurrency()
+                ];
+            }
+            throw new Exception('TLD not found in the pricing list.');
+        }catch(\Exception $e){
+            return ['error' => $e->getMessage()];
+        }
+    }
 }
+
