@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Configuration fields
  * OpenProvider Registrar module
@@ -140,7 +141,7 @@ $additionaldomainfields['.pt'][] = array(
 // it
 $additionaldomainfields['.it'][] = array(
     'Name' => 'Company Registration Number',
-    "LangVar"=> "itCompanyRegistrationNumber",
+    "LangVar" => "itCompanyRegistrationNumber",
     "Type" => "text",
     "Size" => "30",
     "Required" => false,
@@ -150,7 +151,7 @@ $additionaldomainfields['.it'][] = array(
 
 $additionaldomainfields['.it'][] = array(
     'Name' => 'Company VAT number',
-    "LangVar"=> "vat",
+    "LangVar" => "vat",
     "Type" => "text",
     "Size" => "30",
     "Required" => false,
@@ -160,7 +161,7 @@ $additionaldomainfields['.it'][] = array(
 
 $additionaldomainfields['.it'][] = array(
     'Name' => 'Individual Codice Fiscale',
-    "LangVar"=> "socialSecurityNumber",
+    "LangVar" => "socialSecurityNumber",
     "Type" => "text",
     "Size" => "30",
     "Required" => false,
@@ -377,7 +378,7 @@ $additionaldomainfields[".se"][] = array(
 
 $additionaldomainfields['.se'][] = array(
     'Name' => 'Identification number',
-    "LangVar"=> "seIdentificationNumber",
+    "LangVar" => "seIdentificationNumber",
     "Type" => "text",
     "Size" => "30",
     "Required" => true,
@@ -897,4 +898,14 @@ $additionaldomainfields[".de"][] = array(
 $additionaldomainfields[".de"][] = array(
     "Name" => "Agree to DE Terms",
     "Remove" => true,
+);
+
+// .DK
+$additionaldomainfields[".dk"][] = array(
+    "Name" => 'By registering this domain name, I acknowledges and accepts the .dk registration agreement',
+    "LangVar" => "dkAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "dkAcceptance"
 );
