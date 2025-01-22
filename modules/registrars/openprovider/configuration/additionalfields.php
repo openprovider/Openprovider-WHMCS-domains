@@ -960,3 +960,13 @@ $additionaldomainfields[".de"][] = array(
     "Name" => "Agree to DE Terms",
     "Remove" => true,
 );
+
+// .DK
+$additionaldomainfields[".dk"][] = array(
+    "Name" => 'By registering this domain name, I acknowledges and accepts the .dk registration agreement',
+    "LangVar" => "dkAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "dkAcceptance"
+);
