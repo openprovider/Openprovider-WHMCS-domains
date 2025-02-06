@@ -36,10 +36,9 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
         try {
             $splitAddress = AddressSplitter::splitAddress($fullAddress);
             $housenumber = $splitAddress['houseNumberParts']['base'];
-            $convertedAddress = $splitAddress['streetName'] . ' ' . $splitAddress['additionToAddress2'];
+            $convertedAddress = $splitAddress['houseNumber'] . ' ' . $splitAddress['streetName'] . ' ' . $splitAddress['additionToAddress2'];
 
             $this->street   =   $convertedAddress;
-            $this->number   =   $housenumber;
         } catch (\Exception $e)
         {
             if (strpos($e->getMessage(), ' could not be splitted into street name and house number.') !== false)
