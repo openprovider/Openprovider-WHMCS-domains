@@ -22,6 +22,10 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
     {
         parent::__construct($fields);
 
+        if (isset($fields['country']) && !is_null($fields['country'])) {
+            $this->country = strtoupper(trim($fields['country']));
+        }
+
         if (isset($fields['fulladdress']) && !is_null($fields['fulladdress'])) {
             $this->setAddress($fields['fulladdress']);
         }
@@ -33,12 +37,22 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
      */
     protected function setAddress($fullAddress)
     {
-        try {
-            $splitAddress = AddressSplitter::splitAddress($fullAddress);
-            $housenumber = $splitAddress['houseNumberParts']['base'];
-            $convertedAddress = $splitAddress['houseNumber'] . ' ' . $splitAddress['streetName'] . ' ' . $splitAddress['additionToAddress2'];
+        $country = $this->country ?? '';
 
-            $this->street   =   $convertedAddress;
+        try {
+            $splitAddress = AddressSplitter::splitAddress($fullAddress, $country);
+            $housenumber = $splitAddress['houseNumberParts']['base'];
+          
+            if ($country == 'US') {
+                $convertedAddress = trim($splitAddress['houseNumber'] . ' ' . $splitAddress['streetName'] . ' ' . $splitAddress['additionToAddress2']);
+                $this->street   =   $convertedAddress;
+
+            } else {
+                $convertedAddress = $splitAddress['streetName'] . ' ' . $splitAddress['additionToAddress2'];
+                $this->street   =   $convertedAddress;
+                $this->number   =   $housenumber;
+            }
+
         } catch (\Exception $e)
         {
             if (strpos($e->getMessage(), ' could not be splitted into street name and house number.') !== false)

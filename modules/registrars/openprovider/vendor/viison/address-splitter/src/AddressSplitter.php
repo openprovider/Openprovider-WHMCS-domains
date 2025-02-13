@@ -82,8 +82,10 @@ class AddressSplitter
      * @return array
      * @throws SplittingException
      */
-    public static function splitAddress($address)
+    public static function splitAddress($address, $country = '')
     {
+        $country = is_string($country) ? trim($country) : '';
+
         $houseNumberPrefixes = self::getHouseNumberPrefixes();
         $numberPrefixes = self::getGeneralNumberPrefixes();
 
@@ -214,12 +216,73 @@ class AddressSplitter
 
             # }}}
         )';
-        $regex =  '/
-        (?P<C_House_number>\d+)\s+                     # House number
-        (?P<C_Street_name>(?:[a-zA-Z]+\s?)+?)\s       # Street name
-        (?P<C_Addition_to_address_2>.+)?              # Addition to address 2
-        \s*\Z # Trim white spaces at the end
-    /xu';
+        // Regex for addresses in the United States (House number first)
+        $regex_US = '/
+            (?P<C_House_number>\d+)\s+                     # House number
+            (?P<C_Street_name>(?:[a-zA-Z]+\s?)+?)\s       # Street name
+            (?P<C_Addition_to_address_2>.+)?              # Additional address information
+            \s*\Z # Trim white spaces at the end
+            /xu';
+
+        // Regex for non-US addresses (Street name first, reintegrating addition2Introducers)
+        $regex_Default = '
+        /\A\s*
+        (?: #########################################################################
+            # Option A: [<Addition to address 1>] <House number> <Street name>      #
+            # [<Addition to address 2>]                                             #
+            #########################################################################
+            (?:(?P<A_Addition_to_address_1>.*?),\s*)? # Addition to address 1
+            (?: ' . $houseNumberPrefixes . ' \s*)?
+            (?P<A_House_number_match>
+                 (?P<A_House_number_base>
+                    \pN+(\s+\d+\/\d+)?
+                 )
+                 (?:
+                    \s*[\-\/\.]?\s*
+                    (?P<A_House_number_extension>(?:[a-zA-Z\pN]){1,2})
+                    \s+
+                 )?
+            )
+        \s*,?\s*
+            (?P<A_Street_name>(?:[a-zA-Z]\s*|\pN\pL{2,}\s\pL)\S[^,#]*?(?<!\s)) # Street name
+        \s*(?:(?:[,\/]|(?=\#))\s*(?!\s* ' . $houseNumberPrefixes . ')
+            (?P<A_Addition_to_address_2>(?!\s).*?))? # Addition to address 2
+        |   #########################################################################
+            # Option B: [<Addition to address 1>] <Street name> <House number>      #
+            # [<Addition to address 2>]                                             #
+            #########################################################################
+            (?:(?P<B_Addition_to_address_1>.*?),\s*(?=.*[,\/]))? # Addition to address 1
+            (?!\s* ' . $houseNumberPrefixes . ')
+            (?P<B_Street_name>[^0-9# ]\s*\S(?:[^,#](?!\b\pN+\s))*?(?<!\s)) # Street name
+        \s*[\/,]?\s*(?:\s ' . $houseNumberPrefixes . ')?\s*
+            (?P<B_House_number_match>
+                 (?P<B_House_number_base>
+                    \pN+
+                 )
+                 (?:
+                    (?: \s*[\-\/]\s* )*
+                    (?P<B_House_number_extension>
+                        (?!' . $addition2Introducers .')
+                        \s*[\pL\pN]+
+                    )
+                    (?:
+                        (?!' . $addition2Introducers .')
+                        \s* [\-\/] \s*
+                        [\pL\pN]+
+                    )*
+                 )?
+            ) # House number
+            (?:
+                (?:\s*[-,\/]|(?=\#)|\s)
+                \s*
+                (?!\s* ' . $houseNumberPrefixes . ' )
+                \s*
+                (?P<B_Addition_to_address_2>(?!\s).*?)
+            )?
+        )
+        \s*\Z/xu';
+
+        $regex = ($country === 'US') ? $regex_US : $regex_Default;
 
         $result = preg_match($regex, $address, $matches);
         if ($result === 0) {
@@ -228,18 +291,23 @@ class AddressSplitter
             throw new \RuntimeException(sprintf('Error occurred while trying to split address \'%s\'', $address));
         }
 
-        if (!empty($matches['C_Street_name'])) {
+        if ($country === 'US' && !empty($matches['C_Street_name'])) {
             return array(
-                'additionToAddress1' => $matches['C_Addition_to_address_1'],
+                'additionToAddress1' => '',
                 'streetName' => $matches['C_Street_name'],
                 'houseNumber' => $matches['C_House_number'],
-                'houseNumberParts' => array(
-                    'base' => $matches['C_House_number'],
-                    'extension' => ''
-                ),
+                'houseNumberParts' => self::splitHouseNumber($matches['C_House_number']),
                 'additionToAddress2' => isset($matches['C_Addition_to_address_2']) ? $matches['C_Addition_to_address_2'] : ''
             );
-        } else {
+        }else if (!empty($matches['A_Street_name']) || !empty($matches['B_Street_name'])) {
+            return array(
+                'additionToAddress1' => isset($matches['A_Addition_to_address_1']) ? $matches['A_Addition_to_address_1'] : (isset($matches['B_Addition_to_address_1']) ? $matches['B_Addition_to_address_1'] : ''),
+                'streetName' => isset($matches['A_Street_name']) ? $matches['A_Street_name'] : $matches['B_Street_name'],
+                'houseNumber' => isset($matches['A_House_number_match']) ? $matches['A_House_number_match'] : $matches['B_House_number_match'],
+                'houseNumberParts' => isset($matches['A_House_number_match']) ? self::splitHouseNumber($matches['A_House_number_match']) : self::splitHouseNumber($matches['B_House_number_match']),
+                'additionToAddress2' => isset($matches['A_Addition_to_address_2']) ? $matches['A_Addition_to_address_2'] : (isset($matches['B_Addition_to_address_2']) ? $matches['B_Addition_to_address_2'] : '')
+            );
+        }else {
             throw new SplittingException(SplittingException::CODE_ADDRESS_SPLITTING_ERROR, $address);
         }
     }
