@@ -105,8 +105,8 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
                 }
 
                 return [
-                    'balance' => number_format($balance, 2),
-                    'reservedBalance' => number_format($reservedBalance, 2),
+                    'balance' => $balance,
+                    'reservedBalance' => $reservedBalance,
                     'domainsTotal' => $domainsTotal,
                     'html' => $html,
                     'versionResult' => $versionResult
@@ -128,6 +128,8 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 EOF;
         }
         $availableBalance = $data['balance'] - $data['reservedBalance'];
+        $balance = number_format((float) $data['balance'], 2);
+        $availableBalance = number_format((float) $availableBalance, 2);
 
         if ($data['balance'] <= 100)
             $balance_css = 'text-danger';
@@ -142,7 +144,7 @@ EOF;
     <div class="row">
         <div class="col-sm-6 bordered-right">
             <div class="item">
-                <div class="data $balance_css" style="display:inline-block;">€{$data['balance']}</div> <div class="data $reservedBalance_css"  style="display:inline-block;"><small>(€$availableBalance available)</small></div>
+                <div class="data $balance_css" style="display:inline-block;">€$balance</div> <div class="data $reservedBalance_css"  style="display:inline-block;"><small>(€$availableBalance available)</small></div>
                 <div class="note">Balance</div>
             </div>
         </div>
