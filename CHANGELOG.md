@@ -1,6 +1,6 @@
 # Changelog
 
-## v5.8.1
+## v5.8.2
 
 ## Features and improvements
 * Added .es transfer auth code support (ensure to select **[EPP Code](https://docs.whmcs.com/domains/pricing-and-configuration/domain-pricing/#epp-code)** checkbox for .es in **Domain Pricing** to require an EPP code for incoming transfers of .es domains). 
