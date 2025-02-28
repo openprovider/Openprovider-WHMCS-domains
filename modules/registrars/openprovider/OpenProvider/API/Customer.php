@@ -164,17 +164,22 @@ class Customer
 
         //Customer Address
         $fullAddress = '';
+        $addressLine1 = $params[$indexes['address1']] ?? $params['address 1'] ?? $params['street 1'] ?? '';
+        $addressLine2 = $params[$indexes['address2']] ?? $params['address 2'] ?? $params['street 2'] ?? '';
+        
         if ($getFromContactDetails) {
-            if (isset($params[$indexes['address']]) && !empty($params[$indexes['address']])) {
+            if (!empty(trim($addressLine1 . ' ' . $addressLine2))) {
+                $fullAddress = trim($addressLine1 . ' ' . $addressLine2);
+            }
+            else if (isset($params[$indexes['address']]) && !empty($params[$indexes['address']])) {
                 $fullAddress = $params[$indexes['address']];
-            } else if (!empty(trim($params[$indexes['address1']] . ' ' . $params[$indexes['address2']]))) {
-                $fullAddress = $params[$indexes['address1']] . ' ' . $params[$indexes['address2']];
             }
         } else {
             if (!empty(trim($params[$indexes['address1']] . ' ' . $params[$indexes['address2']]))) {
                 $fullAddress = $params[$indexes['address1']] . ' ' . $params[$indexes['address2']];
             }
         }
+        logActivity("DEBUG - fulladdress customer.php: " . json_encode($fields['fulladdress']));
 
         $address            =   new \OpenProvider\API\CustomerAddress(array(
             'fulladdress'   =>  $fullAddress ?: null,

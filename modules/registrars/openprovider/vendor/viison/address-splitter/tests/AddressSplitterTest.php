@@ -14,9 +14,9 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
      * @param string $address
      * @param array  $expected
      */
-    public function testValidAddresses($address, $expected)
+    public function testValidAddresses($address, $expected, $country = '')
     {
-        $this->assertSame($expected, AddressSplitter::splitAddress($address));
+        $this->assertSame($expected, AddressSplitter::splitAddress($address, $country));
     }
 
     /**
@@ -36,7 +36,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'FR'
             ),
             array(
                 'Piazza dell\'Indipendenza 14',
@@ -49,7 +50,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'IT'
             ),
             array(
                 'Neuhof 13/15',
@@ -63,7 +65,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                     ),
                     'additionToAddress2' => ''
 
-                )
+                ),
+                'DE'
             ),
             array(
                 '574 E 10th Street',
@@ -76,7 +79,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'US'
             ),
             array(
                 '1101 Madison St # 600',
@@ -89,7 +93,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => '# 600'
-                )
+                ),
+                'US'
             ),
             array(
                 '3940 Radio Road, Unit 110',
@@ -102,7 +107,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'Unit 110'
-                )
+                ),
+                'ES'
             ),
             array(
                 'D 6, 2',
@@ -115,7 +121,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 '13 2ème Avenue',
@@ -128,7 +135,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'FR'
             ),
             array(
                 '13 2ème Avenue, App 3',
@@ -141,7 +149,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'App 3'
-                )
+                ),
+                'FR'
             ),
             array(
                 'Apenrader Str. 16 / Whg. 3',
@@ -154,7 +163,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'Whg. 3'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Pallaswiesenstr. 57 App. 235',
@@ -167,7 +177,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'App. 235'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Kirchengasse 7, 1. Stock Zi.Nr. 4',
@@ -180,7 +191,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => '1. Stock Zi.Nr. 4'
-                )
+                ),
+                ''
             ),
             array(
                 'Wiesentcenter, Bayreuther Str. 108, 2. Stock',
@@ -193,7 +205,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => '2. Stock'
-                )
+                ),
+                'DE'
             ),
             array(
                 '244W 300N #101',
@@ -206,7 +219,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => '#101'
-                )
+                ),
+                'US'
             ),
             array(
                 'Corso XXII Marzo 69',
@@ -219,7 +233,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'IT'
             ),
             array(
                 'Frauenplatz 14 A',
@@ -232,7 +247,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'A'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'Mannerheimintie 13A2',
@@ -245,7 +261,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'A2'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'FI'
             ),
             array(
                 'Heinestr.13',
@@ -258,7 +275,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'Am Aubach11',
@@ -271,7 +289,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'Tür 18',
@@ -284,7 +303,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'Çevreyolu Cd. No:19',
@@ -297,7 +317,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'TR'
             ),
             array(
                 'Kerkstraat 3HS',
@@ -310,7 +331,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'HS'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'NL'
             ),
             array(
                 'Kerkstraat 3-HS',
@@ -323,7 +345,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'HS'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'NL'
             ),
             array(
                 'Hollandweg1A',
@@ -336,7 +359,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'A'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'Niederer Weg 20 B',
@@ -349,7 +373,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'B'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'Kerkstraat 3 HS App. 13',
@@ -362,7 +387,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'HS'
                     ),
                     'additionToAddress2' => 'App. 13'
-                )
+                ),
+                'NL'
             ),
             array(
                 'Postbus 3099',
@@ -375,7 +401,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'NL'
             ),
             array(
                 'Nieder-Ramstädter Str. 181A WG B15',
@@ -388,7 +415,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'A'
                     ),
                     'additionToAddress2' => 'WG B15'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Poststr. 15-WG2',
@@ -401,7 +429,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'WG2'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'Reitelbauerstr. 7 1/2',
@@ -414,7 +443,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => '1/2'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'Schegargasse 13-15/8/6',
@@ -427,7 +457,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => '15/8/6'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'AT'
             ),
             array(
                 'Breitenstr. 13/15/8/6',
@@ -440,7 +471,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => '15/8/6'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'Österreicher Weg 12A/8/6',
@@ -453,7 +485,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'A/8/6'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'AT'
             ),
             array(
                 'Karlstr. 1 c/o Breitner',
@@ -466,7 +499,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'c/o Breitner'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Alan-Turing-Straße 12A/8/6 c/o Victory',
@@ -479,7 +513,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'A/8/6'
                     ),
                     'additionToAddress2' => 'c/o Victory'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Grace Hopper Av. 12c/o3',
@@ -492,7 +527,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'c/o3'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'US'
             ),
             array(
                 'Katherine Johnson Street 12c/o3 c/o Dorothy Vaughan',
@@ -505,7 +541,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'c/o3'
                     ),
                     'additionToAddress2' => 'c/o Dorothy Vaughan'
-                )
+                ),
+                'US'
             ),
             array(
                 'Mary Jackson Avenue 1921/Apr ℅ West Area Computing',
@@ -518,7 +555,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'Apr'
                     ),
                     'additionToAddress2' => '℅ West Area Computing'
-                )
+                ),
+                'US'
             ),
             array(
                 'Hauptstraße 27 Haus 1',
@@ -531,7 +569,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'Haus 1'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Rosentiefe 13 A Skulptur 5',
@@ -544,7 +583,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'A'
                     ),
                     'additionToAddress2' => 'Skulptur 5'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Torwolds Road 123 APT 3',
@@ -557,7 +597,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'APT 3'
-                )
+                ),
+                'GB'
             ),
             array(
                 'Denis Ritchie Road 3 Building C',
@@ -570,7 +611,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'Building C'
-                )
+                ),
+                'GB'
             ),
             array(
                 'Brian-Kernighan-Straße 3 LVL3C',
@@ -583,7 +625,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'LVL3C'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Brian-Kernighan-Straße 3 LVL3C Zimmer 12',
@@ -596,7 +639,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'LVL3C Zimmer 12'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Brian-Kernighan-Straße 3 B 8. Stock App. C',
@@ -609,7 +653,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'B'
                     ),
                     'additionToAddress2' => '8. Stock App. C'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Brian-Kernighan-Straße 3 B 8th Floor App. C',
@@ -622,7 +667,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'B'
                     ),
                     'additionToAddress2' => '8th Floor App. C'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Beispielstraße, Nr 12',
@@ -635,7 +681,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'Beispielstraße Nr. 12',
@@ -648,7 +695,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'No. 10 Drowning Street',
@@ -661,7 +709,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'GB'
             ),
             array(
                 'Beispielstraße Nr 12 WG Nr 13',
@@ -674,7 +723,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'WG Nr 13'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Norkshäuschen 8',
@@ -687,7 +737,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'DE'
             ),
             array(
                 'No Street 8',
@@ -700,7 +751,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'GB'
             ),
             array(
                 'No Street No 8',
@@ -713,7 +765,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'GB'
             ),
             array(
                 'Acme Corporation, No Street No 8 c/o Chief Happiness Officer',
@@ -726,7 +779,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'c/o Chief Happiness Officer'
-                )
+                ),
+                'GB'
             ),
             array(
                 'Acme Corporation, No 800 North Street',
@@ -739,7 +793,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'GB'
             ),
             array(
                 'Acme Corporation, No 800 Number Street',
@@ -752,7 +807,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                'GB'
             ),
             array(
                 'Wegstraße 25 Hausnummer 23',
@@ -765,7 +821,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'Hausnummer 23'
-                )
+                ),
+                'DE'
             ),
             array(
                 '25 Roadstreet, APT Number 23',
@@ -778,7 +835,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'APT Number 23'
-                )
+                ),
+                'US'
             ),
             array(
                 '25 Roadstreet, Hausnummer 23',
@@ -791,7 +849,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => ''
                     ),
                     'additionToAddress2' => 'Hausnummer 23'
-                )
+                ),
+                'DE'
             ),
             array(
                 'Steinberger Straße 7E4dK6',
@@ -804,7 +863,8 @@ class AddressSplitterTest extends \PHPUnit_Framework_TestCase
                         'extension' => 'E4dK6'
                     ),
                     'additionToAddress2' => ''
-                )
+                ),
+                ''
             ),
         );
     }
