@@ -20,6 +20,15 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
     protected $cacheExpiry = 600;
     protected $requiredPermission = '';
 
+    // This is needed because WHMCS includes namespace when referring to the ID in the HTML when the widget
+    // is loaded from another namespace.
+    // What should be panelBalanceWidget becomes OpenProvider\WhmcsRegistrar\Controllers\Hooks\Widgets\BalanceWidget
+    // which causes issues with refreshing/closing. The getId method allows us to rename the panel.
+    public function getId()
+    {
+        return 'OPBalanceWidget';
+    }
+
     public function getData()
     {
         $url = "https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest";
