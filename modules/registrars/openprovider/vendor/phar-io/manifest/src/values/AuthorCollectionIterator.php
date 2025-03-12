@@ -1,56 +1,47 @@
-<?php
+<?php declare(strict_types = 1);
 /*
  * This file is part of PharIo\Manifest.
  *
- * (c) Arne Blankerts <arne@blankerts.de>, Sebastian Heuer <sebastian@phpeople.de>, Sebastian Bergmann <sebastian@phpunit.de>
+ * Copyright (c) Arne Blankerts <arne@blankerts.de>, Sebastian Heuer <sebastian@phpeople.de>, Sebastian Bergmann <sebastian@phpunit.de> and contributors
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
+ *
  */
-
 namespace PharIo\Manifest;
 
-class AuthorCollectionIterator implements \Iterator {
-    /**
-     * @var Author[]
-     */
-    private $authors = [];
+use Iterator;
+use function count;
 
-    /**
-     * @var int
-     */
-    private $position;
+/** @template-implements Iterator<int,Author> */
+class AuthorCollectionIterator implements Iterator {
+    /** @var Author[] */
+    private $authors;
+
+    /** @var int */
+    private $position = 0;
 
     public function __construct(AuthorCollection $authors) {
         $this->authors = $authors->getAuthors();
     }
 
-    public function rewind() {
+    public function rewind(): void {
         $this->position = 0;
     }
 
-    /**
-     * @return bool
-     */
-    public function valid() {
+    public function valid(): bool {
         return $this->position < count($this->authors);
     }
 
-    /**
-     * @return int
-     */
-    public function key() {
+    public function key(): int {
         return $this->position;
     }
 
-    /**
-     * @return Author
-     */
-    public function current() {
+    public function current(): Author {
         return $this->authors[$this->position];
     }
 
-    public function next() {
+    public function next(): void {
         $this->position++;
     }
 }

@@ -71,6 +71,7 @@ class APITools
             return $nameServers;
         }
 
+        $invalidNameServer = false;
         for ($i = 1; $i <= 5; $i++) {
             $ns = $params["ns{$i}"];
             if (!$ns) {
@@ -93,14 +94,30 @@ class APITools
                 }
             }
 
-            $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
-                'name'  =>  $nsName,
-                'ip'    =>  $nsIp
-            ));
+            //Try to get IP from gethostbyName
+            if (empty($nsIp)) {
+                $nsIp = gethostbyname($nsName);
+                if (!filter_var($nsIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+                    $nsIp = "";
+                    $invalidNameServer = true;
+                    logModuleCall('openprovider', 'createNameserversArray', $nsName, "Invalid nameserver name: {$nsName}", null, null);
+                }
+            }
+
+            if (!empty($nsIp) && !empty($nsName)) {
+                $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
+                    'name'  =>  $nsName,
+                    'ip'    =>  $nsIp
+                ));
+            }
         }
 
         if (count($nameServers) < 2) {
-            throw new \Exception('You must enter minimum 2 nameservers');
+            if($invalidNameServer) {
+                throw new \Exception('You must enter minimum 2 nameservers. Invalid nameserver found. Please check the module log.');
+            }else{
+                throw new \Exception('You must enter minimum 2 nameservers');
+            }            
         }
 
         return $nameServers;

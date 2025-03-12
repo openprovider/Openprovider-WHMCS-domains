@@ -6,22 +6,18 @@ use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WHMCS\Carbon;
-use OpenProvider\WhmcsHelpers\Activity;
+use OpenProvider\WhmcsHelpers\DomainSync;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\Domain as api_domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Models\Domain;
 
 /**
- * Class TransferSyncController
+ * Class DomainSynController
  * @package OpenProvider\WhmcsRegistrar\Controllers\System
  */
 class DomainSyncController extends BaseController
 {
-    const DOMAIN_STATUSES_ACTIVE = ['ACT'];
-    const DOMAIN_STATUSES_INACTIVE = ['REQ', 'PEN', 'SCH'];
-    const DOMAIN_STATUSES_CANELLED = ['FAI', 'DEL'];
-
     /**
      * @var api_domain
      */
@@ -36,7 +32,6 @@ class DomainSyncController extends BaseController
     private $apiHelper;
 
     /**
-     * ConfigController constructor.
      */
     public function __construct(Core $core, api_domain $api_domain, Domain $domain, ApiHelper $apiHelper)
     {
@@ -48,140 +43,78 @@ class DomainSyncController extends BaseController
     }
 
     /**
-     * Synchronise the transfer status.
+     * Synchronize domain status and expiry date.
      *
      * @param $params
      * @return array
      */
     public function sync($params)
     {
+        // Find the domain in WHMCS
         $this->domain = $this->domain->find($params['domainid']);
-        // Check if the native synchronisation feature
-        if(Configuration::getOrDefault('syncUseNativeWHMCS', false) == false) {
-            return array (
-                'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
-                'active' => true, // Return true if the domain is active
-                'cancelled' => false, // Return true if the domain has expired
-                'transferredAway' => false, // Return true if the domain is transferred out
-            );
-        }
-
-        $this->domain = $this->domain->find($params['domainid']);
-        $setting['syncAutoRenewSetting'] = Configuration::getOrDefault('syncAutoRenewSetting', true);
-        $setting['syncIdentityProtectionToggle'] = Configuration::getOrDefault('syncIdentityProtectionToggle', true);
 
         try {
-            // get data from op
-            $this->api_domain   = DomainFullNameToDomainObject::convert($this->domain->domain);
+            // Convert the domain to an OpenProvider domain object
+            $this->api_domain = DomainFullNameToDomainObject::convert($this->domain->domain);
 
+            // Get domain data from OpenProvider
             $domainOp = $this->apiHelper->getDomain($this->api_domain);
 
-            $expiration_date = (Carbon::createFromFormat('Y-m-d H:i:s', $domainOp['renewalDate'], 'Europe/Amsterdam'))
+            // Update expiry date from OpenProvider
+            $expiration_date = Carbon::createFromFormat('Y-m-d H:i:s', $domainOp['renewalDate'], 'Europe/Amsterdam')
                 ->toDateString();
 
-            if(in_array($domainOp['status'], self::DOMAIN_STATUSES_ACTIVE)) {
-                // auto renew on or not? -> WHMCS is leading.
-                if($setting['syncAutoRenewSetting'] == true)
-                    $this->process_auto_renew($domainOp);
+            // Determine domain status based on OpenProvider data
+            $status = $this->mapDomainStatus($domainOp['status']);
+            // save the status and expiry date
+            $this->updateDomainStatusAndExpiry($status, $expiration_date, $params['domainid']);
+            // Refresh the page
+            $url = $_SERVER['HTTP_REFERER'];
+            $url_decoded = html_entity_decode($url);
+            header('Location: ' . $url_decoded);
 
-                // Identity protection or not? -> WHMCS is leading.
-                if($setting['syncIdentityProtectionToggle'] == true)
-                    $this->process_identity_protection($domainOp);
-
-                return [
-                    'expirydate' => $expiration_date, // Format: YYYY-MM-DD
-                    'active' => true, // Return true if the domain is active
-                    'cancelled' => false, // Return true if the domain has expired
-                    'transferredAway' => false, // Return true if the domain is transferred out
-                ];
-            } else if (in_array($domainOp['status'], self::DOMAIN_STATUSES_INACTIVE)) {
-                return [
-                    'expirydate' => $expiration_date, // Format: YYYY-MM-DD
-                    'active' => false, // Return true if the domain is active
-                    'cancelled' => false, // Return true if the domain has expired
-                    'transferredAway' => false, // Return true if the domain is transferred out
-                ];
-            }
+            return [
+                'expirydate' => $expiration_date, // Format: YYYY-MM-DD
+                'active' => $status === 'Active',
+                'cancelled' => $status === 'Cancelled',
+                'transferredAway' => $status === 'Transferred Away',
+            ];
         } catch (\Exception $ex) {
-            if($ex->getMessage() == 'This action is prohibitted for current domain status.') {
-                // Set the status to expired.
-                return [
-                    'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
-                    'active' => false, // Return true if the domain is active
-                    'cancelled' => true, // Return true if the domain has expired
-                    'transferredAway' => false, // Return true if the domain is transferred out
-                ];
-            } else if($ex->getMessage() == 'The domain is not in your account; please transfer it to your account first.') {
-                // Set the status to expired.
-                return [
-                    'expirydate' => $this->domain->expirydate, // Format: YYYY-MM-DD
-                    'active' => false, // Return true if the domain is active
-                    'cancelled' => false, // Return true if the domain has expired
-                    'transferredAway' => true, // Return true if the domain is transferred out
-                ];
-            }
-            
             return [
                 'error' =>  $ex->getMessage()
             ];
         }
-
-        return [];
     }
-
+    private function updateDomainStatusAndExpiry($status, $expiry_date, $domainId){
+    $command = 'UpdateClientDomain';
+    try {
+        $postData = array(
+            'domainid' => $domainId,
+            'status' => $status,
+            'expirydate' => $expiry_date,
+        );
+        $results = localAPI($command, $postData);
+        logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':$status, 'expirydate' => $expiry_date}", $results, null, null);
+    } catch (\Exception $e) {
+        logModuleCall('WHMCS internal', $command, null, "Failed to update domain. id: " . $domainId . ", msg: " . $e->getMessage(), null, null);
+    }
+    }
     /**
-     * Process the Domain autorenew setting
+     * Map OpenProvider status to WHMCS status.
      *
-     * @return void
-     * @throws \Exception
+     * @param string $opStatus
+     * @return string
      */
-    private function process_auto_renew($domainOp)
+    private function mapDomainStatus($opStatus)
     {
-        $result = $this->apiHelper->toggleAutorenewDomain($this->domain, $domainOp);
-
-        if($result != 'correct')
-        {
-            /**
-             * Log the activity data
-             */
-            $activity_data = [
-                'id'            => $this->domain->id,
-                'domain'        => $this->domain->domain,
-                'old_setting'   => $result['old_setting'],
-                'new_setting'   => $result['new_setting'],
-            ];
-
-            Activity::log('update_autorenew_setting', $activity_data);
-        }
-    }
-
-    /**
-     * Process the Domain identity protection setting
-     *
-     * @return void
-     **/
-    private function process_identity_protection($domainOp)
-    {
-        try {
-            $result = $this->apiHelper->toggleWhoisProtection($this->domain, $domainOp);
-
-        } catch (\Exception $e) {
-            \logModuleCall('OpenProvider', 'Save identity toggle', $this->domain->domain, [$this->domain->domain, @$domainOp], $e->getMessage(), [$params['Password']]);
-        }
-
-        if($result != 'correct')
-        {
-            /**
-             * Log the activity data
-             */
-            $activity_data = [
-                'id'            => $this->domain->id,
-                'domain'        => $this->domain->domain,
-                'old_setting'   => $result['old_setting'],
-                'new_setting'   => $result['new_setting'],
-            ];
-
-            Activity::log('update_identity_protection_setting', $activity_data);
+        if (in_array($opStatus, ['ACT'])) {
+            return 'Active';
+        } elseif (in_array($opStatus, ['FAI', 'DEL'])) {
+            return 'Cancelled';
+        } elseif ($opStatus === 'TRAN') {
+            return 'Transferred Away';
+        } else {
+            return 'Inactive';
         }
     }
 }

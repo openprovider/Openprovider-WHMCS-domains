@@ -86,14 +86,14 @@ class ObjectNormalizer extends AbstractObjectNormalizer
             $name = $reflMethod->name;
             $attributeName = null;
 
-            if (0 === strpos($name, 'get') || 0 === strpos($name, 'has')) {
+            if (str_starts_with($name, 'get') || str_starts_with($name, 'has')) {
                 // getters and hassers
                 $attributeName = substr($name, 3);
 
                 if (!$reflClass->hasProperty($attributeName)) {
                     $attributeName = lcfirst($attributeName);
                 }
-            } elseif (0 === strpos($name, 'is')) {
+            } elseif (str_starts_with($name, 'is')) {
                 // issers
                 $attributeName = substr($name, 2);
 
@@ -107,23 +107,17 @@ class ObjectNormalizer extends AbstractObjectNormalizer
             }
         }
 
-        $checkPropertyInitialization = \PHP_VERSION_ID >= 70400;
-
         // properties
+        $propertyValues = !method_exists($object, '__get') ? (array) $object : null;
         foreach ($reflClass->getProperties() as $reflProperty) {
-            $isPublic = $reflProperty->isPublic();
-
-            if ($checkPropertyInitialization) {
-                if (!$isPublic) {
-                    $reflProperty->setAccessible(true);
-                }
-                if (!$reflProperty->isInitialized($object)) {
+            if (null !== $propertyValues && !\array_key_exists($reflProperty->name, $propertyValues)) {
+                if ($reflProperty->isPublic()
+                    || ($reflProperty->isProtected() && !\array_key_exists("\0*\0{$reflProperty->name}", $propertyValues))
+                    || ($reflProperty->isPrivate() && !\array_key_exists("\0{$reflProperty->class}\0{$reflProperty->name}", $propertyValues))
+                ) {
                     unset($attributes[$reflProperty->name]);
-                    continue;
                 }
-            }
 
-            if (!$isPublic) {
                 continue;
             }
 

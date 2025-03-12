@@ -1,9 +1,9 @@
 # Domain Module for WHMCS 8.x
 
-**This new version of Openprovider domain module is compatible with WHMCS versions up to 8.10.1 and PHP 8.1.**
+## **Important: This is a test version of the Openprovider domain registar module and is not meant for use in production environments.**
 
-**If you notice any bugs or lack of functionality or
-other problems, please report it to [Openprovider Support team](https://support.openprovider.eu/hc/en-us/articles/360001674667-Contact-Openprovider-Support) immediately with all available details (reseller_id, error details, [module logs](https://github.com/openprovider/Openprovider-WHMCS-domains/tree/version-8?tab=readme-ov-file#troubleshooting), WHMCS & PHP & web server version details and screenshot(s)/screen record if possible) so that we can rectify issues accordingly. The more details you can provide about issues, the faster we can reproduce and investigate it for a resolution. Your help in this regard is greatly appreciated!** 
+If you notice any bugs or lack of functionality or
+other problems, please report it to [Openprovider Support team](https://support.openprovider.eu/hc/en-us/articles/360001674667-Contact-Openprovider-Support) immediately with all available details (reseller_id, error details, [module logs](https://github.com/openprovider/Openprovider-WHMCS-domains/tree/version-8?tab=readme-ov-file#troubleshooting), WHMCS & PHP & web server version details and screenshot(s)/screen record if possible) so that we can rectify issues accordingly. The more details you can provide about issues, the faster we can reproduce and investigate it for a resolution. Your help in this regard is greatly appreciated!
 
 ## Introduction
 The Openprovider WHMCS module integrates conveniently with your [Openprovider account](https://cp.openprovider.eu/signup), allowing you to automate domain provisioning and management tasks, such as registration, renewal, deletion, updates to contact details, etc.
@@ -31,7 +31,13 @@ Features
 
 # Install and configure the Openprovider module
 
-## Copy files into the module directories
+## Installation using script
+- To install the Openprovider domain registrar module, run the following commands from **WHMCS root directory** as the hosting/website user (e.g., on a cPanel server, run it as the cPanel user under which the WHMCS website is hosted).
+```bash
+curl -s https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/refs/heads/version-8.1/scripts/install_openprovider.sh | /bin/bash -s
+```  
+
+## Manuaul Installation - Copy files into the module directories
 
 - Upload the contents of `/modules/registrars/openprovider` from this repository to  `<your WHMCS directory>/modules/registrars/openprovider`
 - Upload the contents of `/includes/hooks/` to `<your WHMCS directory>/includes/hooks`

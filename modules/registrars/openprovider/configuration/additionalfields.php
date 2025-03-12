@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Configuration fields
  * OpenProvider Registrar module
@@ -140,7 +141,7 @@ $additionaldomainfields['.pt'][] = array(
 // it
 $additionaldomainfields['.it'][] = array(
     'Name' => 'Company Registration Number',
-    "LangVar"=> "itCompanyRegistrationNumber",
+    "LangVar" => "itCompanyRegistrationNumber",
     "Type" => "text",
     "Size" => "30",
     "Required" => false,
@@ -150,7 +151,7 @@ $additionaldomainfields['.it'][] = array(
 
 $additionaldomainfields['.it'][] = array(
     'Name' => 'Company VAT number',
-    "LangVar"=> "vat",
+    "LangVar" => "vat",
     "Type" => "text",
     "Size" => "30",
     "Required" => false,
@@ -160,7 +161,7 @@ $additionaldomainfields['.it'][] = array(
 
 $additionaldomainfields['.it'][] = array(
     'Name' => 'Individual Codice Fiscale',
-    "LangVar"=> "socialSecurityNumber",
+    "LangVar" => "socialSecurityNumber",
     "Type" => "text",
     "Size" => "30",
     "Required" => false,
@@ -359,11 +360,30 @@ $additionaldomainfields['.es'][] = array(
     "op_name"  => "esIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
 
+$additionaldomainfields[".es"][] = array(
+    "Name" => 'I agree with <a href="https://www.red.es/es" target="_blank">red.es</a> rules and accept the terms and conditions - <a href="https://drive.google.com/file/d/1LJMdRZwlbplF1HakqOg0ry09z6FR5IXW/edit" target="_blank">ANNEX 3 Policy</a>',
+    "LangVar" => "esRegistrantAnnex3Acceptance",
+    "Type" => "tickbox",
+    "Required" => false,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "esAnnexAcceptance"
+);
+
 // All .ES SLDs
 $additionaldomainfields[".com.es"] = $additionaldomainfields[".es"];
 $additionaldomainfields[".nom.es"] = $additionaldomainfields[".es"];
 $additionaldomainfields[".edu.es"] = $additionaldomainfields[".es"];
 $additionaldomainfields[".org.es"] = $additionaldomainfields[".es"];
+
+//.ae
+$additionaldomainfields[".ae"][] = array(
+    "Name" => "By registering this domain name, I acknowledges and accepts the .ae registration agreement",
+    "LangVar" => "aeAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "aeAcceptance"
+);
 
 // .SE
 $additionaldomainfields[".se"][] = array(
@@ -377,7 +397,7 @@ $additionaldomainfields[".se"][] = array(
 
 $additionaldomainfields['.se'][] = array(
     'Name' => 'Identification number',
-    "LangVar"=> "seIdentificationNumber",
+    "LangVar" => "seIdentificationNumber",
     "Type" => "text",
     "Size" => "30",
     "Required" => true,
@@ -834,10 +854,52 @@ $additionaldomainfields[".law"][] = array(
 $additionaldomainfields[".fi"][] = array(
     "Name" => "Organisation Type",
     "LangVar" => "fiOrgType",
-    "Type" => "text",
+    "Type" => "dropdown",
     "Required" => true,
+    "Options" => "0 - Private person,1 - Company,2 - Corporation,3 - Institution,4 - Political party,5 - Township,6 - Government,7 - Public Community",
+    "op_explode" => ' -',
     "op_location" => "domainAdditionalData",
     "op_name" => "orgType"
+);
+
+$additionaldomainfields['.fi'][] = array(
+    'Name' => 'Company Registration Number',
+    "LangVar" => "fiCompanyRegistrationNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "Required" => false,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "companyRegistrationNumber"
+);
+
+$additionaldomainfields['.fi'][] = array(
+    'Name' => 'Passport/ID number for Individuals',
+    "LangVar" => "fiPassportNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "Required" => false,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "passportNumber"
+);
+
+$additionaldomainfields['.fi'][] = array(
+    'Name' => 'Social Security Number for Individuals',
+    "LangVar" => "fiSocialSecurityNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "Required" => false,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "socialSecurityNumber"
+);
+
+$additionaldomainfields['.fi'][] = array(
+    'Name' => 'Birthday for Foreign Private Individuals (YYYY-MM-DD)',
+    "LangVar" => "fiBirthDate",
+    "Type" => "text",
+    "Size" => "10",
+    "Required" => false,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "birthDate"
 );
 
 $additionaldomainfields['.nu'][] = array(
@@ -897,4 +959,14 @@ $additionaldomainfields[".de"][] = array(
 $additionaldomainfields[".de"][] = array(
     "Name" => "Agree to DE Terms",
     "Remove" => true,
+);
+
+// .DK
+$additionaldomainfields[".dk"][] = array(
+    "Name" => 'By registering this domain name, I acknowledges and accepts the .dk registration agreement',
+    "LangVar" => "dkAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "dkAcceptance"
 );

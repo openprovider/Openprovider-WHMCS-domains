@@ -22,27 +22,27 @@ use phpDocumentor\Reflection\DocBlock\Description;
 abstract class BaseTag implements DocBlock\Tag
 {
     /** @var string Name of the tag */
-    protected $name = '';
+    protected string $name = '';
 
     /** @var Description|null Description of the tag. */
-    protected $description;
+    protected ?Description $description = null;
 
     /**
      * Gets the name of this tag.
      *
      * @return string The name of this tag.
      */
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getDescription() : ?Description
+    public function getDescription(): ?Description
     {
         return $this->description;
     }
 
-    public function render(?Formatter $formatter = null) : string
+    public function render(?Formatter $formatter = null): string
     {
         if ($formatter === null) {
             $formatter = new Formatter\PassthroughFormatter();

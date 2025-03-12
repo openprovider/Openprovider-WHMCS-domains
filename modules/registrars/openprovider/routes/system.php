@@ -46,6 +46,7 @@ return [
     'getEppCode'                  => 'EppController@get',
     'transferSync'                => 'TransferSyncController@sync',
     'domainSync'                  => 'DomainSyncController@sync',
+    'domainSyncAutoRenew'         => 'DomainSyncAutoRenewController@sync',
     'checkAvailability'           => 'CheckAvailabilityController@check',
     'getTldPricing'               => 'TldPricingController@get',
     'getDomainSuggestionOptions'  => 'DomainSuggestionOptionsController@get',
