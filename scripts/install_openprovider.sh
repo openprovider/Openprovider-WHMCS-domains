@@ -2,17 +2,13 @@
 
 # Variables
 GIT_REPO="https://github.com/openprovider/Openprovider-WHMCS-domains.git"
+PACKAGE_URL="https://github.com/openprovider/Openprovider-WHMCS-domains/archive/refs/tags/v5.8.2.tar.gz"
 TEMP_DIR="/tmp/openprovider_module"
+PACKAGE_FILE="/tmp/openprovider_module.tar.gz"
 
 # Check if the current directory is the WHMCS root directory
 if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modules/addons" ]; then
     echo "Error: This script must be run from the WHMCS root directory."
-    exit 1
-fi
-
-# Check if git is installed
-if ! command -v git &> /dev/null; then
-    echo "Error: git is not installed. Please install git and try again."
     exit 1
 fi
 
@@ -23,12 +19,38 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Clone the Openprovider module repository
-echo "Cloning Openprovider repository..."
-git clone "$GIT_REPO" "$TEMP_DIR"
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to clone repository. Check your network connection or git permissions."
-    exit 1
+# Check if git is installed
+if command -v git &> /dev/null; then
+    echo "Cloning Openprovider repository..."
+    git clone "$GIT_REPO" "$TEMP_DIR"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to clone repository. Falling back to downloading package."
+        FALLBACK=true
+    fi
+else
+    echo "Git is not installed. Falling back to downloading package."
+    FALLBACK=true
+fi
+
+# Fallback to downloading the package if git is unavailable or fails
+if [ "$FALLBACK" = true ]; then
+    if command -v curl &> /dev/null; then
+        echo "Downloading package using curl..."
+        curl -L "$PACKAGE_URL" -o "$PACKAGE_FILE"
+    elif command -v wget &> /dev/null; then
+        echo "Downloading package using wget..."
+        wget "$PACKAGE_URL" -O "$PACKAGE_FILE"
+    else
+        echo "Error: Neither git, curl, nor wget are available. Cannot proceed."
+        exit 1
+    fi
+    
+    echo "Extracting package..."
+    tar -xzf "$PACKAGE_FILE" -C "$TEMP_DIR" --strip-components=1
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to extract package."
+        exit 1
+    fi
 fi
 
 # Copy files to WHMCS directories
@@ -75,7 +97,7 @@ fi
 
 # Clean up temporary directory
 echo "Cleaning up temporary files..."
-rm -rf "$TEMP_DIR"
+rm -rf "$TEMP_DIR" "$PACKAGE_FILE"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to clean up temporary files."
     exit 1
