@@ -2,9 +2,8 @@
 
 # Variables
 GIT_REPO="https://github.com/openprovider/Openprovider-WHMCS-domains.git"
-PACKAGE_URL="https://github.com/openprovider/Openprovider-WHMCS-domains/archive/refs/tags/v5.8.2.tar.gz"
+LATEST_RELEASE_API="https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest"
 TEMP_DIR="/tmp/openprovider_module"
-PACKAGE_FILE="/tmp/openprovider_module.tar.gz"
 
 # Check if the current directory is the WHMCS root directory
 if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modules/addons" ]; then
@@ -21,32 +20,34 @@ fi
 
 # Check if git is installed
 if command -v git &> /dev/null; then
-    echo "Cloning Openprovider repository..."
-    git clone "$GIT_REPO" "$TEMP_DIR"
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to clone repository. Falling back to downloading package."
-        FALLBACK=true
-    fi
+    FALLBACK=true
+    # echo "Cloning Openprovider repository..."
+    # git clone "$GIT_REPO" "$TEMP_DIR"
+    # if [ $? -ne 0 ]; then
+    #     echo "Error: Failed to clone repository. Falling back to downloading latest release."
+    #     FALLBACK=true
+    # fi
 else
-    echo "Git is not installed. Falling back to downloading package."
+    echo "Git is not installed. Falling back to downloading latest release."
     FALLBACK=true
 fi
 
-# Fallback to downloading the package if git is unavailable or fails
+
+
+# Fallback to downloading the latest release if git is unavailable or fails
 if [ "$FALLBACK" = true ]; then
     if command -v curl &> /dev/null; then
-        echo "Downloading package using curl..."
-        curl -L "$PACKAGE_URL" -o "$PACKAGE_FILE"
+        LATEST_URL=$(curl -s $LATEST_RELEASE_API | grep "tarball_url" | cut -d '"' -f 4)
     elif command -v wget &> /dev/null; then
-        echo "Downloading package using wget..."
-        wget "$PACKAGE_URL" -O "$PACKAGE_FILE"
+        LATEST_URL=$(wget -qO- $LATEST_RELEASE_API | grep "tarball_url" | cut -d '"' -f 4)
     else
         echo "Error: Neither git, curl, nor wget are available. Cannot proceed."
         exit 1
     fi
     
-    echo "Extracting package..."
-    tar -xzf "$PACKAGE_FILE" -C "$TEMP_DIR" --strip-components=1
+    echo "Downloading latest release..."
+    curl -L "$LATEST_URL" -o "$TEMP_DIR/latest.tar.gz"
+    tar -xzf "$TEMP_DIR/latest.tar.gz" -C "$TEMP_DIR" --strip-components=1
     if [ $? -ne 0 ]; then
         echo "Error: Failed to extract package."
         exit 1
@@ -97,7 +98,7 @@ fi
 
 # Clean up temporary directory
 echo "Cleaning up temporary files..."
-rm -rf "$TEMP_DIR" "$PACKAGE_FILE"
+rm -rf "$TEMP_DIR"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to clean up temporary files."
     exit 1
