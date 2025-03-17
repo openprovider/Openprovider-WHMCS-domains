@@ -51,12 +51,7 @@ class Configuration
     public static function getOrDefault($key, $defaultValue = false)
     {
         self::init();
-        $value = self::$config[$key];
-        if (!$value) {
-            return $defaultValue;
-        }
-
-        return $value;
+        return array_key_exists($key, self::$config) ? self::$config[$key] : $defaultValue;
     }
 
     public static function getApiUrl($apiMethod)
@@ -83,9 +78,9 @@ class Configuration
 
         if (
             (strpos($systemUrlWithoutProtocol, 'www.') !== false &&
-            strpos($phpHostUrl, 'www.') !== false) ||
+                strpos($phpHostUrl, 'www.') !== false) ||
             (strpos($systemUrlWithoutProtocol, 'www.') === false &&
-            strpos($phpHostUrl, 'www.') === false)
+                strpos($phpHostUrl, 'www.') === false)
         ) {
             return '//' . $systemUrlWithoutProtocol;
         }
