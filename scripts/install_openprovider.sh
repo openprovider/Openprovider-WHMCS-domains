@@ -20,7 +20,6 @@ fi
 
 # Check if git is installed
 if command -v git &> /dev/null; then
-    FALLBACK=true
     echo "Cloning Openprovider repository..."
     git clone "$GIT_REPO" "$TEMP_DIR"
     if [ $? -ne 0 ]; then
@@ -32,19 +31,51 @@ else
     FALLBACK=true
 fi
 
+# # Fallback to downloading the latest release if git is unavailable or fails
+# if [ "$FALLBACK" = true ]; then
+#     if command -v curl &> /dev/null; then
+#         LATEST_URL=$(curl -s $LATEST_RELEASE_API | grep "tarball_url" | cut -d '"' -f 4)
+#     elif command -v wget &> /dev/null; then
+#         LATEST_URL=$(wget -qO- $LATEST_RELEASE_API | grep "tarball_url" | cut -d '"' -f 4)
+#     else
+#         echo "Error: Neither git, curl, nor wget are available. Cannot proceed."
+#         exit 1
+#     fi
+    
+#     echo "Downloading latest release..."
+#     curl -L "$LATEST_URL" -o "$TEMP_DIR/latest.tar.gz"
+#     tar -xzf "$TEMP_DIR/latest.tar.gz" -C "$TEMP_DIR" --strip-components=1
+#     if [ $? -ne 0 ]; then
+#         echo "Error: Failed to extract package."
+#         exit 1
+#     fi
+# fi
+
 # Fallback to downloading the latest release if git is unavailable or fails
 if [ "$FALLBACK" = true ]; then
+    echo "Fetching the latest release version..."
     if command -v curl &> /dev/null; then
-        LATEST_URL=$(curl -s $LATEST_RELEASE_API | grep "tarball_url" | cut -d '"' -f 4)
+        LATEST_TAG=$(curl -s "$LATEST_RELEASE_API" | grep '"tag_name"' | cut -d '"' -f 4)
     elif command -v wget &> /dev/null; then
-        LATEST_URL=$(wget -qO- $LATEST_RELEASE_API | grep "tarball_url" | cut -d '"' -f 4)
+        LATEST_TAG=$(wget -qO- "$LATEST_RELEASE_API" | grep '"tag_name"' | cut -d '"' -f 4)
     else
-        echo "Error: Neither git, curl, nor wget are available. Cannot proceed."
+        echo "Error: Neither curl nor wget is available. Cannot fetch latest release."
         exit 1
     fi
     
-    echo "Downloading latest release..."
-    curl -L "$LATEST_URL" -o "$TEMP_DIR/latest.tar.gz"
+    LATEST_URL="https://github.com/openprovider/Openprovider-WHMCS-domains/archive/refs/tags/${LATEST_TAG}.tar.gz"
+    
+    echo "Downloading latest release: $LATEST_TAG ..."
+    if command -v curl &> /dev/null; then
+        curl -L "$LATEST_URL" -o "$TEMP_DIR/latest.tar.gz"
+    elif command -v wget &> /dev/null; then
+        wget "$LATEST_URL" -O "$TEMP_DIR/latest.tar.gz"
+    else
+        echo "Error: Neither curl nor wget is available. Cannot proceed."
+        exit 1
+    fi
+    
+    echo "Extracting package..."
     tar -xzf "$TEMP_DIR/latest.tar.gz" -C "$TEMP_DIR" --strip-components=1
     if [ $? -ne 0 ]; then
         echo "Error: Failed to extract package."
