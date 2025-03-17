@@ -19,17 +19,17 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check if git is installed
-if command -v git &> /dev/null; then
-    echo "Cloning Openprovider repository..."
-    git clone "$GIT_REPO" "$TEMP_DIR"
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to clone repository. Falling back to downloading latest release."
-        FALLBACK=true
-    fi
-else
-    echo "Git is not installed. Falling back to downloading latest release."
-    FALLBACK=true
-fi
+# if command -v git &> /dev/null; then
+#     echo "Cloning Openprovider repository..."
+#     git clone "$GIT_REPO" "$TEMP_DIR"
+#     if [ $? -ne 0 ]; then
+#         echo "Error: Failed to clone repository. Falling back to downloading latest release."
+#         FALLBACK=true
+#     fi
+# else
+#     echo "Git is not installed. Falling back to downloading latest release."
+#     FALLBACK=true
+# fi
 
 # # Fallback to downloading the latest release if git is unavailable or fails
 # if [ "$FALLBACK" = true ]; then
@@ -50,6 +50,8 @@ fi
 #         exit 1
 #     fi
 # fi
+
+FALLBACK=true
 
 # Fallback to downloading the latest release if git is unavailable or fails
 if [ "$FALLBACK" = true ]; then
