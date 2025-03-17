@@ -18,7 +18,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-Check if git is installed
+#Check if git is installed
 if command -v git &> /dev/null; then
     echo "Cloning Openprovider repository..."
     git clone "$GIT_REPO" "$TEMP_DIR"
