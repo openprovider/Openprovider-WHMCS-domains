@@ -2,6 +2,7 @@
 
 # Variables
 GIT_REPO="https://github.com/openprovider/Openprovider-WHMCS-domains.git"
+LATEST_RELEASE_API="https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest"
 TEMP_DIR="/tmp/openprovider_module"
 
 # Check if the current directory is the WHMCS root directory
@@ -21,12 +22,6 @@ else
     exit 0
 fi
 
-# Check if git is installed
-if ! command -v git &> /dev/null; then
-    echo "Error: git is not installed. Please install git and try again."
-    exit 1
-fi
-
 # Create a temporary directory
 mkdir -p "$TEMP_DIR"
 if [ $? -ne 0 ]; then
@@ -34,12 +29,45 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Clone the Openprovider module repository
-echo "Fetching the latest version of Openprovider module..."
-git clone "$GIT_REPO" "$TEMP_DIR"
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to clone repository. Check your network connection or git permissions."
-    exit 1
+# # Check if git is installed
+# if command -v git &> /dev/null; then
+#     echo "Fetching the latest version of Openprovider module using git..."
+#     git clone "$GIT_REPO" "$TEMP_DIR"
+#     if [ $? -ne 0 ]; then
+#         echo "Error: Failed to clone repository. Falling back to downloading package."
+#         FALLBACK=true
+#     fi
+# else
+#     echo "Git is not installed. Falling back to downloading package."
+#     FALLBACK=true
+# fi
+
+FALLBACK=true
+
+# Fallback to downloading the package if git is unavailable or fails
+if [ "$FALLBACK" = true ]; then
+    LATEST_RELEASE_URL=$(curl -s $LATEST_RELEASE_API | grep "tarball_url" | cut -d '"' -f 4)
+    if [ -z "$LATEST_RELEASE_URL" ]; then
+        echo "Error: Failed to fetch the latest release URL."
+        exit 1
+    fi
+
+    echo "Downloading latest release package..."
+    if command -v curl &> /dev/null; then
+        curl -L "$LATEST_RELEASE_URL" -o "$TEMP_DIR/openprovider_module.tar.gz"
+    elif command -v wget &> /dev/null; then
+        wget "$LATEST_RELEASE_URL" -O "$TEMP_DIR/openprovider_module.tar.gz"
+    else
+        echo "Error: Neither git, curl, nor wget are available. Cannot proceed."
+        exit 1
+    fi
+
+    echo "Extracting package..."
+    tar -xzf "$TEMP_DIR/openprovider_module.tar.gz" -C "$TEMP_DIR" --strip-components=1
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to extract package."
+        exit 1
+    fi
 fi
 
 # Copy files to update the Openprovider module in WHMCS
