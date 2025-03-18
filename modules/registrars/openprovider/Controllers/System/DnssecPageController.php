@@ -3,7 +3,8 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use WHMCS\ClientArea;
-use WHMCS\Authentication\CurrentUser;
+use WHMCS\User\Client;
+use WHMCS\Domain\Domain;
 use OpenProvider\API\APIConfig;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
@@ -38,26 +39,34 @@ class DnssecPageController extends BaseController
 
     public function show($params)
     {
+        $currentUser = Client::find($_SESSION['uid']); 
+        if (isset($_GET['domainid'])) {
+            $domain = Domain::find($_GET['domainid']);
+        }
+        
         $ca = new ClientArea();
 
         $ca->setPageTitle(self::PAGE_NAME);
 
-        $currentUser = new CurrentUser();
-        $authUser = $currentUser->user();
-        $selectedClient = $currentUser->client();
+        $ca->assign('dnssecKeys', $dnssecKeys);
+        $ca->assign('isDnssecEnabled', $isDnssecEnabled);
+        $ca->assign('apiUrlUpdateDnssecRecords', Configuration::getApiUrl('dnssec-record-update'));
+        $ca->assign('apiUrlTurnOnOffDnssec', Configuration::getApiUrl('dnssec-enabled-update'));
+        $ca->assign('domainId', $domain['id']);
+        $ca->assign('jsModuleUrl', Configuration::getJsModuleUrl(self::MODULE_NAME));
+        $ca->assign('cssModuleUrl', Configuration::getCssModuleUrl(self::MODULE_NAME));
 
-        if (!$authUser || !$selectedClient) {
-            $this->redirectUserAway();
-            return;
-        }
+        $ca->addToBreadCrumb('index.php', \Lang::trans('globalsystemname'));
+        $ca->addToBreadCrumb('clientarea.php', \Lang::trans('clientareatitle'));
+        $ca->addToBreadCrumb('clientarea.php?action=domains', \Lang::trans('clientareanavdomains'));
+        $ca->addToBreadCrumb('clientarea.php?action=domaindetails&id=' . $domain['id'], $domain['domain']);
+        $ca->addToBreadCrumb('dnssec.php', self::PAGE_NAME);
 
-        $domainId = $_GET['domainid'];
-        $domain = \WHMCS\Database\Capsule::table('tbldomains')
-            ->where('id', $domainId)
-            ->where('userid', $selectedClient->id)
-            ->first();
+        $ca->initPage();
 
-        if (!$domain) {
+        $ca->requireLogin();
+
+        if ($domain['userid'] != $currentUser['id']) {
             $this->redirectUserAway();
             return;
         }
@@ -81,63 +90,11 @@ class DnssecPageController extends BaseController
             return;
         }
 
-        $ca->assign('dnssecKeys', $dnssecKeys);
-        $ca->assign('isDnssecEnabled', $isDnssecEnabled);
-        $ca->assign('apiUrlUpdateDnssecRecords', Configuration::getApiUrl('dnssec-record-update'));
-        $ca->assign('apiUrlTurnOnOffDnssec', Configuration::getApiUrl('dnssec-enabled-update'));
-        $ca->assign('domainId', $domainId);
-        $ca->assign('jsModuleUrl', Configuration::getJsModuleUrl(self::MODULE_NAME));
-        $ca->assign('cssModuleUrl', Configuration::getCssModuleUrl(self::MODULE_NAME));
+        \Menu::addContext('client', $currentUser);
+        \Menu::addContext('domain', $domain);
 
-        $ca->addToBreadCrumb('index.php', \Lang::trans('globalsystemname'));
-        $ca->addToBreadCrumb('clientarea.php', \Lang::trans('clientareatitle'));
-        $ca->addToBreadCrumb('clientarea.php?action=domains', \Lang::trans('clientareanavdomains'));
-        $ca->addToBreadCrumb('clientarea.php?action=domaindetails&id=' . $domainId, $domain->domain);
-        $ca->addToBreadCrumb('dnssec.php', self::PAGE_NAME);
-
-        $ca->initPage();
-
-        $ca->requireLogin();
-
-        $primarySidebar = \Menu::primarySidebar('domainView');
-
-        $primarySidebar->getChild('Domain Details Management')
-            ->addChild('Overview')
-            ->setLabel(\Lang::trans('overview'))
-            ->setUri("clientarea.php?action=domaindetails&id={$domainId}")
-            ->setOrder(0);
-
-        $primarySidebar->getChild('Domain Details Management')
-            ->addChild('Auto Renew')
-            ->setLabel(\Lang::trans('domainsautorenew'))
-            ->setUri("clientarea.php?action=domaindetails&id={$domainId}#tabAutorenew")
-            ->setOrder(10);
-
-        $primarySidebar->getChild('Domain Details Management')
-            ->addChild('Nameservers')
-            ->setLabel(\Lang::trans('orderservernameservers'))
-            ->setUri("clientarea.php?action=domaindetails&id={$domainId}#tabNameservers")
-            ->setOrder(20);
-
-        $primarySidebar->getChild('Domain Details Management')
-            ->addChild('Addons')
-            ->setLabel(\Lang::trans('domainaddons'))
-            ->setUri("clientarea.php?action=domaindetails&id={$domainId}#tabAddons")
-            ->setOrder(30);
-
-        $primarySidebar->getChild('Domain Details Management')
-            ->addChild('Contact Information')
-            ->setLabel(\Lang::trans('domaincontactinfo'))
-            ->setUri("clientarea.php?action=domaincontacts&domainid={$domainId}")
-            ->setOrder(40);
-
-        if ($openproviderNameserversCount > 1 && $domain->dnsmanagement) {
-            $primarySidebar->getChild('Domain Details Management')
-                ->addChild('DNS Management')
-                ->setLabel(\Lang::trans('domaindnsmanagement'))
-                ->setUri("clientarea.php?action=domaindns&domainid={$domainId}")
-                ->setOrder(50);
-        }
+        \Menu::primarySidebar('domainView');
+        \Menu::secondarySidebar('domainView');
 
         $ca->setTemplate('/modules/registrars/openprovider/includes/templates/dnssec.tpl');
 
