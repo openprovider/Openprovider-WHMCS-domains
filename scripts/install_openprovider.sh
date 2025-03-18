@@ -3,6 +3,7 @@
 # Variables
 GIT_REPO="https://github.com/openprovider/Openprovider-WHMCS-domains.git"
 LATEST_RELEASE_API="https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest"
+BASE_RELEASE_URL="https://github.com/openprovider/Openprovider-WHMCS-domains/archive/refs/tags"
 TEMP_DIR="/tmp/openprovider_module"
 
 # Check if the current directory is the WHMCS root directory
@@ -31,26 +32,6 @@ else
     FALLBACK=true
 fi
 
-# # Fallback to downloading the latest release if git is unavailable or fails
-# if [ "$FALLBACK" = true ]; then
-#     if command -v curl &> /dev/null; then
-#         LATEST_URL=$(curl -s $LATEST_RELEASE_API | grep "tarball_url" | cut -d '"' -f 4)
-#     elif command -v wget &> /dev/null; then
-#         LATEST_URL=$(wget -qO- $LATEST_RELEASE_API | grep "tarball_url" | cut -d '"' -f 4)
-#     else
-#         echo "Error: Neither git, curl, nor wget are available. Cannot proceed."
-#         exit 1
-#     fi
-    
-#     echo "Downloading latest release..."
-#     curl -L "$LATEST_URL" -o "$TEMP_DIR/latest.tar.gz"
-#     tar -xzf "$TEMP_DIR/latest.tar.gz" -C "$TEMP_DIR" --strip-components=1
-#     if [ $? -ne 0 ]; then
-#         echo "Error: Failed to extract package."
-#         exit 1
-#     fi
-# fi
-
 # Fallback to downloading the latest release if git is unavailable or fails
 if [ "$FALLBACK" = true ]; then
     echo "Fetching the latest release version..."
@@ -63,15 +44,33 @@ if [ "$FALLBACK" = true ]; then
         exit 1
     fi
     
-    LATEST_URL="https://github.com/openprovider/Openprovider-WHMCS-domains/archive/refs/tags/${LATEST_TAG}.tar.gz"
+    if [ -z "$LATEST_TAG" ]; then
+        echo "Error: Failed to fetch the latest release tag."
+        exit 1
+    fi
+    
+    LATEST_URL="${BASE_RELEASE_URL}/${LATEST_TAG}.tar.gz"
     
     echo "Downloading latest release: $LATEST_TAG ..."
     if command -v curl &> /dev/null; then
         curl -L "$LATEST_URL" -o "$TEMP_DIR/latest.tar.gz"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to download package using curl."
+            exit 1
+        fi
     elif command -v wget &> /dev/null; then
         wget "$LATEST_URL" -O "$TEMP_DIR/latest.tar.gz"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to download package using wget."
+            exit 1
+        fi
     else
         echo "Error: Neither curl nor wget is available. Cannot proceed."
+        exit 1
+    fi
+    
+    if [ ! -s "$TEMP_DIR/latest.tar.gz" ]; then
+        echo "Error: Downloaded file is empty or corrupted."
         exit 1
     fi
     
@@ -82,6 +81,7 @@ if [ "$FALLBACK" = true ]; then
         exit 1
     fi
 fi
+
 
 # Copy files to WHMCS directories
 echo "Copying registrar module files..."
