@@ -3,6 +3,7 @@
 # Variables
 GIT_REPO="https://github.com/openprovider/Openprovider-WHMCS-domains.git"
 LATEST_RELEASE_API="https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest"
+BASE_RELEASE_URL="https://github.com/openprovider/Openprovider-WHMCS-domains/archive/refs/tags"
 TEMP_DIR="/tmp/openprovider_module"
 
 # Check if the current directory is the WHMCS root directory
@@ -42,24 +43,48 @@ else
     FALLBACK=true
 fi
 
-# Fallback to downloading the package if git is unavailable or fails
+# Fallback to downloading the latest release if git is unavailable or fails
 if [ "$FALLBACK" = true ]; then
-    LATEST_RELEASE_URL=$(curl -s $LATEST_RELEASE_API | grep "tarball_url" | cut -d '"' -f 4)
-    if [ -z "$LATEST_RELEASE_URL" ]; then
-        echo "Error: Failed to fetch the latest release URL."
-        exit 1
-    fi
-
-    echo "Downloading latest release package..."
+    echo "Fetching the latest release version..."
     if command -v curl &> /dev/null; then
-        curl -L "$LATEST_RELEASE_URL" -o "$TEMP_DIR/openprovider_module.tar.gz"
+        LATEST_TAG=$(curl -s "$LATEST_RELEASE_API" | grep '"tag_name"' | cut -d '"' -f 4)
     elif command -v wget &> /dev/null; then
-        wget "$LATEST_RELEASE_URL" -O "$TEMP_DIR/openprovider_module.tar.gz"
+        LATEST_TAG=$(wget -qO- "$LATEST_RELEASE_API" | grep '"tag_name"' | cut -d '"' -f 4)
     else
-        echo "Error: Neither git, curl, nor wget are available. Cannot proceed."
+        echo "Error: Neither curl nor wget is available. Cannot fetch latest release."
         exit 1
     fi
-
+    
+    if [ -z "$LATEST_TAG" ]; then
+        echo "Error: Failed to fetch the latest release tag. Check your internet connection or GitHub API rate limits."
+        exit 1
+    fi
+    
+    LATEST_URL="${BASE_RELEASE_URL}/${LATEST_TAG}.tar.gz"
+    
+    echo "Downloading latest release: $LATEST_TAG ..."
+    if command -v curl &> /dev/null; then
+        curl -L "$LATEST_URL" -o "$TEMP_DIR/openprovider_module.tar.gz"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to download package using curl."
+            exit 1
+        fi
+    elif command -v wget &> /dev/null; then
+        wget "$LATEST_URL" -O "$TEMP_DIR/openprovider_module.tar.gz"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to download package using wget."
+            exit 1
+        fi
+    else
+        echo "Error: Neither curl nor wget is available. Cannot proceed."
+        exit 1
+    fi
+    
+    if [ ! -s "$TEMP_DIR/openprovider_module.tar.gz" ]; then
+        echo "Error: Downloaded file is empty or corrupted."
+        exit 1
+    fi
+    
     echo "Extracting package..."
     tar -xzf "$TEMP_DIR/openprovider_module.tar.gz" -C "$TEMP_DIR" --strip-components=1
     if [ $? -ne 0 ]; then
