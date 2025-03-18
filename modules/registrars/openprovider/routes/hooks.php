@@ -35,7 +35,7 @@ return [
     [
         'hookPoint' => 'AdminHomeWidgets',
         'priority' =>  1,
-        'controller' => 'AdminWidgetController@showBalance'
+        'controller' => 'AdminWidgetController@showBalanceWidget'
     ],
     [
         'hookPoint' => 'ClientAreaPageDomainDNSManagement',
