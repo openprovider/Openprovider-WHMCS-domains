@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Openprovider Upgrade Script - Version v1.1
+
 # Variables
 GIT_REPO="https://github.com/openprovider/Openprovider-WHMCS-domains.git"
 LATEST_RELEASE_API="https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest"

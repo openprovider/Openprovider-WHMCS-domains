@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Openprovider Install Script - Version v1.1
+
 # Variables
 GIT_REPO="https://github.com/openprovider/Openprovider-WHMCS-domains.git"
 LATEST_RELEASE_API="https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest"
@@ -81,7 +83,6 @@ if [ "$FALLBACK" = true ]; then
         exit 1
     fi
 fi
-
 
 # Copy files to WHMCS directories
 echo "Copying registrar module files..."
