@@ -2,6 +2,8 @@
 
 # Variables
 GIT_REPO="https://github.com/openprovider/Openprovider-WHMCS-domains.git"
+LATEST_RELEASE_API="https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest"
+BASE_RELEASE_URL="https://github.com/openprovider/Openprovider-WHMCS-domains/archive/refs/tags"
 TEMP_DIR="/tmp/openprovider_module"
 
 # Check if the current directory is the WHMCS root directory
@@ -21,12 +23,6 @@ else
     exit 0
 fi
 
-# Check if git is installed
-if ! command -v git &> /dev/null; then
-    echo "Error: git is not installed. Please install git and try again."
-    exit 1
-fi
-
 # Create a temporary directory
 mkdir -p "$TEMP_DIR"
 if [ $? -ne 0 ]; then
@@ -34,12 +30,67 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Clone the Openprovider module repository
-echo "Fetching the latest version of Openprovider module..."
-git clone "$GIT_REPO" "$TEMP_DIR"
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to clone repository. Check your network connection or git permissions."
-    exit 1
+# Check if git is installed
+if command -v git &> /dev/null; then
+    echo "Fetching the latest version of Openprovider module using git..."
+    git clone "$GIT_REPO" "$TEMP_DIR"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to clone repository. Falling back to downloading package."
+        FALLBACK=true
+    fi
+else
+    echo "Git is not installed. Falling back to downloading package."
+    FALLBACK=true
+fi
+
+# Fallback to downloading the latest release if git is unavailable or fails
+if [ "$FALLBACK" = true ]; then
+    echo "Fetching the latest release version..."
+    if command -v curl &> /dev/null; then
+        LATEST_TAG=$(curl -s "$LATEST_RELEASE_API" | grep '"tag_name"' | cut -d '"' -f 4)
+    elif command -v wget &> /dev/null; then
+        LATEST_TAG=$(wget -qO- "$LATEST_RELEASE_API" | grep '"tag_name"' | cut -d '"' -f 4)
+    else
+        echo "Error: Neither curl nor wget is available. Cannot fetch latest release."
+        exit 1
+    fi
+    
+    if [ -z "$LATEST_TAG" ]; then
+        echo "Error: Failed to fetch the latest release tag. Check your internet connection or GitHub API rate limits."
+        exit 1
+    fi
+    
+    LATEST_URL="${BASE_RELEASE_URL}/${LATEST_TAG}.tar.gz"
+    
+    echo "Downloading latest release: $LATEST_TAG ..."
+    if command -v curl &> /dev/null; then
+        curl -L "$LATEST_URL" -o "$TEMP_DIR/openprovider_module.tar.gz"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to download package using curl."
+            exit 1
+        fi
+    elif command -v wget &> /dev/null; then
+        wget "$LATEST_URL" -O "$TEMP_DIR/openprovider_module.tar.gz"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to download package using wget."
+            exit 1
+        fi
+    else
+        echo "Error: Neither curl nor wget is available. Cannot proceed."
+        exit 1
+    fi
+    
+    if [ ! -s "$TEMP_DIR/openprovider_module.tar.gz" ]; then
+        echo "Error: Downloaded file is empty or corrupted."
+        exit 1
+    fi
+    
+    echo "Extracting package..."
+    tar -xzf "$TEMP_DIR/openprovider_module.tar.gz" -C "$TEMP_DIR" --strip-components=1
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to extract package."
+        exit 1
+    fi
 fi
 
 # Copy files to update the Openprovider module in WHMCS
