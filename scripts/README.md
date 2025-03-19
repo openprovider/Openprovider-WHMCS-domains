@@ -1,10 +1,10 @@
-# WHMCS Installation and Upgrade Scripts
+# [Experimental feature] WHMCS Installation and Upgrade Scripts
 
 - This directory contains scripts for installing and upgrading the Openprovider domain registrar module. Follow the instructions below to use the scripts.
 - To install/upgrade the Openprovider domain registrar module, run the following commands from **WHMCS root directory** as the hosting/website user (e.g., on a cPanel server, run it as the cPanel user under which the WHMCS website is hosted).
 
 ## Prerequisites
-- Ensure `curl` and `git` is installed on your system.
+- Ensure `curl` is installed on your system.
 - User has privileges to execute bash scripts.
 
 ## Installation
