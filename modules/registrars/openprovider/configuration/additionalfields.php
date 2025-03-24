@@ -412,8 +412,26 @@ $additionaldomainfields[".sg"][] = array(
     "LangVar" => "companyRegistrationNumber",
     "Type" => "text",
     "Size" => "30",
-    "op_location" => "customerExtensionAdditionalData",
+    "op_location" => "domainAdditionalData",
     "op_name"  => "companyRegistrationNumber"
+);
+
+$additionaldomainfields[".sg"][] = array(
+    "Name" => "Singapore Personal Access ID",
+    "LangVar" => "adminSingPassId",
+    "Type" => "text",
+    "Size" => "30",
+    "op_location" => "domainAdditionalData",
+    "op_name"  => "adminSingPassId"
+);
+
+$additionaldomainfields[".sg"][] = array(
+    "Name" => "Passport Number",
+    "LangVar" => "passportNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "passportNumber"
 );
 
 // .COM.SG
