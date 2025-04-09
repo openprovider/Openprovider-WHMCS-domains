@@ -942,10 +942,36 @@ $additionaldomainfields[".top"][] = array(
 );
 
 // .EU
-$additionaldomainfields[".eu"][] = array(
-    "Name" => "Entity Type",
-    "Remove" => true,
-);
+// .EU Entity Type and Citizenship
+$eu_types = [
+    'COMPANY|Company - Undertakings having their registered office or central administration and/or principal place of business within the European Community',
+    'INDIVIDUAL|Individual - Natural persons resident within the European Community',
+    'ORGANIZATION|Organization - Organizations established within the European Community without prejudice to the application of national law',
+];
+
+$additionaldomainfields['.eu'][] = [
+    'Name' => 'Entity Type',
+    'LangVar' => 'euTldEntityType',
+    'Type' => 'dropdown',
+    'Options' => implode(',', $eu_types),
+    'Default' => 'INDIVIDUAL|Individual - Natural persons resident within the European Community',
+    'Description' => 'EURid Geographical Restrictions. You must meet certain eligibility requirements.',
+];
+
+$additionaldomainfields['.eu'][] = [
+    'Name' => 'EU Country of Citizenship',
+    'LangVar' => 'eu_country_of_citizenship',
+    'Type' => 'dropdown',
+    'Options' => [
+        '', 'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'EL', 'ES', 'FI',
+        'FR', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL',
+        'PT', 'RO', 'SE', 'SI', 'SK', 'AX', 'GF', 'GP', 'MQ', 'RE',
+    ],
+    'Default' => '',
+    'Required' => false,
+    'op_location' => 'customerExtensionAdditionalData',
+    'op_name' => 'countryOfCitizenship',
+];
 
 // .DE
 $additionaldomainfields[".de"][] = array(
