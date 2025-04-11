@@ -954,7 +954,7 @@ $additionaldomainfields['.eu'][] = [
     'LangVar' => 'euTldEntityType',
     'Type' => 'dropdown',
     'Options' => implode(',', $eu_types),
-    'Default' => 'INDIVIDUAL|Individual - Natural persons resident within the European Community',
+    'Default' => $eu_types[1],
     'Description' => 'EURid Geographical Restrictions. You must meet certain eligibility requirements.',
 ];
 
