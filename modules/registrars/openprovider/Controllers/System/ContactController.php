@@ -130,12 +130,41 @@ class ContactController extends BaseController
             $handle = $this->handle;
             $handle->setApiHelper($this->apiHelper);
 
-            $customers['ownerHandle']   = $handle->updateOrCreate($params, 'registrant');
-            $customers['adminHandle']   = $handle->updateOrCreate($params, 'admin');
-            $customers['techHandle']    = $handle->updateOrCreate($params, 'tech');
+            $contactTypes = ['Owner' => 'ownerHandle', 'Admin' => 'adminHandle', 'Tech' => 'techHandle'];
+            if (isset($params['contactdetails']['Billing'])) {
+                $contactTypes['Billing'] = 'billingHandle';
+            }
 
-            if(isset($params['contactdetails']['Billing']))
-                $customers['billingHandle'] = $handle->updateOrCreate($params, 'billing');
+            $handles = [];
+            $contactDataHashes = [];
+
+            foreach ($contactTypes as $type => $handleKey) {
+                $data = $params['contactdetails'][$type] ?? [];
+                $normalized = json_encode(array_map('trim', $data)); // normalize and stringify for hash comparison
+
+                $contactRoleType = strtolower($type);
+                if ($contactRoleType == 'owner') {
+                    $contactRoleType = 'registrant';
+                }
+
+                $ownHandle = $handle->checkHandleEquality($params, $contactRoleType);
+
+                if ($ownHandle !== false) {
+                    $customers[$handleKey] = $ownHandle;
+                    $handles[$handleKey] = $customers[$handleKey];
+                }
+                // Try to reuse existing handle
+                elseif ($existingKey = array_search($normalized, $contactDataHashes)) {
+                    // reuse handle
+                    $customers[$handleKey] = $handles[$existingKey];
+                    $handles[$handleKey] = $customers[$handleKey];
+                } else {
+                    // create/update handle
+                    $customers[$handleKey] = $handle->updateOrCreate($params, $contactRoleType);
+                    $contactDataHashes[$handleKey] = $normalized;
+                    $handles[$handleKey] = $customers[$handleKey];
+                }
+            }
 
             // Sleep for 10 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);

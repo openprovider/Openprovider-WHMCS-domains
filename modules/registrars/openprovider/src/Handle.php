@@ -212,6 +212,36 @@ class Handle
     }
 
     /**
+     * Check whether there is a difference in the given handles.
+     *
+     * @param array $params
+     * @param string $type
+     * @return string|false
+     */
+    public function checkHandleEquality(array $params, string $type = 'registrant')
+    {
+        // Find the domain
+        $domain = Domain::find($params['domainid']);
+        $params['userid'] = $domain->userid;
+
+        try {
+            $this->model = $domain->handles()->wherePivot('type', $type)->firstOrFail();
+
+            $this->prepareHandle($params, $type);
+
+            $action = $this->findChanges($params);
+
+            if ($action === false) {
+                return $this->model->handle; // No changes, return existing handle
+            }
+        } catch (\Exception $e) {
+            // No existing handle found
+        }
+
+        return false; // Changes found or handle not found
+    }
+
+    /**
      * Set the additional fields for the handle.
      *
      * @param array $fields
