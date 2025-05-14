@@ -412,8 +412,26 @@ $additionaldomainfields[".sg"][] = array(
     "LangVar" => "companyRegistrationNumber",
     "Type" => "text",
     "Size" => "30",
-    "op_location" => "customerExtensionAdditionalData",
+    "op_location" => "customerAdditionalData",
     "op_name"  => "companyRegistrationNumber"
+);
+
+$additionaldomainfields[".sg"][] = array(
+    "Name" => "Singapore Personal Access ID",
+    "LangVar" => "adminSingPassId",
+    "Type" => "text",
+    "Size" => "30",
+    "op_location" => "domainAdditionalData",
+    "op_name"  => "adminSingPassId"
+);
+
+$additionaldomainfields[".sg"][] = array(
+    "Name" => "Passport Number",
+    "LangVar" => "passportNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "passportNumber"
 );
 
 // .COM.SG
@@ -902,13 +920,24 @@ $additionaldomainfields['.fi'][] = array(
     "op_name"  => "birthDate"
 );
 
-$additionaldomainfields['.nu'][] = array(
-    'Name' => 'Identification Number',
-    "Remove" => true,
+// .NU
+$additionaldomainfields[".nu"][] = array(
+    "Name" => "Owner type",
+    "op_dropdown_for_op_name" => "nuIdentificationNumber",
+    "LangVar" => "nuIdentificationType",
+    "Type" => "dropdown",
+    "Options" => "socialSecurityNumber|Private individual,companyRegistrationNumber|Legal Entity",
+    "Default" => "Private individual",
 );
+
 $additionaldomainfields['.nu'][] = array(
-    'Name' => 'VAT Number',
-    "Remove" => true,
+    'Name' => 'Identification number',
+    "LangVar" => "nuIdentificationNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "Required" => true,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "nuIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
 
 // .PRO
