@@ -412,7 +412,7 @@ $additionaldomainfields[".sg"][] = array(
     "LangVar" => "companyRegistrationNumber",
     "Type" => "text",
     "Size" => "30",
-    "op_location" => "domainAdditionalData",
+    "op_location" => "customerAdditionalData",
     "op_name"  => "companyRegistrationNumber"
 );
 
