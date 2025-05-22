@@ -9,7 +9,7 @@ class ShoppingCartController
 {
     public function checkoutOutput($vars)
     {
-        GLOBAL $_LANG;
+        global $_LANG;
 
         $idnumbermod = Configuration::get('idnumbermod');
 
@@ -23,7 +23,7 @@ class ShoppingCartController
                 $tld = $this->getFullTld($domainName);
 
                 if (!$tld) {
-                    continue; // skip if TLD not matched
+                    continue;
                 }
 
                 $domainTlds[$domainName] = $tld;
@@ -155,6 +155,14 @@ class ShoppingCartController
                         9 => 'socialSecurityNumber',
                     ];
                     $this->updateContactFields($itFieldsMap, $fields, $contactid);
+                } elseif ($tld === 'fi') {
+                    $fiFieldsMap = [
+                        1 => 'companyRegistrationNumber',
+                        2 => 'passportNumber',
+                        3 => 'socialSecurityNumber',
+                        4 => 'birthDate',
+                    ];
+                    $this->updateContactFields($fiFieldsMap, $fields, $contactid);
                 }
             }
         }
