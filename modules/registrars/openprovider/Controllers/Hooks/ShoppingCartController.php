@@ -14,15 +14,24 @@ class ShoppingCartController
         $idnumbermod = Configuration::get('idnumbermod');
 
         if ($idnumbermod) {
-            $domainsToMatch = ['es', 'pt'];
+            $data = [];
+            $domainTlds = [];
+            $domainsToMatch = ['es', 'pt', 'com.es', 'nom.es', 'edu.es', 'org.es'];
 
             foreach ($vars['cart']['domains'] as $domain) {
-                $tld       = explode('.', $domain['domain']);
-                $f         = 0;
+                $domainName = $domain['domain'];
+                $tld = $this->getFullTld($domainName, $domainsToMatch);
+                if (!$tld) {
+                    continue; // skip if TLD not matched
+                }
+
+                $domainTlds[$domainName] = $tld;
                 $fieldData = [];
-                foreach ($domain['fields'] as $field) {
-                    $f++;
-                    if (in_array($tld[1], $domainsToMatch)) {
+
+                if (in_array($tld, ['es', 'pt', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
+                    $f         = 0;
+                    foreach ($domain['fields'] as $field) {
+                        $f++;
                         switch ($f) {
                             case 1:
                                 $fieldData['field'] = $field;
@@ -32,32 +41,38 @@ class ShoppingCartController
                                 break;
                         }
                     }
+                    if (!empty($fieldData['field']) && !empty($fieldData['value'])) {
+                        $data[$domain['domain']] = [$fieldData];
+                    }
                 }
-
-                $data[$domain['domain']] = $fieldData;
             }
 
-            foreach ($data as $domain => $fields) {
+            foreach ($data as $domain => $fieldsArray) {
+                $tld = $domainTlds[$domain] ?? '';
+                if (isset($fieldsArray[0]) && is_array($fieldsArray[0])) {
+                    foreach ($fieldsArray as $fields) {
+                        $name = '';
+                        switch ($fields['field']) {
+                            case 'companyRegistrationNumber':
+                                $name = $_LANG['esIdentificationCompany'];
+                                break;
+                            case 'passportNumber':
+                                $name = $_LANG['esIdentificationPassport'];
+                                break;
+                            case 'vat':
+                                $name = $_LANG['ptIdentificationVat'];
+                                break;
+                            case 'socialSecurityNumber':
+                                $name = $_LANG['ptIdentificationSocialSecurityNumber'];
+                                break;
+                        }
 
-                switch ($fields['field']) {
-                    case 'companyRegistrationNumber':
-                        $name = $_LANG['esIdentificationCompany'];
-                        break;
-                    case 'passportNumber':
-                        $name = $_LANG['esIdentificationPassport'];
-                        break;
-                    case 'vat':
-                        $name = $_LANG['ptIdentificationVat'];
-                        break;
-                    case 'socialSecurityNumber':
-                        $name = $_LANG['ptIdentificationSocialSecurityNumber'];
-                        break;
+                        $fieldDisplay .= "<div class='col-sm-12'><div class='form-group prepend-icon'><label class='field-icon' for='" . $domain . "_" . $fields["field"] . "'> <i class='fas id-card'></i></label><input required class='form-control' readonly id='" . $domain . "_" . $fields["field"] . "' type='text' name='" . $fields["field"] . "' value='[$domain] $name:  " . $fields["value"] . "' /> </div></div>";
+                    }
                 }
-
-                $fieldDisplay .= "<div class='col-sm-12'><div class='form-group prepend-icon'><label class='field-icon' for='" . $domain . "_" . $fields["field"] . "'> <i class='fas id-card'></i></label><input required class='form-control' readonly id='" . $domain . "_" . $fields["field"] . "' type='text' name='" . $fields["field"] . "' value='[$domain] $name:  " . $fields["value"] . "' /> </div></div>";
             }
 
-            $output = '<script type="text/javascript">$("#domainRegistrantInputFields").append("' . $fieldDisplay . '")</script>';
+            $output = '<script type="text/javascript">$("#domainRegistrantInputFields").append(`' . addslashes($fieldDisplay) . '`)</script>';
 
             return $output;
         }
@@ -98,5 +113,15 @@ class ShoppingCartController
                 }
             }
         }
+    }
+
+    private function getFullTld(string $domainName, array $domainsToMatch): ?string
+    {
+        foreach ($domainsToMatch as $tld) {
+            if (str_ends_with($domainName, '.' . $tld)) {
+                return $tld;
+            }
+        }
+        return null;
     }
 }
