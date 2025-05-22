@@ -44,6 +44,25 @@ class ShoppingCartController
                     if (!empty($fieldData['field']) && !empty($fieldData['value'])) {
                         $data[$domain['domain']] = [$fieldData];
                     }
+                } elseif ($tld === 'it') {
+                    $itFieldsMap = [
+                        7 => 'companyRegistrationNumber',
+                        9 => 'socialSecurityNumber',
+                    ];
+
+                    $mappedFields = [];
+                    foreach ($itFieldsMap as $index => $name) {
+                        if (!empty($domain['fields'][$index])) {
+                            $mappedFields[] = [
+                                'field' => $name,
+                                'value' => $domain['fields'][$index],
+                            ];
+                        }
+                    }
+
+                    if (!empty($mappedFields)) {
+                        $data[$domain['domain']] = $mappedFields;
+                    }
                 }
             }
 
@@ -58,10 +77,14 @@ class ShoppingCartController
                                     $name = $_LANG['esIdentificationCompany'];
                                 } elseif ($tld === 'se') {
                                     $name = $_LANG['seIdentificationCompany'];
+                                } elseif ($tld === 'it') {
+                                    $name = $_LANG['itIdentificationCompany'];
                                 }
                                 break;
                             case 'passportNumber':
-                                $name = $_LANG['esIdentificationPassport'];
+                                if (in_array($tld, ['es', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
+                                    $name = $_LANG['esIdentificationPassport'];
+                                }
                                 break;
                             case 'vat':
                                 $name = $_LANG['ptIdentificationVat'];
@@ -71,6 +94,8 @@ class ShoppingCartController
                                     $name = $_LANG['ptIdentificationSocialSecurityNumber'];
                                 } elseif ($tld === 'se') {
                                     $name = $_LANG['seIdentificationSocialSecurityNumber'];
+                                } elseif ($tld === 'it') {
+                                    $name = $_LANG['itIdentificationSocialSecurityNumber'];
                                 }
                                 break;
                         }
