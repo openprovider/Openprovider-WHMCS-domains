@@ -134,24 +134,16 @@ class ShoppingCartController
                 $tld = explode('.', $domain['domain']);
 
                 if (in_array($tld[1], $domainsToMatch)) {
-                    $fieldData = array();
-                    foreach ($domain['fields'] as $field) {
-                        if (
-                            $field == 'passportNumber' ||
-                            $field == 'companyRegistrationNumber' ||
-                            $field == 'vat' ||
-                            $field == 'socialSecurityNumber'
-                        ) {
-                            $fieldData['field'] = $field;
-                        }
+                    $fieldsArray = array_values($domain['fields']);
+                    if (isset($fieldsArray[0]) && isset($fieldsArray[1])) {
+                        $fieldData = [
+                            'field' => $fieldsArray[0],
+                            'value' => $fieldsArray[1],
+                        ];
 
-                        if (!empty($fieldData['field'])) {
-                            $fieldData['value'] = $field;
+                        if (!empty($fieldData['value']) && !empty($fieldData['field']) && !empty($contactid)) {
+                            DB::updateOrCreateContact($fieldData['value'], $contactid, $fieldData['field']);
                         }
-                    }
-
-                    if (!empty($fieldData['value']) && !empty($fieldData['field']) && !empty($contactid)) {
-                        DB::updateOrCreateContact($fieldData['value'], $contactid, $fieldData['field']);
                     }
                 }
             }
