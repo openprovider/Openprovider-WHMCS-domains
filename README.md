@@ -1,13 +1,10 @@
 # Domain Module for WHMCS 8.x
 
-**This new version of Openprovider domain module is compatible with WHMCS versions up to 8.10.1 and PHP 8.1.**
-
 **If you notice any bugs or lack of functionality or
 other problems, please report it to [Openprovider Support team](https://support.openprovider.eu/hc/en-us/articles/360001674667-Contact-Openprovider-Support) immediately with all available details (reseller_id, error details, [module logs](https://github.com/openprovider/Openprovider-WHMCS-domains/tree/version-8?tab=readme-ov-file#troubleshooting), WHMCS & PHP & web server version details and screenshot(s)/screen record if possible) so that we can rectify issues accordingly. The more details you can provide about issues, the faster we can reproduce and investigate it for a resolution. Your help in this regard is greatly appreciated!** 
 
 ## Introduction
 The Openprovider WHMCS module integrates conveniently with your [Openprovider account](https://cp.openprovider.eu/signup), allowing you to automate domain provisioning and management tasks, such as registration, renewal, deletion, updates to contact details, etc.
-
 
 The module keeps domain expiration dates, status and auto renew settings synchronized (on all Pending Transfer, Pending Registration, and Active status domains) between your WHMCS installation and Openprovider account, making sure the correct domains get renewed each day.
 
