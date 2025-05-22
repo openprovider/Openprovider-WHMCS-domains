@@ -16,11 +16,11 @@ class ShoppingCartController
         if ($idnumbermod) {
             $data = [];
             $domainTlds = [];
-            $domainsToMatch = ['es', 'pt', 'com.es', 'nom.es', 'edu.es', 'org.es'];
 
             foreach ($vars['cart']['domains'] as $domain) {
                 $domainName = $domain['domain'];
-                $tld = $this->getFullTld($domainName, $domainsToMatch);
+                $tld = $this->getFullTld($domainName);
+
                 if (!$tld) {
                     continue; // skip if TLD not matched
                 }
@@ -28,7 +28,7 @@ class ShoppingCartController
                 $domainTlds[$domainName] = $tld;
                 $fieldData = [];
 
-                if (in_array($tld, ['es', 'pt', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
+                if (in_array($tld, ['es', 'pt', 'se', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
                     $f         = 0;
                     foreach ($domain['fields'] as $field) {
                         $f++;
@@ -54,7 +54,11 @@ class ShoppingCartController
                         $name = '';
                         switch ($fields['field']) {
                             case 'companyRegistrationNumber':
-                                $name = $_LANG['esIdentificationCompany'];
+                                if (in_array($tld, ['es', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
+                                    $name = $_LANG['esIdentificationCompany'];
+                                } elseif ($tld === 'se') {
+                                    $name = $_LANG['seIdentificationCompany'];
+                                }
                                 break;
                             case 'passportNumber':
                                 $name = $_LANG['esIdentificationPassport'];
@@ -63,7 +67,11 @@ class ShoppingCartController
                                 $name = $_LANG['ptIdentificationVat'];
                                 break;
                             case 'socialSecurityNumber':
-                                $name = $_LANG['ptIdentificationSocialSecurityNumber'];
+                                if ($tld === 'pt') {
+                                    $name = $_LANG['ptIdentificationSocialSecurityNumber'];
+                                } elseif ($tld === 'se') {
+                                    $name = $_LANG['seIdentificationSocialSecurityNumber'];
+                                }
                                 break;
                         }
 
@@ -115,13 +123,17 @@ class ShoppingCartController
         }
     }
 
-    private function getFullTld(string $domainName, array $domainsToMatch): ?string
+    private function getFullTld(string $domainName): string
     {
-        foreach ($domainsToMatch as $tld) {
-            if (str_ends_with($domainName, '.' . $tld)) {
-                return $tld;
+        $multiTlds = ['com.es', 'nom.es', 'edu.es', 'org.es'];
+
+        foreach ($multiTlds as $multiTld) {
+            if (str_ends_with($domainName, '.' . $multiTld)) {
+                return $multiTld;
             }
         }
-        return null;
+
+        $tld = explode('.', $domainName)[1];
+        return $tld;
     }
 }
