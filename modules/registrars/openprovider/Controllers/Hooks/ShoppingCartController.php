@@ -149,6 +149,12 @@ class ShoppingCartController
                             DB::updateOrCreateContact($fieldData['value'], $contactid, $fieldData['field']);
                         }
                     }
+                } elseif ($tld === 'it') {
+                    $itFieldsMap = [
+                        7 => 'companyRegistrationNumber',
+                        9 => 'socialSecurityNumber',
+                    ];
+                    $this->updateContactFields($itFieldsMap, $fields, $contactid);
                 }
             }
         }
@@ -180,5 +186,19 @@ class ShoppingCartController
             }
         }
         return $result;
+    }
+
+    private function updateContactFields(array $map, array $fields, $contactId): void
+    {
+        foreach ($map as $index => $fieldName) {
+            if (!empty($fields[$index])) {
+                $fieldData = [
+                    'field' => $fieldName,
+                    'value' => $fields[$index],
+                ];
+
+                DB::updateOrCreateContact($fieldData['value'], $contactId, $fieldData['field']);
+            }
+        }
     }
 }
