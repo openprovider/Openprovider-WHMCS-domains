@@ -126,15 +126,19 @@ class ShoppingCartController
         $idnumbermod = Configuration::get('idnumbermod');
 
         if ($idnumbermod) {
-            $domainsToMatch = array('es', 'pt');
+
             $contactid      = $vars['contact'];
 
             foreach ($vars['domains'] as $domain) {
+                $domainName = $domain['domain'];
+                $fields = $domain['fields'];
+                $tld = $this->getFullTld($domainName);
 
-                $tld = explode('.', $domain['domain']);
-
-                if (in_array($tld[1], $domainsToMatch)) {
-                    $fieldsArray = array_values($domain['fields']);
+                if (!$tld || empty($fields) || empty($contactid)) {
+                    continue;
+                }
+                if (in_array($tld, ['es', 'pt', 'se', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
+                    $fieldsArray = array_values($fields);
                     if (isset($fieldsArray[0]) && isset($fieldsArray[1])) {
                         $fieldData = [
                             'field' => $fieldsArray[0],
