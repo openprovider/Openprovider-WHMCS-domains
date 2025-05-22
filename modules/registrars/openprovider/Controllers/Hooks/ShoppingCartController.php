@@ -19,6 +19,7 @@ class ShoppingCartController
 
             foreach ($vars['cart']['domains'] as $domain) {
                 $domainName = $domain['domain'];
+                $fields = $domain['fields'];
                 $tld = $this->getFullTld($domainName);
 
                 if (!$tld) {
@@ -30,7 +31,7 @@ class ShoppingCartController
 
                 if (in_array($tld, ['es', 'pt', 'se', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
                     $f         = 0;
-                    foreach ($domain['fields'] as $field) {
+                    foreach ($fields as $field) {
                         $f++;
                         switch ($f) {
                             case 1:
@@ -42,7 +43,7 @@ class ShoppingCartController
                         }
                     }
                     if (!empty($fieldData['field']) && !empty($fieldData['value'])) {
-                        $data[$domain['domain']] = [$fieldData];
+                        $data[$domainName] = [$fieldData];
                     }
                 } elseif ($tld === 'it') {
                     $itFieldsMap = [
@@ -50,19 +51,19 @@ class ShoppingCartController
                         9 => 'socialSecurityNumber',
                     ];
 
-                    $mappedFields = [];
-                    foreach ($itFieldsMap as $index => $name) {
-                        if (!empty($domain['fields'][$index])) {
-                            $mappedFields[] = [
-                                'field' => $name,
-                                'value' => $domain['fields'][$index],
-                            ];
-                        }
-                    }
+                    $mappedFields = $this->mapFieldsByIndex($fields, $itFieldsMap);
+                } elseif ($tld === 'fi') {
+                    $fiFieldsMap = [
+                        1 => 'companyRegistrationNumber',
+                        2 => 'passportNumber',
+                        3 => 'socialSecurityNumber',
+                        4 => 'birthDate',
+                    ];
 
-                    if (!empty($mappedFields)) {
-                        $data[$domain['domain']] = $mappedFields;
-                    }
+                    $mappedFields = $this->mapFieldsByIndex($fields, $fiFieldsMap);
+                }
+                if (!empty($mappedFields)) {
+                    $data[$domainName] = $mappedFields;
                 }
             }
 
@@ -79,11 +80,15 @@ class ShoppingCartController
                                     $name = $_LANG['seIdentificationCompany'];
                                 } elseif ($tld === 'it') {
                                     $name = $_LANG['itIdentificationCompany'];
+                                } elseif ($tld === 'fi') {
+                                    $name = $_LANG['fiIdentificationCompany'];
                                 }
                                 break;
                             case 'passportNumber':
                                 if (in_array($tld, ['es', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
                                     $name = $_LANG['esIdentificationPassport'];
+                                } elseif ($tld === 'fi') {
+                                    $name = $_LANG['fiIdentificationPassport'];
                                 }
                                 break;
                             case 'vat':
@@ -96,7 +101,12 @@ class ShoppingCartController
                                     $name = $_LANG['seIdentificationSocialSecurityNumber'];
                                 } elseif ($tld === 'it') {
                                     $name = $_LANG['itIdentificationSocialSecurityNumber'];
+                                } elseif ($tld === 'fi') {
+                                    $name = $_LANG['fiIdentificationSocialSecurityNumber'];
                                 }
+                                break;
+                            case 'birthDate':
+                                $name = $_LANG['fiIdentificationBirthDate'];
                                 break;
                         }
 
@@ -160,5 +170,19 @@ class ShoppingCartController
 
         $tld = explode('.', $domainName)[1];
         return $tld;
+    }
+
+    private function mapFieldsByIndex(array $fields, array $map): array
+    {
+        $result = [];
+        foreach ($map as $index => $fieldName) {
+            if (!empty($fields[$index])) {
+                $result[] = [
+                    'field' => $fieldName,
+                    'value' => $fields[$index],
+                ];
+            }
+        }
+        return $result;
     }
 }
