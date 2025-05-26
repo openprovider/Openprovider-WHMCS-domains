@@ -79,7 +79,7 @@ class AdditionalFields
     * 
     * @return array $fields
     */
-    public function get ()
+    public function get (): array
     {   
         // Set the registrar
         $this->WAdditionalFields->setRegistrarName('openprovider');
@@ -90,7 +90,7 @@ class AdditionalFields
         $this->WAdditionalFields->setRegistrarAdditionalFields($additionaldomainfields);
 
         // Return the data.
-        return $this->WAdditionalFields->getFilteredAdditionalFields();
+        return $this->WAdditionalFields->registrarAdditionalFields;
     }
 
     /**
