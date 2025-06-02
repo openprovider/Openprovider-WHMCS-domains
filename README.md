@@ -50,8 +50,8 @@ if (function_exists('openprovider_additional_fields'))
 - [Optional] Upload `<Module directory>/modules/addons/openprovider` to `<WHMCS directory>/modules/addons`
 ## Basic Configurations
 
-- Navigate to **Configuration >> System Settings >> Domain Registrars** and activate Openprovider module. 
-![Screenshot 2024-05-31 150913](https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/afbb212d-6177-4f75-be07-ad9aec30107b)
+- Navigate to **Configuration >> System Settings >> Domain Registrars** and activate Openprovider module.
+<img width="1291" alt="Screenshot 2025-06-02" src="https://github.com/user-attachments/assets/8a7f504e-c738-4410-9d42-c12e18798102" />
 
 
 1. Enter API credentials (username and password, not hash) of your user. Ensure API access is enabled in the Openprovier control panel for the credentials you are using. Please refer to [this KB article](https://support.openprovider.eu/hc/en-us/articles/360015453220-How-to-enable-API-access) if API is not enabled already.
