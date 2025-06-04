@@ -72,7 +72,13 @@ final class Message
         $summary = $body->read($truncateAt);
         $body->rewind();
 
-        if ($size > $truncateAt) {
+        $summaryObj = json_decode($summary);
+        if($summaryObj->code == 399){
+            $summaryObj->desc .= ". ". $summaryObj->data;
+            $summary = json_encode($summaryObj);
+        }
+
+        if ($size > $truncateAt && $summaryObj->code != 399) {
             $summary .= ' (truncated...)';
         }
 
