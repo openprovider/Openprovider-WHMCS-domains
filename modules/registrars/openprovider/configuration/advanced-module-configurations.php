@@ -42,8 +42,8 @@ return [
     // maxRegistrationPeriod
     'maxRegistrationPeriod' => 1,
 
-    // enable advanced additional data management for .es and .pt domain registrations    
-    'idnumbermod' => false,
+    // enable advanced customer additional data management for .es, .pt, .se, .com.es, .nom.es, .edu.es, .org.es, .it and .fi domain registrations    
+    'idnumbermod' => true,
 
     'renewalDateSync' =>true, //  Default: true, If true, Set 'OP renewal date' to WHMCS as expiration date. Else Set 'OP expiration date' to WHMCS as expiration date.
 
