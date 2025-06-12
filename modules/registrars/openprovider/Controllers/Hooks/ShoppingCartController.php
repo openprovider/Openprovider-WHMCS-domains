@@ -7,6 +7,18 @@ use OpenProvider\WhmcsRegistrar\helpers\DB;
 
 class ShoppingCartController
 {
+    private static array $itFieldsMap = [
+        7 => 'companyRegistrationNumber',
+        9 => 'socialSecurityNumber',
+    ];
+
+    private static array $fiFieldsMap = [
+        1 => 'companyRegistrationNumber',
+        2 => 'passportNumber',
+        3 => 'socialSecurityNumber',
+        4 => 'birthDate',
+    ];
+
     public function checkoutOutput($vars)
     {
         global $_LANG;
@@ -30,7 +42,7 @@ class ShoppingCartController
                 $fieldData = [];
 
                 if (in_array($tld, ['es', 'pt', 'se', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
-                    $f         = 0;
+                    $f = 0;
                     foreach ($fields as $field) {
                         $f++;
                         switch ($f) {
@@ -46,21 +58,9 @@ class ShoppingCartController
                         $data[$domainName] = [$fieldData];
                     }
                 } elseif ($tld === 'it') {
-                    $itFieldsMap = [
-                        7 => 'companyRegistrationNumber',
-                        9 => 'socialSecurityNumber',
-                    ];
-
-                    $mappedFields = $this->mapFieldsByIndex($fields, $itFieldsMap);
+                    $mappedFields = $this->mapFieldsByIndex($fields, self::$itFieldsMap);
                 } elseif ($tld === 'fi') {
-                    $fiFieldsMap = [
-                        1 => 'companyRegistrationNumber',
-                        2 => 'passportNumber',
-                        3 => 'socialSecurityNumber',
-                        4 => 'birthDate',
-                    ];
-
-                    $mappedFields = $this->mapFieldsByIndex($fields, $fiFieldsMap);
+                    $mappedFields = $this->mapFieldsByIndex($fields, self::$fiFieldsMap);
                 }
                 if (!empty($mappedFields)) {
                     $data[$domainName] = $mappedFields;
@@ -115,7 +115,7 @@ class ShoppingCartController
                 }
             }
 
-            $output = '<script type="text/javascript">$("#domainRegistrantInputFields").append(`' . addslashes($fieldDisplay) . '`)</script>';
+            $output = '<script type="text/javascript">$("#domainRegistrantInputFields").append(' . json_encode($fieldDisplay) . ')</script>';
 
             return $output;
         }
@@ -150,19 +150,9 @@ class ShoppingCartController
                         }
                     }
                 } elseif ($tld === 'it') {
-                    $itFieldsMap = [
-                        7 => 'companyRegistrationNumber',
-                        9 => 'socialSecurityNumber',
-                    ];
-                    $this->updateContactFields($itFieldsMap, $fields, $contactid);
+                    $this->updateContactFields(self::$itFieldsMap, $fields, $contactid);
                 } elseif ($tld === 'fi') {
-                    $fiFieldsMap = [
-                        1 => 'companyRegistrationNumber',
-                        2 => 'passportNumber',
-                        3 => 'socialSecurityNumber',
-                        4 => 'birthDate',
-                    ];
-                    $this->updateContactFields($fiFieldsMap, $fields, $contactid);
+                    $this->updateContactFields(self::$fiFieldsMap, $fields, $contactid);
                 }
             }
         }
