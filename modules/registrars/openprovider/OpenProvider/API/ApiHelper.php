@@ -502,9 +502,17 @@ class ApiHelper
         $customerInfo['Last Name'] = $customerOp['name']['lastName'];
         $customerInfo['Company Name'] = $customerOp['companyName'];
         $customerInfo['Email Address'] = $customerOp['email'];
-        $customerInfo['Address'] = $customerOp['address']['street'] . ' ' .
-            $customerOp['address']['number'] . ' ' .
-            $customerOp['address']['suffix'];
+        if ($customerOp['address']['country'] === 'US') {
+            $customerInfo['Address'] =
+                $customerOp['address']['number'] . ' ' .
+                $customerOp['address']['street'] . ' ' .
+                $customerOp['address']['suffix'];
+        } else {
+            $customerInfo['Address'] =
+                $customerOp['address']['street'] . ' ' .
+                $customerOp['address']['number'] . ' ' .
+                $customerOp['address']['suffix'];
+        }        
         $customerInfo['City'] = $customerOp['address']['city'];
         $customerInfo['State'] = $customerOp['address']['state'];
         $customerInfo['Zip Code'] = $customerOp['address']['zipcode'];

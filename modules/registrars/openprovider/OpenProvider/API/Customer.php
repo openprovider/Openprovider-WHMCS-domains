@@ -106,6 +106,8 @@ class Customer
                 'lastname' => 'last name',
                 'gender' => 'gender',
                 'address' => 'address',
+                'address1' => 'address 1',
+                'address2' => 'address 2',
                 'postcode' => 'zip code',
                 'city' => 'city',
                 'state' => 'fullstate',
@@ -165,17 +167,29 @@ class Customer
         //Customer Address
         $fullAddress = '';
         if ($getFromContactDetails) {
-            if (isset($params[$indexes['address']]) && !empty($params[$indexes['address']])) {
-                $fullAddress = $params[$indexes['address']];
-            } else if (!empty(trim($params[$indexes['address1']] . ' ' . $params[$indexes['address2']]))) {
-                $fullAddress = $params[$indexes['address1']] . ' ' . $params[$indexes['address2']];
-            }
-        } else {
-            if (!empty(trim($params[$indexes['address1']] . ' ' . $params[$indexes['address2']]))) {
-                $fullAddress = $params[$indexes['address1']] . ' ' . $params[$indexes['address2']];
-            }
-        }
+           $address1 = $params[$indexes['address1']] ?? '';
+           $address2 = $params[$indexes['address2']] ?? '';
+           $address = $params[$indexes['address']] ?? ''; 
 
+           if (!empty(trim($address1 . ' ' . $address2))) {
+                $fullAddress = trim($address1 . ' ' . $address2);
+            } elseif (!empty(trim($address))) {
+                $fullAddress = $address;
+            } 
+        } else {
+            $address1 = $params[$indexes['address1']] ?? '';
+            $address2 = $params[$indexes['address2']] ?? '';
+            $fullAddress = trim($address1 . ' ' . $address2);
+        }
+    
+        logModuleCall('openprovider', 'composed_fullAddress', [
+            'address1' => $address1 ?? '',
+            'address2' => $address2 ?? '',
+            'address'  => $address ?? '',
+            'final'    => $fullAddress,
+        ], '', '');
+        
+        
         $address            =   new \OpenProvider\API\CustomerAddress(array(
             'fulladdress'   =>  $fullAddress ?: null,
             'zipcode'       =>  $params[$indexes['postcode']],
