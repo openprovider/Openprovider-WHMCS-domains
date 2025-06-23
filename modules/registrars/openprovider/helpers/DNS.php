@@ -41,4 +41,29 @@ class DNS
         }
     }
 
+    /**
+     * Get the DNS URL
+     *
+     * @return bool|void
+     */
+    public static function getDnsUrlOrFailWithoutDnsManagerEnabled($domain_id)
+    {
+        // Get the domain details
+        $domain = Capsule::table('tbldomains')
+            ->where('id', $domain_id)
+            ->first();
+
+        // Check if OpenProvider is the provider
+        if ($domain->registrar != 'openprovider' || $domain->status != 'Active')
+            return false;
+
+        // Let's get the URL.
+        try {
+            $OpenProvider       = new OpenProvider();
+            return $OpenProvider->api->getDnsSingleDomainTokenUrl($domain->domain)['url'];
+        } catch (\Exception $e) {
+            \logModuleCall('OpenProvider', 'Fetching generateSingleDomainTokenRequest', $domain->domain, @$response, $e->getMessage(), [htmlentities($params['Password']), $params['Password']]);
+            return false;
+        }
+    }
 }

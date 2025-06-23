@@ -120,7 +120,64 @@ request.fail(function( jqXHR, textStatus ) {
 
 }
 </script>
-HTML;
-        }
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const manageDomainBtn = document.querySelector('a[href^="clientarea.php?action=domaindetails&id="]');
+    if (manageDomainBtn) {
+        // Extract service ID from current URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const serviceId = urlParams.get('id');
+        if (!serviceId) return;
+
+        const formHTML = `
+            <div style="padding-top: 8px;">
+                <form method="post" action="clientarea.php?action=productdetails&amp;id=\${serviceId}">
+                    <input type="hidden" name="id" value="\${serviceId}" />
+                    <input type="hidden" name="modop" value="custom" />
+                    <input type="hidden" name="a" value="managePremiumDNS" />
+                    <input type="submit" value="Manage PremiumDNS" />
+                </form>
+            </div>
+        `;
+
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = formHTML.trim();
+        manageDomainBtn.insertAdjacentElement('afterend', wrapper);
     }
+});
+</script>
+
+HTML;
+    } else {
+      return <<<HTML
+<!-- <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const manageDomainBtn = document.querySelector('a[href^="clientarea.php?action=domaindetails&id="]');
+    if (manageDomainBtn) {
+        // Extract service ID from current URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const serviceId = urlParams.get('id');
+        if (!serviceId) return;
+
+        const formHTML = `
+            <div style="padding-top: 8px;">
+                <form method="post" action="clientarea.php?action=productdetails&amp;id=\${serviceId}">
+                    <input type="hidden" name="id" value="\${serviceId}" />
+                    <input type="hidden" name="modop" value="custom" />
+                    <input type="hidden" name="a" value="managePremiumDNS" />
+                    <input type="submit" value="Manage PremiumDNS" />
+                </form>
+            </div>
+        `;
+
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = formHTML.trim();
+        manageDomainBtn.insertAdjacentElement('afterend', wrapper);
+    }
+});
+</script> -->
+HTML;
+    }
+  }
 }
