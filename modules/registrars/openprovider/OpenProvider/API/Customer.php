@@ -166,19 +166,16 @@ class Customer
 
         //Customer Address
         $fullAddress = '';
+        $address1 = $params[$indexes['address1']] ?? '';
+        $address2 = $params[$indexes['address2']] ?? '';
         if ($getFromContactDetails) {
-           $address1 = $params[$indexes['address1']] ?? '';
-           $address2 = $params[$indexes['address2']] ?? '';
            $address = $params[$indexes['address']] ?? ''; 
-
            if (!empty(trim($address1 . ' ' . $address2))) {
                 $fullAddress = trim($address1 . ' ' . $address2);
             } elseif (!empty(trim($address))) {
                 $fullAddress = $address;
             } 
         } else {
-            $address1 = $params[$indexes['address1']] ?? '';
-            $address2 = $params[$indexes['address2']] ?? '';
             $fullAddress = trim($address1 . ' ' . $address2);
         }
     

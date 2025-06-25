@@ -31,7 +31,7 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
      * Format address
      * @param string
      */
-    protected function setAddress($fullAddress, $country = '')
+    protected function setAddress($fullAddress)
     {
         try {
             $splitAddress = AddressSplitter::splitAddress($fullAddress);
