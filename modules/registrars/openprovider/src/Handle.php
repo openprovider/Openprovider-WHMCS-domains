@@ -170,6 +170,11 @@ class Handle
         {
             $this->model    = $domain->handles()->wherePivot('type', $type)->firstOrFail();
 
+            if ($this->model->handle == '') {
+                // If the handle for specific type is empty, check for "all" type handle
+                $this->model    = $domain->handles()->wherePivot('type', "all")->firstOrFail();
+            }
+
             // No domain found with this handle, let's continue
             $this->prepareHandle($params, $type);
 
@@ -233,6 +238,76 @@ class Handle
 
             if ($action === false) {
                 return $this->model->handle; // No changes, return existing handle
+            }
+        } catch (\Exception $e) {
+            // No existing handle found
+        }
+
+        return false; // Changes found or handle not found
+    }
+
+    /**
+     * Check whether there is a difference in the given handles.
+     *
+     * @param array $params
+     * @param string $type
+     * @return string|false
+     */
+    public function checkAccountOwnerHandleEquality(array $params, string $type = 'registrant')
+    {
+        try {
+            if ($type == 'registrant')
+                $type = 'owner';
+
+            $type = ucfirst($type);
+
+            if (count($params['contactdetails'][$type] ?? []) <= 14) {
+                return false;
+            }
+
+            $fieldMap = [
+                'firstname'            => ['account_owner' => 'firstname',     'contact' => 'First Name'],
+                'lastname'             => ['account_owner' => 'lastname',      'contact' => 'Last Name'],
+                'address1'             => ['account_owner' => 'address1',      'contact' => 'Address 1'],
+                'address2'             => ['account_owner' => 'address2',      'contact' => 'Address 2'],
+                'postcode'             => ['account_owner' => 'postcode',      'contact' => 'ZIP Code'],
+                'city'                 => ['account_owner' => 'city',          'contact' => 'City'],
+                'state'                => ['account_owner' => 'fullstate',     'contact' => 'State'],
+                'country'              => ['account_owner' => 'country',       'contact' => 'Country'],
+                'phone number'         => ['account_owner' => 'phonenumberformatted',   'contact' => 'Phone Number'],
+                'phone country code'   => ['account_owner' => 'phone-cc',      'contact' => 'Phone Country Code'],
+                'email'                => ['account_owner' => 'email',         'contact' => 'Email'],
+                'companyname'          => ['account_owner' => 'companyname',   'contact' => 'Company Name'],
+            ];
+
+
+            $allMatch = true;
+
+            foreach ($fieldMap as $key => $indexes) {
+                $ownerValue   = $params[$indexes['account_owner']] ?? '';
+                $contactValue = $params['contactdetails'][$type][$indexes['contact']] ?? '';
+
+                $normalizedOwner   = trim((string)($ownerValue ?? ''));
+                $normalizedContact = trim((string)($contactValue ?? ''));
+
+                if ($normalizedOwner !== $normalizedContact) {
+                    $allMatch = false;
+                    break;
+                }
+            }
+
+            if ($allMatch) {
+                $ownerUserId = $params['owner_user_id'] ?? null;
+
+                if ($ownerUserId) {
+                    $found = $this->model->findExistingByUserId($ownerUserId, $type);
+                    if (!$found) {
+                        $found = $this->model->findExistingByUserId($ownerUserId, 'all');
+                    }
+                    if ($found) {
+                        return $found->handle; // Return existing handle if found
+                    }
+                }
             }
         } catch (\Exception $e) {
             // No existing handle found

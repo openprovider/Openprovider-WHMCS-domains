@@ -147,22 +147,29 @@ class ContactController extends BaseController
                     $contactRoleType = 'registrant';
                 }
 
-                $ownHandle = $handle->checkHandleEquality($params, $contactRoleType);
+                $accountOwnerHandle = $handle->checkAccountOwnerHandleEquality($params, $contactRoleType);
 
-                if ($ownHandle !== false) {
-                    $customers[$handleKey] = $ownHandle;
-                    $handles[$handleKey] = $customers[$handleKey];
-                }
-                // Try to reuse existing handle
-                elseif ($existingKey = array_search($normalized, $contactDataHashes)) {
-                    // reuse handle
-                    $customers[$handleKey] = $handles[$existingKey];
+                if ($accountOwnerHandle !== false) {
+                    $customers[$handleKey] = $accountOwnerHandle;
                     $handles[$handleKey] = $customers[$handleKey];
                 } else {
-                    // create/update handle
-                    $customers[$handleKey] = $handle->updateOrCreate($params, $contactRoleType);
-                    $contactDataHashes[$handleKey] = $normalized;
-                    $handles[$handleKey] = $customers[$handleKey];
+                    $ownHandle = $handle->checkHandleEquality($params, $contactRoleType);
+
+                    if ($ownHandle !== false) {
+                        $customers[$handleKey] = $ownHandle;
+                        $handles[$handleKey] = $customers[$handleKey];
+                    }
+                    // Try to reuse existing handle
+                    elseif ($existingKey = array_search($normalized, $contactDataHashes)) {
+                        // reuse handle
+                        $customers[$handleKey] = $handles[$existingKey];
+                        $handles[$handleKey] = $customers[$handleKey];
+                    } else {
+                        // create/update handle
+                        $customers[$handleKey] = $handle->updateOrCreate($params, $contactRoleType);
+                        $contactDataHashes[$handleKey] = $normalized;
+                        $handles[$handleKey] = $customers[$handleKey];
+                    }
                 }
             }
 

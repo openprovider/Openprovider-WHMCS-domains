@@ -19,7 +19,7 @@ class Domain extends BaseDomain
      */
     public function handles()
     {
-        return $this->belongsToMany('WeDevelopCoffee\wPower\Handles\Models\Handle','wDomain_handle');
+        return $this->belongsToMany('WeDevelopCoffee\wPower\Handles\Models\Handle', 'wDomain_handle')->withPivot('type');
     }
 
     /**
