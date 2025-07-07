@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "610c8359821e8f10ff2b0b0a8c3b9b2a",
+    "content-hash": "9a29979374213b4116ca45940115c24f",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -313,16 +313,16 @@
         },
         {
             "name": "openprovider/rest-client-php",
-            "version": "dev-v1beta",
+            "version": "v2.0.2-beta",
             "source": {
                 "type": "git",
                 "url": "https://github.com/openprovider/rest-client-php.git",
-                "reference": "250fa1ca3e98a6a7ea26331eef31273d488041bb"
+                "reference": "85bb4910c886ca8c8532dcd2770d6f584663b535"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/250fa1ca3e98a6a7ea26331eef31273d488041bb",
-                "reference": "250fa1ca3e98a6a7ea26331eef31273d488041bb",
+                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/85bb4910c886ca8c8532dcd2770d6f584663b535",
+                "reference": "85bb4910c886ca8c8532dcd2770d6f584663b535",
                 "shasum": ""
             },
             "require": {
@@ -357,10 +357,10 @@
             ],
             "description": "HTTP client for Openprovider API",
             "support": {
-                "source": "https://github.com/openprovider/rest-client-php/tree/v1beta",
+                "source": "https://github.com/openprovider/rest-client-php/tree/v2.0.2-beta",
                 "issues": "https://github.com/openprovider/rest-client-php/issues"
             },
-            "time": "2021-05-25T03:26:24+00:00"
+            "time": "2024-01-23T09:38:44+00:00"
         },
         {
             "name": "opis/closure",
@@ -4667,7 +4667,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "openprovider/rest-client-php": 20
+        "openprovider/rest-client-php": 10
     },
     "prefer-stable": false,
     "prefer-lowest": false,
