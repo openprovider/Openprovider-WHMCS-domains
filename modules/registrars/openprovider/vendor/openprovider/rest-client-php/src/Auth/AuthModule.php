@@ -5,7 +5,7 @@
  */
 namespace Openprovider\Api\Rest\Client\Auth;
 
-use GuzzleHttp6\ClientInterface;
+use GuzzleHttp\ClientInterface;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
 use Openprovider\Api\Rest\Client\Auth\Api\AuthApi;
