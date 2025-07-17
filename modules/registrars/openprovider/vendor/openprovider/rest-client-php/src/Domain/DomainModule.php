@@ -5,7 +5,7 @@
  */
 namespace Openprovider\Api\Rest\Client\Domain;
 
-use GuzzleHttp\ClientInterface;
+use GuzzleHttp6\ClientInterface;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
 use Openprovider\Api\Rest\Client\Domain\Api\AdditionalDataApi;

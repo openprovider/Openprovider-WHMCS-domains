@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Person\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -246,7 +246,7 @@ class StatisticsApi
      *
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getStatisticsAsync()
     {
@@ -265,7 +265,7 @@ class StatisticsApi
      *
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getStatisticsAsyncWithHttpInfo()
     {
@@ -311,7 +311,7 @@ class StatisticsApi
      *
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getStatisticsRequest()
     {
@@ -343,7 +343,7 @@ class StatisticsApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -360,7 +360,7 @@ class StatisticsApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

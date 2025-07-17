@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Template\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -249,7 +249,7 @@ class EmailApi
      * @param  \Openprovider\Api\Rest\Client\Template\Model\EmailCreateEmailRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createEmailAsync($body)
     {
@@ -269,7 +269,7 @@ class EmailApi
      * @param  \Openprovider\Api\Rest\Client\Template\Model\EmailCreateEmailRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createEmailAsyncWithHttpInfo($body)
     {
@@ -316,7 +316,7 @@ class EmailApi
      * @param  \Openprovider\Api\Rest\Client\Template\Model\EmailCreateEmailRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function createEmailRequest($body)
     {
@@ -357,7 +357,7 @@ class EmailApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -374,7 +374,7 @@ class EmailApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -541,7 +541,7 @@ class EmailApi
      * @param  int $id Object ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteEmailAsync($id)
     {
@@ -561,7 +561,7 @@ class EmailApi
      * @param  int $id Object ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteEmailAsyncWithHttpInfo($id)
     {
@@ -608,7 +608,7 @@ class EmailApi
      * @param  int $id Object ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function deleteEmailRequest($id)
     {
@@ -654,7 +654,7 @@ class EmailApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -671,7 +671,7 @@ class EmailApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -853,7 +853,7 @@ class EmailApi
      * @param  bool $is_system Is system. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listEmailsAsync($id = null, $name = null, $group = null, $limit = null, $offset = null, $is_system = null)
     {
@@ -878,7 +878,7 @@ class EmailApi
      * @param  bool $is_system Is system. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listEmailsAsyncWithHttpInfo($id = null, $name = null, $group = null, $limit = null, $offset = null, $is_system = null)
     {
@@ -930,7 +930,7 @@ class EmailApi
      * @param  bool $is_system Is system. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listEmailsRequest($id = null, $name = null, $group = null, $limit = null, $offset = null, $is_system = null)
     {
@@ -986,7 +986,7 @@ class EmailApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1003,7 +1003,7 @@ class EmailApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1173,7 +1173,7 @@ class EmailApi
      * @param  \Openprovider\Api\Rest\Client\Template\Model\EmailUpdateEmailRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateEmailAsync($id, $body)
     {
@@ -1194,7 +1194,7 @@ class EmailApi
      * @param  \Openprovider\Api\Rest\Client\Template\Model\EmailUpdateEmailRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateEmailAsyncWithHttpInfo($id, $body)
     {
@@ -1242,7 +1242,7 @@ class EmailApi
      * @param  \Openprovider\Api\Rest\Client\Template\Model\EmailUpdateEmailRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function updateEmailRequest($id, $body)
     {
@@ -1297,7 +1297,7 @@ class EmailApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1314,7 +1314,7 @@ class EmailApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

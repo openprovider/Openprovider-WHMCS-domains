@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Domain\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -261,7 +261,7 @@ class AuthCodeApi
      * @param  string $sending_type Indicates how authcode should be provisioned to domain owner. For ru / xn--p1ai domains only. Possible values: sms, email letter. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getAuthCodeAsync($id, $domain_name = null, $domain_extension = null, $auth_code_type = null, $sending_type = null)
     {
@@ -285,7 +285,7 @@ class AuthCodeApi
      * @param  string $sending_type Indicates how authcode should be provisioned to domain owner. For ru / xn--p1ai domains only. Possible values: sms, email letter. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getAuthCodeAsyncWithHttpInfo($id, $domain_name = null, $domain_extension = null, $auth_code_type = null, $sending_type = null)
     {
@@ -336,7 +336,7 @@ class AuthCodeApi
      * @param  string $sending_type Indicates how authcode should be provisioned to domain owner. For ru / xn--p1ai domains only. Possible values: sms, email letter. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getAuthCodeRequest($id, $domain_name = null, $domain_extension = null, $auth_code_type = null, $sending_type = null)
     {
@@ -398,7 +398,7 @@ class AuthCodeApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -415,7 +415,7 @@ class AuthCodeApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -585,7 +585,7 @@ class AuthCodeApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\AuthcodeResetAuthCodeRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function resetAuthCodeAsync($id, $body)
     {
@@ -606,7 +606,7 @@ class AuthCodeApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\AuthcodeResetAuthCodeRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function resetAuthCodeAsyncWithHttpInfo($id, $body)
     {
@@ -654,7 +654,7 @@ class AuthCodeApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\AuthcodeResetAuthCodeRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function resetAuthCodeRequest($id, $body)
     {
@@ -709,7 +709,7 @@ class AuthCodeApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -726,7 +726,7 @@ class AuthCodeApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

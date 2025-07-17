@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Person\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -279,7 +279,7 @@ class EmailVerificationApi
      * @param  int $offset The offset. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listDomainEmailVerificationsAsync($domain_id = null, $domain = null, $email = null, $handle = null, $status = null, $description = null, $is_suspended = null, $response_type = null, $response_to = null, $limit = null, $offset = null)
     {
@@ -309,7 +309,7 @@ class EmailVerificationApi
      * @param  int $offset The offset. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listDomainEmailVerificationsAsyncWithHttpInfo($domain_id = null, $domain = null, $email = null, $handle = null, $status = null, $description = null, $is_suspended = null, $response_type = null, $response_to = null, $limit = null, $offset = null)
     {
@@ -366,7 +366,7 @@ class EmailVerificationApi
      * @param  int $offset The offset. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listDomainEmailVerificationsRequest($domain_id = null, $domain = null, $email = null, $handle = null, $status = null, $description = null, $is_suspended = null, $response_type = null, $response_to = null, $limit = null, $offset = null)
     {
@@ -442,7 +442,7 @@ class EmailVerificationApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -459,7 +459,7 @@ class EmailVerificationApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -626,7 +626,7 @@ class EmailVerificationApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\EmailRestartEmailVerificationRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function restartEmailVerificationAsync($body)
     {
@@ -646,7 +646,7 @@ class EmailVerificationApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\EmailRestartEmailVerificationRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function restartEmailVerificationAsyncWithHttpInfo($body)
     {
@@ -693,7 +693,7 @@ class EmailVerificationApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\EmailRestartEmailVerificationRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function restartEmailVerificationRequest($body)
     {
@@ -734,7 +734,7 @@ class EmailVerificationApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -751,7 +751,7 @@ class EmailVerificationApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -918,7 +918,7 @@ class EmailVerificationApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\EmailStartEmailVerificationRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function startEmailVerificationAsync($body)
     {
@@ -938,7 +938,7 @@ class EmailVerificationApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\EmailStartEmailVerificationRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function startEmailVerificationAsyncWithHttpInfo($body)
     {
@@ -985,7 +985,7 @@ class EmailVerificationApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\EmailStartEmailVerificationRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function startEmailVerificationRequest($body)
     {
@@ -1026,7 +1026,7 @@ class EmailVerificationApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1043,7 +1043,7 @@ class EmailVerificationApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

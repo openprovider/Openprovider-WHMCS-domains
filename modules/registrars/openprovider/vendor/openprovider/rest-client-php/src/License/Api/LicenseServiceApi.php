@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\License\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -249,7 +249,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseCreatePleskLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createPleskLicenseAsync($body)
     {
@@ -269,7 +269,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseCreatePleskLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createPleskLicenseAsyncWithHttpInfo($body)
     {
@@ -316,7 +316,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseCreatePleskLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function createPleskLicenseRequest($body)
     {
@@ -357,7 +357,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -374,7 +374,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -541,7 +541,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseCreateVirtuozzoLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createVirtuozzoLicenseAsync($body)
     {
@@ -561,7 +561,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseCreateVirtuozzoLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createVirtuozzoLicenseAsyncWithHttpInfo($body)
     {
@@ -608,7 +608,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseCreateVirtuozzoLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function createVirtuozzoLicenseRequest($body)
     {
@@ -649,7 +649,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -666,7 +666,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -833,7 +833,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deletePleskLicenseAsync($key_id)
     {
@@ -853,7 +853,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deletePleskLicenseAsyncWithHttpInfo($key_id)
     {
@@ -900,7 +900,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function deletePleskLicenseRequest($key_id)
     {
@@ -946,7 +946,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -963,7 +963,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1130,7 +1130,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteVirtuozzoLicenseAsync($key_id)
     {
@@ -1150,7 +1150,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteVirtuozzoLicenseAsyncWithHttpInfo($key_id)
     {
@@ -1197,7 +1197,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function deleteVirtuozzoLicenseRequest($key_id)
     {
@@ -1243,7 +1243,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1260,7 +1260,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1427,7 +1427,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getPleskKeyAsync($key_id)
     {
@@ -1447,7 +1447,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getPleskKeyAsyncWithHttpInfo($key_id)
     {
@@ -1494,7 +1494,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getPleskKeyRequest($key_id)
     {
@@ -1540,7 +1540,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1557,7 +1557,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1724,7 +1724,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getPleskLicenseAsync($key_id)
     {
@@ -1744,7 +1744,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getPleskLicenseAsyncWithHttpInfo($key_id)
     {
@@ -1791,7 +1791,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getPleskLicenseRequest($key_id)
     {
@@ -1837,7 +1837,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1854,7 +1854,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -2021,7 +2021,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getVirtuozzoKeyAsync($key_id)
     {
@@ -2041,7 +2041,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getVirtuozzoKeyAsyncWithHttpInfo($key_id)
     {
@@ -2088,7 +2088,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getVirtuozzoKeyRequest($key_id)
     {
@@ -2134,7 +2134,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -2151,7 +2151,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -2318,7 +2318,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getVirtuozzoLicenseAsync($key_id)
     {
@@ -2338,7 +2338,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getVirtuozzoLicenseAsyncWithHttpInfo($key_id)
     {
@@ -2385,7 +2385,7 @@ class LicenseServiceApi
      * @param  int $key_id License key ID (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getVirtuozzoLicenseRequest($key_id)
     {
@@ -2431,7 +2431,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -2448,7 +2448,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -2642,7 +2642,7 @@ class LicenseServiceApi
      * @param  string $product Product type (only Plesk is available). (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listItemsAsync($limit = null, $offset = null, $order_by_id = null, $order_by_key_id = null, $order_by_title = null, $order_by_product = null, $order_by_status = null, $order_by_key_number = null, $order_by_expiration_date = null, $product = null)
     {
@@ -2671,7 +2671,7 @@ class LicenseServiceApi
      * @param  string $product Product type (only Plesk is available). (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listItemsAsyncWithHttpInfo($limit = null, $offset = null, $order_by_id = null, $order_by_key_id = null, $order_by_title = null, $order_by_product = null, $order_by_status = null, $order_by_key_number = null, $order_by_expiration_date = null, $product = null)
     {
@@ -2727,7 +2727,7 @@ class LicenseServiceApi
      * @param  string $product Product type (only Plesk is available). (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listItemsRequest($limit = null, $offset = null, $order_by_id = null, $order_by_key_id = null, $order_by_title = null, $order_by_product = null, $order_by_status = null, $order_by_key_number = null, $order_by_expiration_date = null, $product = null)
     {
@@ -2799,7 +2799,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -2816,7 +2816,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -3025,7 +3025,7 @@ class LicenseServiceApi
      * @param  string $status License status. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listLicensesWithPriceVersionAsync($limit = null, $offset = null, $order_by_id = null, $order_by_key_id = null, $order_by_title = null, $order_by_product = null, $order_by_status = null, $order_by_key_number = null, $order_by_expiration_date = null, $product = null, $key_number = null, $title_pattern = null, $key_number_pattern = null, $parent_key_id = null, $status = null)
     {
@@ -3059,7 +3059,7 @@ class LicenseServiceApi
      * @param  string $status License status. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listLicensesWithPriceVersionAsyncWithHttpInfo($limit = null, $offset = null, $order_by_id = null, $order_by_key_id = null, $order_by_title = null, $order_by_product = null, $order_by_status = null, $order_by_key_number = null, $order_by_expiration_date = null, $product = null, $key_number = null, $title_pattern = null, $key_number_pattern = null, $parent_key_id = null, $status = null)
     {
@@ -3120,7 +3120,7 @@ class LicenseServiceApi
      * @param  string $status License status. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listLicensesWithPriceVersionRequest($limit = null, $offset = null, $order_by_id = null, $order_by_key_id = null, $order_by_title = null, $order_by_product = null, $order_by_status = null, $order_by_key_number = null, $order_by_expiration_date = null, $product = null, $key_number = null, $title_pattern = null, $key_number_pattern = null, $parent_key_id = null, $status = null)
     {
@@ -3212,7 +3212,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -3229,7 +3229,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -3414,7 +3414,7 @@ class LicenseServiceApi
      * @param  int $parent_key_id Key ID of the partent license. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listPleskLicensesAsync($limit = null, $offset = null, $key_id = null, $key_number = null, $title_pattern = null, $key_number_pattern = null, $parent_key_id = null)
     {
@@ -3440,7 +3440,7 @@ class LicenseServiceApi
      * @param  int $parent_key_id Key ID of the partent license. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listPleskLicensesAsyncWithHttpInfo($limit = null, $offset = null, $key_id = null, $key_number = null, $title_pattern = null, $key_number_pattern = null, $parent_key_id = null)
     {
@@ -3493,7 +3493,7 @@ class LicenseServiceApi
      * @param  int $parent_key_id Key ID of the partent license. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listPleskLicensesRequest($limit = null, $offset = null, $key_id = null, $key_number = null, $title_pattern = null, $key_number_pattern = null, $parent_key_id = null)
     {
@@ -3553,7 +3553,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -3570,7 +3570,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -3755,7 +3755,7 @@ class LicenseServiceApi
      * @param  int $parent_key_id Key ID of the partent license. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listVirtuozzoLicensesAsync($limit = null, $offset = null, $key_id = null, $key_number = null, $title_pattern = null, $key_number_pattern = null, $parent_key_id = null)
     {
@@ -3781,7 +3781,7 @@ class LicenseServiceApi
      * @param  int $parent_key_id Key ID of the partent license. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listVirtuozzoLicensesAsyncWithHttpInfo($limit = null, $offset = null, $key_id = null, $key_number = null, $title_pattern = null, $key_number_pattern = null, $parent_key_id = null)
     {
@@ -3834,7 +3834,7 @@ class LicenseServiceApi
      * @param  int $parent_key_id Key ID of the partent license. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listVirtuozzoLicensesRequest($limit = null, $offset = null, $key_id = null, $key_number = null, $title_pattern = null, $key_number_pattern = null, $parent_key_id = null)
     {
@@ -3894,7 +3894,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -3911,7 +3911,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -4084,7 +4084,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseResetHwidRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function resetHwidAsync($product, $key_id, $body)
     {
@@ -4106,7 +4106,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseResetHwidRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function resetHwidAsyncWithHttpInfo($product, $key_id, $body)
     {
@@ -4155,7 +4155,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseResetHwidRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function resetHwidRequest($product, $key_id, $body)
     {
@@ -4224,7 +4224,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -4241,7 +4241,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -4411,7 +4411,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseUpdatePleskLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updatePleskLicenseAsync($key_id, $body)
     {
@@ -4432,7 +4432,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseUpdatePleskLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updatePleskLicenseAsyncWithHttpInfo($key_id, $body)
     {
@@ -4480,7 +4480,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseUpdatePleskLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function updatePleskLicenseRequest($key_id, $body)
     {
@@ -4535,7 +4535,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -4552,7 +4552,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -4722,7 +4722,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseUpdateVirtuozzoLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateVirtuozzoLicenseAsync($key_id, $body)
     {
@@ -4743,7 +4743,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseUpdateVirtuozzoLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateVirtuozzoLicenseAsyncWithHttpInfo($key_id, $body)
     {
@@ -4791,7 +4791,7 @@ class LicenseServiceApi
      * @param  \Openprovider\Api\Rest\Client\License\Model\LicenseUpdateVirtuozzoLicenseRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function updateVirtuozzoLicenseRequest($key_id, $body)
     {
@@ -4846,7 +4846,7 @@ class LicenseServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -4863,7 +4863,7 @@ class LicenseServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

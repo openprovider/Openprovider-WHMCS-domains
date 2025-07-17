@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Dns\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -249,7 +249,7 @@ class NameserverServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NameserverNameserver $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createNameserverAsync($body)
     {
@@ -269,7 +269,7 @@ class NameserverServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NameserverNameserver $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createNameserverAsyncWithHttpInfo($body)
     {
@@ -316,7 +316,7 @@ class NameserverServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NameserverNameserver $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function createNameserverRequest($body)
     {
@@ -357,7 +357,7 @@ class NameserverServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -374,7 +374,7 @@ class NameserverServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -541,7 +541,7 @@ class NameserverServiceApi
      * @param  string $name Nameserver name (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteNameserverAsync($name)
     {
@@ -561,7 +561,7 @@ class NameserverServiceApi
      * @param  string $name Nameserver name (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteNameserverAsyncWithHttpInfo($name)
     {
@@ -608,7 +608,7 @@ class NameserverServiceApi
      * @param  string $name Nameserver name (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function deleteNameserverRequest($name)
     {
@@ -654,7 +654,7 @@ class NameserverServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -671,7 +671,7 @@ class NameserverServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -838,7 +838,7 @@ class NameserverServiceApi
      * @param  string $name Nameserver name (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getNameserverAsync($name)
     {
@@ -858,7 +858,7 @@ class NameserverServiceApi
      * @param  string $name Nameserver name (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getNameserverAsyncWithHttpInfo($name)
     {
@@ -905,7 +905,7 @@ class NameserverServiceApi
      * @param  string $name Nameserver name (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getNameserverRequest($name)
     {
@@ -951,7 +951,7 @@ class NameserverServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -968,7 +968,7 @@ class NameserverServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1156,7 +1156,7 @@ class NameserverServiceApi
      * @param  string $order_by Field for sorting output. Possible values: id, name. (optional, default to 'name')
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listNameserversAsync($name = null, $ip = null, $ip6 = null, $pattern = null, $limit = 100, $offset = null, $order = 'asc', $order_by = 'name')
     {
@@ -1183,7 +1183,7 @@ class NameserverServiceApi
      * @param  string $order_by Field for sorting output. Possible values: id, name. (optional, default to 'name')
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listNameserversAsyncWithHttpInfo($name = null, $ip = null, $ip6 = null, $pattern = null, $limit = 100, $offset = null, $order = 'asc', $order_by = 'name')
     {
@@ -1237,7 +1237,7 @@ class NameserverServiceApi
      * @param  string $order_by Field for sorting output. Possible values: id, name. (optional, default to 'name')
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listNameserversRequest($name = null, $ip = null, $ip6 = null, $pattern = null, $limit = 100, $offset = null, $order = 'asc', $order_by = 'name')
     {
@@ -1301,7 +1301,7 @@ class NameserverServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1318,7 +1318,7 @@ class NameserverServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1488,7 +1488,7 @@ class NameserverServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NameserverNameserver $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateNameserverAsync($name, $body)
     {
@@ -1509,7 +1509,7 @@ class NameserverServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NameserverNameserver $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateNameserverAsyncWithHttpInfo($name, $body)
     {
@@ -1557,7 +1557,7 @@ class NameserverServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NameserverNameserver $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function updateNameserverRequest($name, $body)
     {
@@ -1612,7 +1612,7 @@ class NameserverServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1629,7 +1629,7 @@ class NameserverServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

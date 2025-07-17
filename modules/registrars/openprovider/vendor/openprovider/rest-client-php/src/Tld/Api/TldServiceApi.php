@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Tld\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -273,7 +273,7 @@ class TldServiceApi
      * @param  string[] $status Extension status. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getTldAsync($name, $limit = null, $offset = null, $with_description = null, $with_restrictions = null, $with_price = null, $with_level_prices = null, $with_usage_count = null, $status = null)
     {
@@ -301,7 +301,7 @@ class TldServiceApi
      * @param  string[] $status Extension status. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getTldAsyncWithHttpInfo($name, $limit = null, $offset = null, $with_description = null, $with_restrictions = null, $with_price = null, $with_level_prices = null, $with_usage_count = null, $status = null)
     {
@@ -356,7 +356,7 @@ class TldServiceApi
      * @param  string[] $status Extension status. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getTldRequest($name, $limit = null, $offset = null, $with_description = null, $with_restrictions = null, $with_price = null, $with_level_prices = null, $with_usage_count = null, $status = null)
     {
@@ -437,7 +437,7 @@ class TldServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -454,7 +454,7 @@ class TldServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -669,7 +669,7 @@ class TldServiceApi
      * @param  string $application_mode Pre-registration mode. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listTldsAsync($limit = null, $offset = null, $order = null, $order_by = null, $extensions = null, $name_pattern = null, $only_names = null, $with_description = null, $with_restrictions = null, $with_usage_count = null, $with_application_mode = null, $with_price = null, $with_level_prices = null, $is_active = null, $is_new_gtld = null, $status = null, $application_mode = null)
     {
@@ -705,7 +705,7 @@ class TldServiceApi
      * @param  string $application_mode Pre-registration mode. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listTldsAsyncWithHttpInfo($limit = null, $offset = null, $order = null, $order_by = null, $extensions = null, $name_pattern = null, $only_names = null, $with_description = null, $with_restrictions = null, $with_usage_count = null, $with_application_mode = null, $with_price = null, $with_level_prices = null, $is_active = null, $is_new_gtld = null, $status = null, $application_mode = null)
     {
@@ -768,7 +768,7 @@ class TldServiceApi
      * @param  string $application_mode Pre-registration mode. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listTldsRequest($limit = null, $offset = null, $order = null, $order_by = null, $extensions = null, $name_pattern = null, $only_names = null, $with_description = null, $with_restrictions = null, $with_usage_count = null, $with_application_mode = null, $with_price = null, $with_level_prices = null, $is_active = null, $is_new_gtld = null, $status = null, $application_mode = null)
     {
@@ -877,7 +877,7 @@ class TldServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -894,7 +894,7 @@ class TldServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

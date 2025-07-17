@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Domain\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -252,7 +252,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainApproveTransferRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function approveTransferAsync($id, $body)
     {
@@ -273,7 +273,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainApproveTransferRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function approveTransferAsyncWithHttpInfo($id, $body)
     {
@@ -321,7 +321,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainApproveTransferRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function approveTransferRequest($id, $body)
     {
@@ -376,7 +376,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -393,7 +393,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -560,7 +560,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainCheckDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function checkDomainAsync($body)
     {
@@ -580,7 +580,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainCheckDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function checkDomainAsyncWithHttpInfo($body)
     {
@@ -627,7 +627,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainCheckDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function checkDomainRequest($body)
     {
@@ -668,7 +668,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -685,7 +685,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -852,7 +852,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainCreateDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createDomainAsync($body)
     {
@@ -872,7 +872,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainCreateDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createDomainAsyncWithHttpInfo($body)
     {
@@ -919,7 +919,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainCreateDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function createDomainRequest($body)
     {
@@ -960,7 +960,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -977,7 +977,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1159,7 +1159,7 @@ class DomainServiceApi
      * @param  bool $force_delete Force delete domain even if it has glue records. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteDomainAsync($id, $domain_name = null, $domain_extension = null, $type = null, $skip_soft_quarantine = null, $force_delete = null)
     {
@@ -1184,7 +1184,7 @@ class DomainServiceApi
      * @param  bool $force_delete Force delete domain even if it has glue records. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteDomainAsyncWithHttpInfo($id, $domain_name = null, $domain_extension = null, $type = null, $skip_soft_quarantine = null, $force_delete = null)
     {
@@ -1236,7 +1236,7 @@ class DomainServiceApi
      * @param  bool $force_delete Force delete domain even if it has glue records. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function deleteDomainRequest($id, $domain_name = null, $domain_extension = null, $type = null, $skip_soft_quarantine = null, $force_delete = null)
     {
@@ -1302,7 +1302,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1319,7 +1319,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1516,7 +1516,7 @@ class DomainServiceApi
      * @param  bool $is_deleted Indicates whether object is deleted. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getDomainAsync($id, $domain_name = null, $domain_extension = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $with_verification_email = null, $with_abuse_details = null, $with_whois_privacy_data = null, $with_registry_statuses = null, $is_deleted = null)
     {
@@ -1546,7 +1546,7 @@ class DomainServiceApi
      * @param  bool $is_deleted Indicates whether object is deleted. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getDomainAsyncWithHttpInfo($id, $domain_name = null, $domain_extension = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $with_verification_email = null, $with_abuse_details = null, $with_whois_privacy_data = null, $with_registry_statuses = null, $is_deleted = null)
     {
@@ -1603,7 +1603,7 @@ class DomainServiceApi
      * @param  bool $is_deleted Indicates whether object is deleted. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getDomainRequest($id, $domain_name = null, $domain_extension = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $with_verification_email = null, $with_abuse_details = null, $with_whois_privacy_data = null, $with_registry_statuses = null, $is_deleted = null)
     {
@@ -1689,7 +1689,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1706,7 +1706,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1963,7 +1963,7 @@ class DomainServiceApi
      * @param  bool $is_deleted Indicates whether object is deleted. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listDomainsAsync($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null)
     {
@@ -2013,7 +2013,7 @@ class DomainServiceApi
      * @param  bool $is_deleted Indicates whether object is deleted. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listDomainsAsyncWithHttpInfo($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null)
     {
@@ -2090,7 +2090,7 @@ class DomainServiceApi
      * @param  bool $is_deleted Indicates whether object is deleted. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listDomainsRequest($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null)
     {
@@ -2249,7 +2249,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -2266,7 +2266,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -2436,7 +2436,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainRenewDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function renewDomainAsync($id, $body)
     {
@@ -2457,7 +2457,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainRenewDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function renewDomainAsyncWithHttpInfo($id, $body)
     {
@@ -2505,7 +2505,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainRenewDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function renewDomainRequest($id, $body)
     {
@@ -2560,7 +2560,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -2577,7 +2577,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -2747,7 +2747,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainRestoreDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function restoreDomainAsync($id, $body)
     {
@@ -2768,7 +2768,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainRestoreDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function restoreDomainAsyncWithHttpInfo($id, $body)
     {
@@ -2816,7 +2816,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainRestoreDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function restoreDomainRequest($id, $body)
     {
@@ -2871,7 +2871,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -2888,7 +2888,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -3058,7 +3058,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainSendFoa1Request $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function sendFoa1Async($id, $body)
     {
@@ -3079,7 +3079,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainSendFoa1Request $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function sendFoa1AsyncWithHttpInfo($id, $body)
     {
@@ -3127,7 +3127,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainSendFoa1Request $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function sendFoa1Request($id, $body)
     {
@@ -3182,7 +3182,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -3199,7 +3199,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -3366,7 +3366,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function suggestNameDomainAsync($body)
     {
@@ -3386,7 +3386,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function suggestNameDomainAsyncWithHttpInfo($body)
     {
@@ -3433,7 +3433,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainSuggestNameDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function suggestNameDomainRequest($body)
     {
@@ -3474,7 +3474,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -3491,7 +3491,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -3658,7 +3658,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainTradeDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function tradeDomainAsync($body)
     {
@@ -3678,7 +3678,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainTradeDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function tradeDomainAsyncWithHttpInfo($body)
     {
@@ -3725,7 +3725,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainTradeDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function tradeDomainRequest($body)
     {
@@ -3766,7 +3766,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -3783,7 +3783,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -3950,7 +3950,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainTransferDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function transferDomainAsync($body)
     {
@@ -3970,7 +3970,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainTransferDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function transferDomainAsyncWithHttpInfo($body)
     {
@@ -4017,7 +4017,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainTransferDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function transferDomainRequest($body)
     {
@@ -4058,7 +4058,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -4075,7 +4075,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -4245,7 +4245,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainTryAgainLastOperationRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function tryAgainLastOperationAsync($id, $body)
     {
@@ -4266,7 +4266,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainTryAgainLastOperationRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function tryAgainLastOperationAsyncWithHttpInfo($id, $body)
     {
@@ -4314,7 +4314,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainTryAgainLastOperationRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function tryAgainLastOperationRequest($id, $body)
     {
@@ -4369,7 +4369,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -4386,7 +4386,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -4556,7 +4556,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainUpdateDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateDomainAsync($id, $body)
     {
@@ -4577,7 +4577,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainUpdateDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateDomainAsyncWithHttpInfo($id, $body)
     {
@@ -4625,7 +4625,7 @@ class DomainServiceApi
      * @param  \Openprovider\Api\Rest\Client\Domain\Model\DomainUpdateDomainRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function updateDomainRequest($id, $body)
     {
@@ -4680,7 +4680,7 @@ class DomainServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -4697,7 +4697,7 @@ class DomainServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

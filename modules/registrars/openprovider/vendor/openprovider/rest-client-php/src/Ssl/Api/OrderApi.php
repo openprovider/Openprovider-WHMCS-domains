@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Ssl\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -252,7 +252,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderCancelOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function cancelOrderAsync($id, $body)
     {
@@ -273,7 +273,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderCancelOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function cancelOrderAsyncWithHttpInfo($id, $body)
     {
@@ -321,7 +321,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderCancelOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function cancelOrderRequest($id, $body)
     {
@@ -376,7 +376,7 @@ class OrderApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -393,7 +393,7 @@ class OrderApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -560,7 +560,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderCreateOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createOrderAsync($body)
     {
@@ -580,7 +580,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderCreateOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createOrderAsyncWithHttpInfo($body)
     {
@@ -627,7 +627,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderCreateOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function createOrderRequest($body)
     {
@@ -668,7 +668,7 @@ class OrderApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -685,7 +685,7 @@ class OrderApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -852,7 +852,7 @@ class OrderApi
      * @param  int $id Object id (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getOrderAsync($id)
     {
@@ -872,7 +872,7 @@ class OrderApi
      * @param  int $id Object id (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getOrderAsyncWithHttpInfo($id)
     {
@@ -919,7 +919,7 @@ class OrderApi
      * @param  int $id Object id (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getOrderRequest($id)
     {
@@ -965,7 +965,7 @@ class OrderApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -982,7 +982,7 @@ class OrderApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1182,7 +1182,7 @@ class OrderApi
      * @param  bool $show_expiring Indicates, whether to return only certificates that are expiring within 30 days. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listOrdersAsync($limit = 100, $offset = null, $order_by_common_name = null, $order_by_order_date = 'desc', $order_by_active_date = null, $order_by_expiration_date = null, $order_by_status = null, $order_by_product_name = null, $common_name_pattern = null, $status = null, $contact_handle = null, $show_expiring = null)
     {
@@ -1213,7 +1213,7 @@ class OrderApi
      * @param  bool $show_expiring Indicates, whether to return only certificates that are expiring within 30 days. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listOrdersAsyncWithHttpInfo($limit = 100, $offset = null, $order_by_common_name = null, $order_by_order_date = 'desc', $order_by_active_date = null, $order_by_expiration_date = null, $order_by_status = null, $order_by_product_name = null, $common_name_pattern = null, $status = null, $contact_handle = null, $show_expiring = null)
     {
@@ -1271,7 +1271,7 @@ class OrderApi
      * @param  bool $show_expiring Indicates, whether to return only certificates that are expiring within 30 days. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listOrdersRequest($limit = 100, $offset = null, $order_by_common_name = null, $order_by_order_date = 'desc', $order_by_active_date = null, $order_by_expiration_date = null, $order_by_status = null, $order_by_product_name = null, $common_name_pattern = null, $status = null, $contact_handle = null, $show_expiring = null)
     {
@@ -1354,7 +1354,7 @@ class OrderApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1371,7 +1371,7 @@ class OrderApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1541,7 +1541,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderReissueOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function reissueOrderAsync($id, $body)
     {
@@ -1562,7 +1562,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderReissueOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function reissueOrderAsyncWithHttpInfo($id, $body)
     {
@@ -1610,7 +1610,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderReissueOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function reissueOrderRequest($id, $body)
     {
@@ -1665,7 +1665,7 @@ class OrderApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1682,7 +1682,7 @@ class OrderApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1852,7 +1852,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderRenewOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function renewOrderAsync($id, $body)
     {
@@ -1873,7 +1873,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderRenewOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function renewOrderAsyncWithHttpInfo($id, $body)
     {
@@ -1921,7 +1921,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderRenewOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function renewOrderRequest($id, $body)
     {
@@ -1976,7 +1976,7 @@ class OrderApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1993,7 +1993,7 @@ class OrderApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -2163,7 +2163,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderUpdateOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateOrderAsync($id, $body)
     {
@@ -2184,7 +2184,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderUpdateOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateOrderAsyncWithHttpInfo($id, $body)
     {
@@ -2232,7 +2232,7 @@ class OrderApi
      * @param  \Openprovider\Api\Rest\Client\Ssl\Model\OrderUpdateOrderRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function updateOrderRequest($id, $body)
     {
@@ -2287,7 +2287,7 @@ class OrderApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -2304,7 +2304,7 @@ class OrderApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

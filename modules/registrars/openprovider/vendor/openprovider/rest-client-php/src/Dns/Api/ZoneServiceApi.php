@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Dns\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -249,7 +249,7 @@ class ZoneServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\ZoneCreateZoneRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createZoneAsync($body)
     {
@@ -269,7 +269,7 @@ class ZoneServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\ZoneCreateZoneRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createZoneAsyncWithHttpInfo($body)
     {
@@ -316,7 +316,7 @@ class ZoneServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\ZoneCreateZoneRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function createZoneRequest($body)
     {
@@ -357,7 +357,7 @@ class ZoneServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -374,7 +374,7 @@ class ZoneServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -553,7 +553,7 @@ class ZoneServiceApi
      * @param  string $provider Name of the DNS provider. Set provider&#x3D;sectigo in case of sectigo premium DNS zone should be deleted. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteZoneAsync($name, $id = null, $domain_name = null, $domain_extension = null, $provider = null)
     {
@@ -577,7 +577,7 @@ class ZoneServiceApi
      * @param  string $provider Name of the DNS provider. Set provider&#x3D;sectigo in case of sectigo premium DNS zone should be deleted. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteZoneAsyncWithHttpInfo($name, $id = null, $domain_name = null, $domain_extension = null, $provider = null)
     {
@@ -628,7 +628,7 @@ class ZoneServiceApi
      * @param  string $provider Name of the DNS provider. Set provider&#x3D;sectigo in case of sectigo premium DNS zone should be deleted. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function deleteZoneRequest($name, $id = null, $domain_name = null, $domain_extension = null, $provider = null)
     {
@@ -690,7 +690,7 @@ class ZoneServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -707,7 +707,7 @@ class ZoneServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -889,7 +889,7 @@ class ZoneServiceApi
      * @param  string $provider Name of the DNS provider. Set provider&#x3D;sectigo in case of only sectigo premium DNS zone should be retrieved. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getZoneAsync($name, $id = null, $with_records = true, $with_history = true, $with_dnskey = null, $provider = null)
     {
@@ -914,7 +914,7 @@ class ZoneServiceApi
      * @param  string $provider Name of the DNS provider. Set provider&#x3D;sectigo in case of only sectigo premium DNS zone should be retrieved. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getZoneAsyncWithHttpInfo($name, $id = null, $with_records = true, $with_history = true, $with_dnskey = null, $provider = null)
     {
@@ -966,7 +966,7 @@ class ZoneServiceApi
      * @param  string $provider Name of the DNS provider. Set provider&#x3D;sectigo in case of only sectigo premium DNS zone should be retrieved. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getZoneRequest($name, $id = null, $with_records = true, $with_history = true, $with_dnskey = null, $provider = null)
     {
@@ -1032,7 +1032,7 @@ class ZoneServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1049,7 +1049,7 @@ class ZoneServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1246,7 +1246,7 @@ class ZoneServiceApi
      * @param  string $provider Name of the DNS provider. Set provider&#x3D;sectigo in case of only sectigo premium DNS zone should be retrieved. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listZonesAsync($limit = 100, $offset = null, $order_by_creation_date = 'desc', $order_by_modification_date = null, $order_by_name = null, $type = null, $name_pattern = null, $with_records = null, $with_history = null, $with_dnskey = null, $provider = null)
     {
@@ -1276,7 +1276,7 @@ class ZoneServiceApi
      * @param  string $provider Name of the DNS provider. Set provider&#x3D;sectigo in case of only sectigo premium DNS zone should be retrieved. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listZonesAsyncWithHttpInfo($limit = 100, $offset = null, $order_by_creation_date = 'desc', $order_by_modification_date = null, $order_by_name = null, $type = null, $name_pattern = null, $with_records = null, $with_history = null, $with_dnskey = null, $provider = null)
     {
@@ -1333,7 +1333,7 @@ class ZoneServiceApi
      * @param  string $provider Name of the DNS provider. Set provider&#x3D;sectigo in case of only sectigo premium DNS zone should be retrieved. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listZonesRequest($limit = 100, $offset = null, $order_by_creation_date = 'desc', $order_by_modification_date = null, $order_by_name = null, $type = null, $name_pattern = null, $with_records = null, $with_history = null, $with_dnskey = null, $provider = null)
     {
@@ -1409,7 +1409,7 @@ class ZoneServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1426,7 +1426,7 @@ class ZoneServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1596,7 +1596,7 @@ class ZoneServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\ZoneUpdateZoneRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateZoneAsync($name, $body)
     {
@@ -1617,7 +1617,7 @@ class ZoneServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\ZoneUpdateZoneRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateZoneAsyncWithHttpInfo($name, $body)
     {
@@ -1665,7 +1665,7 @@ class ZoneServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\ZoneUpdateZoneRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function updateZoneRequest($name, $body)
     {
@@ -1720,7 +1720,7 @@ class ZoneServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1737,7 +1737,7 @@ class ZoneServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

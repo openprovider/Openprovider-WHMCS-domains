@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Person\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -249,7 +249,7 @@ class CustomerApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\CustomerCreateCustomerRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createCustomerAsync($body)
     {
@@ -269,7 +269,7 @@ class CustomerApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\CustomerCreateCustomerRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createCustomerAsyncWithHttpInfo($body)
     {
@@ -316,7 +316,7 @@ class CustomerApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\CustomerCreateCustomerRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function createCustomerRequest($body)
     {
@@ -357,7 +357,7 @@ class CustomerApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -374,7 +374,7 @@ class CustomerApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -541,7 +541,7 @@ class CustomerApi
      * @param  string $handle Customer unique identifier or handle, which can be created via CreateCustomer API method (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteCustomerAsync($handle)
     {
@@ -561,7 +561,7 @@ class CustomerApi
      * @param  string $handle Customer unique identifier or handle, which can be created via CreateCustomer API method (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteCustomerAsyncWithHttpInfo($handle)
     {
@@ -608,7 +608,7 @@ class CustomerApi
      * @param  string $handle Customer unique identifier or handle, which can be created via CreateCustomer API method (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function deleteCustomerRequest($handle)
     {
@@ -654,7 +654,7 @@ class CustomerApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -671,7 +671,7 @@ class CustomerApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -841,7 +841,7 @@ class CustomerApi
      * @param  bool $with_additional_data Retrieves objects with (1) or without (0) additional data. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getCustomerAsync($handle, $with_additional_data = null)
     {
@@ -862,7 +862,7 @@ class CustomerApi
      * @param  bool $with_additional_data Retrieves objects with (1) or without (0) additional data. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getCustomerAsyncWithHttpInfo($handle, $with_additional_data = null)
     {
@@ -910,7 +910,7 @@ class CustomerApi
      * @param  bool $with_additional_data Retrieves objects with (1) or without (0) additional data. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getCustomerRequest($handle, $with_additional_data = null)
     {
@@ -960,7 +960,7 @@ class CustomerApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -977,7 +977,7 @@ class CustomerApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1186,7 +1186,7 @@ class CustomerApi
      * @param  string[] $columns Сolumns to retrieve. Possible values: &#39;firstName&#39;, &#39;prefix&#39;, &#39;initials&#39;, &#39;lastName&#39;, &#39;companyName&#39;, &#39;email&#39;, &#39;handle&#39;, &#39;id&#39;, &#39;fullName&#39;. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listCustomersAsync($reseller_id = null, $limit = null, $offset = null, $order = null, $order_by = null, $email_pattern = null, $company_name_pattern = null, $last_name_pattern = null, $first_name_pattern = null, $comment_pattern = null, $handle_pattern = null, $pattern = null, $with_additional_data = null, $type = null, $columns = null)
     {
@@ -1220,7 +1220,7 @@ class CustomerApi
      * @param  string[] $columns Сolumns to retrieve. Possible values: &#39;firstName&#39;, &#39;prefix&#39;, &#39;initials&#39;, &#39;lastName&#39;, &#39;companyName&#39;, &#39;email&#39;, &#39;handle&#39;, &#39;id&#39;, &#39;fullName&#39;. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listCustomersAsyncWithHttpInfo($reseller_id = null, $limit = null, $offset = null, $order = null, $order_by = null, $email_pattern = null, $company_name_pattern = null, $last_name_pattern = null, $first_name_pattern = null, $comment_pattern = null, $handle_pattern = null, $pattern = null, $with_additional_data = null, $type = null, $columns = null)
     {
@@ -1281,7 +1281,7 @@ class CustomerApi
      * @param  string[] $columns Сolumns to retrieve. Possible values: &#39;firstName&#39;, &#39;prefix&#39;, &#39;initials&#39;, &#39;lastName&#39;, &#39;companyName&#39;, &#39;email&#39;, &#39;handle&#39;, &#39;id&#39;, &#39;fullName&#39;. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listCustomersRequest($reseller_id = null, $limit = null, $offset = null, $order = null, $order_by = null, $email_pattern = null, $company_name_pattern = null, $last_name_pattern = null, $first_name_pattern = null, $comment_pattern = null, $handle_pattern = null, $pattern = null, $with_additional_data = null, $type = null, $columns = null)
     {
@@ -1376,7 +1376,7 @@ class CustomerApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1393,7 +1393,7 @@ class CustomerApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1563,7 +1563,7 @@ class CustomerApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\CustomerUpdateCustomerRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateCustomerAsync($handle, $body)
     {
@@ -1584,7 +1584,7 @@ class CustomerApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\CustomerUpdateCustomerRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateCustomerAsyncWithHttpInfo($handle, $body)
     {
@@ -1632,7 +1632,7 @@ class CustomerApi
      * @param  \Openprovider\Api\Rest\Client\Person\Model\CustomerUpdateCustomerRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function updateCustomerRequest($handle, $body)
     {
@@ -1687,7 +1687,7 @@ class CustomerApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1704,7 +1704,7 @@ class CustomerApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

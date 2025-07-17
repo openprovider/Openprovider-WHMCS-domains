@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Dns\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -249,7 +249,7 @@ class NsGroupServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NsGroupCreateGroupRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createGroupAsync($body)
     {
@@ -269,7 +269,7 @@ class NsGroupServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NsGroupCreateGroupRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function createGroupAsyncWithHttpInfo($body)
     {
@@ -316,7 +316,7 @@ class NsGroupServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NsGroupCreateGroupRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function createGroupRequest($body)
     {
@@ -357,7 +357,7 @@ class NsGroupServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -374,7 +374,7 @@ class NsGroupServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -541,7 +541,7 @@ class NsGroupServiceApi
      * @param  string $ns_group Plain text name of the nameserver group, which can consist of several nameservers with attached IPs. Once created in Openprovider reseller account, nameserver group can be reused for operations with domains. (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteGroupAsync($ns_group)
     {
@@ -561,7 +561,7 @@ class NsGroupServiceApi
      * @param  string $ns_group Plain text name of the nameserver group, which can consist of several nameservers with attached IPs. Once created in Openprovider reseller account, nameserver group can be reused for operations with domains. (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function deleteGroupAsyncWithHttpInfo($ns_group)
     {
@@ -608,7 +608,7 @@ class NsGroupServiceApi
      * @param  string $ns_group Plain text name of the nameserver group, which can consist of several nameservers with attached IPs. Once created in Openprovider reseller account, nameserver group can be reused for operations with domains. (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function deleteGroupRequest($ns_group)
     {
@@ -654,7 +654,7 @@ class NsGroupServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -671,7 +671,7 @@ class NsGroupServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -841,7 +841,7 @@ class NsGroupServiceApi
      * @param  int $id Nameserver group ID. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getGroupAsync($ns_group, $id = null)
     {
@@ -862,7 +862,7 @@ class NsGroupServiceApi
      * @param  int $id Nameserver group ID. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function getGroupAsyncWithHttpInfo($ns_group, $id = null)
     {
@@ -910,7 +910,7 @@ class NsGroupServiceApi
      * @param  int $id Nameserver group ID. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function getGroupRequest($ns_group, $id = null)
     {
@@ -960,7 +960,7 @@ class NsGroupServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -977,7 +977,7 @@ class NsGroupServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1171,7 +1171,7 @@ class NsGroupServiceApi
      * @param  string $ns_ip_pattern Nameserver IP address pattern. Wildcard (*) can be used. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listGroupsAsync($limit = 100, $offset = null, $order_by_ns_group = 'asc', $order_by_domain_count = null, $order_by_ns_count = null, $with_domain_count = null, $with_ns_count = null, $ns_group_pattern = null, $ns_name_pattern = null, $ns_ip_pattern = null)
     {
@@ -1200,7 +1200,7 @@ class NsGroupServiceApi
      * @param  string $ns_ip_pattern Nameserver IP address pattern. Wildcard (*) can be used. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listGroupsAsyncWithHttpInfo($limit = 100, $offset = null, $order_by_ns_group = 'asc', $order_by_domain_count = null, $order_by_ns_count = null, $with_domain_count = null, $with_ns_count = null, $ns_group_pattern = null, $ns_name_pattern = null, $ns_ip_pattern = null)
     {
@@ -1256,7 +1256,7 @@ class NsGroupServiceApi
      * @param  string $ns_ip_pattern Nameserver IP address pattern. Wildcard (*) can be used. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listGroupsRequest($limit = 100, $offset = null, $order_by_ns_group = 'asc', $order_by_domain_count = null, $order_by_ns_count = null, $with_domain_count = null, $with_ns_count = null, $ns_group_pattern = null, $ns_name_pattern = null, $ns_ip_pattern = null)
     {
@@ -1328,7 +1328,7 @@ class NsGroupServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1345,7 +1345,7 @@ class NsGroupServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
@@ -1515,7 +1515,7 @@ class NsGroupServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NsGroupUpdateGroupRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateGroupAsync($ns_group, $body)
     {
@@ -1536,7 +1536,7 @@ class NsGroupServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NsGroupUpdateGroupRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function updateGroupAsyncWithHttpInfo($ns_group, $body)
     {
@@ -1584,7 +1584,7 @@ class NsGroupServiceApi
      * @param  \Openprovider\Api\Rest\Client\Dns\Model\NsGroupUpdateGroupRequest $body (required)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function updateGroupRequest($ns_group, $body)
     {
@@ -1639,7 +1639,7 @@ class NsGroupServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -1656,7 +1656,7 @@ class NsGroupServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)

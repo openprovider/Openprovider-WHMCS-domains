@@ -28,13 +28,13 @@
 
 namespace Openprovider\Api\Rest\Client\Dns\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\MultipartStream;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\RequestOptions;
+use GuzzleHttp6\Client;
+use GuzzleHttp6\ClientInterface;
+use GuzzleHttp6\Exception\RequestException;
+use GuzzleHttp6\Psr7\MultipartStream;
+use GuzzleHttp6\Psr7\Request;
+use GuzzleHttp6\Psr7\Query;
+use GuzzleHttp6\RequestOptions;
 use Openprovider\Api\Rest\Client\Base\ApiException;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
@@ -291,7 +291,7 @@ class ZoneRecordServiceApi
      * @param  string $zone_provider Name of the DNS provider. Set zone_provider&#x3D;sectigo in case of only sectigo premium DNS zone records should be retrieved. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listZoneRecordsAsync($name, $zone_id = null, $limit = 100, $offset = null, $order_by_type = 'asc', $order_by_name = 'asc', $order_by_value = null, $order_by_ttl = null, $order_by_prio = null, $record_name_pattern = null, $value_pattern = null, $type = null, $prio = null, $ttl = null, $zone_provider = null)
     {
@@ -325,7 +325,7 @@ class ZoneRecordServiceApi
      * @param  string $zone_provider Name of the DNS provider. Set zone_provider&#x3D;sectigo in case of only sectigo premium DNS zone records should be retrieved. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
+     * @return \GuzzleHttp6\Promise\PromiseInterface
      */
     public function listZoneRecordsAsyncWithHttpInfo($name, $zone_id = null, $limit = 100, $offset = null, $order_by_type = 'asc', $order_by_name = 'asc', $order_by_value = null, $order_by_ttl = null, $order_by_prio = null, $record_name_pattern = null, $value_pattern = null, $type = null, $prio = null, $ttl = null, $zone_provider = null)
     {
@@ -386,7 +386,7 @@ class ZoneRecordServiceApi
      * @param  string $zone_provider Name of the DNS provider. Set zone_provider&#x3D;sectigo in case of only sectigo premium DNS zone records should be retrieved. (optional)
      *
      * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
+     * @return \GuzzleHttp6\Psr7\Request
      */
     protected function listZoneRecordsRequest($name, $zone_id = null, $limit = 100, $offset = null, $order_by_type = 'asc', $order_by_name = 'asc', $order_by_value = null, $order_by_ttl = null, $order_by_prio = null, $record_name_pattern = null, $value_pattern = null, $type = null, $prio = null, $ttl = null, $zone_provider = null)
     {
@@ -488,7 +488,7 @@ class ZoneRecordServiceApi
         if (isset($_tempBody)) {
             // $_tempBody is the method argument, if present
             if ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
             } else {
                 $httpBody = $_tempBody;
             }
@@ -505,7 +505,7 @@ class ZoneRecordServiceApi
                 $httpBody = new MultipartStream($multipartContents);
 
             } elseif ($headers['Content-Type'] === 'application/json') {
-                $httpBody = \GuzzleHttp\json_encode($formParams);
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
 
             } else {
                 // for HTTP post (form)
