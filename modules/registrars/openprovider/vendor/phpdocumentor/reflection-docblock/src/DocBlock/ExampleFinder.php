@@ -44,7 +44,7 @@ class ExampleFinder
         $filename = $example->getFilePath();
 
         $file = $this->getExampleFileContents($filename);
-        if (!$file) {
+        if ($file === null) {
             return sprintf('** File not found : %s **', $filename);
         }
 
@@ -112,7 +112,7 @@ class ExampleFinder
             }
         }
 
-        if (!$normalizedPath) {
+        if ($normalizedPath === null) {
             if (is_readable($this->getExamplePathFromSource($filename))) {
                 $normalizedPath = $this->getExamplePathFromSource($filename);
             } elseif (is_readable($this->getExamplePathFromExampleDirectory($filename))) {
@@ -122,7 +122,7 @@ class ExampleFinder
             }
         }
 
-        $lines = $normalizedPath && is_readable($normalizedPath) ? file($normalizedPath) : false;
+        $lines = $normalizedPath !== null && is_readable($normalizedPath) ? file($normalizedPath) : false;
 
         return $lines !== false ? $lines : null;
     }

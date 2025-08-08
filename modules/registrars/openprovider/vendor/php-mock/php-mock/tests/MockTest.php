@@ -10,9 +10,8 @@ namespace phpmock;
  * @license http://www.wtfpl.net/txt/copying/ WTFPL
  * @see Mock
  */
-class MockTest extends AbstractMockTest
+class MockTest extends AbstractMockTestCase
 {
-
     protected function defineFunction($namespace, $functionName)
     {
         $mock = new Mock($namespace, $functionName, function () {
@@ -33,8 +32,6 @@ class MockTest extends AbstractMockTest
 
     /**
      * Tests enable().
-     *
-     * @test
      */
     public function testEnable()
     {
@@ -52,8 +49,6 @@ class MockTest extends AbstractMockTest
 
     /**
      * Tests disabling and enabling again.
-     *
-     * @test
      */
     public function testReenable()
     {
@@ -72,8 +67,6 @@ class MockTest extends AbstractMockTest
 
     /**
      * Tests disableAll().
-     *
-     * @test
      */
     public function testDisableAll()
     {

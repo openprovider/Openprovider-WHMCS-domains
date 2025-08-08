@@ -111,13 +111,13 @@ final class Property extends TagWithType implements Factory\StaticMethod
      */
     public function __toString(): string
     {
-        if ($this->description) {
+        if ($this->description !== null) {
             $description = $this->description->render();
         } else {
             $description = '';
         }
 
-        if ($this->variableName) {
+        if ($this->variableName !== null && $this->variableName !== '') {
             $variableName = '$' . $this->variableName;
         } else {
             $variableName = '';

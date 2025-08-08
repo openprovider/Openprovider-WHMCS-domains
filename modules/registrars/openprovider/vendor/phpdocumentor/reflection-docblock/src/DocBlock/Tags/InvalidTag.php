@@ -27,7 +27,7 @@ use function sprintf;
  * we cannot simply throw exceptions at all time because the exceptions will break the creation of a
  * docklock. Just silently ignore the exceptions is not an option because the user as an issue to fix.
  *
- * This tag holds that error information until a using application is able to display it. The object wil just behave
+ * This tag holds that error information until a using application is able to display it. The object will just behave
  * like any normal tag. So the normal application flow will not break.
  */
 final class InvalidTag implements Tag

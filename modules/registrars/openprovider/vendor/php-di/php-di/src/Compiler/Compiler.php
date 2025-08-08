@@ -21,7 +21,7 @@ use DI\Proxy\ProxyFactory;
 use function dirname;
 use function file_put_contents;
 use InvalidArgumentException;
-use Opis\Closure\SerializableClosure;
+use Laravel\SerializableClosure\Support\ReflectionClosure;
 use function rename;
 use function sprintf;
 use function tempnam;
@@ -358,7 +358,7 @@ PHP;
 
     private function createCompilationDirectory(string $directory)
     {
-        if (!is_dir($directory) && !@mkdir($directory, 0777, true)) {
+        if (!is_dir($directory) && !@mkdir($directory, 0777, true) && !is_dir($directory)) {
             throw new InvalidArgumentException(sprintf('Compilation directory does not exist and cannot be created: %s.', $directory));
         }
         if (!is_writable($directory)) {
@@ -401,8 +401,7 @@ PHP;
      */
     private function compileClosure(\Closure $closure) : string
     {
-        $wrapper = new SerializableClosure($closure);
-        $reflector = $wrapper->getReflector();
+        $reflector = new ReflectionClosure($closure);
 
         if ($reflector->getUseVariables()) {
             throw new InvalidDefinition('Cannot compile closures which import variables using the `use` keyword');
