@@ -149,23 +149,67 @@ class ApiV1 implements ApiInterface
         if (isset($args['domain'])) {
             $domainName = $args['domain']['name'] ?? null;
             $extension = $args['domain']['extension'] ?? null;
+            $fullDomain = $domainName . '.' . $extension;
             $title = "{$title} Domain: {$domainName}.{$extension}";
+        }else if(isset($args['id'])) {
+            $domain = Capsule::table('tbldomains')->where('id', $args['id'])->first();
+            if ($domain) {
+                $fullDomain = $domain->domain ?? '';
+                $title = "{$title} Domain: {$fullDomain}";
+            } 
         }
 
         $description = "";
         $index = 1;
         foreach ($warnings as $warn) {
             if ($warn['code'] != 0 && $warn['code'] != 250) {
-                $description .= "Warning {$index}:\nCode: {$warn["code"]} \nDescription: {$warn["desc"]} \nData: {$warn["data"]}\n";
+                $description .= "Warning {$index}:\nDomain: {$fullDomain}\nCode: {$warn["code"]} \nDescription: {$warn["desc"]} \nData: {$warn["data"]}\n ";
                 $index++;
             }
         }
 
         if (!empty($description) && !empty($title)) {
-            $this->addToDo($title, $description);
+            if ($this->shouldUseModuleQueue($cmd)&& isset($args['id'])) {
+                $this->addToModuleQueue(
+                    'openprovider',
+                    'warning',
+                    'domain',
+                    $args['id'] ?? 0,
+                    $description,  
+                );
+            }else {
+                $this->addToDo($title, $description);
+            }
         }
     }
-
+    private function shouldUseModuleQueue(string $cmd): bool
+    {
+    return in_array($cmd, [
+        'restoreDomainRequest',
+        'modifyDomainRequest',
+    ]);
+    }
+    private function addToModuleQueue(
+        string $module,
+        string $moduleAction,
+        string $type,
+        int $domainid,
+        string $error,
+    ): void {
+    
+        Capsule::table('tblmodulequeue')->insert([
+            'service_type'       => $type,
+            'service_id'         => $domainid,
+            'module_name'        => $module,
+            'module_action'      => $moduleAction,
+            'last_attempt'       => date('Y-m-d H:i:s'),
+            'last_attempt_error' => $error,
+            'num_retries'        => 0,
+            'completed'          => 0,
+            'created_at'         => date('Y-m-d H:i:s'),
+            'updated_at'         => date('Y-m-d H:i:s'),
+        ]);
+    }
     /**
      * Create New To-do item
      * @param $title
