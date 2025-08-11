@@ -23,7 +23,7 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
         parent::__construct($fields);
 
         if (isset($fields['fulladdress']) && !is_null($fields['fulladdress'])) {
-            $this->setAddress($fields['fulladdress']);
+            $this->setAddress($fields['fulladdress'], $fields['country'] ?? '');
         }
     }
     
@@ -40,12 +40,13 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
 
             $this->street   =   $convertedAddress;
             $this->number   =   $housenumber;
-        } catch (\Exception $e)
-        {
-            if (strpos($e->getMessage(), ' could not be splitted into street name and house number.') !== false)
+            $this->suffix   =   $splitAddress['additionToAddress1'];
+        } catch (\Exception $e){
+            if (strpos($e->getMessage(), ' could not be splitted into street name and house number.') !== false) {
                 $this->street = $fullAddress;
-            else
+            } else {
                 throw $e;
+            }
         }
     }
 }
