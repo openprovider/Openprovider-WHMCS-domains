@@ -1,26 +1,41 @@
 # Changelog
 
-## v5.9.0-beta
+## v5.9.0
 
 ###### Features and improvements
-- [Experimental] Bash scripts for one step installation and upgrade of the module. Run the installation/upgrade script in 'scripts' folder via SSH or Terminal as hosting user.
+- [Experimental] Bash scripts for one step installation and upgrade of the module. → Run the command via SSH or Terminal as hosting user. 
 - Per domain sync button in WHMCS Admin area.
 - Open new DNS manager in a new tab ( "useNewDnsManagerFeature" => true in advanced-module-configurations.php)
 - Module version and update check button in Openprovider widget.
+- Single function for balance widget and shows available balance.
 - Updated "jquery" (to address: CVE-2019-11358), "phpunit", "phpdocumentor", and "guzzlehttp" packages.
 - Renewal date sync to WHMCS with WHMCS native domain sync. This will avoid mismatch in dates due to renewal offset.
 - Progress indicator for DNSSEC activation and deactivation in WHMCS client area.
-- Support for .fi, .ae and .es (.es ANNEX III registrant Acceptance) additional fields.
+- Support for .fi, .ae, .eu and .es (.es ANNEX III registrant Acceptance) additional fields.
 - Disabled domain locking warning in client area for TLDs that do not support locking - .nl, .eu, etc.
 - Improvement in loading time by switching LocalAPI call to the $CONFIG global.
-- Addon module readme file updated.
 - Nameserver validation for registrations, transfers and nameserver changes from WHMCS.
-- Generate auth code on clicking 'Get EPP Code' button in WHMCS if domain auth code is empty.
+- Updated rest-client-php library
+- Readme files (main and addon module) and WHMCS documentation links in docs files and updated.  
 
 ###### Bugfixes
-- To-Do list item creation for warning code 250.
-- Long error logging entry in Activity Log when module log is empty (WHMCS Addon Module).
-- TLD Import & Pricing Sync with Sandbox credentials.
+- Fixed: Random admin logouts
+- Fixed: To-Do list item creation for warning code 250.
+- Fixed: Long error logging entry in Activity Log when module log is empty (WHMCS Addon Module).
+- Fixed: TLD Import & Pricing Sync with Sandbox credentials.
+- Fixed: ShoppingCartController - Warning in error log when foreach() is passed a null argument.
+
+## v5.8.3
+
+###### Features and improvements
+- Added .es transfer auth code support (ensure to select EPP Code checkbox for .es in Domain Pricing to require an EPP code for incoming transfers of .es domains).
+- Added .dk Terms & Conditions Acceptance checkbox - .DK Registry made changes to the flow of .DK domain names, making it mandatory for domain owners to accept T&C's of the registry before registering a .dk domain name.
+- Generate a new auth code on clicking 'Get EPP Code' button in WHMCS if domain auth code is empty (for supported TLDs).
+
+###### Bugfixes
+- Fixed: Resolved an issue with converting checkbox values to strings.
+- Fixed error accessing admin dashboard - Argument #2 ($array) must be of type array, null given in ../DocBlock/Tags/InvalidTag.php:89
+- Updated the getOrDefault() function and default value of 'require_op_dns_servers' in advanced-module-configurations.php file.
 
 ## v5.8.0
 
