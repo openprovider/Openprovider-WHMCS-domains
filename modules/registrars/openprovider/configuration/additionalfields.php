@@ -7,6 +7,24 @@
  * @copyright Copyright (c) Openprovider 2018
  */
 
+if (!function_exists('op_addConsentField')) {
+    function op_addConsentField(array &$additionaldomainfields, string $tld, bool $required = false): void
+    {
+        $additionaldomainfields[$tld][] = array(
+            "Name"        => "Consent to Publish Domain Information",
+            "LangVar"     => "consentForPublishing",
+            "Type"        => "tickbox",
+            "Description" => '<span style="display:block;margin-top:6px;font-size:12px;line-height:1.45;color:#6b7280;max-width:100%;">'
+                           . 'Your data is redacted by default to protect your privacy. '
+                           . 'If you allow publication, the contact information will be treated as public and non-personal data.'
+                           . '</span>',
+            "Required"    => $required,          
+            "op_location" => "domainAdditionalData",
+            "op_name"     => "consentForPublishing",
+        );
+    }
+}
+
 // .US
 $additionaldomainfields[".us"][] = array(
     "Name" => "Nexus Category",
@@ -37,6 +55,7 @@ $additionaldomainfields[".travel"][] = array(
     "op_location" => "customerExtensionAdditionalData",
     "op_name" => "uin",
 );
+op_addConsentField($additionaldomainfields, ".travel", true);
 
 // .XXX
 $additionaldomainfields[".xxx"][] = array(
@@ -54,6 +73,7 @@ $additionaldomainfields[".xxx"][] = array(
     "op_location" => "customerExtensionAdditionalData",
     "op_name" => "defensive",
 );
+op_addConsentField($additionaldomainfields, ".xxx", true);
 
 // .JOBS
 $additionaldomainfields[".jobs"][] = array(
@@ -100,6 +120,7 @@ $additionaldomainfields[".jobs"][] = array(
     "op_location" => "customerExtensionAdditionalData",
     "op_name" => "hrMember"
 );
+op_addConsentField($additionaldomainfields, ".jobs", true);
 
 // .AERO
 $additionaldomainfields[".aero"][] = array(
@@ -119,6 +140,7 @@ $additionaldomainfields[".aero"][] = array(
     "op_location" => "customerExtensionAdditionalData",
     "op_name" => "ensKey"
 );
+op_addConsentField($additionaldomainfields, ".aero", true);
 
 // .PT
 $additionaldomainfields[".pt"][] = array(
@@ -474,6 +496,8 @@ $additionaldomainfields[".com"][] = array(
     "op_name" => "idnScript"
 );
 
+op_addConsentField($additionaldomainfields, ".com", true);
+
 // .NET
 $additionaldomainfields[".net"] = $additionaldomainfields[".com"];
 
@@ -489,6 +513,8 @@ $additionaldomainfields[".org"][] = array(
     "op_skip" => "None"
 );
 
+op_addConsentField($additionaldomainfields, ".org", true);
+
 // .VOTO
 $additionaldomainfields[".voto"][] = array(
     "Name" => "Accept Voto Registry Policy",
@@ -499,6 +525,8 @@ $additionaldomainfields[".voto"][] = array(
     "op_name" => "votoAcceptance"
 );
 
+op_addConsentField($additionaldomainfields, ".voto", true);
+
 // .VOTE
 $additionaldomainfields[".vote"][] = array(
     "Name" => "Accept Vote Registry Policy",
@@ -508,6 +536,8 @@ $additionaldomainfields[".vote"][] = array(
     "op_location" => "domainAdditionalData",
     "op_name" => "voteAcceptance"
 );
+
+op_addConsentField($additionaldomainfields, ".vote", true);
 
 // .SCOT
 $additionaldomainfields[".scot"][] = array(
@@ -537,6 +567,8 @@ $additionaldomainfields[".scot"][] = array(
     "op_location" => "domainAdditionalData",
     "op_name" => "domainNameVariants"
 );
+
+op_addConsentField($additionaldomainfields, ".scot", true);
 
 // .EUS
 $additionaldomainfields[".eus"] = $additionaldomainfields[".scot"];
@@ -600,6 +632,8 @@ $additionaldomainfields[".democrat"][] = array(
     "op_name" => "idnScript",
     "op_skip" => "None"
 );
+
+op_addConsentField($additionaldomainfields, ".democrat", true);
 
 // .DANCE
 $additionaldomainfields[".dance"] = $additionaldomainfields[".democrat"];
@@ -700,6 +734,8 @@ $additionaldomainfields[".immobilien"][] = array(
     "op_skip" => "None"
 );
 
+op_addConsentField($additionaldomainfields, ".immobilien", true);
+
 // .KAUFEN
 $additionaldomainfields[".kaufen"] = $additionaldomainfields[".immobilien"];
 
@@ -717,6 +753,8 @@ $additionaldomainfields[".nrw"][] = array(
     "op_name" => "idnScript",
     "op_skip" => "None"
 );
+
+op_addConsentField($additionaldomainfields, ".nrw", true);
 
 // .OPR (xn--c1avg)
 $additionaldomainfields[".opr"][] = array(
@@ -766,6 +804,8 @@ $additionaldomainfields[".swiss"][] = array(
     "op_name" => "intendedUse"
 );
 
+op_addConsentField($additionaldomainfields, ".swiss", true);
+
 // .RADIO
 $additionaldomainfields[".radio"][] = array(
     "Name" => "Intended Use",
@@ -775,6 +815,8 @@ $additionaldomainfields[".radio"][] = array(
     "op_location" => "domainAdditionalData",
     "op_name" => "intendedUse"
 );
+
+op_addConsentField($additionaldomainfields, ".radio", true);
 
 // .LAW
 $additionaldomainfields[".law"][] = array(
@@ -830,8 +872,10 @@ $additionaldomainfields[".law"][] = array(
     "op_location" => "domainAdditionalData",
     "op_name" => "lawAcceptance"
 );
-// .FI
 
+op_addConsentField($additionaldomainfields, ".law", true);
+
+// .FI
 $additionaldomainfields[".fi"][] = array(
     "Name" => "Organisation Type",
     "LangVar" => "fiOrgType",
@@ -841,6 +885,7 @@ $additionaldomainfields[".fi"][] = array(
     "op_name" => "orgType"
 );
 
+// .NU
 $additionaldomainfields['.nu'][] = array(
     'Name' => 'Identification Number',
     "Remove" => true,
@@ -868,6 +913,8 @@ $additionaldomainfields[".pro"][] = array(
     "Remove" => true,
 );
 
+op_addConsentField($additionaldomainfields, ".pro", true);
+
 // .TOP
 $additionaldomainfields[".top"][] = array(
     "Name" => "Internationalized domain name Script (only for IDN domains)",
@@ -879,6 +926,8 @@ $additionaldomainfields[".top"][] = array(
     "op_name" => "idnScript",
     "op_skip" => "None"
 );
+
+op_addConsentField($additionaldomainfields, ".top", true);
 
 // .EU
 $additionaldomainfields[".eu"][] = array(
