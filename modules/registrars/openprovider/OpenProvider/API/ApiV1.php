@@ -150,8 +150,8 @@ class ApiV1 implements ApiInterface
             $domainName = $args['domain']['name'] ?? null;
             $extension = $args['domain']['extension'] ?? null;
             $fullDomain = $domainName . '.' . $extension;
-            $title = "{$title} Domain: {$domainName}.{$extension}";
-        }else if(isset($args['id'])) {
+            $title = "{$title} Domain: {$fullDomain}";
+        } else if(isset($args['id'])) {
             $domain = Capsule::table('tbldomains')->where('id', $args['id'])->first();
             if ($domain) {
                 $fullDomain = $domain->domain ?? '';
@@ -163,13 +163,13 @@ class ApiV1 implements ApiInterface
         $index = 1;
         foreach ($warnings as $warn) {
             if ($warn['code'] != 0 && $warn['code'] != 250) {
-                $description .= "Warning {$index}:\nDomain: {$fullDomain}\nCode: {$warn["code"]} \nDescription: {$warn["desc"]} \nData: {$warn["data"]}\n ";
+                $description .= "Warning {$index}:\nDomain: {$fullDomain}\nCode: {$warn["code"]} \nDescription: {$warn["desc"]} \nData: {$warn["data"]}\n";
                 $index++;
             }
         }
 
         if (!empty($description) && !empty($title)) {
-            if ($this->shouldUseModuleQueue($cmd)&& isset($args['id'])) {
+            if ($this->shouldUseModuleQueue($cmd) && isset($args['id'])) {
                 $this->addToModuleQueue(
                     'openprovider',
                     'warning',
@@ -177,18 +177,19 @@ class ApiV1 implements ApiInterface
                     $args['id'] ?? 0,
                     $description,  
                 );
-            }else {
+            } else {
                 $this->addToDo($title, $description);
             }
         }
     }
-    private function shouldUseModuleQueue(string $cmd): bool
-    {
-    return in_array($cmd, [
-        'restoreDomainRequest',
-        'modifyDomainRequest',
-    ]);
+
+    private function shouldUseModuleQueue(string $cmd): bool {
+        return in_array($cmd, [
+            'restoreDomainRequest',
+            'modifyDomainRequest',
+        ]);
     }
+
     private function addToModuleQueue(
         string $module,
         string $moduleAction,
@@ -210,6 +211,7 @@ class ApiV1 implements ApiInterface
             'updated_at'         => date('Y-m-d H:i:s'),
         ]);
     }
+    
     /**
      * Create New To-do item
      * @param $title
