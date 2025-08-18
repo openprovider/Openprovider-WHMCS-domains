@@ -96,4 +96,9 @@ return [
         'priority'  => 1,
         'controller'=> 'ClientAreaFooterController@output',
     ],
+    [
+        'hookPoint' => 'AdminAreaFooterOutput',
+        'priority'  => 1,
+        'controller' => 'AdminAreaFooterController@output',
+    ],
 ];
