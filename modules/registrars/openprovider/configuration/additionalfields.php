@@ -1155,6 +1155,5 @@ $gtldsToAdd = array(
     '.zappos', '.zara', '.zero', '.zip', '.zippo', '.zone', '.zuerich',
 );
 foreach ($gtldsToAdd as $gtld) {
-    // $additionaldomainfields[$gtld] = $additionaldomainfields[".com"];
     op_addConsentField($additionaldomainfields, $gtld, true);
 }
