@@ -82,7 +82,6 @@ class AdminAreaFooterController
                                 <input type="hidden" name="\${inputName}" value="0">
                                 <div style="display:flex;align-items:center;gap:.5rem;">
                                   <input type="checkbox" name="\${inputName}" value="1" \${isChecked ? 'checked' : ''} id="\${checkboxId}"  style="margin-top:0;">
-                                  <span style="font-weight:500;">Consent to Publish Domain Information</span>
                                 </div>
                                 <!-- Mirror field that always posts 0/1 for server-side convenience -->
                                 <input type="hidden" name="op_consent_value" id="\${hiddenMirrorId}" value="\${isChecked ? '1' : '0'}">
