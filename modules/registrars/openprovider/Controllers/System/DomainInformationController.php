@@ -147,7 +147,8 @@ class DomainInformationController extends BaseController
 
         // Cache for Admin hooks on this page render
         $_SESSION['admin_area_op_domain_info'][(int)$params['domainid']] = [
-            'consentForPublishing' => $op_domain['consentForPublishing'] ?? false
+            'consentForPublishing' => $op_domain['consentForPublishing'] ?? false,
+            'opDomainId' => $op_domain['id'] ?? null
         ];
 
         return $result;
