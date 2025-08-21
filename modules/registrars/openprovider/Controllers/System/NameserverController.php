@@ -1,4 +1,5 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use Exception;
@@ -47,7 +48,67 @@ class NameserverController extends BaseController
      */
     function get($params)
     {
-        return [];
+        try {
+            // Resolve domain from 'domain' or 'domainid' (Local API), or from client area object
+            $domainName = $params['domain'] ?? '';
+            if (!$domainName && !empty($params['domainid'])) {
+                $domainName = Capsule::table('tbldomains')
+                    ->where('id', (int)$params['domainid'])
+                    ->value('domain');
+            }
+            if (!$domainName && isset($params['original']['domainObj'])) {
+                $domainName = $params['original']['domainObj']->getDomain();
+            }
+            if (!$domainName) {
+                return ['error' => 'Missing domain identifier (domainid/domain).'];
+            }
+
+            // Split SLD/TLD
+            $parts = explode('.', $domainName);
+            if (count($parts) < 2) {
+                return ['error' => 'Invalid domain format.'];
+            }
+            $tld = array_pop($parts);
+            $sld = implode('.', $parts);
+
+            // Load domain DTO and call REST via the injected ApiHelper instance (NOT static)
+            $domain = $this->domain;
+            $domain->load(['name' => $sld, 'extension' => $tld]);
+
+            $op = $this->apiHelper->getDomain($domain); // <-- instance call
+
+            $items = $op['nameServers'] ?? [];
+            if (!is_array($items)) {
+                return ['error' => 'Registrar returned no nameservers array.'];
+            }
+
+            // Order by seqNr and build ns list (prefer hostname, fallback IP)
+            usort($items, static fn($a, $b) => ($a['seqNr'] ?? 0) <=> ($b['seqNr'] ?? 0));
+            $ns = [];
+            foreach ($items as $it) {
+                $host = $it['name'] ?? null;
+                $ip   = $it['ip']   ?? null;
+                if ($host) {
+                    $ns[] = $host;
+                } elseif ($ip) {
+                    $ns[] = $ip;
+                }
+            }
+            $ns = array_values(array_unique(array_filter($ns)));
+
+            if (count($ns) < 2) {
+                $status = $op['status'] ?? '';
+                return ['error' => 'Registrar returned fewer than 2 nameservers.' . ($status ? " Status: {$status}" : '')];
+            }
+
+            $output = ['result' => 'success'];
+            foreach (range(1, 5) as $i) {
+                $output["ns{$i}"] = $ns[$i - 1] ?? '';
+            }
+            return $output;
+        } catch (\Throwable $e) {
+            return ['error' => 'Registrar Error: ' . $e->getMessage()];
+        }
     }
 
     /**
@@ -65,7 +126,7 @@ class NameserverController extends BaseController
         ));
 
         try {
-            $nameServers = \OpenProvider\API\APITools::createNameserversArray($params,$this->apiHelper);
+            $nameServers = \OpenProvider\API\APITools::createNameserversArray($params, $this->apiHelper);
             $this->apiHelper->saveDomainNameservers($domain, $nameServers);
         } catch (Exception $e) {
             return [
@@ -98,8 +159,7 @@ class NameserverController extends BaseController
         $nameServer->name   =   $params['nameserver'];
         $nameServer->ip     =   $params['ipaddress'];
 
-        if (($nameServer->name == '.' . $params['sld'] . '.' . $params['tld']) || !$nameServer->ip)
-        {
+        if (($nameServer->name == '.' . $params['sld'] . '.' . $params['tld']) || !$nameServer->ip) {
             return [
                 'error' => 'You must enter all required fields'
             ];
@@ -131,34 +191,27 @@ class NameserverController extends BaseController
         $currentIp  =   $params['currentipaddress'];
 
         // check if not empty
-        if (($params['nameserver'] == '.' . $params['sld'] . '.' . $params['tld']) || !$newIp || !$currentIp)
-        {
+        if (($params['nameserver'] == '.' . $params['sld'] . '.' . $params['tld']) || !$newIp || !$currentIp) {
             return array(
                 'error' => 'You must enter all required fields',
             );
         }
 
         // check if the addresses are different
-        if ($newIp == $currentIp)
-        {
-            return array
-            (
+        if ($newIp == $currentIp) {
+            return array(
                 'error' => 'The Current IP Address is the same as the New IP Address',
             );
         }
 
-        try
-        {
+        try {
             $nameServer = new \OpenProvider\API\DomainNameServer();
             $nameServer->name = $params['nameserver'];
             $nameServer->ip = $newIp;
 
             $this->apiHelper->updateNameserver($nameServer, $currentIp);
-        }
-        catch (\Exception $e)
-        {
-            return array
-            (
+        } catch (\Exception $e) {
+            return array(
                 'error' => $e->getMessage(),
             );
         }
@@ -179,8 +232,7 @@ class NameserverController extends BaseController
 
         // check if not empty
         if ($params['nameserver'] == '.' . $params['sld'] . '.' . $params['tld']) {
-            return array
-            (
+            return array(
                 'error' => 'You must enter all required fields',
             );
         }
