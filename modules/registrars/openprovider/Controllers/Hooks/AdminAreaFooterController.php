@@ -40,11 +40,13 @@ class AdminAreaFooterController
 
     $checked = $cached['consentForPublishing'] ? 'checked' : '';
     $opDomainId  = (string)($cached['opDomainId'] ?? '');
+    $isWppEnabled = (bool)($cached['wppEnabled'] ?? false);
 
     $checkedJson = json_encode($checked, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
     $opDomainIdJson = json_encode($opDomainId, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+    $isWppEnabledJson = json_encode($isWppEnabled, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
 
-        return <<<HTML
+    $consentScript =  <<<HTML
                   <script>
                     (function() {
                       function inject() {
@@ -59,6 +61,7 @@ class AdminAreaFooterController
                         // PHP-provided checked state
                         var isChecked = {$checkedJson} === 'checked';
                         var opDomainId = {$opDomainIdJson};
+                        var wppEnabled  = {$isWppEnabledJson} === true;
 
                         var \$area = \$row.find('td.fieldarea');
                         if (!\$area.length) return false;
@@ -90,7 +93,7 @@ class AdminAreaFooterController
                                 <div role="note" aria-label="Privacy notice"
                                     style="margin-top:.25rem;padding:.5rem .75rem;border-left:4px solid #d9534f;background:#f9f2f4;">
                                   <div style="font-size:12px;line-height:1.45;">
-                                    Your data is <strong>redacted by default</strong> to protect your privacy.<br>
+                                    Your personal information is <strong>redacted by default</strong> to protect your privacy.<br>
                                     If you manually change this setting to allow publication, you understand and agree
                                     that the contact information will be treated as <strong>public and non-personal data</strong>.
                                   </div>
@@ -106,8 +109,21 @@ class AdminAreaFooterController
                         var \$box    = jQuery('#' + checkboxId);
                         var \$hidden = jQuery('#' + hiddenMirrorId);
                         function syncMirror(){ \$hidden.val(\$box.is(':checked') ? '1' : '0'); }
-                        syncMirror();
-                        \$box.on('change', syncMirror);
+                        
+                        function handleToggle(){
+                          if (\$box.is(':checked') && wppEnabled) {
+                            OPWppModal.show();           // <-- styled modal from helper
+                            \$box.prop('checked', false);
+                            \$hidden.val('0');
+                            return;
+                          }
+                          syncMirror();
+                        }
+
+                      // initial sync
+                      syncMirror();
+                      // on change
+                      \$box.on('change', handleToggle);
 
                         // Mark as injected
                         \$row.data('op-consent-injected', true);
@@ -139,5 +155,56 @@ class AdminAreaFooterController
                     })();
                   </script>
                 HTML;
-    }
+
+    return $this->renderWppModal() . $this->renderWppModalScript() . $consentScript;
+  }
+
+  private function renderWppModal(): string
+  {
+    return <<<HTML
+<div id="op-wpp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:8px;max-width:520px;width:92%;padding:20px 22px;box-shadow:0 10px 30px rgba(0,0,0,.25);font-family:inherit;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <div style="font-size:20px;color:#d9534f;">&#9432;</div>
+      <h3 style="margin:0;font-size:18px;color:#d9534f;">WPP Enabled</h3>
+    </div>
+    <div style="font-size:14px;line-height:1.55;color:#333;">
+      WHOIS Privacy Protection (WPP) is currently enabled for this domain.<br>
+      To proceed with publishing personal information, please disable WPP first.
+    </div>
+    <div style="margin-top:16px;text-align:right;">
+      <button id="op-wpp-modal-close" type="button"
+              style="background:#28a745;color:#fff;border:0;padding:8px 14px;border-radius:4px;cursor:pointer;">
+        OK
+      </button>
+    </div>
+  </div>
+</div>
+HTML;
+  }
+
+  // 2) Small helpers to control the modal (can be reused)
+  private function renderWppModalScript(): string
+  {
+    return <<<HTML
+                  <script>
+                  window.OPWppModal = (function(){
+                    var modalId = 'op-wpp-modal';
+                    function el(){ return document.getElementById(modalId); }
+                    function show(){
+                      var m = el(); if(!m) return;
+                      m.style.display = 'flex';
+                    }
+                    function hide(){
+                      var m = el(); if(!m) return;
+                      m.style.display = 'none';
+                    }
+                    document.addEventListener('click', function(e){
+                      if (e.target && e.target.id === 'op-wpp-modal-close') hide();
+                    });
+                    return { show: show, hide: hide };
+                  })();
+                  </script>
+                HTML;
+  }
 }
