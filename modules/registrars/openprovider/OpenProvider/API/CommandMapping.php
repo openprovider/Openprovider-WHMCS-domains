@@ -132,6 +132,10 @@ class CommandMapping
         ],
 
         // Nameservers
+        'getNameservers' => [
+            self::COMMAND_MAP_METHOD => 'get',
+            self::COMMAND_MAP_CLASS  => \OpenProvider\WhmcsRegistrar\Controllers\System\NameserverController::class,
+        ],
         'searchNsRequest' => [
             self::COMMAND_MAP_METHOD => 'getNameserver',
             self::COMMAND_MAP_CLASS => NameserverServiceApi::class,
