@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.8.4
+
+###### Features and improvements
+* Added a **Consent to Publish Domain Information** checkbox for gTLDs in domain registration, transfer, and admin domain information modification pages – gTLDs now require explicit consent to publish contact details.
+
 ## v5.8.3
 
 ###### Features and improvements
