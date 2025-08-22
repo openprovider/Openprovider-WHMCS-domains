@@ -49,65 +49,64 @@ class NameserverController extends BaseController
     function get($params)
     {
         try {
-            // Resolve domain from 'domain' or 'domainid' (Local API), or from client area object
+            // Resolve domain from 'domain' or 'domainid' (Local API) or client area object
             $domainName = $params['domain'] ?? '';
             if (!$domainName && !empty($params['domainid'])) {
                 $domainName = Capsule::table('tbldomains')
-                    ->where('id', (int)$params['domainid'])
+                    ->where('id', (int) $params['domainid'])
                     ->value('domain');
             }
             if (!$domainName && isset($params['original']['domainObj'])) {
                 $domainName = $params['original']['domainObj']->getDomain();
             }
             if (!$domainName) {
-                return ['error' => 'Missing domain identifier (domainid/domain).'];
+                return ['result' => 'error', 'message' => 'Missing domain identifier (domainid/domain).'];
             }
 
-            // Split SLD/TLD
-            $parts = explode('.', $domainName);
-            if (count($parts) < 2) {
-                return ['error' => 'Invalid domain format.'];
+            if (isset($params['original']['domainObj'])) {
+                $sld = $params['original']['domainObj']->getSecondLevel();
+                $tld = $params['original']['domainObj']->getTopLevel();
             }
-            $tld = array_pop($parts);
-            $sld = implode('.', $parts);
 
-            // Load domain DTO and call REST via the injected ApiHelper instance (NOT static)
+            // Load DTO and fetch from REST via ApiHelper instance
             $domain = $this->domain;
             $domain->load(['name' => $sld, 'extension' => $tld]);
 
-            $op = $this->apiHelper->getDomain($domain); // <-- instance call
+            $op = $this->apiHelper->getDomain($domain);
 
+            // Extract and normalize nameservers
             $items = $op['nameServers'] ?? [];
             if (!is_array($items)) {
-                return ['error' => 'Registrar returned no nameservers array.'];
+                return ['result' => 'error', 'message' => 'Registrar returned no nameservers array.'];
             }
 
-            // Order by seqNr and build ns list (prefer hostname, fallback IP)
-            usort($items, static fn($a, $b) => ($a['seqNr'] ?? 0) <=> ($b['seqNr'] ?? 0));
-            $ns = [];
+            // Sort by seqNr; push missing seqNr to the end
+            usort($items, static fn($a, $b) => ($a['seqNr'] ?? PHP_INT_MAX) <=> ($b['seqNr'] ?? PHP_INT_MAX));
+
+            // Prefer hostname; fallback to IP; dedupe and drop empties
+            $nsList = [];
             foreach ($items as $it) {
-                $host = $it['name'] ?? null;
-                $ip   = $it['ip']   ?? null;
-                if ($host) {
-                    $ns[] = $host;
-                } elseif ($ip) {
-                    $ns[] = $ip;
+                $val = $it['name'] ?? ($it['ip'] ?? null);
+                if ($val) {
+                    $nsList[] = $val;
                 }
             }
-            $ns = array_values(array_unique(array_filter($ns)));
+            $nsList = array_values(array_unique($nsList));
 
-            if (count($ns) < 2) {
+            // 5) Enforce minimum 2
+            if (count($nsList) < 2) {
                 $status = $op['status'] ?? '';
-                return ['error' => 'Registrar returned fewer than 2 nameservers.' . ($status ? " Status: {$status}" : '')];
+                return ['result' => 'error', 'message' => 'Registrar returned fewer than 2 nameservers.' . ($status ? " Status: {$status}" : '')];
             }
 
-            $output = ['result' => 'success'];
-            foreach (range(1, 5) as $i) {
-                $output["ns{$i}"] = $ns[$i - 1] ?? '';
+            $resp = ['result' => 'success'];
+            $limit = min(5, count($nsList));
+            for ($i = 0; $i < $limit; $i++) {
+                $resp['ns' . ($i + 1)] = $nsList[$i];
             }
-            return $output;
+            return $resp;
         } catch (\Throwable $e) {
-            return ['error' => 'Registrar Error: ' . $e->getMessage()];
+            return ['result' => 'error', 'message' => 'Registrar Error: ' . $e->getMessage()];
         }
     }
 
