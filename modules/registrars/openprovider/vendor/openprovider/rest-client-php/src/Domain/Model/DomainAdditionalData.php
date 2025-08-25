@@ -65,6 +65,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'auth_code' => 'string',
         'bank_acceptance' => 'string',
         'company_registration_number' => 'string',
+        'consent_for_publishing' => 'string',
         'coop_acceptance' => 'string',
         'customer_uin' => 'string',
         'customer_uin_doc_type' => '\Openprovider\Api\Rest\Client\Domain\Model\DomainUINDocumentType',
@@ -111,6 +112,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'auth_code' => null,
         'bank_acceptance' => null,
         'company_registration_number' => null,
+        'consent_for_publishing' => null,
         'coop_acceptance' => null,
         'customer_uin' => null,
         'customer_uin_doc_type' => null,
@@ -178,6 +180,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'auth_code' => 'auth_code',
         'bank_acceptance' => 'bank_acceptance',
         'company_registration_number' => 'company_registration_number',
+        'consent_for_publishing' => 'consent_for_publishing',
         'coop_acceptance' => 'coop_acceptance',
         'customer_uin' => 'customer_uin',
         'customer_uin_doc_type' => 'customer_uin_doc_type',
@@ -224,6 +227,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'auth_code' => 'setAuthCode',
         'bank_acceptance' => 'setBankAcceptance',
         'company_registration_number' => 'setCompanyRegistrationNumber',
+        'consent_for_publishing' => 'setConsentForPublishing',
         'coop_acceptance' => 'setCoopAcceptance',
         'customer_uin' => 'setCustomerUin',
         'customer_uin_doc_type' => 'setCustomerUinDocType',
@@ -270,6 +274,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'auth_code' => 'getAuthCode',
         'bank_acceptance' => 'getBankAcceptance',
         'company_registration_number' => 'getCompanyRegistrationNumber',
+        'consent_for_publishing' => 'getConsentForPublishing',
         'coop_acceptance' => 'getCoopAcceptance',
         'customer_uin' => 'getCustomerUin',
         'customer_uin_doc_type' => 'getCustomerUinDocType',
@@ -371,6 +376,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         $this->container['bank_acceptance'] = isset($data['bank_acceptance']) ? $data['bank_acceptance'] : null;
         $this->container['company_registration_number'] = isset($data['company_registration_number']) ? $data['company_registration_number'] : null;
         $this->container['coop_acceptance'] = isset($data['coop_acceptance']) ? $data['coop_acceptance'] : null;
+        $this->container['consent_for_publishing'] = isset($data['consent_for_publishing']) ? $data['consent_for_publishing'] : null;
         $this->container['customer_uin'] = isset($data['customer_uin']) ? $data['customer_uin'] : null;
         $this->container['customer_uin_doc_type'] = isset($data['customer_uin_doc_type']) ? $data['customer_uin_doc_type'] : null;
         $this->container['domain_name_variants'] = isset($data['domain_name_variants']) ? $data['domain_name_variants'] : null;
@@ -591,6 +597,30 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
     public function setCompanyRegistrationNumber($company_registration_number)
     {
         $this->container['company_registration_number'] = $company_registration_number;
+
+        return $this;
+    }
+
+    /**
+     * Gets consent_for_publishing
+     *
+     * @return string|null
+     */
+    public function getConsentForPublishing()
+    {
+        return $this->container['consent_for_publishing'];
+    }
+
+    /**
+     * Sets consent_for_publishing
+     *
+     * @param string|null $consent_for_publishing consent_for_publishing
+     *
+     * @return $this
+     */
+    public function setConsentForPublishing($consent_for_publishing)
+    {
+        $this->container['consent_for_publishing'] = $consent_for_publishing;
 
         return $this;
     }
