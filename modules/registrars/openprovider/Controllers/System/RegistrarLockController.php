@@ -81,6 +81,7 @@ class RegistrarLockController extends BaseController
             $this->apiHelper->updateDomain($domainOp['id'], [
                 'isLocked' => $params["lockenabled"] == "locked",
             ]);
+            $values["success"] = true;
         } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
