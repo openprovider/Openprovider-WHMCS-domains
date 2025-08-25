@@ -65,9 +65,7 @@ class AdminClientDomainsTabController
      */
     protected function updateConsentForPublishing(int $domainId, array $requestVars = [])
     {
-        $consentForPublishing = $requestVars['op_consent_value'] === '1';
-        // need to convert consentForPublishing as 1 or 0
-        $consentForPublishing = $consentForPublishing ? 1 : 0;
+        $consentForPublishing = $requestVars['op_consent_value'] ?? '0'; // default to '0' if not set consentForPublishing value should be a string
 
         $opDomainId = $_REQUEST['op_domain_id'] ?? '';
 
