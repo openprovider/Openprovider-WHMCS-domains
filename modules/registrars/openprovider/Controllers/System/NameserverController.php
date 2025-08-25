@@ -46,7 +46,7 @@ class NameserverController extends BaseController
      * @param $params
      * @return array
      */
-    function get($params)
+    public function get($params)
     {
         try {
             // Resolve domain from 'domain' or 'domainid' (Local API) or client area object
@@ -60,7 +60,7 @@ class NameserverController extends BaseController
                 $domainName = $params['original']['domainObj']->getDomain();
             }
             if (!$domainName) {
-                return ['result' => 'error', 'message' => 'Missing domain identifier (domainid/domain).'];
+                return ['error' => 'Missing domain identifier (domainid/domain).'];
             }
 
             if (isset($params['original']['domainObj'])) {
@@ -77,11 +77,11 @@ class NameserverController extends BaseController
             // Extract and normalize nameservers
             $items = $op['nameServers'] ?? [];
             if (!is_array($items)) {
-                return ['result' => 'error', 'message' => 'Registrar returned no nameservers array.'];
+                return ['error' => 'Registrar returned no nameservers array.'];
             }
 
             // Sort by seqNr; push missing seqNr to the end
-            usort($items, static fn($a, $b) => ($a['seqNr'] ?? PHP_INT_MAX) <=> ($b['seqNr'] ?? PHP_INT_MAX));
+            usort($items, static fn ($a, $b) => ($a['seqNr'] ?? PHP_INT_MAX) <=> ($b['seqNr'] ?? PHP_INT_MAX));
 
             // Prefer hostname; fallback to IP; dedupe and drop empties
             $nsList = [];
@@ -96,7 +96,7 @@ class NameserverController extends BaseController
             // 5) Enforce minimum 2
             if (count($nsList) < 2) {
                 $status = $op['status'] ?? '';
-                return ['result' => 'error', 'message' => 'Registrar returned fewer than 2 nameservers.' . ($status ? " Status: {$status}" : '')];
+                return ['error' => 'Registrar returned fewer than 2 nameservers.' . ($status ? " Status: {$status}" : '')];
             }
 
             $resp = ['result' => 'success'];
@@ -106,7 +106,7 @@ class NameserverController extends BaseController
             }
             return $resp;
         } catch (\Throwable $e) {
-            return ['result' => 'error', 'message' => 'Registrar Error: ' . $e->getMessage()];
+            return ['error' => 'Registrar Error:' . $e->getMessage()];
         }
     }
 
