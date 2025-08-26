@@ -18,7 +18,7 @@ if (!function_exists('op_addConsentField')) {
                            . 'Your data is redacted by default to protect your privacy. '
                            . 'If you allow publication, the contact information will be treated as public and non-personal data.'
                            . '</span>',
-            "Required"    => $required,          
+            "Required"    => $required,
             "op_location" => "domainAdditionalData",
             "op_name"     => "consentForPublishing",
         );
@@ -940,7 +940,7 @@ $gtldsToAdd = array(
     '.archi','.army','.arpa','.art','.arte','.asda','.asia','.associates','.athleta','.attorney',
     '.auction','.audi','.audible','.audio','.auspost','.author','.auto','.autos','.avianca','.aws',
     '.axa','.azure',
-    
+
     // B
     '.baby','.baidu','.banamex','.bananarepublic','.band','.bank','.bar','.barcelona',
     '.barclaycard','.barclays','.barefoot','.bargains','.baseball','.basketball','.bauhaus',
@@ -951,7 +951,7 @@ $gtldsToAdd = array(
     '.bond','.boo','.book','.booking','.boots','.bosch','.bostik','.boston','.bot',
     '.boutique','.box','.bradesco','.bridgestone','.broadway','.broker','.brother',
     '.brussels','.budapest','.bugatti','.build','.builders','.business','.buy','.buzz','.bzh',
-    
+
     // C
     '.cab', '.cafe', '.cal', '.call', '.calvinklein', '.cam', '.camera', '.camp', '.cancerresearch', '.canon',
     '.capetown', '.capital', '.capitalone', '.car', '.caravan', '.cards', '.care', '.career', '.careers', '.cars',
@@ -964,20 +964,20 @@ $gtldsToAdd = array(
     '.comsec', '.condos', '.construction', '.consulting', '.contact', '.contractors', '.cooking', '.cookingchannel', '.cool', '.coop',
     '.corsica', '.country', '.coupon', '.coupons', '.courses', '.cpa', '.credit', '.creditcard', '.creditunion', '.cricket',
     '.crown', '.crs', '.cruise', '.cruises', '.csc', '.cuisinella', '.cymru', '.cyou',
-    
+
     // D
     '.dabur', '.dad', '.data', '.date', '.dating', '.datsun', '.day', '.dclk', '.dds', '.degree',
-    '.deal', '.dealer', '.deals', '.delivery', '.dell', '.deloitte', '.delta', '.dental', '.dentist', 
+    '.deal', '.dealer', '.deals', '.delivery', '.dell', '.deloitte', '.delta', '.dental', '.dentist',
     '.democrat','.desi', '.design', '.dev', '.dhl', '.diamonds', '.diet', '.digital', '.direct', '.directory',
     '.discount', '.discover', '.dish', '.diy', '.dnp', '.docs', '.doctor', '.dodge', '.dog', '.doha',
     '.domains', '.doosan', '.dot', '.download', '.drive', '.dtv', '.dubai', '.duck', '.dunlop', '.duns',
     '.dupont', '.durban', '.dvag', '.dvr',
-    
+
     // E
     '.earth', '.eat', '.eco', '.edeka', '.edu', '.education', '.email', '.emerck', '.energy', '.engineer',
     '.engineering', '.enterprises', '.epost', '.epson', '.equipment', '.ericsson', '.erni', '.esq', '.estate', '.esurance',
     '.etisalat', '.eurovision', '.eus', '.events', '.everbank', '.exchange', '.expert', '.exposed', '.express', '.extraspace',
-    
+
     // F
     '.fage', '.fail', '.fairwinds', '.faith', '.family', '.fan', '.fans', '.farm', '.farmers', '.fashion',
     '.fast', '.fedex', '.feedback', '.ferrari', '.ferrero', '.fiat', '.fidelity', '.fido', '.film', '.final',
@@ -1125,5 +1125,5 @@ $gtldsToAdd = array(
     '.zappos', '.zara', '.zero', '.zip', '.zippo', '.zone', '.zuerich',
 );
 foreach ($gtldsToAdd as $gtld) {
-    op_addConsentField($additionaldomainfields, $gtld, true);
+    op_addConsentField($additionaldomainfields, $gtld, false);
 }
