@@ -68,7 +68,7 @@ class RenewDomainController extends BaseController
             try {
                 if ($domainOp['hardQuarantineExpiryDate'] && (new Carbon($domainOp['hardQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
                     $tld    = $params['original']['domainObj']->getTopLevel();
-                    $policy = $this->apiHelper->getExtensionPolicy($tld);
+                    $policy = $this->apiHelper->getExtensionRestorePolicy($tld);
 
                     if ($this->isZeroFeeRestoreAllowed($policy)) {
                         $this->apiHelper->restoreDomain($domainOp['id']);
@@ -95,7 +95,7 @@ class RenewDomainController extends BaseController
                     $this->apiHelper->restoreDomain($domainOp['id']);
                 } elseif ($domainOp['hardQuarantineExpiryDate'] && (new Carbon($domainOp['hardQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
                     $tld    = $params['original']['domainObj']->getTopLevel();
-                    $policy = $this->apiHelper->getExtensionPolicy($tld);
+                    $policy = $this->apiHelper->getExtensionRestorePolicy($tld);
 
                     if ($this->isZeroFeeRestoreAllowed($policy)) {
                         $this->apiHelper->restoreDomain($domainOp['id']);
@@ -121,7 +121,7 @@ class RenewDomainController extends BaseController
 
     private function isZeroFeeRestoreAllowed(array $policy): bool
     {
-        if (empty($policy['restore_allowed'])) {
+        if (!($policy['restore_allowed'])) {
             return false;
         }
         if (!array_key_exists('restore_fee', $policy) || $policy['restore_fee'] === null) {

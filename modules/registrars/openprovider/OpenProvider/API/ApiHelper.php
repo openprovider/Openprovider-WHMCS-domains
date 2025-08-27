@@ -584,7 +584,7 @@ class ApiHelper
 
         return $arr;
     }
-    public function getExtensionPolicy(string $tld): array
+    public function getExtensionRestorePolicy(string $tld): array
     {
         $tld = ltrim(strtolower($tld), '.');
 
