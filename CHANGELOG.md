@@ -2,8 +2,8 @@
 
 ## v5.8.4
 
-###### Features and improvements
-* Added a **Consent to Publish Domain Contact Data** option for gTLDs in domain registration, transfer, and admin domain information pages - explicit consent is now required before publishing private contact details to registrar WHOIS/RDAP.
+### Features and improvements
+* Added a **Consent to Publish Domain Contact Data** option for gTLDs in domain registration, transfer, and and domain modification (WHMCS Admin Area) pages - Personal data is redacted by default to protect registrants privacy according to GDPR. Explicit consent is now required to publish private contact details publicly to registrar WHOIS/RDAP.
 
 ## v5.8.3
 
