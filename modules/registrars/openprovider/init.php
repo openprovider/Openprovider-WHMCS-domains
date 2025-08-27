@@ -1,4 +1,5 @@
 <?php
+
 // Require any libraries needed for the module to function.
 
 use Carbon\Carbon;
@@ -23,9 +24,16 @@ require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/classes/idna_convert.class.php';
 
-const SESSION_EXPIRATION_LIFE_TIME = 300;
-const AUTH_TOKEN_EXPIRATION_LIFE_TIME = 1;
+$expirationTimes = [
+    'SESSION_EXPIRATION_LIFE_TIME'    => 300,
+    'AUTH_TOKEN_EXPIRATION_LIFE_TIME' => 1,
+];
 
+foreach ($expirationTimes as $name => $value) {
+    if (!defined($name)) {
+        define($name, $value);
+    }
+}
 /**
  * Configure and launch the system
  */
@@ -132,7 +140,6 @@ function openprovider_bind_required_classes($launcher)
                     $client->getConfiguration()->setToken($token);
                 }
             }
-            
         }
 
         return $client;
