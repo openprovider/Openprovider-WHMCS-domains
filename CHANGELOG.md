@@ -3,7 +3,7 @@
 ## v5.8.4
 
 ###### Features and improvements
-* Added a **Consent to Publish Domain Information** checkbox for gTLDs in domain registration, transfer, and admin domain information modification pages – gTLDs now require explicit consent to publish contact details.
+* Added a **Consent to Publish Domain Contact Data** option for gTLDs in domain registration, transfer, and admin domain information pages - explicit consent is now required before publishing private contact details to registrar WHOIS/RDAP.
 
 ## v5.8.3
 
