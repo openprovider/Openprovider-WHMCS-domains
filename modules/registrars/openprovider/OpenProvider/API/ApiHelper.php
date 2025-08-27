@@ -46,7 +46,6 @@ class ApiHelper
         if (!is_null($domain['results'][0])) {
             return $domain['results'][0];
         }
-        
         throw new \Exception('Domain does not exist in Openprovider!');
     }
 
@@ -233,10 +232,11 @@ class ApiHelper
     public function toggleAutorenewDomain(DomainModel $domainModel, array $domainOp)
     {
         // Check if we should auto renew or use the default settings
-        if ($domainModel->donotrenew == 0)
+        if ($domainModel->donotrenew == 0) {
             $auto_renew = 'default';
-        else
+        } else {
             $auto_renew = 'off';
+        }
 
         // Check if openprovider has the same data
         if ($domainModel['autorenew'] != $auto_renew) {
@@ -582,5 +582,81 @@ class ApiHelper
         }
 
         return $arr;
+    }
+    public function getExtensionPolicy(string $tld): array
+    {
+        $tld = ltrim(strtolower($tld), '.');
+
+        try {
+            $res  = $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld]);
+
+            $data = $this->buildResponse($res);
+            $row  = $data['tld'] ?? $data;
+            return $this->mapTldPolicy($row, $tld);
+        } catch (\Exception $e) {
+            return $this->handleTldPolicyError($tld, $e);
+        }
+
+        $list = $this->buildResponse(
+            $this->apiClient->call('searchExtensionRequest', ['name' => $tld])
+        );
+
+        $items = [];
+        if (!empty($list['tlds']) && is_array($list['tlds'])) {
+            $items = $list['tlds'];
+        } elseif (!empty($list['results']) && is_array($list['results'])) {
+            $items = $list['results'];
+        }
+
+        foreach ($items as $ext) {
+            $name = strtolower(ltrim($ext['name'] ?? '', '.'));
+            if ($name === $tld) {
+                return $this->mapTldPolicy($ext, $tld);
+            }
+        }
+
+        throw new \Exception("TLD policy not found for .{$tld}");
+    }
+    /**
+     * @param array $row
+     * @param string $tld
+     * @return array
+     */
+    private function mapTldPolicy(array $row, string $tld): array
+    {
+        $restoreAllowed = (bool)(
+            $row['restoreAllowed'] ?? $row['restore_allowed']
+        );
+        $restoreFee = null;
+
+        foreach (['restoreFee','restore_fee','redemptionFee','redemption_fee'] as $k) {
+            if (array_key_exists($k, $row)) {
+                $restoreFee = (float)$row[$k];
+                break;
+            }
+        }
+
+        if ($restoreFee === null && !empty($row['price']) && is_array($row['price'])) {
+            foreach (['restore','redemption'] as $k) {
+                if (isset($row['price'][$k])) {
+                    $restoreFee = (float)$row['price'][$k];
+                    break;
+                }
+            }
+        }
+        if ($restoreFee === null && !empty($row['prices']) && is_array($row['prices'])) {
+            foreach (['restore','redemption'] as $k) {
+                if (isset($row['prices'][$k])) {
+                    $restoreFee = (float)$row['prices'][$k];
+                    break;
+                }
+            }
+        }
+
+        return [
+            'tld'             => $tld,
+            'restore_allowed' => $restoreAllowed,
+            'restore_fee'     => $restoreFee,
+        ];
     }
 }
