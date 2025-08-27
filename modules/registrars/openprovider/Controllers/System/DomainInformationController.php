@@ -77,7 +77,7 @@ class DomainInformationController extends BaseController
 
         // Get the data
         try {
-            $op_domain = $this->apiHelper->getDomain($domain);
+            $op_domain = $this->apiHelper->getDomain($domain, ['withAdditionalData' => true]);
         } catch (\Exception $e) {
             return [
                 'error' => $e->getMessage(),
@@ -144,6 +144,13 @@ class DomainInformationController extends BaseController
         if ($verification['domain_contact_change_expiry_date']) {
             $result->setDomainContactChangeExpiryDate(Carbon::createFromFormat('Y-m-d H:i:s', $verification['domain_contact_change_expiry_date']));
         }
+
+        // Cache for Admin hooks on this page render
+        $_SESSION['admin_area_op_domain_info'][(int)$params['domainid']] = [
+            'consentForPublishing' => $op_domain['additionalData']['consentForPublishing'] ?? false,
+            'opDomainId' => $op_domain['id'] ?? null,
+            'wppEnabled' => $op_domain['isPrivateWhoisEnabled'] ?? false,
+        ];
 
         return $result;
     }
