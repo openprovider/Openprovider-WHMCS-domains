@@ -16,6 +16,7 @@ class ApiHelper
      * @var Serializer
      */
     private $serializer;
+    private const RESTORE_FORBIDDEN_TLDS = ['tk','ph','com.ph','net.ph','org.ph'];
 
     /**
      * ApiManager constructor.
@@ -588,34 +589,14 @@ class ApiHelper
         $tld = ltrim(strtolower($tld), '.');
 
         try {
-            $res  = $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld]);
+            $res  = $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld,'with_price' => true,'with_level_prices' => false]);
 
             $data = $this->buildResponse($res);
             $row  = $data['tld'] ?? $data;
             return $this->mapTldPolicy($row, $tld);
         } catch (\Exception $e) {
-            return $this->handleTldPolicyError($tld, $e);
+            return "TLD policy not found for .{$tld}: " . $e->getMessage();
         }
-
-        $list = $this->buildResponse(
-            $this->apiClient->call('searchExtensionRequest', ['name' => $tld])
-        );
-
-        $items = [];
-        if (!empty($list['tlds']) && is_array($list['tlds'])) {
-            $items = $list['tlds'];
-        } elseif (!empty($list['results']) && is_array($list['results'])) {
-            $items = $list['results'];
-        }
-
-        foreach ($items as $ext) {
-            $name = strtolower(ltrim($ext['name'] ?? '', '.'));
-            if ($name === $tld) {
-                return $this->mapTldPolicy($ext, $tld);
-            }
-        }
-
-        throw new \Exception("TLD policy not found for .{$tld}");
     }
     /**
      * @param array $row
@@ -624,34 +605,9 @@ class ApiHelper
      */
     private function mapTldPolicy(array $row, string $tld): array
     {
-        $restoreAllowed = (bool)(
-            $row['restoreAllowed'] ?? $row['restore_allowed']
-        );
-        $restoreFee = null;
-
-        foreach (['restoreFee','restore_fee','redemptionFee','redemption_fee'] as $k) {
-            if (array_key_exists($k, $row)) {
-                $restoreFee = (float)$row[$k];
-                break;
-            }
-        }
-
-        if ($restoreFee === null && !empty($row['price']) && is_array($row['price'])) {
-            foreach (['restore','redemption'] as $k) {
-                if (isset($row['price'][$k])) {
-                    $restoreFee = (float)$row['price'][$k];
-                    break;
-                }
-            }
-        }
-        if ($restoreFee === null && !empty($row['prices']) && is_array($row['prices'])) {
-            foreach (['restore','redemption'] as $k) {
-                if (isset($row['prices'][$k])) {
-                    $restoreFee = (float)$row['prices'][$k];
-                    break;
-                }
-            }
-        }
+        $restoreAllowed = !in_array($tld, self::RESTORE_FORBIDDEN_TLDS, true);
+        $prices = $row['prices'] ?? [];
+        $restoreFee = $prices['restorePrice']['reseller']['price'] ?? null;
 
         return [
             'tld'             => $tld,
