@@ -1,7 +1,10 @@
 <?php
+
 namespace WeDevelopCoffee\wPower\Domain;
+
 use WeDevelopCoffee\wPower\Core\Path;
 use WeDevelopCoffee\wPower\Models\Registrar;
+
 /**
  * Replace the additional fields.
  *
@@ -45,7 +48,7 @@ class AdditionalFields
      *
      * @return
      */
-    public function __construct (Path $path, Registrar $registrar)
+    public function __construct(Path $path, Registrar $registrar)
     {
         $this->path = $path;
         $this->registrar = $registrar;
@@ -56,7 +59,7 @@ class AdditionalFields
      *
      * @return void
      */
-    public function getDistAdditionalFields ()
+    public function getDistAdditionalFields()
     {
         include($this->path->getDocRoot() . '/resources/domains/dist.additionalfields.php');
         $this->distAdditionalFields = $additionaldomainfields;
@@ -73,28 +76,22 @@ class AdditionalFields
         $this->getDistAdditionalFields();
         // Loop through the fields and compile a finished additional fields set.
         $additionalField = [];
-        foreach($this->registrarAdditionalFields as $tld => $fields)
-        {
+        foreach ($this->registrarAdditionalFields as $tld => $fields) {
             $tmpRegistrarFields = [];
             // Only override TLDs that belong to this registrar.
-            if(isset($this->registrarTlds[$tld]))
-            {
+            if (isset($this->registrarTlds[$tld])) {
                 // Set the additional fields.
                 $additionalFields[$tld] = $fields;
                 // Temporarily store the field names to prevent that they will get removed from WHMCS.
-                foreach($fields as $field)
-                {
+                foreach ($fields as $field) {
                     $tmpRegistrarFields[$field['Name']] = true;
                 }
                 // Remove the distributed fields.
-                if(isset($this->distAdditionalFields[$tld]))
-                {
+                if (isset($this->distAdditionalFields[$tld])) {
                     // Disable the additional fields.
-                    foreach($this->distAdditionalFields[$tld] as $whmcsField)
-                    {
+                    foreach ($this->distAdditionalFields[$tld] as $whmcsField) {
                         // Only remove fields that are not in the Registrars field.
-                        if(!isset($tmpRegistrarFields[$whmcsField['Name']]))
-                        {
+                        if (!isset($tmpRegistrarFields[$whmcsField['Name']])) {
                             $removeField = [];
                             $removeField['Name']    = $whmcsField['Name'];
                             $removeField['Remove']  = true;
@@ -113,7 +110,7 @@ class AdditionalFields
      *
      * @return $this
      */
-    public function setRegistrarAdditionalFields ($additionalFields)
+    public function setRegistrarAdditionalFields($additionalFields)
     {
         $this->registrarAdditionalFields = $additionalFields;
 
@@ -125,7 +122,7 @@ class AdditionalFields
      *
      * @return $this
      */
-    public function setRegistrarName ($registrar)
+    public function setRegistrarName($registrar)
     {
         $this->registrarName    = $registrar;
         $this->registrarTlds    = $this->registrar->getTlds($registrar);

@@ -58,7 +58,7 @@ return array(
     'GuzzleHttp6\\Promise\\' => array($baseDir . '/vendor-static/guzzlehttp/promises/src'),
     'GuzzleHttp6\\' => array($baseDir . '/vendor-static/guzzlehttp/guzzle/src'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
-    'Doctrine\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib/Doctrine/Inflector'),
+    'Doctrine\\Inflector\\' => array($vendorDir . '/doctrine/inflector/src'),
     'Doctrine\\Deprecations\\' => array($vendorDir . '/doctrine/deprecations/src'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
     'DI\\' => array($vendorDir . '/php-di/php-di/src'),

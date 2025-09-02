@@ -1,4 +1,5 @@
 <?php
+
 /**
  * wPower Boostrap
  *
@@ -7,20 +8,22 @@
 
 use WeDevelopCoffee\wPower\Module\Setup;
 
-if (!defined("WHMCS")) {
-    die("This file cannot be accessed directly");
+try {
+    if (!defined("WHMCS")) {
+        die("This file cannot be accessed directly");
+    }
+    require_once __DIR__ . '/init.php';
+    $core = openprovider_registrar_core();
+
+    $core->launch()->hooks();
+
+    $core->launcher = openprovider_bind_required_classes($core->launcher);
+
+    $activate = $core->launcher->get(Setup::class);
+    $activate->enableFeature('handles');
+    $activate->addMigrationPath(__DIR__.'/migrations');
+    $activate->migrate();
+} catch (\Throwable $e) {
+    logModuleCall('Openprovider', 'bootstrap', 'Error during bootstrap', $e->getMessage(), $e->getTraceAsString());
+    throw $e;
 }
-
-require_once(__DIR__ .'/init.php');
-
-$core = openprovider_registrar_core();
-
-$core->launch()
-    ->hooks();
-
-$core->launcher = openprovider_bind_required_classes($core->launcher);
-
-$activate = $core->launcher->get(Setup::class);
-$activate->enableFeature('handles');
-$activate->addMigrationPath(__DIR__.'/migrations');
-$activate->migrate();

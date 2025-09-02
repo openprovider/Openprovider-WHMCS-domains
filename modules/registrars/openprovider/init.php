@@ -1,4 +1,5 @@
 <?php
+
 // Require any libraries needed for the module to function.
 
 use Carbon\Carbon;
@@ -132,7 +133,6 @@ function openprovider_bind_required_classes($launcher)
                     $client->getConfiguration()->setToken($token);
                 }
             }
-            
         }
 
         return $client;
