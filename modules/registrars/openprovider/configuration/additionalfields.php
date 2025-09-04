@@ -405,6 +405,15 @@ $additionaldomainfields['.se'][] = array(
     "op_name"  => "seIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
 
+$additionaldomainfields[".se"][] = array(
+    "Name" => 'By registering this domain name, I acknowledges and accepts the .se registration agreement',
+    "LangVar" => "iisse_acceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "iisse_acceptance"
+);
+
 // .SG
 
 $additionaldomainfields[".sg"][] = array(
