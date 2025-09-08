@@ -407,11 +407,11 @@ $additionaldomainfields['.se'][] = array(
 
 $additionaldomainfields[".se"][] = array(
     "Name" => 'By registering this domain name, I acknowledges and accepts the .se registration agreement',
-    "LangVar" => "iisse_acceptance",
+    "LangVar" => "iisseAcceptance",
     "Type" => "tickbox",
     "Required" => true,
     "op_location" => "domainAdditionalData",
-    "op_name" => "iisse_acceptance"
+    "op_name" => "iisseAcceptance"
 );
 
 // .SG
@@ -922,11 +922,11 @@ $additionaldomainfields['.nu'][] = array(
 
 $additionaldomainfields[".nu"][] = array(
     "Name" => 'By registering this domain name, I acknowledges and accepts the .nu registration agreement',
-    "LangVar" => "iisse_acceptance",
+    "LangVar" => "iisseAcceptance",
     "Type" => "tickbox",
     "Required" => true,
     "op_location" => "domainAdditionalData",
-    "op_name" => "iisse_acceptance"
+    "op_name" => "iisseAcceptance"
 );
 
 // .PRO
