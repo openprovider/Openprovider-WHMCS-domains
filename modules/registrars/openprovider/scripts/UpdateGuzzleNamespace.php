@@ -52,10 +52,8 @@ class UpdateGuzzleNamespace
         $vendorStaticGuzzle = escapeshellarg($vendorStaticDir . '/guzzlehttp');
         shell_exec("rm -rf $vendorStaticGuzzle");
 
-
         $vendorDirEscaped = escapeshellarg($vendorDir . '/guzzlehttp');
         $vendorStaticDirEscaped = escapeshellarg($vendorStaticDir);
-
 
         shell_exec("mkdir -p $vendorStaticDirEscaped && mv $vendorDirEscaped $vendorStaticDirEscaped");
     }
