@@ -920,6 +920,15 @@ $additionaldomainfields['.nu'][] = array(
     "Remove" => true,
 );
 
+$additionaldomainfields[".nu"][] = array(
+    "Name" => 'By registering this domain name, I acknowledges and accepts the .nu registration agreement',
+    "LangVar" => "iisse_acceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "iisse_acceptance"
+);
+
 // .PRO
 $additionaldomainfields[".pro"][] = array(
     "Name" => "Profession",
