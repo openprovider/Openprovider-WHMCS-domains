@@ -19,7 +19,9 @@ return [
     'restapi_url_sandbox'               => 'http://api.sandbox.openprovider.nl:8480',
     'xmlapi_url_sandbox'                => 'https://api.sandbox.openprovider.nl/',
 
-    //  Default: false, boolean - Set to true to allow support for premium domains
+    // OpenproviderPremium (READ-ONLY):
+    // This value is computed from WHMCS Configuration > System Settings > Domain Pricing.
+    // Do NOT edit here; it is set automatically by the Openprovider module.
     'OpenproviderPremium'               => $premiumEnabled,
     //  Default: true,  boolean - Set to true to Require Openprovider DNS servers for DNS management
     'require_op_dns_servers'            => false,
