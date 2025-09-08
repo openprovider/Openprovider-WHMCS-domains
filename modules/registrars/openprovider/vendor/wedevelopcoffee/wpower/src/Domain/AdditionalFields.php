@@ -96,8 +96,6 @@ class AdditionalFields
                             $whmcsField['Name'] = $name;
                         }
                         // Only remove fields that are not in the Registrars field.
-
-                        // Only remove fields that are not in the Registrars field.
                         if (!isset($tmpRegistrarFields[$whmcsField['Name']])) {
                             $removeField = [];
                             $removeField['Name']    = $whmcsField['Name'];
