@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.8.5
+
+### Features and improvements
+* Added **.SE/.NU Terms & Conditions Acceptance** checkbox - IIS (.SE/.NU) Registry made changes to the flow of .se/.nu domain names, making it mandatory for domain owners to accept T&C's of the registry before registering a .se or .nu domain name.
+
 ## v5.8.4
 
 ### Features and improvements

@@ -404,6 +404,15 @@ $additionaldomainfields['.se'][] = array(
     "op_name"  => "seIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
 
+$additionaldomainfields[".se"][] = array(
+    "Name" => 'By registering this domain name, I acknowledges and accepts the <a href="https://internetstiftelsen.se/app/uploads/2024/05/se-terms-and-conditions-2024-06-03.pdf" target="_blank">.se registration agreement</a>',
+    "LangVar" => "iisseAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "iisseAcceptance"
+);
+
 // .SG
 
 $additionaldomainfields[".sg"][] = array(
@@ -860,13 +869,32 @@ $additionaldomainfields[".fi"][] = array(
 );
 
 // .NU
-$additionaldomainfields['.nu'][] = array(
-    'Name' => 'Identification Number',
-    "Remove" => true,
+$additionaldomainfields[".nu"][] = array(
+    "Name" => "Owner type",
+    "op_dropdown_for_op_name" => "nuIdentificationNumber",
+    "LangVar" => "nuIdentificationType",
+    "Type" => "dropdown",
+    "Options" => "socialSecurityNumber|Private individual,companyRegistrationNumber|Legal Entity",
+    "Default" => "Private individual",
 );
+
 $additionaldomainfields['.nu'][] = array(
-    'Name' => 'VAT Number',
-    "Remove" => true,
+    'Name' => 'Identification number',
+    "LangVar" => "nuIdentificationNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "Required" => true,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "nuIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
+);
+
+$additionaldomainfields['.nu'][] = array(
+    "Name" => 'By registering this domain name, I acknowledges and accepts the <a href="https://internetstiftelsen.se/app/uploads/2024/05/nu-terms-and-conditions-2024-06-03.pdf" target="_blank">.nu registration agreement</a>',
+    "LangVar" => "iisseAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "iisseAcceptance"
 );
 
 // .PRO
