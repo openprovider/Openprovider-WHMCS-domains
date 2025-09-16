@@ -404,6 +404,15 @@ $additionaldomainfields['.se'][] = array(
     "op_name"  => "seIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
 
+$additionaldomainfields[".se"][] = array(
+    "Name" => 'By registering this domain name, I acknowledges and accepts the .se registration agreement',
+    "LangVar" => "iisseAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "iisseAcceptance"
+);
+
 // .SG
 
 $additionaldomainfields[".sg"][] = array(
@@ -867,6 +876,15 @@ $additionaldomainfields['.nu'][] = array(
 $additionaldomainfields['.nu'][] = array(
     'Name' => 'VAT Number',
     "Remove" => true,
+);
+
+$additionaldomainfields['.nu'][] = array(
+    "Name" => 'By registering this domain name, I acknowledges and accepts the .nu registration agreement',
+    "LangVar" => "iisseAcceptance",
+    "Type" => "tickbox",
+    "Required" => true,
+    "op_location" => "domainAdditionalData",
+    "op_name" => "iisseAcceptance"
 );
 
 // .PRO
