@@ -405,7 +405,7 @@ $additionaldomainfields['.se'][] = array(
 );
 
 $additionaldomainfields[".se"][] = array(
-    "Name" => 'By registering this domain name, I acknowledges and accepts the .se registration agreement',
+    "Name" => 'By registering this domain name, I acknowledges and accepts the <a href="https://internetstiftelsen.se/app/uploads/2024/05/se-terms-and-conditions-2024-06-03.pdf" target="_blank">.se registration agreement</a>',
     "LangVar" => "iisseAcceptance",
     "Type" => "tickbox",
     "Required" => true,
@@ -879,7 +879,7 @@ $additionaldomainfields['.nu'][] = array(
 );
 
 $additionaldomainfields['.nu'][] = array(
-    "Name" => 'By registering this domain name, I acknowledges and accepts the .nu registration agreement',
+    "Name" => 'By registering this domain name, I acknowledges and accepts the <a href="https://internetstiftelsen.se/app/uploads/2024/05/nu-terms-and-conditions-2024-06-03.pdf" target="_blank">.nu registration agreement</a>',
     "LangVar" => "iisseAcceptance",
     "Type" => "tickbox",
     "Required" => true,
