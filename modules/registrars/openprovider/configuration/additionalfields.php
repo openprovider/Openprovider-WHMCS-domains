@@ -869,13 +869,23 @@ $additionaldomainfields[".fi"][] = array(
 );
 
 // .NU
-$additionaldomainfields['.nu'][] = array(
-    'Name' => 'Identification Number',
-    "Remove" => true,
+$additionaldomainfields[".nu"][] = array(
+    "Name" => "Owner type",
+    "op_dropdown_for_op_name" => "nuIdentificationNumber",
+    "LangVar" => "nuIdentificationType",
+    "Type" => "dropdown",
+    "Options" => "socialSecurityNumber|Private individual,companyRegistrationNumber|Legal Entity",
+    "Default" => "Private individual",
 );
+
 $additionaldomainfields['.nu'][] = array(
-    'Name' => 'VAT Number',
-    "Remove" => true,
+    'Name' => 'Identification number',
+    "LangVar" => "nuIdentificationNumber",
+    "Type" => "text",
+    "Size" => "30",
+    "Required" => true,
+    "op_location" => "customerAdditionalData",
+    "op_name"  => "nuIdentificationNumber" // Real name is defined by the op_dropdown_for_op_name.
 );
 
 $additionaldomainfields['.nu'][] = array(
