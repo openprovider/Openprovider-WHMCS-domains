@@ -6,7 +6,7 @@
  * @copyright Copyright (c) Openprovider 2018
  */
 
-use \OpenProvider\WhmcsRegistrar\src\Configuration;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WHMCS\Exception\Module\InvalidConfiguration;
 
 if (!defined("WHMCS")) {
@@ -64,6 +64,7 @@ function openprovider_AdminCustomButtonArray()
     $buttonarray = array(
         "Auto-renew Sync" => "AutoRenewSync",
         "Sync" => "Sync",
+        'Manage DNS Zone' => 'AdminManageDnsZone',
     );
 
     return $buttonarray;
@@ -282,7 +283,7 @@ function openprovider_AutoRenewSync($params)
  * @return array
  */
 function openprovider_Sync($paramsArray)
-{   
+{
     return openprovider_registrar_launch_decorator('domainSync', $paramsArray);
 }
 
@@ -342,6 +343,13 @@ function openprovider_ResendIRTPVerificationEmail(array $params)
     return openprovider_registrar_launch_decorator('resendIRTPVerificationEmail', $params);
 }
 
+function openprovider_AdminManageDnsZone($params)
+{
+    $controller = new \OpenProvider\WhmcsRegistrar\Controllers\Hooks\DnsAuthController();
+    $ok = $controller->redirectDnsManagementPage($params);
+
+    return ['error' => 'Could not redirect to DNS panel'];
+}
 
 function openprovider_config_validate($params)
 {
@@ -358,7 +366,7 @@ function openprovider_config_validate($params)
         $baseUrl = Configuration::get('restapi_url_sandbox');
     }
 
-    $url = "{$baseUrl}{$resourcePath}"; 
+    $url = "{$baseUrl}{$resourcePath}";
 
     $data = array(
         "username" => $username,
@@ -375,6 +383,7 @@ function openprovider_config_validate($params)
     curl_setopt($curl, CURLOPT_POSTFIELDS, $encodedData);
     $result = curl_exec($curl);
     curl_close($curl);
+
     $response = json_decode($result);
     if (!$response->data->token || !$response->data->reseller_id) {
         throw new InvalidConfiguration("Credentials are Invalid for $env Environment");
