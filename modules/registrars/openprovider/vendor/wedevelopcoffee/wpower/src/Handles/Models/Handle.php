@@ -225,4 +225,26 @@ class Handle extends Model {
     {
         return $this->belongsToMany('WeDevelopCoffee\wPower\Models\Domain','wDomain_handle');
     }
+
+    /**
+     * Find an existing handle for a given user ID, registrar, and type.
+     *
+     * @param int $userId
+     * @param string $type
+     * @return Handle|false
+     */
+    public static function findExistingByUserId(int $userId, string $type = 'all')
+    {
+        try {
+            return self::where('user_id', $userId)
+                ->where(function ($query) use ($type) {
+                    $query->where('type', $type)
+                        ->orWhere('type', 'all');
+                })
+                ->where('handle', '!=', '')
+                ->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            return false;
+        }
+    }
 }
