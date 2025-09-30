@@ -12,7 +12,6 @@ use OpenProvider\WhmcsRegistrar\src\Handle;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use WHMCS\Database\Capsule;
-
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
 
 /**
@@ -72,16 +71,18 @@ class ContactController extends BaseController
 
         $domainTld = new Tld($params['tld']);
         array_walk($values, function (&$contact) use ($domainTld) {
-            if (!$domainTld->isNeededShortState())
+            if (!$domainTld->isNeededShortState()) {
                 return;
+            }
 
             switch ($contact['Country']) {
                 case 'US':
                     $USStates = array_flip(Dictionary::get(Dictionary::USStates));
                     $USStateExist = !empty($contact['State'])
                         && in_array($contact['State'], array_keys($USStates));
-                    if ($USStateExist)
+                    if ($USStateExist) {
                         $contact['State'] = $USStates[$contact['State']];
+                    }
 
                     break;
                 default:
@@ -108,10 +109,12 @@ class ContactController extends BaseController
                 $customerTag = Capsule::table(DatabaseTable::ClientTags)
                     ->where('clientid', $params['userid'])
                     ->first();
-                if ($customerTag && $customerTag->tag)
+                if ($customerTag && $customerTag->tag) {
                     $userTag = [$customerTag->tag];
+                }
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         if (isset($params['contactdetails'])) {
             $contactDetails = &$params['contactdetails'];
@@ -120,8 +123,7 @@ class ContactController extends BaseController
             });
         }
 
-        try
-        {
+        try {
             $this->domain->load(array(
                 'name'          =>  $params['sld'],
                 'extension'     =>  $params['tld']
@@ -131,31 +133,43 @@ class ContactController extends BaseController
             $handle->setApiHelper($this->apiHelper);
 
             $customers['ownerHandle']   = $handle->updateOrCreate($params, 'registrant');
-            $customers['adminHandle']   = $handle->updateOrCreate($params, 'admin');
-            $customers['techHandle']    = $handle->updateOrCreate($params, 'tech');
 
-            if(isset($params['contactdetails']['Billing']))
+            if (isset($params['contactdetails']['Admin']) &&
+                is_array($params['contactdetails']['Admin']) &&
+                !empty($params['contactdetails']['Admin']['First Name'])) {
+                $customers['adminHandle'] = $handle->updateOrCreate($params, 'admin');
+            }
+
+            if (isset($params['contactdetails']['Tech']) &&
+                is_array($params['contactdetails']['Tech']) &&
+                !empty($params['contactdetails']['Tech']['First Name'])) {
+                $customers['techHandle'] = $handle->updateOrCreate($params, 'tech');
+            }
+
+            if (isset($params['contactdetails']['Billing']) &&
+                is_array($params['contactdetails']['Billing']) &&
+                !empty($params['contactdetails']['Billing']['First Name'])) {
                 $customers['billingHandle'] = $handle->updateOrCreate($params, 'billing');
+            }
 
             // Sleep for 10 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
 
             $finalCustomers = [];
             // clean out the empty results
-            array_walk($customers, function($handle, $key) use (&$customers, &$finalCustomers){
-                if($handle != '')
+            array_walk($customers, function ($handle, $key) use (&$customers, &$finalCustomers) {
+                if ($handle != '') {
                     $finalCustomers[$key] = $handle;
+                }
             });
 
-            if(!empty($finalCustomers)) {
+            if (!empty($finalCustomers)) {
                 $domainOp = $this->apiHelper->getDomain($this->domain);
                 $this->apiHelper->updateDomain($domainOp['id'], $finalCustomers);
             }
 
             return ['success' => true];
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
         return $values;

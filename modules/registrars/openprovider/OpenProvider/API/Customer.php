@@ -1,5 +1,7 @@
 <?php
+
 namespace OpenProvider\API;
+
 use OpenProvider\WhmcsHelpers\CustomField;
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
 use WeDevelopCoffee\wPower\Domain\AdditionalFields;
@@ -86,21 +88,20 @@ class Customer
      */
     public function __construct($params, $prefix = '')
     {
-
-        if($prefix == 'all')
+        if ($prefix == 'all') {
             $prefix = '';
+        }
 
-        if($prefix == 'registrant')
+        if ($prefix == 'registrant') {
             $prefix = 'owner';
+        }
 
         $getFromContactDetails = false;
-        if (isset($params['contactdetails']))
-        {
+        if (isset($params['contactdetails'])) {
             $getFromContactDetails = true;
         }
 
-        if ($getFromContactDetails == true)
-        {
+        if ($getFromContactDetails == true) {
             $indexes = array(
                 'firstname' => 'first name',
                 'lastname' => 'last name',
@@ -116,14 +117,19 @@ class Customer
                 'companyname' => 'company name',
             );
 
-            if(!isset($params["contactdetails"][$prefix]['fullstate']))
+            if (!isset($params["contactdetails"][$prefix]['fullstate'])) {
                 $indexes['state'] = 'state';
+            }
 
-            $params = array_change_key_case($params["contactdetails"][ucfirst($prefix)]);
-
-        }
-        else
-        {
+            // FIX ICANN RDP - Handle null contacts  if
+            if (isset($params["contactdetails"][ucfirst($prefix)]) &&
+            is_array($params["contactdetails"][ucfirst($prefix)])) {
+                $params = array_change_key_case($params["contactdetails"][ucfirst($prefix)]);
+            } else {
+                // If contact doesn't exist, use empty array
+                $params = [];
+            }
+        } else {
             $indexes = array(
                 'firstname' => 'firstname',
                 'lastname' => 'lastname',
@@ -140,12 +146,9 @@ class Customer
                 'companyname' => 'companyname',
             );
 
-            foreach ($indexes as &$value)
-            {
+            foreach ($indexes as &$value) {
                 $value = $prefix . $value;
             }
-
-
         }
 
         // Customer Name
@@ -167,7 +170,7 @@ class Customer
         if ($getFromContactDetails) {
             if (isset($params[$indexes['address']]) && !empty($params[$indexes['address']])) {
                 $fullAddress = $params[$indexes['address']];
-            } else if (!empty(trim($params[$indexes['address1']] . ' ' . $params[$indexes['address2']]))) {
+            } elseif (!empty(trim($params[$indexes['address1']] . ' ' . $params[$indexes['address2']]))) {
                 $fullAddress = $params[$indexes['address1']] . ' ' . $params[$indexes['address2']];
             }
         } else {
@@ -185,31 +188,30 @@ class Customer
         ));
 
         //Phone number
-        if(!isset($params[$indexes['fullphonenumber']]))
-        {
+        if (!isset($params[$indexes['fullphonenumber']])) {
             $phoneParams = array(
                 'phone number'   =>  $params[$indexes['phone number']],
                 'country'        =>  $params[$indexes['country']],
             );
 
             // Check if there is a country code included.
-            if(isset($params[$indexes['phone country code']]) && $params[$indexes['phone country code']] != '')
+            if (isset($params[$indexes['phone country code']]) && $params[$indexes['phone country code']] != '') {
                 $phoneParams['phone country code'] = $params[$indexes['phone country code']];
+            }
 
             $phone              =   new \OpenProvider\API\CustomerPhone($phoneParams);
-        }
-        else
-        {
+        } else {
             $phone              =   new \OpenProvider\API\CustomerPhone(array(
                 'fullphonenumber'   =>  $params[$indexes['fullphonenumber']]
             ));
         }
 
         // Tags
-        if (isset($params['tags']))
+        if (isset($params['tags'])) {
             $tags = new \OpenProvider\API\CustomerTags($params['tags']);
-        else
+        } else {
             $tags = new \OpenProvider\API\CustomerTags('');
+        }
 
         // set values
         $this->name         =   $name;
@@ -224,7 +226,7 @@ class Customer
 
         if (isset($params['additionalfields']) && !empty($params['additionalfields'])) {
             $additionalData = [];
-            foreach($params['additionalfields'] as $additionalfield) {
+            foreach ($params['additionalfields'] as $additionalfield) {
                 if (isset($additionalData['vat']) && empty($additionalData['vat'])) {
                     $additionalData['vat'] = $additionalfield;
                     $this->vat = $additionalfield;
@@ -284,8 +286,9 @@ class Customer
             case 'US':
                 $USStates = Dictionary::get(Dictionary::USStates);
                 $state = ucwords(strtolower($this->address->state));
-                if ($this->address->state && isset($USStates[$state]))
+                if ($this->address->state && isset($USStates[$state])) {
                     $this->address->state = $USStates[$state];
+                }
                 break;
 
             default:
