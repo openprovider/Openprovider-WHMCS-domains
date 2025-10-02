@@ -618,7 +618,7 @@ class ApiHelper
         try {
             $meta = $this->getTldMeta($tld);
             return (bool)($meta['dnssec_allowed'] ?? $meta['dnssecAllowed'] ?? false);
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }
