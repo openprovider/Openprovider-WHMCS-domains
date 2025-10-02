@@ -55,29 +55,13 @@ class DnssecToggleController
 
         $enabled = $tld_enabled && $admin_enabled;
 
-        // Domain-scoped flash: show only once
-        $flashMsg = '';
-        $flashClass = '';
-        if (!empty($_SESSION['op_dnssec_flash'])
-            && isset($_SESSION['op_dnssec_flash']['domainid'])
-            && (int)$_SESSION['op_dnssec_flash']['domainid'] === $domainId) {
-            $flashMsg   = (string)($_SESSION['op_dnssec_flash']['message'] ?? '');
-            $flashClass = (string)($_SESSION['op_dnssec_flash']['class'] ?? 'text-muted');
-            unset($_SESSION['op_dnssec_flash']); 
-        }
-
         $html = '
             <div style="display:flex;align-items:center;gap:10px;">
                 <label style="display:inline-flex;align-items:center;gap:8px;">
                     <input type="checkbox" name="op_dnssec_management" value="1" '.($enabled ? 'checked' : '').' />
                     <span style="font-weight: normal;">'.'Check to Enable'.'</span>
                 </label>
-            </div>'
-            . ($flashMsg !== ''
-                ? '<div class="'.htmlspecialchars($flashClass).'" style="margin-top:6px;">'
-                    . htmlspecialchars($flashMsg) .
-                  '</div>'
-                : '');
+            </div>';
 
         return [
             'DNSSEC Management' => $html,
@@ -109,11 +93,13 @@ class DnssecToggleController
             try {
                 Capsule::table('tbldomains')->where('id', $row->id)->update(['dnssecmanagement' => 0]);
             } catch (\Exception $e) {}
-            $_SESSION['op_dnssec_flash'] = [
+            $_SESSION['op_dnssec_popup'] = [
                 'domainid' => (int)$row->id,
-                'class'    => 'text-success',
+                'type'     => 'success',
+                'status'   => 'disabled',
                 'message'  => 'DNSSEC management has been disabled for this domain.',
             ];
+            
             return;
         }
 
@@ -129,21 +115,129 @@ class DnssecToggleController
             try {
                 Capsule::table('tbldomains')->where('id', $row->id)->update(['dnssecmanagement' => 1]);
             } catch (\Exception $e) {}
-            $_SESSION['op_dnssec_flash'] = [
+            $_SESSION['op_dnssec_popup'] = [
                 'domainid' => (int)$row->id,
-                'class'    => 'text-success',
+                'type'     => 'success',
+                'status'   => 'enabled',
                 'message'  => 'DNSSEC management has been successfully enabled for the domain. The client can now manage DNSSEC from the client area.',
             ];
         } else {
             try {
                 Capsule::table('tbldomains')->where('id', $row->id)->update(['dnssecmanagement' => 0]);
             } catch (\Exception $e) {}
-            $_SESSION['op_dnssec_flash'] = [
+            $_SESSION['op_dnssec_popup'] = [
                 'domainid' => (int)$row->id,
-                'class'    => 'text-warning',
+                'type'     => 'warning',
+                'status'   => 'not_allowed',
                 'message'  => 'DNSSEC management cannot be enabled for the domain because the TLD does not support DNSSEC.',
             ];
+            
         }
+    }
+
+    public function footer($vars)
+    {
+        if (empty($_SESSION['op_dnssec_popup'])) {
+            return '';
+        }
+
+        $currentId = 0;
+        if (isset($_GET['id'])) {
+            $currentId = (int) $_GET['id'];
+        } elseif (isset($_GET['domainid'])) {
+            $currentId = (int) $_GET['domainid'];
+        }
+
+        $sess = $_SESSION['op_dnssec_popup'];
+        $sessDomainId = (int) ($sess['domainid'] ?? 0);
+
+        if ($sessDomainId > 0 && $currentId > 0 && $currentId !== $sessDomainId) {
+            return '';
+        }
+
+        $type   = (string)($sess['type'] ?? 'success');       // success | warning
+        $status = (string)($sess['status'] ?? 'enabled');     // enabled | disabled | not_allowed
+        $msg    = (string)($sess['message'] ?? '');
+
+        switch ($status) {
+            case 'disabled':
+                $title = 'DNSSEC Management: Disabled';
+                break;
+            case 'not_allowed':
+                $title = 'DNSSEC Management: Not Allowed';
+                break;
+            case 'enabled':
+            default:
+                $title = 'DNSSEC Management: Enabled';
+                break;
+        }
+
+        $palette = [
+            'success' => ['bg' => '#dff0d8', 'fg' => '#3c763d', 'btn' => 'btn-success'],
+            'warning' => ['bg' => '#fcf8e3', 'fg' => '#8a6d3b', 'btn' => 'btn-warning'],
+        ];
+        $colors  = $palette[$type] ?? $palette['success'];
+
+        $escTitle = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+        $escMsg   = htmlspecialchars($msg,   ENT_QUOTES, 'UTF-8');
+        $bg       = $colors['bg'];
+        $fg       = $colors['fg'];
+        $btnClass = $colors['btn'];
+        $icon     = $colors['icon'];
+
+        unset($_SESSION['op_dnssec_popup']);
+        $jsonMsg = json_encode($msg, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT);
+
+        return <<<HTML
+        <style id="op-dnssec-modal-css">
+        #opDnssecModal .modal-header{
+            background: {$bg} !important;
+            color: {$fg} !important;
+            border-bottom: none !important;
+        }
+        #opDnssecModal .modal-title{
+            color: {$fg} !important;
+            font-weight: 600;
+        }
+        #opDnssecModal .modal-body p{
+            margin: 0;
+        }
+        #opDnssecModal .modal-footer{
+            border-top: none !important;
+        }
+        </style>
+
+        <div class="modal fade" id="opDnssecModal" tabindex="-1" role="dialog" aria-labelledby="opDnssecModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                <h4 class="modal-title" id="opDnssecModalLabel">{$icon} {$escTitle}</h4>
+            </div>
+            <div class="modal-body">
+                <p>{$escMsg}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn {$btnClass}" data-dismiss="modal">OK</button>
+            </div>
+            </div>
+        </div>
+        </div>
+        <script>
+        (function () {
+        if (window.jQuery && jQuery.fn.modal) {
+            jQuery(function () { jQuery('#opDnssecModal').modal('show'); });
+        } else {
+            try { alert({$this->jsonInline($msg)}); } catch (e) {}
+        }
+        })();
+        </script>
+        HTML;
+    }
+
+    private function jsonInline($str)
+    {
+        return json_encode((string)$str, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT);
     }
 
     private function ensureDnssecColumn(): void

@@ -126,5 +126,11 @@ return [
         'hookPoint' => 'AdminClientDomainsTabFieldsSave',
         'priority'  => 1,
         'controller'=> 'DnssecToggleController@save',
-    ]
+    ],
+    [
+        'hookPoint' => 'AdminAreaFooterOutput',
+        'priority' => 1,
+        'controller' => 'DnssecToggleController@footer',
+    ],
+
 ];
