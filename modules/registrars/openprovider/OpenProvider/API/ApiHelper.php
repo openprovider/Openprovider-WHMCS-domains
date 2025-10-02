@@ -16,6 +16,7 @@ class ApiHelper
      * @var Serializer
      */
     private $serializer;
+    private static array $tldCache = [];
 
     /**
      * ApiManager constructor.
@@ -581,6 +582,46 @@ class ApiHelper
     public function getPromoMessages(): array
     {
         return $this->buildResponse($this->apiClient->call('searchPromoMessageRequest'));
+    }
+
+    /**
+     * @param string $tld
+     * @return array
+     * @throws \Exception 
+     */
+    public function getTldMeta(string $tld): array
+    {
+        $tld = trim($tld);
+        logModuleCall("Test tld at api", null, $tld, null, null, null);
+        if ($tld === '') {
+            throw new \InvalidArgumentException('Missing TLD.');
+        }
+
+        if (isset(self::$tldCache[$tld])) {
+            return self::$tldCache[$tld];
+        }
+
+        $data = $this->buildResponse(
+            $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
+        );
+
+        $arr = is_object($data) ? json_decode(json_encode($data), true) : (array)$data;
+
+        return self::$tldCache[$tld] = $arr;
+    }
+
+    /**
+     * @param string $tld
+     * @return bool
+     */
+    public function supportsDnssec(string $tld): bool
+    {
+        try {
+            $meta = $this->getTldMeta($tld);
+            return (bool)($meta['dnssec_allowed'] ?? $meta['dnssecAllowed'] ?? false);
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     /**
