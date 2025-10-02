@@ -592,7 +592,6 @@ class ApiHelper
     public function getTldMeta(string $tld): array
     {
         $tld = trim($tld);
-        logModuleCall("Test tld at api", null, $tld, null, null, null);
         if ($tld === '') {
             throw new \InvalidArgumentException('Missing TLD.');
         }
