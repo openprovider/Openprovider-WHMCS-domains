@@ -1,6 +1,6 @@
 # DNSSEC page for end users
 
-- Navigate to the **target client profile > domains** select the desired domain and enable **"DNSSEC Management"** check box.
+- Navigate to the **target client profile > domains** select the desired domain and enable **"DNSSEC Management"** checkbox.
 <img src="img/DNSSEC management checkbox.png" style="zoom: 67%;" />
 - The below option will appear in the domain details page of the chosen domain
 

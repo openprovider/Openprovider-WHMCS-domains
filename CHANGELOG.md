@@ -15,6 +15,7 @@
 - Disabled domain locking warning in client area for TLDs that do not support locking - .nl, .eu, etc.
 - Improvement in loading time by switching LocalAPI call to the $CONFIG global.
 - Nameserver validation for registrations, transfers and nameserver changes from WHMCS.
+- Admin control to manage client access to the Client Area DNSSEC Management button.
 - Updated rest-client-php library
 - Readme files (main and addon module) and WHMCS documentation links in docs files and updated.  
 
