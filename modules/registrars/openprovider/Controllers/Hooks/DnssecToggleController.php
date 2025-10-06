@@ -46,7 +46,7 @@ class DnssecToggleController
         
         $tld_enabled = false;
         try {
-            $tld_enabled   =  $this->apiHelper->supportsDnssec($tld);
+            $tld_enabled = $this->apiHelper->supportsDnssec($tld);
         } catch (\Exception $e) {
             $tld_enabled = false;
         }
@@ -106,7 +106,7 @@ class DnssecToggleController
         $tld = $this->extractTldFromFqdn((string)$row->domain);
         $allowed = false;
         try {
-            $allowed   =  $this->apiHelper->supportsDnssec($tld);
+            $allowed = $this->apiHelper->supportsDnssec($tld);
         } catch (\Exception $e) {
             $allowed = false;
         }
