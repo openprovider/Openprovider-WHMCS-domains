@@ -130,9 +130,12 @@ class ContactController extends BaseController
             $handle = $this->handle;
             $handle->setApiHelper($this->apiHelper);
 
-            $customers['ownerHandle']   = $handle->updateOrCreate($params, 'registrant');
-            $customers['adminHandle']   = $handle->updateOrCreate($params, 'admin');
-            $customers['techHandle']    = $handle->updateOrCreate($params, 'tech');
+            if (isset($params['contactdetails']['Owner']))
+                $customers['ownerHandle']   = $handle->updateOrCreate($params, 'registrant');
+            if (isset($params['contactdetails']['Admin']))
+                $customers['adminHandle']   = $handle->updateOrCreate($params, 'admin');
+            if (isset($params['contactdetails']['Tech']))
+                $customers['techHandle']    = $handle->updateOrCreate($params, 'tech');
 
             if(isset($params['contactdetails']['Billing']))
                 $customers['billingHandle'] = $handle->updateOrCreate($params, 'billing');
