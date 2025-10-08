@@ -16,7 +16,6 @@ class ApiHelper
      * @var Serializer
      */
     private $serializer;
-    private static array $tldCache = [];
 
     /**
      * ApiManager constructor.
@@ -596,17 +595,7 @@ class ApiHelper
             throw new \InvalidArgumentException('Missing TLD.');
         }
 
-        if (isset(self::$tldCache[$tld])) {
-            return self::$tldCache[$tld];
-        }
-
-        $data = $this->buildResponse(
-            $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
-        );
-
-        $arr = is_object($data) ? json_decode(json_encode($data), true) : (array)$data;
-
-        return self::$tldCache[$tld] = $arr;
+        return $this->buildResponse($this->apiClient->call('retrieveExtensionRequest', ['name' => $tld]));
     }
 
     /**
