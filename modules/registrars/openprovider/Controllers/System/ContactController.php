@@ -177,9 +177,13 @@ class ContactController extends BaseController
             return [];
         }
 
+        $tldMetaData = $this->apiHelper->getTldMeta($this->domain->extension);
+
         $contacts = [];
         foreach (APIConfig::$handlesNames as $key => $name) {
-            if (empty($domainOp[$key])) {
+            $handleSupportedKey = $key . 'Supported';
+
+            if (!isset($tldMetaData[$handleSupportedKey]) || !$tldMetaData[$handleSupportedKey] || empty($domainOp[$key])) {
                 continue;
             }
 
