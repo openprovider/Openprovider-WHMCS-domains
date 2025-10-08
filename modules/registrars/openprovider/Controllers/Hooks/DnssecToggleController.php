@@ -76,6 +76,8 @@ class DnssecToggleController
             return;
         }
 
+        unset($_SESSION['op_dnssec_popup']);
+
         $this->ensureDnssecColumn();
 
         $row = Capsule::table('tbldomains')
@@ -87,9 +89,43 @@ class DnssecToggleController
             return;
         }
 
-        $wantsEnable = isset($_REQUEST['op_dnssec_management']) && $_REQUEST['op_dnssec_management'] == '1';
+        $current = (int)($row->dnssecmanagement ?? 0); 
+        $checkEnable = isset($_REQUEST['op_dnssec_management']) && $_REQUEST['op_dnssec_management'] == '1';
+        $wantsEnable = $checkEnable ? 1 : 0; 
+        $tld = $this->extractTldFromFqdn((string)$row->domain);
+        $allowed = false;
+        try {
+            $allowed = $this->apiHelper->supportsDnssec($tld);
+        } catch (\Exception $e) {
+            $allowed = false;
+        }
 
-        if (!$wantsEnable) {
+        if ($wantsEnable === $current) {
+            if ($wantsEnable === 1 && !$allowed) {
+                try {
+                    Capsule::table('tbldomains')->where('id', $row->id)->update(['dnssecmanagement' => 0]);
+                } catch (\Exception $e) {}
+                $_SESSION['op_dnssec_popup'] = [
+                    'domainid' => (int)$row->id,
+                    'type'     => 'warning',
+                    'status'   => 'not_allowed',
+                    'message'  => 'DNSSEC management cannot be enabled for the domain because the TLD does not support DNSSEC.', 
+                    'ts'       => time(),  
+                ];
+                return;
+            }
+            unset($_SESSION['op_dnssec_popup']);
+            return;
+        }
+
+        if (!$allowed && $wantsEnable === 0 && $current === 1) {
+            try {
+                Capsule::table('tbldomains')->where('id', $row->id)->update(['dnssecmanagement' => 0]);
+            } catch (\Exception $e) {}
+            return;
+        }
+
+        if ($wantsEnable === 0) {
             try {
                 Capsule::table('tbldomains')->where('id', $row->id)->update(['dnssecmanagement' => 0]);
             } catch (\Exception $e) {}
@@ -98,17 +134,9 @@ class DnssecToggleController
                 'type'     => 'success',
                 'status'   => 'disabled',
                 'message'  => 'DNSSEC management has been disabled for this domain.',
+                'ts'       => time(),
             ];
-            
             return;
-        }
-
-        $tld = $this->extractTldFromFqdn((string)$row->domain);
-        $allowed = false;
-        try {
-            $allowed = $this->apiHelper->supportsDnssec($tld);
-        } catch (\Exception $e) {
-            $allowed = false;
         }
 
         if ($allowed) {
@@ -120,6 +148,7 @@ class DnssecToggleController
                 'type'     => 'success',
                 'status'   => 'enabled',
                 'message'  => 'DNSSEC management has been successfully enabled for the domain. The client can now manage DNSSEC from the client area.',
+                'ts'       => time(),
             ];
         } else {
             try {
@@ -130,8 +159,8 @@ class DnssecToggleController
                 'type'     => 'warning',
                 'status'   => 'not_allowed',
                 'message'  => 'DNSSEC management cannot be enabled for the domain because the TLD does not support DNSSEC.',
+                'ts'       => time(),
             ];
-            
         }
     }
 
@@ -141,17 +170,24 @@ class DnssecToggleController
             return '';
         }
 
-        $currentId = 0;
-        if (isset($_GET['id'])) {
-            $currentId = (int) $_GET['id'];
-        } elseif (isset($_GET['domainid'])) {
-            $currentId = (int) $_GET['domainid'];
+        $filename = (string)($vars['filename'] ?? '');
+        $domainId = isset($_GET['id']) ? (int)$_GET['id'] : (isset($_GET['domainid']) ? (int)$_GET['domainid'] : 0);
+
+        if ($filename !== 'clientsdomains' || $domainId <= 0) {
+            unset($_SESSION['op_dnssec_popup']);
+            return '';
         }
 
         $sess = $_SESSION['op_dnssec_popup'];
-        $sessDomainId = (int) ($sess['domainid'] ?? 0);
+        $sessDomainId = (int)($sess['domainid'] ?? 0);
+        if ($sessDomainId !== $domainId) {
+            unset($_SESSION['op_dnssec_popup']);
+            return '';
+        }
 
-        if ($sessDomainId > 0 && $currentId > 0 && $currentId !== $sessDomainId) {
+        $ts  = (int)($sess['ts'] ?? 0);
+        if ($ts <= 0 || (time() - $ts) > 30) {
+            unset($_SESSION['op_dnssec_popup']);
             return '';
         }
 
@@ -183,9 +219,8 @@ class DnssecToggleController
         $bg       = $colors['bg'];
         $fg       = $colors['fg'];
         $btnClass = $colors['btn'];
-        $icon     = $colors['icon'];
 
-        unset($_SESSION['op_dnssec_popup']);
+        unset($_SESSION['op_dnssec_popup']); 
         $jsonMsg = json_encode($msg, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT);
 
         return <<<HTML
@@ -212,7 +247,7 @@ class DnssecToggleController
             <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
-                <h4 class="modal-title" id="opDnssecModalLabel">{$icon} {$escTitle}</h4>
+                <h4 class="modal-title" id="opDnssecModalLabel">{$escTitle}</h4>
             </div>
             <div class="modal-body">
                 <p>{$escMsg}</p>
