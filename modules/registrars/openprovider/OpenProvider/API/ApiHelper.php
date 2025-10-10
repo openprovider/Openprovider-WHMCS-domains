@@ -595,13 +595,9 @@ class ApiHelper
             throw new \InvalidArgumentException('Missing TLD.');
         }
 
-        $data = $this->buildResponse(
+        return $this->buildResponse(
             $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
         );
-
-        $arr = is_object($data) ? json_decode(json_encode($data), true) : (array)$data;
-
-        return $arr;
     }
 
 
