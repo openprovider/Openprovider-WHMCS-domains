@@ -143,7 +143,7 @@ class DomainController extends BaseController
                 $adminHandle = $adminHandle ?? $handle->findOrCreate($params, 'admin');
                 $domainRegistration->techHandle = $adminHandle;
             }
-            if (isset($tldMetaData['techHandleSupported']) && $tldMetaData['techHandleSupported']) {
+            if (isset($tldMetaData['billingHandleSupported']) && $tldMetaData['billingHandleSupported']) {
                 $adminHandle = $adminHandle ?? $handle->findOrCreate($params, 'admin');
                 $domainRegistration->billingHandle = $adminHandle;
             }
@@ -268,7 +268,7 @@ class DomainController extends BaseController
                 $adminHandle = $adminHandle ?? $handle->findOrCreate($params, 'admin');
                 $domainTransfer->techHandle = $adminHandle;
             }
-            if (isset($tldMetaData['techHandleSupported']) && $tldMetaData['techHandleSupported']) {
+            if (isset($tldMetaData['billingHandleSupported']) && $tldMetaData['billingHandleSupported']) {
                 $adminHandle = $adminHandle ?? $handle->findOrCreate($params, 'admin');
                 $domainTransfer->billingHandle = $adminHandle;
             }
