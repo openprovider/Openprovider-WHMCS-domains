@@ -70,6 +70,11 @@ class ApiHelper
                 return $result['authCode'];
             }
 
+            if ($result['success'] == true) {
+                $message = "The authorization code has been successfully sent to the registrant email. Please check registrant inbox.";
+                return $message;
+            }
+
             if (isset($result['message']) && $result['message'] != "") {
                 throw new \Exception($result['message']);
             }
