@@ -22,7 +22,7 @@ final class BodySummarizer implements BodySummarizerInterface
     public function summarize(MessageInterface $message): ?string
     {
         return $this->truncateAt === null
-            ? Psr7\Message::bodySummary($message)
+            ? Psr7\Message::bodySummary($message, 500)
             : Psr7\Message::bodySummary($message, $this->truncateAt);
     }
 }
