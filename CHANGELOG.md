@@ -1,5 +1,13 @@
 # Changelog
 
+## v5.8.6
+
+###### Features and improvements
+* Implemented ICANN's Registration Data Policy(RDP): Minimum Data Set (MDS) changes
+
+###### Bugfixes
+* Fixed contact update failure for existing domains due to Minimum Data Set changes
+
 ## v5.8.5
 
 ### Features and improvements
