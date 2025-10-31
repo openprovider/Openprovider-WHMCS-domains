@@ -82,14 +82,38 @@ jQuery( document ).ready(function() {
             $domainId        = isset($_REQUEST['domainid']) ? $_REQUEST['domainid'] : $_REQUEST['id'];
             $isDomainEnabled = Capsule::table('tbldomains')
                 ->where('id', $domainId)
-                ->select('status', 'dnsmanagement', 'domain')
+                ->select('status', 'dnssecmanagement', 'domain')
                 ->first();
             
-            if ($isDomainEnabled->dnsmanagement != 1){
+            if ($isDomainEnabled->dnssecmanagement != 1){
                 return;
             }
 
             $domain = DomainFullNameToDomainObject::convert($isDomainEnabled->domain);
+            $tld = null;
+            if (is_object($domain) && method_exists($domain, 'getExtension')) {
+                $tld = $domain->getExtension(); 
+            } else {
+                $labels = array_values(array_filter(explode('.', strtolower($isDomainEnabled->domain))));
+                if (count($labels) > 1) {
+                    array_shift($labels);
+                    $tld = implode('.', $labels);
+                }
+            }
+            
+            if (empty($tld)) {
+                logModuleCall('openprovider', 'supportsDnssec', ['domain' => $isDomainEnabled->domain], null, 'Could not derive TLD', null);
+                return;
+            }
+
+            try {
+                if (!$this->apiHelper->supportsDnssec($tld)) {
+                    return;
+                }
+            } catch (\Exception $e) {
+                return;
+            }
+
             try {
                 $op_domain = $this->apiHelper->getDomain($domain);
             } catch (\Exception $e) {
