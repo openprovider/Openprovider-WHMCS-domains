@@ -584,6 +584,24 @@ class ApiHelper
     }
 
     /**
+     * @param string $tld
+     * @return array
+     * @throws \Exception 
+     */
+    public function getTldMeta(string $tld): array
+    {
+        $tld = trim($tld);
+        if ($tld === '') {
+            throw new \InvalidArgumentException('Missing TLD.');
+        }
+
+        return $this->buildResponse(
+            $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
+        );
+    }
+
+
+    /**
      * @param ResponseInterface $response
      * @return array
      * @throws \Exception
