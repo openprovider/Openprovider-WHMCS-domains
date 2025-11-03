@@ -858,7 +858,7 @@ $additionaldomainfields[".fi"][] = array(
     "Required" => true,
     "Options" => "0 - Private person,1 - Company,2 - Corporation,3 - Institution,4 - Political party,5 - Township,6 - Government,7 - Public Community",
     "op_explode" => ' -',
-    "op_location" => "domainAdditionalData",
+    "op_location" => "customerExtensionAdditionalData",
     "op_name" => "orgType"
 );
 
