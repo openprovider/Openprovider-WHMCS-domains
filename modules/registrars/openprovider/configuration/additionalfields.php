@@ -408,10 +408,11 @@ $additionaldomainfields['.se'][] = array(
 // .SG
 
 $additionaldomainfields[".sg"][] = array(
-    "Name" => "Company Registration Number",
+    "Name" => "Company Registration Number /</br>Passport Number / NRIC",
     "LangVar" => "companyRegistrationNumber",
     "Type" => "text",
     "Size" => "30",
+    "Required" => true,
     "op_location" => "customerAdditionalData",
     "op_name"  => "companyRegistrationNumber"
 );
@@ -421,17 +422,9 @@ $additionaldomainfields[".sg"][] = array(
     "LangVar" => "adminSingPassId",
     "Type" => "text",
     "Size" => "30",
+    "Required" => true,
     "op_location" => "domainAdditionalData",
     "op_name"  => "adminSingPassId"
-);
-
-$additionaldomainfields[".sg"][] = array(
-    "Name" => "Passport Number",
-    "LangVar" => "passportNumber",
-    "Type" => "text",
-    "Size" => "30",
-    "op_location" => "customerAdditionalData",
-    "op_name"  => "passportNumber"
 );
 
 // .COM.SG
