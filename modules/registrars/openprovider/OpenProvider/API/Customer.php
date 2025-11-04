@@ -1,9 +1,10 @@
 <?php
 namespace OpenProvider\API;
-use OpenProvider\WhmcsHelpers\CustomField;
+
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
-use WeDevelopCoffee\wPower\Domain\AdditionalFields;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use WHMCS\Config\Setting;
+use WHMCS\Language\ClientLanguage;
 
 /**
  * Customer
@@ -61,6 +62,12 @@ class Customer
      * @var string
      */
     public $handle          =   null;
+
+    /**
+     *
+     * @var string
+     */
+    public $locale          =   'en_001';
 
     /**
      *
@@ -138,6 +145,7 @@ class Customer
                 'phone country code' => 'Phone Country Code',
                 'email' => 'email',
                 'companyname' => 'companyname',
+                'language' => 'language'
             );
 
             foreach ($indexes as &$value)
@@ -219,6 +227,7 @@ class Customer
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
         $this->tags         =   $tags->getTags();
+        $this->locale       =   $this->getLocaleByLanguage($params[$indexes['language']] ?? null);;
 
         $this->additionalData = new CustomerAdditionalData();
 
@@ -276,6 +285,7 @@ class Customer
                 $this->additionalData->set($idn_id_type, $idn_id);
             }
         }
+
     }
 
     public function setAddressStateShort()
@@ -296,5 +306,17 @@ class Customer
     public function setTags($tags)
     {
         $this->tags = (new CustomerTags($tags))->getTags();
+    }
+
+    private function getLocaleByLanguage(?string $language)
+    {
+        // en_001 = "English (World)" in the openprovider control panel. Templates should match this. (or be the default)
+        $defaultLanguageCode = 'en_001';
+
+        if (!$language || $language == 'english') {
+            return $defaultLanguageCode;
+        }
+
+        return ClientLanguage::factory(Setting::getValue('Language'), $language)->toArray()['locale'] ?? $defaultLanguageCode;
     }
 }
