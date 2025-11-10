@@ -200,7 +200,6 @@ class DomainController extends BaseController
         } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
-
         return $values;
     }
 
@@ -302,7 +301,6 @@ class DomainController extends BaseController
         } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
         }
-
         return $values;
     }
 }

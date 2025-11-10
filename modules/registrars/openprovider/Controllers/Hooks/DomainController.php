@@ -60,4 +60,98 @@ class DomainController
             return false;
         }
     }
+ 
+    /**
+     * Hook handler for AfterRegistrarRegistration
+     * Updates expiry date in WHMCS after registration completes.
+     *
+     * @param array $vars
+     * @return void
+     */
+    public function updateExpiryDateAfterRegistration(array $vars): void
+    {
+        try {
+            // Only handle for Openprovider
+            if ($vars['params']['registrar'] !== 'openprovider') {
+                return;
+            }
+
+            $domainId = $vars['params']['domainid'];
+            $domainName = $vars['params']['sld'] . '.' . $vars['params']['tld'];
+
+            if (!$domainId || !$domainName) {
+                return;
+            }
+
+            // Fetch actual expiry from Openprovider API
+            $domainObj = DomainFullNameToDomainObject::convert($domainName);
+            $opDomain  = $this->apiHelper->getDomain($domainObj);
+
+            if (!empty($opDomain['renewalDate'])) {
+                $expiryDate = date('Y-m-d', strtotime($opDomain['renewalDate']));
+
+                // Update expiry date in WHMCS DB
+                localAPI('UpdateClientDomain', [
+                    'domainid'   => $domainId,
+                    'expirydate' => $expiryDate,
+                ]);
+            }
+        } catch (\Exception $e) {
+            \logModuleCall(
+                'OpenProvider',
+                'AfterRegistrarRegistrationError',
+                ['domain' => $vars['params']['sld'] . '.' . $vars['params']['tld']],
+                '',
+                $e->getMessage(),
+                []
+            );
+        }
+    }
+
+    /**
+     * Hook handler for AfterRegistrarTransfer
+     * Updates expiry date in WHMCS after a successful domain transfer.
+     *
+     * @param array $vars
+     * @return void
+     */
+    public function updateExpiryDateAfterTransfer(array $vars): void
+    {
+        try {
+            // Only handle for Openprovider
+            if ($vars['params']['registrar'] !== 'openprovider') {
+                return;
+            }
+
+            $domainId = $vars['params']['domainid'];
+            $domainName = $vars['params']['sld'] . '.' . $vars['params']['tld'];
+
+            if (!$domainId || !$domainName) {
+                return;
+            }
+
+            // Fetch actual expiry from Openprovider API
+            $domainObj = DomainFullNameToDomainObject::convert($domainName);
+            $opDomain  = $this->apiHelper->getDomain($domainObj);
+
+            if (!empty($opDomain['renewalDate'])) {
+                $expiryDate = date('Y-m-d', strtotime($opDomain['renewalDate']));
+
+                // Update expiry date in WHMCS
+                localAPI('UpdateClientDomain', [
+                    'domainid'   => $domainId,
+                    'expirydate' => $expiryDate,
+                ]);
+            }
+        } catch (\Exception $e) {
+            \logModuleCall(
+                'OpenProvider',
+                'AfterRegistrarTransferError',
+                ['domain' => $vars['params']['sld'] . '.' . $vars['params']['tld']],
+                '',
+                $e->getMessage(),
+                []
+            );
+        }
+    }
 }
