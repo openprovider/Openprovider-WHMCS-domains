@@ -196,18 +196,9 @@ class DomainController extends BaseController
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
 
-            $result = $this->apiHelper->createDomain($domainRegistration);
+            $this->apiHelper->createDomain($domainRegistration);
         } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
-        }
-
-        if (!isset($values['error']) && isset($result['renewalDate'])) {
-            $expiryYmd = Carbon::parse($result['renewalDate'])->format('Y-m-d');
-
-            localAPI('UpdateClientDomain', [
-                'domainid'   => $params['domainid'],
-                'expirydate' => $expiryYmd,
-            ]);
         }
 
         return $values;
@@ -307,18 +298,9 @@ class DomainController extends BaseController
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
 
-            $result = $this->apiHelper->transferDomain($domainTransfer);
+            $this->apiHelper->transferDomain($domainTransfer);
         } catch (\Exception $e) {
             $values["error"] = $e->getMessage();
-        }
-
-        if (!isset($values['error']) && isset($result['renewalDate'])) {
-            $expiryYmd = Carbon::parse($result['renewalDate'])->format('Y-m-d');
-
-            localAPI('UpdateClientDomain', [
-                'domainid'   => $params['domainid'],
-                'expirydate' => $expiryYmd,
-            ]);
         }
 
         return $values;
