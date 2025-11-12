@@ -1,12 +1,13 @@
 # Changelog
 
-## v5.8.6
+## v5.8.7
 
 ###### Features and improvements
 * Implemented ICANN's Registration Data Policy(RDP): Minimum Data Set (MDS) changes
 
 ###### Bugfixes
 * Fixed contact update failure for existing domains due to Minimum Data Set changes
+* Fixed transfer error in v5.8.6 [#443](https://github.com/openprovider/Openprovider-WHMCS-domains/issues/443)
 
 ## v5.8.5
 
