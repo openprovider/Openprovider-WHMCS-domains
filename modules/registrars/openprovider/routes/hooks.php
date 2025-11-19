@@ -122,4 +122,14 @@ return [
         'priority'  => 1,
         'controller'=> 'AdminAreaHeaderOutputController@output',
     ],
+    [
+        'hookPoint' => 'AfterRegistrarRegistration',
+        'priority'  => 1,
+        'controller' => 'DomainController@updateExpiryDateAfterRegistration',
+    ],
+    [
+        'hookPoint' => 'AfterRegistrarTransfer',
+        'priority'  => 1,
+        'controller' => 'DomainController@updateExpiryDateAfterTransfer',
+    ],
 ];
