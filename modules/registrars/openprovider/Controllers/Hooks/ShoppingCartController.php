@@ -4,6 +4,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\helpers\DB;
+use idna_convert;
 
 class ShoppingCartController
 {
@@ -98,5 +99,49 @@ class ShoppingCartController
                 }
             }
         }
+    }
+
+    public function hideIdnScriptForNonIdnDomains($vars)
+    {
+        if (
+            ($vars['filename'] ?? '') !== 'cart' ||
+            ($vars['action'] ?? '') !== 'confdomains' ||
+            ($vars['templatefile'] ?? '') !== 'configuredomains'
+        ) {
+            return [];
+        }
+        
+        if (empty($vars['domains']) || !is_array($vars['domains'])) {
+            return [];
+        }
+
+        $idn = new idna_convert();
+        $updatedDomains = $vars['domains'];
+
+        foreach ($updatedDomains as $i => $domainData) {
+    
+            if (empty($domainData['fields']) || empty($domainData['domain'])) {
+                continue;
+            }
+
+            $domainName = $domainData['domain'];  
+
+            // Detect IDN 
+            $encoded = $idn->encode($domainName);
+
+            $isNonIdn = ($domainName === $encoded) && (strpos($domainName, 'xn--') === false);
+
+            if (!$isNonIdn) {
+                continue;
+            }
+
+            foreach ($domainData['fields'] as $fieldName => $html) {
+                if (stripos($fieldName, 'Internationalized domain name Script') !== false) {
+                    unset($updatedDomains[$i]['fields'][$fieldName]);
+                }
+            }
+        }
+
+        return ['domains' => $updatedDomains];
     }
 }

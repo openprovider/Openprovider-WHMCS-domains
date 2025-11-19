@@ -122,4 +122,9 @@ return [
         'priority'  => 1,
         'controller'=> 'AdminAreaHeaderOutputController@output',
     ],
+    [
+        'hookPoint' => 'ClientAreaPageCart',
+        'priority'  => 1,
+        'controller'=> 'ShoppingCartController@hideIdnScriptForNonIdnDomains',
+    ],
 ];
