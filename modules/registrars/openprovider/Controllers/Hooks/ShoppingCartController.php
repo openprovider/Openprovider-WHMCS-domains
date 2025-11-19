@@ -9,36 +9,50 @@ class ShoppingCartController
 {
     public function checkoutOutput($vars)
     {
-        GLOBAL $_LANG;
-
+        global $_LANG;
         $idnumbermod = Configuration::get('idnumbermod');
-
         if ($idnumbermod) {
             $domainsToMatch = ['es', 'pt'];
+            $data = []; // Initialize $data array
 
-            foreach ($vars['cart']['domains'] as $domain) {
-                $tld       = explode('.', $domain['domain']);
-                $f         = 0;
-                $fieldData = [];
-                foreach ($domain['fields'] as $field) {
-                    $f++;
-                    if (in_array($tld[1], $domainsToMatch)) {
-                        switch ($f) {
-                            case 1:
-                                $fieldData['field'] = $field;
-                                break;
-                            case 2:
-                                $fieldData['value'] = $field;
-                                break;
+            // Check if domains exist
+            if (!empty($vars['cart']['domains'])) {
+                foreach ($vars['cart']['domains'] as $domain) {
+                    $tld = explode('.', $domain['domain']);
+                    $f = 0;
+                    $fieldData = [];
+
+                    // Check if fields exist
+                    if (!empty($domain['fields']) && is_array($domain['fields'])) {
+                        foreach ($domain['fields'] as $field) {
+                            $f++;
+                            if (isset($tld[1]) && in_array($tld[1], $domainsToMatch)) {
+                                switch ($f) {
+                                    case 1:
+                                        $fieldData['field'] = $field;
+                                        break;
+                                    case 2:
+                                        $fieldData['value'] = $field;
+                                        break;
+                                }
+                            }
                         }
                     }
-                }
 
-                $data[$domain['domain']] = $fieldData;
+                    if (!empty($fieldData)) {
+                        $data[$domain['domain']] = $fieldData;
+                    }
+                }
             }
 
-            foreach ($data as $domain => $fields) {
+            $fieldDisplay = ''; // Initialize $fieldDisplay
 
+            foreach ($data as $domain => $fields) {
+                if (empty($fields['field']) || empty($fields['value'])) {
+                    continue;
+                }
+
+                $name = '';
                 switch ($fields['field']) {
                     case 'companyRegistrationNumber':
                         $name = $_LANG['esIdentificationCompany'];
@@ -57,12 +71,15 @@ class ShoppingCartController
                 $fieldDisplay .= "<div class='col-sm-12'><div class='form-group prepend-icon'><label class='field-icon' for='" . $domain . "_" . $fields["field"] . "'> <i class='fas id-card'></i></label><input required class='form-control' readonly id='" . $domain . "_" . $fields["field"] . "' type='text' name='" . $fields["field"] . "' value='[$domain] $name:  " . $fields["value"] . "' /> </div></div>";
             }
 
-            $output = '<script type="text/javascript">$("#domainRegistrantInputFields").append("' . $fieldDisplay . '")</script>';
-
-            return $output;
+            if (!empty($fieldDisplay)) {
+                $output = '<script type="text/javascript">$("#domainRegistrantInputFields").append("' . $fieldDisplay . '")</script>';
+                return $output;
+            }
         }
-    }
 
+        return ''; // Return empty string if no output
+    }
+    
     public function preCheckout($vars)
     {
         $idnumbermod = Configuration::get('idnumbermod');
