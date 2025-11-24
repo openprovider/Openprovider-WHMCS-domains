@@ -74,37 +74,34 @@ class AdditionalFields
     {
         // Get the distribution fields.
         $this->getDistAdditionalFields();
-        $additionalFields = [];
-
-        //Loop over all registrar TLDs 
-        foreach (array_keys((array)$this->registrarTlds) as $tld) {
-
-            // Use custom fields if present; otherwise empty array
-            $fields = $this->registrarAdditionalFields[$tld] ?? [];
-
-            // Set the additional fields.
-            $additionalFields[$tld] = $fields;
-
+        // Loop through the fields and compile a finished additional fields set.
+        $additionalField = [];
+        foreach ($this->registrarAdditionalFields as $tld => $fields) {
             $tmpRegistrarFields = [];
-            // Temporarily store the field names to prevent that they will get removed from WHMCS.
-            foreach ($fields as $field) {
-                $tmpRegistrarFields[$field['Name']] = true;
-            }
-            // Remove the distributed fields.
-            if (isset($this->distAdditionalFields[$tld])) {
-                // Disable the additional fields.
-                foreach ($this->distAdditionalFields[$tld] as $whmcsField) {
-                    if (!is_array($whmcsField)) {
-                        $name = $whmcsField;
-                        $whmcsField = array();
-                        $whmcsField['Name'] = $name;
-                    }
-                    // Only remove fields that are not in the Registrars field.
-                    if (!isset($tmpRegistrarFields[$whmcsField['Name']])) {
-                        $removeField = [];
-                        $removeField['Name']    = $whmcsField['Name'];
-                        $removeField['Remove']  = true;
-                        $additionalFields[$tld][] = $removeField;
+            // Only override TLDs that belong to this registrar.
+            if (isset($this->registrarTlds[$tld])) {
+                // Set the additional fields.
+                $additionalFields[$tld] = $fields;
+                // Temporarily store the field names to prevent that they will get removed from WHMCS.
+                foreach ($fields as $field) {
+                    $tmpRegistrarFields[$field['Name']] = true;
+                }
+                // Remove the distributed fields.
+                if (isset($this->distAdditionalFields[$tld])) {
+                    // Disable the additional fields.
+                    foreach ($this->distAdditionalFields[$tld] as $whmcsField) {
+                        if (!is_array($whmcsField)) {
+                            $name = $whmcsField;
+                            $whmcsField = array();
+                            $whmcsField['Name'] = $name;
+                        }
+                        // Only remove fields that are not in the Registrars field.
+                        if (!isset($tmpRegistrarFields[$whmcsField['Name']])) {
+                            $removeField = [];
+                            $removeField['Name']    = $whmcsField['Name'];
+                            $removeField['Remove']  = true;
+                            $additionalFields[$tld][] = $removeField;
+                        }
                     }
                 }
             }
