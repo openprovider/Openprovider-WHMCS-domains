@@ -132,4 +132,14 @@ return [
         'priority'  => 1,
         'controller' => 'DomainController@updateExpiryDateAfterTransfer',
     ],
+    [
+        'hookPoint' => 'AdminAreaFooterOutput',
+        'priority'  => 1,
+        'controller' => 'AdminAreaFooterController@output',
+    ],
+    [
+        'hookPoint' => 'AdminClientDomainsTabFieldsSave',
+        'priority'  => 1,
+        'controller' => 'AdminClientDomainsTabController@save',
+    ],
 ];

@@ -24,7 +24,7 @@ return [
     // Do NOT edit here; it is set automatically by the Openprovider module.
     'OpenproviderPremium'               => $premiumEnabled,
     //  Default: true,  boolean - Set to true to Require Openprovider DNS servers for DNS management
-    'require_op_dns_servers'            => false,
+    'require_op_dns_servers'            => true,
     //  Default: '',    string -Enter TLDs split by a comma ("nl,eu,be") The module will alway try to renew TLDs in this list as soon as transfer is completed. This is useful for TLDs which don't include an automatic renewal with domain transfer. Note that this will incur a cost in your Openprovider account
     'renewTldsUponTransferCompletion'   => '',
     //  Default: '', string - Choose a DNS template

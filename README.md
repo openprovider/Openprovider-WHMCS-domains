@@ -6,7 +6,6 @@ other problems, please report it to [Openprovider Support team](https://support.
 ## Introduction
 The Openprovider WHMCS module integrates conveniently with your [Openprovider account](https://cp.openprovider.eu/signup), allowing you to automate domain provisioning and management tasks, such as registration, renewal, deletion, updates to contact details, etc.
 
-
 The module keeps domain expiration dates, status and auto renew settings synchronized (on all Pending Transfer, Pending Registration, and Active status domains) between your WHMCS installation and Openprovider account, making sure the correct domains get renewed each day.
 
 Additionally, the module allows you to use the Openprovider API to check for domain availability, increasing performance over the default domain availability check. 

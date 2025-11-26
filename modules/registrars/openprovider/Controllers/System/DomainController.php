@@ -248,7 +248,7 @@ class DomainController extends BaseController
             if (isset($additionalFields['customer']))
                 $handle->setCustomerAdditionalData($additionalFields['customer']);
 
-            $tldMetaData = $this->apiHelper->getTldMeta($this->domain->extension);
+            $tldMetaData = $this->apiHelper->getTldMeta($domain->extension);
 
             $domainTransfer                  = new DomainTransfer();
             $domainTransfer->domain          = $domain;
