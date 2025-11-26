@@ -54,14 +54,14 @@
 ## v5.8.3
 
 ###### Features and improvements
-- Added .es transfer auth code support (ensure to select EPP Code checkbox for .es in Domain Pricing to require an EPP code for incoming transfers of .es domains).
-- Added .dk Terms & Conditions Acceptance checkbox - .DK Registry made changes to the flow of .DK domain names, making it mandatory for domain owners to accept T&C's of the registry before registering a .dk domain name.
-- Generate a new auth code on clicking 'Get EPP Code' button in WHMCS if domain auth code is empty (for supported TLDs).
+* Added .es transfer auth code support (ensure to select **[EPP Code](https://docs.whmcs.com/domains/pricing-and-configuration/domain-pricing/#epp-code)** checkbox for .es in **Domain Pricing** to require an EPP code for incoming transfers of .es domains). 
+* Added .dk Terms & Conditions Acceptance checkbox - .DK Registry made changes to the flow of .DK domain names, making it mandatory for domain owners to accept T&C's of the registry before registering a .dk domain name. 
+* Generate a new auth code on clicking 'Get EPP Code' button in WHMCS if domain auth code is empty (for supported TLDs).
 
 ###### Bugfixes
-- Fixed: Resolved an issue with converting checkbox values to strings.
-- Fixed error accessing admin dashboard - Argument #2 ($array) must be of type array, null given in ../DocBlock/Tags/InvalidTag.php:89
-- Updated the getOrDefault() function and default value of 'require_op_dns_servers' in advanced-module-configurations.php file.
+* Fixed: Resolved an issue with converting checkbox values to strings.
+* Fixed error accessing admin dashboard - `Argument #2 ($array) must be of type array, null given in ../DocBlock/Tags/InvalidTag.php:89`
+* Updated the getOrDefault() function and default value of 'require_op_dns_servers' in advanced-module-configurations.php file.
 
 ## v5.8.0
 
