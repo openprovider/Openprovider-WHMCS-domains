@@ -31,6 +31,7 @@
 - Fixed: Duplicate handle creations on contact updates from WHMCS.
 - Fixed: Error requesting EPP code for .be domains from WHMCS.
 - Fixed: DomainGetNameservers API returns empty response.
+- Fixed: Incorrect Error Response for DomainUpdateLockingStatus
 
 ## v5.8.7
 
