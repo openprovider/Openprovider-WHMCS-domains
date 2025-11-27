@@ -39,7 +39,6 @@ use phpmock\generator\MockFunctionGenerator;
  */
 class Mock implements Deactivatable
 {
-
     /**
      * @var string namespace for the mock function.
      */
@@ -91,7 +90,7 @@ class Mock implements Deactivatable
         if ($registry->isRegistered($this)) {
             throw new MockEnabledException(
                 "$this->name is already enabled."
-                . "Call disable() on the existing mock."
+                . " Call disable() on the existing mock."
             );
         }
         $this->define();

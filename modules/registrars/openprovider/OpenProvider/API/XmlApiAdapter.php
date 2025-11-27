@@ -68,7 +68,7 @@ class XmlApiAdapter implements ApiInterface
         $params = [
             'Username' => $this->configuration->getUserName(),
             'Password' => $this->configuration->getPassword(),
-            'test_mode' => $this->configuration->getHost() == Configuration::get('api_url_cte') ? 'on' : 'off',
+            'test_mode' => $this->configuration->getHost() == Configuration::get('restapi_url_sandbox') ? 'on' : 'off',
         ];
 
         $debug = $this->configuration->getDebug() ? 1 : 0;

@@ -64,7 +64,12 @@ class SupportController extends ViewBaseController {
         $outputActivityLog = $this->getActivityLog($date);
 
         // Fetch module logs
-        $outputModuleLog = $this->getModuleLog($date, $outputModuleLog);
+        $outputModuleLog = $this->getModuleLog($date);
+        if (empty($outputModuleLog)) {
+            http_response_code(204);
+            echo 'The module.log is empty. There is no data to download.';
+            exit;
+        }
 
         // Send the file
         $this->generateDownload($outputActivityLog, $outputModuleLog);
@@ -75,7 +80,7 @@ class SupportController extends ViewBaseController {
      * @param $outputModuleLog
      * @return string
      */
-    public function getModuleLog( $date, $outputModuleLog): string
+    public function getModuleLog( $date, $outputModuleLog = ""): string
     {
         $moduleLogs = $this->capsule->table('tblmodulelog')
             ->where('date', '>=', $date)
@@ -113,7 +118,7 @@ EOF;
      * @param static $date
      * @param $outputActivityLog
      */
-    public function getActivityLog( $date): string
+    public function getActivityLog( $date, $outputActivityLog = ""): string
     {
         $activityLogs = $this->capsule->table('tblactivitylog')
             ->where('date', '>=', $date)

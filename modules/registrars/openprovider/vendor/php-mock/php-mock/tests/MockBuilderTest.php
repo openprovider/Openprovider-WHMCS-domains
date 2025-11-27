@@ -15,11 +15,8 @@ use PHPUnit\Framework\TestCase;
  */
 class MockBuilderTest extends TestCase
 {
-
     /**
      * Tests build().
-     *
-     * @test
      */
     public function testBuild()
     {

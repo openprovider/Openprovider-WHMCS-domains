@@ -9,56 +9,68 @@
  */
 namespace PHPUnit\Runner;
 
+use function array_slice;
+use function assert;
+use function dirname;
+use function explode;
+use function implode;
+use function strpos;
 use SebastianBergmann\Version as VersionId;
 
 /**
- * This class defines the current version of PHPUnit.
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
-class Version
+final class Version
 {
-    private static $pharVersion;
+    /**
+     * @var string
+     */
+    private static $pharVersion = '';
 
-    private static $version;
+    /**
+     * @var string
+     */
+    private static $version = '';
 
     /**
      * Returns the current version of PHPUnit.
+     *
+     * @psalm-return non-empty-string
      */
     public static function id(): string
     {
-        if (self::$pharVersion !== null) {
+        if (self::$pharVersion !== '') {
             return self::$pharVersion;
         }
 
-        if (self::$version === null) {
-            $version       = new VersionId('7.5.20', \dirname(__DIR__, 2));
-            self::$version = $version->getVersion();
+        if (self::$version === '') {
+            self::$version = (new VersionId('9.6.23', dirname(__DIR__, 2)))->getVersion();
+
+            assert(!empty(self::$version));
         }
 
         return self::$version;
     }
 
+    /**
+     * @psalm-return non-empty-string
+     */
     public static function series(): string
     {
-        if (\strpos(self::id(), '-')) {
-            $version = \explode('-', self::id())[0];
+        if (strpos(self::id(), '-')) {
+            $version = explode('-', self::id())[0];
         } else {
             $version = self::id();
         }
 
-        return \implode('.', \array_slice(\explode('.', $version), 0, 2));
+        return implode('.', array_slice(explode('.', $version), 0, 2));
     }
 
+    /**
+     * @psalm-return non-empty-string
+     */
     public static function getVersionString(): string
     {
         return 'PHPUnit ' . self::id() . ' by Sebastian Bergmann and contributors.';
-    }
-
-    public static function getReleaseChannel(): string
-    {
-        if (\strpos(self::$pharVersion, '-') !== false) {
-            return '-nightly';
-        }
-
-        return '';
     }
 }

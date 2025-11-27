@@ -1,5 +1,38 @@
 # Changelog
 
+## v5.9.0
+
+###### Features and improvements
+- [Experimental] Bash scripts for one step installation and upgrade of the module. → Run the command via SSH or Terminal as hosting user. 
+- Per-domain sync button in the WHMCS Admin area.
+- Open the new DNS manager in a new tab ("useNewDnsManagerFeature" => true in advanced-module-configurations.php)
+- Module version and update check button in Openprovider widget.
+- Single function for balance widget and shows available balance.
+- Updated "jquery" (to address: CVE-2019-11358), "phpunit", "phpdocumentor", and "guzzlehttp" packages.
+- Renewal date sync to WHMCS with WHMCS native domain sync. This avoids mismatched dates caused by renewal offsets.
+- Progress indicator for DNSSEC activation and deactivation in WHMCS client area.
+- Support for .fi, .ae, .eu and .es (.es ANNEX III registrant Acceptance) additional fields.
+- Disabled domain locking warning in the client area for TLDs that do not support locking, for example .nl, .eu, etc.
+- Improved loading time by switching LocalAPI call to the $CONFIG global.
+- Nameserver validation for registrations, transfers and nameserver changes from WHMCS.
+- Updated rest-client-php library.
+- Updated readme files (main and addon module) and WHMCS documentation links in the docs.
+- Module now creates a queue item with domain details for API warnings.  
+
+###### Bugfixes
+- Fixed: Random admin logouts.
+- Fixed: To-Do list item creation for warning code 250.
+- Fixed: Long error logging entry in Activity Log when module log is empty (WHMCS Addon Module).
+- Fixed: TLD Import & Pricing Sync with Sandbox credentials.
+- Fixed: ShoppingCartController - Warning in error log when foreach() is passed a null argument.
+- Fixed: Domain details missing in to-do list items created.
+- Fixed: [Addon] To-Do list items getting created (The autorenewal for domain.tld has been enabled. Reschedule the transfer with Openprovider.) for domains that are not registered with Openprovider and not scheduled for transfer.
+- Fixed: Null check added to prevent type errors if additional fields function returns null value.
+- Fixed: Duplicate handle creations on contact updates from WHMCS.
+- Fixed: Error requesting EPP code for .be domains from WHMCS.
+- Fixed: DomainGetNameservers API returns empty response.
+- Fixed: Incorrect Error Response for DomainUpdateLockingStatus
+
 ## v5.8.7
 
 ###### Features and improvements
@@ -34,6 +67,7 @@
 ## v5.8.0
 
 ###### Features and improvements
+
 - **Improved [TLD Price Sync](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/TLD_Pricing_sync_Utility.md)** - Fetch TLD prices with a single click from WHMCS. If prices were fetched via within last 24 hours, we will use the downloaded prices to speed up the operation.
 - **Improved [DNSSEC management for end users](https://github.com/openprovider/Openprovider-WHMCS-domains/blob/version-8/docs/DNSSEC_for_clients.md)** - Manually copying contents from 'custom-pages' to root folder is no longer required if your hosting environment permits. Made it easier to manage DNSSEC.
 - **Improved error reporting and logging** - Errors will be shown in WHMCS without restrictions. New informative error messages added for some scenarios.
@@ -41,8 +75,8 @@
 - **Auto-renew** - Domains will be created with auto-renew value "default" (will inherit reseller account settings)
 - **New**: [To-Do List](https://docs.whmcs.com/admins/admin-tools/#to-do-list) items creation for domain operation warnings in success response.
 
-
 ###### Bugfixes
+
 - Fixed known PHP 8.1 compatibility issues (Renewal, double-renewal, TLD sync, cron, additional fields, whois lookup, domain suggestions
 - Fixed errors getting truncated
 - Fixed duplicate handle creation on contact update
@@ -57,7 +91,7 @@
 
 ###### Features and improvements
 
-- Allow end user to enter additional fields for domain .it(company registration number/vat number/social security number). 
+- Allow end user to enter additional fields for domain .it(company registration number/vat number/social security number).
 - Enhanced module logs.
 
 ###### Bugfixes
@@ -70,7 +104,7 @@
 
 ###### Features and improvements
 
-- Allow end user to enter additional fields for domain .es(owner type/company registration number or identification number). 
+- Allow end user to enter additional fields for domain .es(owner type/company registration number or identification number).
 - Enhanced module logs.
 
 ## v5.4
@@ -90,7 +124,7 @@
 
 ###### Features and improvements
 
-- Allow end users and WHMCS administrators to update domain contact  details for .es domains, including the company / personal identification number
+- Allow end users and WHMCS administrators to update domain contact details for .es domains, including the company / personal identification number
 
 ###### Bugfixes
 
@@ -128,9 +162,9 @@
 ###### Features
 
 - Added support for Domain contact verification, for more information see the [WHMCS documentation](https://docs.whmcs.com/Domain_Contact_Verification)
-- [Support for tag management of clients](https://github.com/openprovider/OP-WHMCS7#allow-end-users-to-edit-dnssec-records)
+- [Support for tag management of clients](https://github.com/openprovider/Openprovider-WHMCS-domains#allow-end-users-to-edit-dnssec-records)
 - Simplified configuration page
-- [Allow end users to manage DNSSEC records](https://github.com/openprovider/OP-WHMCS7#allow-end-users-to-edit-dnssec-records)
+- [Allow end users to manage DNSSEC records](https://github.com/openprovider/Openprovider-WHMCS-domains#allow-end-users-to-edit-dnssec-records)
 - Refactored documentation
 
 ###### Bugfixes
@@ -147,6 +181,7 @@
 - [FEATURE] Adds support for assigning tags to specific clients, which allows the WHMCS administrator to send custom emails to the client and all of the client's contacts
 
 ## v3.3
+
 Notes:
 To improve DNS support, perform the actions are instructed in "Install the DNS management options". We have created a [request for WHMCS to make this easier. Please upvote this request here](https://requests.whmcs.com/topic/add-support-for-custom-dns-types).
 
@@ -166,7 +201,6 @@ To improve DNS support, perform the actions are instructed in "Install the DNS m
 - Bugfix: Removed the by WHMCS introduced field "Eurid Entity type" for .eu (#130)
 - Bugfix: Fixed addon activation (#119)
 - Bugfix: Domains in Pending transfer are skipped by DomainSync (#131)
-
 
 ## All previous versions to v3.0
 

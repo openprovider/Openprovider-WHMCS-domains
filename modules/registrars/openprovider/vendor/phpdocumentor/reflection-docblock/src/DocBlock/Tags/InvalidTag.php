@@ -11,6 +11,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionFunction;
 use Throwable;
+
 use function array_map;
 use function get_class;
 use function get_resource_type;
@@ -26,19 +27,16 @@ use function sprintf;
  * we cannot simply throw exceptions at all time because the exceptions will break the creation of a
  * docklock. Just silently ignore the exceptions is not an option because the user as an issue to fix.
  *
- * This tag holds that error information until a using application is able to display it. The object wil just behave
+ * This tag holds that error information until a using application is able to display it. The object will just behave
  * like any normal tag. So the normal application flow will not break.
  */
 final class InvalidTag implements Tag
 {
-    /** @var string */
-    private $name;
+    private string $name;
 
-    /** @var string */
-    private $body;
+    private string $body;
 
-    /** @var Throwable|null */
-    private $throwable;
+    private ?Throwable $throwable = null;
 
     private function __construct(string $name, string $body)
     {
@@ -46,22 +44,22 @@ final class InvalidTag implements Tag
         $this->body = $body;
     }
 
-    public function getException() : ?Throwable
+    public function getException(): ?Throwable
     {
         return $this->throwable;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public static function create(string $body, string $name = '') : self
+    public static function create(string $body, string $name = ''): self
     {
         return new self($name, $body);
     }
 
-    public function withError(Throwable $exception) : self
+    public function withError(Throwable $exception): self
     {
         $this->flattenExceptionBacktrace($exception);
         $tag            = new self($this->name, $this->body);
@@ -76,7 +74,7 @@ final class InvalidTag implements Tag
      * Not all objects are serializable. So we need to remove them from the
      * stored exception to be sure that we do not break existing library usage.
      */
-    private function flattenExceptionBacktrace(Throwable $exception) : void
+    private function flattenExceptionBacktrace(Throwable $exception): void
     {
         $traceProperty = (new ReflectionClass(Exception::class))->getProperty('trace');
         $traceProperty->setAccessible(true);
@@ -85,7 +83,7 @@ final class InvalidTag implements Tag
             $trace = $exception->getTrace();
             if (isset($trace[0]['args'])) {
                 $trace = array_map(
-                    function (array $call) : array {
+                    function (array $call): array {
                         $call['args'] = array_map([$this, 'flattenArguments'], $call['args'] ?? []);
 
                         return $call;
@@ -128,7 +126,7 @@ final class InvalidTag implements Tag
         return $value;
     }
 
-    public function render(?Formatter $formatter = null) : string
+    public function render(?Formatter $formatter = null): string
     {
         if ($formatter === null) {
             $formatter = new Formatter\PassthroughFormatter();
@@ -137,7 +135,7 @@ final class InvalidTag implements Tag
         return $formatter->format($this);
     }
 
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->body;
     }

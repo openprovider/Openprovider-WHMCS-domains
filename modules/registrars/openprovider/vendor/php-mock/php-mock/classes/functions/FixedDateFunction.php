@@ -13,7 +13,6 @@ use InvalidArgumentException;
  */
 class FixedDateFunction implements FunctionProvider, Incrementable
 {
-
     /**
      * @var int the timestamp.
      */
@@ -52,6 +51,6 @@ class FixedDateFunction implements FunctionProvider, Incrementable
 
     public function increment($increment)
     {
-        $this->timestamp += $increment;
+        $this->timestamp += (int) $increment;
     }
 }

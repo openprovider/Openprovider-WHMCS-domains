@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenProvider Registar module
  *
@@ -26,15 +27,15 @@ return [
         'priority' =>  1,
         'controller' => 'DomainController@saveDomainEdit'
     ],
-    [
-        'hookPoint' => 'ClientAreaPrimarySidebar',
-        'priority' =>  1,
-        'controller' => 'NavigationController@hideRegistrarLock'
-    ],
+    // [
+    //     'hookPoint' => 'ClientAreaPrimarySidebar',
+    //     'priority' =>  1,
+    //     'controller' => 'NavigationController@hideRegistrarLock'
+    // ],
     [
         'hookPoint' => 'AdminHomeWidgets',
         'priority' =>  1,
-        'controller' => 'AdminWidgetController@showBalance'
+        'controller' => 'AdminWidgetController@showBalanceWidget'
     ],
     [
         'hookPoint' => 'ClientAreaPageDomainDNSManagement',
@@ -59,42 +60,77 @@ return [
     [
         'hookPoint' => 'AdminClientProfileTabFields',
         'priority'  => 1,
-        'controller'=> 'AdminClientProfileTabController@additionalFields',
+        'controller' => 'AdminClientProfileTabController@additionalFields',
     ],
     [
         'hookPoint' => 'AdminClientProfileTabFieldsSave',
         'priority'  => 1,
-        'controller'=> 'AdminClientProfileTabController@saveFields',
+        'controller' => 'AdminClientProfileTabController@saveFields',
     ],
     [
         'hookPoint' => 'ShoppingCartCheckoutOutput',
         'priority'  => 1,
-        'controller'=> 'ShoppingCartController@checkoutOutput',
+        'controller' => 'ShoppingCartController@checkoutOutput',
     ],
     [
         'hookPoint' => 'PreShoppingCartCheckout',
         'priority'  => 1,
-        'controller'=> 'ShoppingCartController@preCheckout',
+        'controller' => 'ShoppingCartController@preCheckout',
     ],
     [
         'hookPoint' => 'ContactAdd',
         'priority'  => 1,
-        'controller'=> 'ContactController@add',
+        'controller' => 'ContactController@add',
     ],
     [
         'hookPoint' => 'ContactDelete',
         'priority'  => 1,
-        'controller'=> 'ContactController@delete',
+        'controller' => 'ContactController@delete',
     ],
     [
         'hookPoint' => 'ContactEdit',
         'priority'  => 1,
-        'controller'=> 'ContactController@edit',
+        'controller' => 'ContactController@edit',
     ],
     [
         'hookPoint' => 'ClientAreaFooterOutput',
         'priority'  => 1,
-        'controller'=> 'ClientAreaFooterController@output',
+        'controller' => 'ClientAreaFooterController@output',
+    ],
+    [
+        'hookPoint' => 'ClientAreaDomainDetailsOutput',
+        'priority' => 1,
+        'controller' => 'DomainLockingEnabledController@handleDomainLockingClientArea',
+    ],
+    [
+        'hookPoint' => 'ClientAreaPrimarySidebar',
+        'priority' => 1,
+        'controller' => 'DomainLockingEnabledController@handleDomainLockingClientSidebar',
+    ],
+    [
+        'hookPoint' => 'AdminAreaFooterOutput',
+        'priority' => 1,
+        'controller' => 'DomainLockingEnabledController@handleDomainLockingAdminArea',
+    ],
+    [
+        'hookPoint' => 'AdminAreaHeaderOutput',
+        'priority'  => 1,
+        'controller'=> 'AdminAreaHeaderOutputController@output',
+    ],
+    [
+        'hookPoint' => 'AdminAreaHeaderOutput',
+        'priority'  => 1,
+        'controller'=> 'AdminAreaHeaderOutputController@output',
+    ],
+    [
+        'hookPoint' => 'AfterRegistrarRegistration',
+        'priority'  => 1,
+        'controller' => 'DomainController@updateExpiryDateAfterRegistration',
+    ],
+    [
+        'hookPoint' => 'AfterRegistrarTransfer',
+        'priority'  => 1,
+        'controller' => 'DomainController@updateExpiryDateAfterTransfer',
     ],
     [
         'hookPoint' => 'AdminAreaFooterOutput',

@@ -37,7 +37,7 @@ final class Throws extends TagWithType implements Factory\StaticMethod
         ?TypeResolver $typeResolver = null,
         ?DescriptionFactory $descriptionFactory = null,
         ?TypeContext $context = null
-    ) : self {
+    ): self {
         Assert::notNull($typeResolver);
         Assert::notNull($descriptionFactory);
 
@@ -47,18 +47,5 @@ final class Throws extends TagWithType implements Factory\StaticMethod
         $description = $descriptionFactory->create($description, $context);
 
         return new static($type, $description);
-    }
-
-    public function __toString() : string
-    {
-        if ($this->description) {
-            $description = $this->description->render();
-        } else {
-            $description = '';
-        }
-
-        $type = (string) $this->type;
-
-        return $type . ($description !== '' ? ($type !== '' ? ' ' : '') . $description : '');
     }
 }

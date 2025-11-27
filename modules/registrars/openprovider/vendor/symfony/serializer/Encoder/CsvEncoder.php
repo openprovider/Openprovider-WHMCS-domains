@@ -36,7 +36,8 @@ class CsvEncoder implements EncoderInterface, DecoderInterface
 
     private const UTF8_BOM = "\xEF\xBB\xBF";
 
-    private $formulasStartCharacters = ['=', '-', '+', '@'];
+    private const FORMULAS_START_CHARACTERS = ['=', '-', '+', '@', "\t", "\r"];
+
     private $defaultContext = [
         self::DELIMITER_KEY => ',',
         self::ENCLOSURE_KEY => '"',
@@ -93,19 +94,20 @@ class CsvEncoder implements EncoderInterface, DecoderInterface
         unset($value);
 
         $headers = array_merge(array_values($headers), array_diff($this->extractHeaders($data), $headers));
+        $endOfLine = $context[self::END_OF_LINE] ?? $this->defaultContext[self::END_OF_LINE];
 
         if (!($context[self::NO_HEADERS_KEY] ?? $this->defaultContext[self::NO_HEADERS_KEY])) {
             fputcsv($handle, $headers, $delimiter, $enclosure, $escapeChar);
-            if ("\n" !== ($context[self::END_OF_LINE] ?? $this->defaultContext[self::END_OF_LINE]) && 0 === fseek($handle, -1, \SEEK_CUR)) {
-                fwrite($handle, $context[self::END_OF_LINE]);
+            if ("\n" !== $endOfLine && 0 === fseek($handle, -1, \SEEK_CUR)) {
+                fwrite($handle, $endOfLine);
             }
         }
 
         $headers = array_fill_keys($headers, '');
         foreach ($data as $row) {
             fputcsv($handle, array_replace($headers, $row), $delimiter, $enclosure, $escapeChar);
-            if ("\n" !== ($context[self::END_OF_LINE] ?? $this->defaultContext[self::END_OF_LINE]) && 0 === fseek($handle, -1, \SEEK_CUR)) {
-                fwrite($handle, $context[self::END_OF_LINE]);
+            if ("\n" !== $endOfLine && 0 === fseek($handle, -1, \SEEK_CUR)) {
+                fwrite($handle, $endOfLine);
             }
         }
 
@@ -141,7 +143,7 @@ class CsvEncoder implements EncoderInterface, DecoderInterface
         fwrite($handle, $data);
         rewind($handle);
 
-        if (0 === strpos($data, self::UTF8_BOM)) {
+        if (str_starts_with($data, self::UTF8_BOM)) {
             fseek($handle, \strlen(self::UTF8_BOM));
         }
 
@@ -165,7 +167,7 @@ class CsvEncoder implements EncoderInterface, DecoderInterface
                     $headerCount = array_fill(0, $nbCols, 1);
                 } else {
                     foreach ($cols as $col) {
-                        $header = explode($keySeparator, $col);
+                        $header = explode($keySeparator, $col ?? '');
                         $headers[] = $header;
                         $headerCount[] = \count($header);
                     }
@@ -179,18 +181,24 @@ class CsvEncoder implements EncoderInterface, DecoderInterface
                 $depth = $headerCount[$i];
                 $arr = &$item;
                 for ($j = 0; $j < $depth; ++$j) {
+                    $headerName = $headers[$i][$j];
+
+                    if ('' === $headerName) {
+                        $headerName = $i;
+                    }
+
                     // Handle nested arrays
                     if ($j === ($depth - 1)) {
-                        $arr[$headers[$i][$j]] = $cols[$i];
+                        $arr[$headerName] = $cols[$i];
 
                         continue;
                     }
 
-                    if (!isset($arr[$headers[$i][$j]])) {
-                        $arr[$headers[$i][$j]] = [];
+                    if (!isset($arr[$headerName])) {
+                        $arr[$headerName] = [];
                     }
 
-                    $arr = &$arr[$headers[$i][$j]];
+                    $arr = &$arr[$headerName];
                 }
             }
 
@@ -227,8 +235,8 @@ class CsvEncoder implements EncoderInterface, DecoderInterface
             if (is_iterable($value)) {
                 $this->flatten($value, $result, $keySeparator, $parentKey.$key.$keySeparator, $escapeFormulas);
             } else {
-                if ($escapeFormulas && \in_array(substr((string) $value, 0, 1), $this->formulasStartCharacters, true)) {
-                    $result[$parentKey.$key] = "\t".$value;
+                if ($escapeFormulas && \in_array(substr((string) $value, 0, 1), self::FORMULAS_START_CHARACTERS, true)) {
+                    $result[$parentKey.$key] = "'".$value;
                 } else {
                     // Ensures an actual value is used when dealing with true and false
                     $result[$parentKey.$key] = false === $value ? 0 : (true === $value ? 1 : $value);
