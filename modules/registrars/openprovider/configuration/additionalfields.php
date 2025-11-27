@@ -928,7 +928,8 @@ $additionaldomainfields['.fi'][] = array(
     "op_location" => "customerAdditionalData",
     "op_name"  => "birthDate"
 
-// .NU
+);
+
 $additionaldomainfields[".nu"][] = array(
     "Name" => "Owner type",
     "op_dropdown_for_op_name" => "nuIdentificationNumber",
