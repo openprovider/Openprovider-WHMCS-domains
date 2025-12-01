@@ -207,7 +207,7 @@ class DnssecToggleController
         $btnClass = $colors['btn'];
 
         unset($_SESSION['op_dnssec_popup']); 
-        $jsonMsg = json_encode($msg, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT);
+        $jsonMsg = $this->jsonInline($msg);
 
         return <<<HTML
         <style id="op-dnssec-modal-css">
@@ -249,7 +249,7 @@ class DnssecToggleController
         if (window.jQuery && jQuery.fn.modal) {
             jQuery(function () { jQuery('#opDnssecModal').modal('show'); });
         } else {
-            try { alert({$this->jsonInline($msg)}); } catch (e) {}
+            try { alert({$jsonMsg}); } catch (e) {}
         }
         })();
         </script>
