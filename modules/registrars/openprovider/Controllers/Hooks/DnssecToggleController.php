@@ -102,16 +102,13 @@ class DnssecToggleController
 
         if ($wantsEnable === $current) {
             if ($wantsEnable === 1 && !$allowed) {
-                try {
-                    Capsule::table('tbldomains')->where('id', $row->id)->update(['dnssecmanagement' => 0]);
-                } catch (\Exception $e) {}
-                $_SESSION['op_dnssec_popup'] = [
-                    'domainid' => (int)$row->id,
-                    'type'     => 'warning',
-                    'status'   => 'not_allowed',
-                    'message'  => 'DNSSEC management cannot be enabled for the domain because the TLD does not support DNSSEC.', 
-                    'ts'       => time(),  
-                ];
+                $this->updateDnssecFlag((int) $row->id, 0);
+                $this->setDnssecPopup(
+                    (int) $row->id,
+                    'warning',
+                    'not_allowed',
+                    'DNSSEC management cannot be enabled for the domain because the TLD does not support DNSSEC.'
+                );
                 return;
             }
             unset($_SESSION['op_dnssec_popup']);
@@ -119,48 +116,37 @@ class DnssecToggleController
         }
 
         if (!$allowed && $wantsEnable === 0 && $current === 1) {
-            try {
-                Capsule::table('tbldomains')->where('id', $row->id)->update(['dnssecmanagement' => 0]);
-            } catch (\Exception $e) {}
+            $this->updateDnssecFlag((int) $row->id, 0);
             return;
         }
 
         if ($wantsEnable === 0) {
-            try {
-                Capsule::table('tbldomains')->where('id', $row->id)->update(['dnssecmanagement' => 0]);
-            } catch (\Exception $e) {}
-            $_SESSION['op_dnssec_popup'] = [
-                'domainid' => (int)$row->id,
-                'type'     => 'success',
-                'status'   => 'disabled',
-                'message'  => 'DNSSEC management has been disabled for this domain.',
-                'ts'       => time(),
-            ];
+            $this->updateDnssecFlag((int) $row->id, 0);
+            $this->setDnssecPopup(
+                (int) $row->id,
+                'success',
+                'disabled',
+                'DNSSEC management has been disabled for this domain.'
+            );
             return;
         }
 
         if ($allowed) {
-            try {
-                Capsule::table('tbldomains')->where('id', $row->id)->update(['dnssecmanagement' => 1]);
-            } catch (\Exception $e) {}
-            $_SESSION['op_dnssec_popup'] = [
-                'domainid' => (int)$row->id,
-                'type'     => 'success',
-                'status'   => 'enabled',
-                'message'  => 'DNSSEC management has been successfully enabled for the domain. The client can now manage DNSSEC from the client area.',
-                'ts'       => time(),
-            ];
+            $this->updateDnssecFlag((int) $row->id, 1);
+            $this->setDnssecPopup(
+                (int) $row->id,
+                'success',
+                'enabled',
+                'DNSSEC management has been successfully enabled for the domain. The client can now manage DNSSEC from the client area.'
+            );
         } else {
-            try {
-                Capsule::table('tbldomains')->where('id', $row->id)->update(['dnssecmanagement' => 0]);
-            } catch (\Exception $e) {}
-            $_SESSION['op_dnssec_popup'] = [
-                'domainid' => (int)$row->id,
-                'type'     => 'warning',
-                'status'   => 'not_allowed',
-                'message'  => 'DNSSEC management cannot be enabled for the domain because the TLD does not support DNSSEC.',
-                'ts'       => time(),
-            ];
+            $this->updateDnssecFlag((int) $row->id, 0);
+            $this->setDnssecPopup(
+                (int) $row->id,
+                'warning',
+                'not_allowed',
+                'DNSSEC management cannot be enabled for the domain because the TLD does not support DNSSEC.'
+            );
         }
     }
 
@@ -290,6 +276,29 @@ class DnssecToggleController
         } catch (\Exception $e) {}
     }
 
+    private function updateDnssecFlag(int $domainId, int $value): void
+    {
+        try {
+            Capsule::table('tbldomains')
+                ->where('id', $domainId)
+                ->update(['dnssecmanagement' => $value]);
+        } catch (\Exception $e) {}
+    }
+
+    private function setDnssecPopup(
+        int $domainId,
+        string $type,
+        string $status,
+        string $message
+    ): void {
+        $_SESSION['op_dnssec_popup'] = [
+            'domainid' => $domainId,
+            'type'     => $type,
+            'status'   => $status,
+            'message'  => $message,
+            'ts'       => time(),
+        ];
+    }
 
     private function extractTldFromFqdn(string $fqdn): string
     {
