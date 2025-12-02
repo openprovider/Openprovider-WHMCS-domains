@@ -14,16 +14,14 @@ use PHPUnit\Framework\TestCase;
  */
 class MicrotimeConverterTest extends TestCase
 {
-
     /**
      * Test convertStringToFloat().
      *
      * @param float  $float   The timestamp.
      * @param string $string  The timestamp.
-     *
-     * @test
      * @dataProvider provideFloatAndStrings
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideFloatAndStrings')]
     public function testConvertStringToFloat($float, $string)
     {
         $converter = new MicrotimeConverter();
@@ -35,10 +33,9 @@ class MicrotimeConverterTest extends TestCase
      *
      * @param float  $float   The timestamp.
      * @param string $string  The timestamp.
-     *
-     * @test
      * @dataProvider provideFloatAndStrings
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideFloatAndStrings')]
     public function testConvertFloatToString($float, $string)
     {
         $converter = new MicrotimeConverter();
@@ -50,7 +47,7 @@ class MicrotimeConverterTest extends TestCase
      *
      * @return array
      */
-    public function provideFloatAndStrings()
+    public static function provideFloatAndStrings()
     {
         return [
             [1.0,        "0.00000000 1"],
