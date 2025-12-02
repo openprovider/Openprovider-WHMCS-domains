@@ -204,10 +204,14 @@ class Handle
         }
 
         if($action == 'create')
+        {
+            if ($type == 'registrant') {
+                $this->findOrCreate($params);
+            }
             $this->findOrCreate($params, $type);
-        else
+        }else{
             $this->update($params);
-
+        }
         return $this->model->handle;
     }
 

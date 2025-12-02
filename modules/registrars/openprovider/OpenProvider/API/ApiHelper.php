@@ -52,6 +52,39 @@ class ApiHelper
 
     /**
      * @param int $id
+     * @return string
+     * @throws \Exception
+     */
+    public function getEPPCode(int $id): string
+    {
+        $args = [
+            'id'     => $id,
+        ];
+
+        $result = '';
+
+        try {
+            $result = $this->buildResponse($this->apiClient->call('getEPPCodeRequest', $args));
+
+            if (isset($result['authCode'])) {
+                return $result['authCode'];
+            }
+
+            if ($result['success'] == true) {
+                $message = "The authorization code has been successfully sent to the registrant email. Please check registrant inbox.";
+                return $message;
+            }
+
+            if (isset($result['message']) && $result['message'] != "") {
+                throw new \Exception($result['message']);
+            }
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage(), $e->getCode());
+        }
+    }
+
+    /**
+     * @param int $id
      * @param array $data
      * @return array
      * @throws \Exception
@@ -566,8 +599,10 @@ class ApiHelper
         if ($tld === '') {
             throw new \InvalidArgumentException('Missing TLD.');
         }
-
-        return $this->buildResponse($this->apiClient->call('retrieveExtensionRequest', ['name' => $tld]));
+        
+        return $this->buildResponse(
+            $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
+        );
     }
 
     /**
