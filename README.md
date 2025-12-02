@@ -1,13 +1,10 @@
 # Domain Module for WHMCS 8.x
 
-## **Important: This is a test version of the Openprovider domain registar module and is not meant for use in production environments.**
-
-If you notice any bugs or lack of functionality or
-other problems, please report it to [Openprovider Support team](https://support.openprovider.eu/hc/en-us/articles/360001674667-Contact-Openprovider-Support) immediately with all available details (reseller_id, error details, [module logs](https://github.com/openprovider/Openprovider-WHMCS-domains/tree/version-8?tab=readme-ov-file#troubleshooting), WHMCS & PHP & web server version details and screenshot(s)/screen record if possible) so that we can rectify issues accordingly. The more details you can provide about issues, the faster we can reproduce and investigate it for a resolution. Your help in this regard is greatly appreciated!
+**If you notice any bugs or lack of functionality or
+other problems, please report it to [Openprovider Support team](https://support.openprovider.eu/hc/en-us/articles/360001674667-Contact-Openprovider-Support) immediately with all available details (reseller_id, error details, [module logs](https://github.com/openprovider/Openprovider-WHMCS-domains/tree/version-8?tab=readme-ov-file#troubleshooting), WHMCS & PHP & web server version details and screenshot(s)/screen record if possible) so that we can rectify issues accordingly. The more details you can provide about issues, the faster we can reproduce and investigate it for a resolution. Your help in this regard is greatly appreciated!**
 
 ## Introduction
 The Openprovider WHMCS module integrates conveniently with your [Openprovider account](https://cp.openprovider.eu/signup), allowing you to automate domain provisioning and management tasks, such as registration, renewal, deletion, updates to contact details, etc.
-
 
 The module keeps domain expiration dates, status and auto renew settings synchronized (on all Pending Transfer, Pending Registration, and Active status domains) between your WHMCS installation and Openprovider account, making sure the correct domains get renewed each day.
 
@@ -31,8 +28,9 @@ Features
 
 # Install and configure the Openprovider module
 
-## Installation using script
+## Installation using script [Beta]
 - To install the Openprovider domain registrar module, run the following commands from **WHMCS root directory** as the hosting/website user (e.g., on a cPanel server, run it as the cPanel user under which the WHMCS website is hosted).
+- Note: Depending on the permissions of the user running the script, you may need to use the sudo command (e.g., sudo /bin/bash -s)
 ```bash
 curl -s https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/refs/heads/version-8.1/scripts/install_openprovider.sh | /bin/bash -s
 ```  
@@ -51,8 +49,8 @@ if (function_exists('openprovider_additional_fields'))
 - [Optional] Upload `<Module directory>/modules/addons/openprovider` to `<WHMCS directory>/modules/addons`
 ## Basic Configurations
 
-- Navigate to **Configuration >> System Settings >> Domain Registrars** and activate Openprovider module. 
-![Screenshot 2024-05-31 150913](https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/afbb212d-6177-4f75-be07-ad9aec30107b)
+- Navigate to **Configuration >> System Settings >> Domain Registrars** and activate Openprovider module.
+<img width="1291" alt="Screenshot 2025-06-02" src="https://github.com/user-attachments/assets/8a7f504e-c738-4410-9d42-c12e18798102" />
 
 
 1. Enter API credentials (username and password, not hash) of your user. Ensure API access is enabled in the Openprovier control panel for the credentials you are using. Please refer to [this KB article](https://support.openprovider.eu/hc/en-us/articles/360015453220-How-to-enable-API-access) if API is not enabled already.
@@ -114,6 +112,8 @@ If you plan on allowing your end users to edit their own DNS records, and want t
  <img width="567" alt="image" src="https://github.com/openprovider/Openprovider-WHMCS-domains/assets/97894083/c4bf574c-2b2f-4367-bb6e-789578535564">
 
 ### Configure TLDs which don't allow locking (.nl, .be, .eu, .es)
+
+**Note: This manual change is only required in versions before 5.9.0.**
 
 Not all TLDs allow domain locking, but WHMCS assumes that this option is available for all domains. As a result, end users will see a warning "you domain is unlocked" when they visit the domain details page. You can hide this option with the following changes to your template files.
 

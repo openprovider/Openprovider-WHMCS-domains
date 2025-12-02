@@ -10,14 +10,13 @@
         "files":  [
             "helpers.php",
             "vendor-static/guzzlehttp/guzzle/src/functions_include.php",
-            "vendor-static/guzzlehttp/psr7/src/functions_include.php",
-            "vendor-static/guzzlehttp/promises/src/functions_include.php"
+            "vendor-static/guzzlehttp/psr7/src/functions_include.php"
         ]
     },
     "require": {
         "wedevelopcoffee/wpower": "2.2.*",
         "viison/address-splitter": "^0.3.2",
-        "openprovider/rest-client-php": "dev-v1beta",
+        "openprovider/rest-client-php": "2.0.2-beta",
         "symfony/serializer": "^5.2",
         "psr/log": "^1.1",
         "symfony/property-access": "^5.2",

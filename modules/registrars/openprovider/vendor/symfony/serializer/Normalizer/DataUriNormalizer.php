@@ -36,7 +36,7 @@ class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, C
      */
     private $mimeTypeGuesser;
 
-    public function __construct(MimeTypeGuesserInterface $mimeTypeGuesser = null)
+    public function __construct(?MimeTypeGuesserInterface $mimeTypeGuesser = null)
     {
         if (!$mimeTypeGuesser && class_exists(MimeTypes::class)) {
             $mimeTypeGuesser = MimeTypes::getDefault();
@@ -50,7 +50,7 @@ class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, C
      *
      * @return string
      */
-    public function normalize($object, string $format = null, array $context = [])
+    public function normalize($object, ?string $format = null, array $context = [])
     {
         if (!$object instanceof \SplFileInfo) {
             throw new InvalidArgumentException('The object must be an instance of "\SplFileInfo".');
@@ -76,7 +76,7 @@ class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, C
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization($data, ?string $format = null)
     {
         return $data instanceof \SplFileInfo;
     }
@@ -88,15 +88,15 @@ class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, C
      *
      * @see https://gist.github.com/bgrins/6194623
      *
+     * @return \SplFileInfo
+     *
      * @throws InvalidArgumentException
      * @throws NotNormalizableValueException
-     *
-     * @return \SplFileInfo
      */
-    public function denormalize($data, string $type, string $format = null, array $context = [])
+    public function denormalize($data, string $type, ?string $format = null, array $context = [])
     {
         if (null === $data || !preg_match('/^data:([a-z0-9][a-z0-9\!\#\$\&\-\^\_\+\.]{0,126}\/[a-z0-9][a-z0-9\!\#\$\&\-\^\_\+\.]{0,126}(;[a-z0-9\-]+\=[a-z0-9\-]+)?)?(;base64)?,[a-z0-9\!\$\&\\\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i', $data)) {
-            throw new NotNormalizableValueException('The provided "data:" URI is not valid.');
+            throw NotNormalizableValueException::createForUnexpectedDataType('The provided "data:" URI is not valid.', $data, ['string'], $context['deserialization_path'] ?? null, true);
         }
 
         try {
@@ -113,7 +113,7 @@ class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, C
                     return new \SplFileObject($data);
             }
         } catch (\RuntimeException $exception) {
-            throw new NotNormalizableValueException($exception->getMessage(), $exception->getCode(), $exception);
+            throw NotNormalizableValueException::createForUnexpectedDataType($exception->getMessage(), $data, ['string'], $context['deserialization_path'] ?? null, false, $exception->getCode(), $exception);
         }
 
         throw new InvalidArgumentException(sprintf('The class parameter "%s" is not supported. It must be one of "SplFileInfo", "SplFileObject" or "Symfony\Component\HttpFoundation\File\File".', $type));
@@ -122,7 +122,7 @@ class DataUriNormalizer implements NormalizerInterface, DenormalizerInterface, C
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, string $type, string $format = null)
+    public function supportsDenormalization($data, string $type, ?string $format = null)
     {
         return isset(self::SUPPORTED_TYPES[$type]);
     }
