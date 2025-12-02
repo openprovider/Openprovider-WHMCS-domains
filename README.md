@@ -32,7 +32,7 @@ Features
 - To install the Openprovider domain registrar module, run the following commands from **WHMCS root directory** as the hosting/website user (e.g., on a cPanel server, run it as the cPanel user under which the WHMCS website is hosted).
 - Note: Depending on the permissions of the user running the script, you may need to use the sudo command (e.g., sudo /bin/bash -s)
 ```bash
-curl -s https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/refs/heads/version-8.1/scripts/install_openprovider.sh | /bin/bash -s
+curl -s https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/refs/heads/master/scripts/install_openprovider.sh | /bin/bash -s
 ```  
 
 ## Manuaul Installation - Copy files into the module directories
