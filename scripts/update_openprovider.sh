@@ -15,30 +15,14 @@ if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modu
 fi
 
 # Prompt user for confirmation to proceed with the update
-if [ -r /dev/tty ]; then
-    # Open the terminal as a separate input stream (fd 3)
-    exec 3</dev/tty
+read -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. To avoid losing changes, please ensure you have backed up your customizations. Do you want to proceed with the update? (Y/n): " confirm
 
-    # Read from the real terminal (fd 3), not from stdin (which may be a pipe from curl)
-    read -u 3 -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. To avoid losing changes, please ensure you have backed up your customizations. Do you want to proceed with the update? (Y/n): " confirm
-
-    # We no longer need fd 3
-    exec 3<&-
-
-    # Treat empty input (just Enter) and Y/y as Yes
-    case "$confirm" in
-        [Yy]|"")
-            echo "Proceeding with the update..."
-            ;;
-        *)
-            echo "Update canceled. Please backup your customizations before proceeding."
-            exit 0
-            ;;
-    esac
+# Check user input
+if [[ "$confirm" =~ ^[Yy]$ ]]; then
+    echo "Proceeding with the update..."
 else
-    echo "No interactive terminal available. Cannot ask for confirmation safely."
-    echo "Update canceled. Please run this script from an interactive shell if you want to proceed."
-    exit 1
+    echo "Update canceled. Please backup your customizations before proceeding."
+    exit 0
 fi
 
 # Create a temporary directory
