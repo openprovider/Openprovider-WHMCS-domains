@@ -15,7 +15,7 @@ if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modu
 fi
 
 # Prompt user for confirmation to proceed with the update
-read -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. To avoid losing changes, please ensure you have backed up your customizations. Do you want to proceed with the update? (Y/n): " confirm </dev/tty
+read -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. To avoid losing changes, please ensure you have backed up your customizations. Do you want to proceed with the update? (Y/n): " confirm
 
 # Check user input
 if [[ "$confirm" =~ ^[Yy]$ ]]; then
