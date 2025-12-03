@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a29979374213b4116ca45940115c24f",
+    "content-hash": "610c8359821e8f10ff2b0b0a8c3b9b2a",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -383,16 +383,16 @@
         },
         {
             "name": "openprovider/rest-client-php",
-            "version": "v2.0.2-beta",
+            "version": "dev-v1beta",
             "source": {
                 "type": "git",
                 "url": "https://github.com/openprovider/rest-client-php.git",
-                "reference": "85bb4910c886ca8c8532dcd2770d6f584663b535"
+                "reference": "8ac2313023dbfa48061f707b6e3afc835506dc0e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/85bb4910c886ca8c8532dcd2770d6f584663b535",
-                "reference": "85bb4910c886ca8c8532dcd2770d6f584663b535",
+                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/8ac2313023dbfa48061f707b6e3afc835506dc0e",
+                "reference": "8ac2313023dbfa48061f707b6e3afc835506dc0e",
                 "shasum": ""
             },
             "require": {
@@ -427,10 +427,10 @@
             ],
             "description": "HTTP client for Openprovider API",
             "support": {
-                "source": "https://github.com/openprovider/rest-client-php/tree/v2.0.2-beta",
+                "source": "https://github.com/openprovider/rest-client-php/tree/v1beta",
                 "issues": "https://github.com/openprovider/rest-client-php/issues"
             },
-            "time": "2024-01-23T09:38:44+00:00"
+            "time": "2025-11-04T06:34:10+00:00"
         },
         {
             "name": "php-di/invoker",
@@ -4949,11 +4949,11 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "openprovider/rest-client-php": 10
+        "openprovider/rest-client-php": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
+    "platform": {},
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

@@ -1291,17 +1291,17 @@
         },
         {
             "name": "openprovider/rest-client-php",
-            "version": "v2.0.2-beta",
-            "version_normalized": "2.0.2.0-beta",
+            "version": "dev-v1beta",
+            "version_normalized": "dev-v1beta",
             "source": {
                 "type": "git",
                 "url": "https://github.com/openprovider/rest-client-php.git",
-                "reference": "85bb4910c886ca8c8532dcd2770d6f584663b535"
+                "reference": "8ac2313023dbfa48061f707b6e3afc835506dc0e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/85bb4910c886ca8c8532dcd2770d6f584663b535",
-                "reference": "85bb4910c886ca8c8532dcd2770d6f584663b535",
+                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/8ac2313023dbfa48061f707b6e3afc835506dc0e",
+                "reference": "8ac2313023dbfa48061f707b6e3afc835506dc0e",
                 "shasum": ""
             },
             "require": {
@@ -1311,7 +1311,7 @@
                 "guzzlehttp/guzzle": "^7.4",
                 "php": ">=7.1"
             },
-            "time": "2024-01-23T09:38:44+00:00",
+            "time": "2025-11-04T06:34:10+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1338,7 +1338,7 @@
             ],
             "description": "HTTP client for Openprovider API",
             "support": {
-                "source": "https://github.com/openprovider/rest-client-php/tree/v2.0.2-beta",
+                "source": "https://github.com/openprovider/rest-client-php/tree/v1beta",
                 "issues": "https://github.com/openprovider/rest-client-php/issues"
             },
             "install-path": "../openprovider/rest-client-php"

@@ -8,6 +8,7 @@ namespace Openprovider\Api\Rest\Client\Dns;
 use GuzzleHttp6\ClientInterface;
 use Openprovider\Api\Rest\Client\Base\Configuration;
 use Openprovider\Api\Rest\Client\Base\HeaderSelector;
+use Openprovider\Api\Rest\Client\Dns\Api\DomainTokenApi;
 use Openprovider\Api\Rest\Client\Dns\Api\NameserverServiceApi;
 use Openprovider\Api\Rest\Client\Dns\Api\NsGroupServiceApi;
 use Openprovider\Api\Rest\Client\Dns\Api\TemplateServiceApi;
@@ -16,6 +17,9 @@ use Openprovider\Api\Rest\Client\Dns\Api\ZoneServiceApi;
 
 class DnsModule 
 {
+    /** @var DomainTokenApi */
+    protected $DomainTokenApi;
+
     /** @var NameserverServiceApi */
     protected $NameserverServiceApi;
 
@@ -43,11 +47,21 @@ class DnsModule
         HeaderSelector $selector = null,
         $host_index = 0
     ) {
-        $this->NameserverServiceApi = new NameserverServiceApi($client, $config, $selector, $host_index);
+        $this->DomainTokenApi = new DomainTokenApi($client, $config, $selector, $host_index);
+	    $this->NameserverServiceApi = new NameserverServiceApi($client, $config, $selector, $host_index);
 	    $this->NsGroupServiceApi = new NsGroupServiceApi($client, $config, $selector, $host_index);
 	    $this->TemplateServiceApi = new TemplateServiceApi($client, $config, $selector, $host_index);
 	    $this->ZoneRecordServiceApi = new ZoneRecordServiceApi($client, $config, $selector, $host_index);
 	    $this->ZoneServiceApi = new ZoneServiceApi($client, $config, $selector, $host_index);
+    }
+
+    /**
+     * Gets DomainTokenApi api.
+     * @return DomainTokenApi
+     */
+    public function getDomainTokenApi() 
+    {
+      return $this->DomainTokenApi;
     }
 
     /**

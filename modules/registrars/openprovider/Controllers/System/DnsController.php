@@ -13,6 +13,7 @@ use OpenProvider\API\DNSrecord;
 use OpenProvider\API\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
+use OpenProvider\WhmcsRegistrar\helpers\DNS;
 
 class DnsController extends BaseController
 {
@@ -26,16 +27,20 @@ class DnsController extends BaseController
      * @var ApiHelper
      */
     private $apiHelper;
-
+    /**
+     * @var DNS
+     */
+    private $dnsHelper;
     /**
      * ConfigController constructor.
      */
-    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper)
+    public function __construct(Core $core, Domain $domain, ApiHelper $apiHelper, DNS $dnsHelper)
     {
         parent::__construct($core);
 
         $this->domain = $domain;
         $this->apiHelper = $apiHelper;
+        $this->dnsHelper = $dnsHelper;
     }
 
     /**
@@ -109,6 +114,35 @@ class DnsController extends BaseController
             return [
                 'error' => $e->getMessage(),
             ];
+        }
+    }
+
+    public function redirectDnsManagementPage ($params)
+    {
+        if($url = $this->dnsHelper->getDnsUrlOrFail($params['domainid'], true))
+        {
+            $urlOne = $_SERVER['HTTP_REFERER'];
+            $url_decoded = html_entity_decode($urlOne);
+
+            // JavaScript confirm dialog
+            echo '<script type="text/javascript">
+                    document.addEventListener("DOMContentLoaded", function() {
+                        var userConfirmed = confirm("Do you want to open in New Tab?");
+                        if (userConfirmed) {
+                            var newWindow = window.open("' . $url . '", "_blank"); // Open OP DNS management page in a new tab
+                            if (newWindow) {
+                                window.location.href = "' . $url_decoded . '"; // Redirect to previous page
+                                newWindow.focus(); // Focus on the new tab
+                            } else {
+                                alert("New tab opening blocked! Please allow it for this site.");
+                                window.location.href = "' . $url . '"; // Redirect to OP DNS management page
+                            }
+                        } else {
+                            window.location.href = "' . $url . '"; // Redirect to OP DNS management page
+                        }
+                    });
+                  </script>';
+            exit;
         }
     }
 
