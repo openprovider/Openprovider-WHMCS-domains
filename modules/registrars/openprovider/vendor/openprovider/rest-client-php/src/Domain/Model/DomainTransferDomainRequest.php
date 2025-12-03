@@ -68,7 +68,10 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
         'comments' => 'string',
         'dnssec_keys' => '\Openprovider\Api\Rest\Client\Domain\Model\DomainDnssecKey[]',
         'domain' => '\Openprovider\Api\Rest\Client\Domain\Model\DomainDomain',
+        'import_contacts_from_registry' => 'bool',
+        'import_nameservers_from_registry' => 'bool',
         'is_dnssec_enabled' => 'bool',
+        'is_hosted_accreditation' => 'bool',
         'is_private_whois_enabled' => 'bool',
         'name_servers' => '\Openprovider\Api\Rest\Client\Domain\Model\DomainNameserver[]',
         'ns_group' => 'string',
@@ -99,7 +102,10 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
         'comments' => null,
         'dnssec_keys' => null,
         'domain' => null,
+        'import_contacts_from_registry' => 'boolean',
+        'import_nameservers_from_registry' => 'boolean',
         'is_dnssec_enabled' => 'boolean',
+        'is_hosted_accreditation' => 'boolean',
         'is_private_whois_enabled' => 'boolean',
         'name_servers' => null,
         'ns_group' => null,
@@ -151,7 +157,10 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
         'comments' => 'comments',
         'dnssec_keys' => 'dnssec_keys',
         'domain' => 'domain',
+        'import_contacts_from_registry' => 'import_contacts_from_registry',
+        'import_nameservers_from_registry' => 'import_nameservers_from_registry',
         'is_dnssec_enabled' => 'is_dnssec_enabled',
+        'is_hosted_accreditation' => 'is_hosted_accreditation',
         'is_private_whois_enabled' => 'is_private_whois_enabled',
         'name_servers' => 'name_servers',
         'ns_group' => 'ns_group',
@@ -182,7 +191,10 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
         'comments' => 'setComments',
         'dnssec_keys' => 'setDnssecKeys',
         'domain' => 'setDomain',
+        'import_contacts_from_registry' => 'setImportContactsFromRegistry',
+        'import_nameservers_from_registry' => 'setImportNameserversFromRegistry',
         'is_dnssec_enabled' => 'setIsDnssecEnabled',
+        'is_hosted_accreditation' => 'setIsHostedAccreditation',
         'is_private_whois_enabled' => 'setIsPrivateWhoisEnabled',
         'name_servers' => 'setNameServers',
         'ns_group' => 'setNsGroup',
@@ -213,7 +225,10 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
         'comments' => 'getComments',
         'dnssec_keys' => 'getDnssecKeys',
         'domain' => 'getDomain',
+        'import_contacts_from_registry' => 'getImportContactsFromRegistry',
+        'import_nameservers_from_registry' => 'getImportNameserversFromRegistry',
         'is_dnssec_enabled' => 'getIsDnssecEnabled',
+        'is_hosted_accreditation' => 'getIsHostedAccreditation',
         'is_private_whois_enabled' => 'getIsPrivateWhoisEnabled',
         'name_servers' => 'getNameServers',
         'ns_group' => 'getNsGroup',
@@ -302,7 +317,10 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
         $this->container['comments'] = isset($data['comments']) ? $data['comments'] : null;
         $this->container['dnssec_keys'] = isset($data['dnssec_keys']) ? $data['dnssec_keys'] : null;
         $this->container['domain'] = isset($data['domain']) ? $data['domain'] : null;
+        $this->container['import_contacts_from_registry'] = isset($data['import_contacts_from_registry']) ? $data['import_contacts_from_registry'] : null;
+        $this->container['import_nameservers_from_registry'] = isset($data['import_nameservers_from_registry']) ? $data['import_nameservers_from_registry'] : null;
         $this->container['is_dnssec_enabled'] = isset($data['is_dnssec_enabled']) ? $data['is_dnssec_enabled'] : null;
+        $this->container['is_hosted_accreditation'] = isset($data['is_hosted_accreditation']) ? $data['is_hosted_accreditation'] : false;
         $this->container['is_private_whois_enabled'] = isset($data['is_private_whois_enabled']) ? $data['is_private_whois_enabled'] : null;
         $this->container['name_servers'] = isset($data['name_servers']) ? $data['name_servers'] : null;
         $this->container['ns_group'] = isset($data['ns_group']) ? $data['ns_group'] : null;
@@ -604,6 +622,58 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets import_contacts_from_registry
+     *
+     * @return bool|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getImportContactsFromRegistry()
+    {
+        return $this->container['import_contacts_from_registry'];
+    }
+
+    /**
+     * Sets import_contacts_from_registry
+     *
+     * @param bool|null $import_contacts_from_registry Imports contacts data from registry and creates handles after the transfer. Allows to skip admin_handle, billing_handle, owner_handle, reseller_handle and tech_handle parameters.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setImportContactsFromRegistry($import_contacts_from_registry)
+    {
+        $this->container['import_contacts_from_registry'] = $import_contacts_from_registry;
+
+        return $this;
+    }
+
+    /**
+     * Gets import_nameservers_from_registry
+     *
+     * @return bool|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getImportNameserversFromRegistry()
+    {
+        return $this->container['import_nameservers_from_registry'];
+    }
+
+    /**
+     * Sets import_nameservers_from_registry
+     *
+     * @param bool|null $import_nameservers_from_registry Imports nameservers from registry after the transfer. Allows to skip ns_group, ns_template_id and ns_template_name parameters.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setImportNameserversFromRegistry($import_nameservers_from_registry)
+    {
+        $this->container['import_nameservers_from_registry'] = $import_nameservers_from_registry;
+
+        return $this;
+    }
+
+    /**
      * Gets is_dnssec_enabled
      *
      * @return bool|null
@@ -625,6 +695,32 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
     public function setIsDnssecEnabled($is_dnssec_enabled)
     {
         $this->container['is_dnssec_enabled'] = $is_dnssec_enabled;
+
+        return $this;
+    }
+
+    /**
+     * Gets is_hosted_accreditation
+     *
+     * @return bool|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getIsHostedAccreditation()
+    {
+        return $this->container['is_hosted_accreditation'];
+    }
+
+    /**
+     * Sets is_hosted_accreditation
+     *
+     * @param bool|null $is_hosted_accreditation Optional. Enables or disables hosted accreditation route. Using this field requires prior activation by the Openprovider team. Please contact sales team for more information.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setIsHostedAccreditation($is_hosted_accreditation)
+    {
+        $this->container['is_hosted_accreditation'] = $is_hosted_accreditation;
 
         return $this;
     }

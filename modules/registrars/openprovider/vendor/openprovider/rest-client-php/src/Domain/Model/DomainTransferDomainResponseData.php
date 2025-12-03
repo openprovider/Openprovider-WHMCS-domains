@@ -357,7 +357,7 @@ class DomainTransferDomainResponseData implements ModelInterface, ArrayAccess
     /**
      * Sets expiration_date
      *
-     * @param string|null $expiration_date expiration_date
+     * @param string|null $expiration_date This value might align with the registry_expiration_date. It is not the primary reference for domain expiration in Openprovider.
      *
      * @return $this
      */
@@ -435,7 +435,7 @@ class DomainTransferDomainResponseData implements ModelInterface, ArrayAccess
     /**
      * Sets renewal_date
      *
-     * @param string|null $renewal_date renewal_date
+     * @param string|null $renewal_date DThe date and time by which a domain must be renewed to avoid expiration, please always refer to the renewal_date to process domain renewals.
      *
      * @return $this
      */

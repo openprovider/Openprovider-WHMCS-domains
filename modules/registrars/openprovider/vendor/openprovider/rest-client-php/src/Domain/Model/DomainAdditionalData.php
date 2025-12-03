@@ -69,6 +69,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'coop_acceptance' => 'string',
         'customer_uin' => 'string',
         'customer_uin_doc_type' => '\Openprovider\Api\Rest\Client\Domain\Model\DomainUINDocumentType',
+        'dk_acceptance' => 'string',
         'domain_name_variants' => 'string[]',
         'eligibility_type' => 'string',
         'eligibility_type_relationship' => 'string',
@@ -79,6 +80,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'id_number' => 'string',
         'id_type' => 'string',
         'idn_script' => 'string',
+        'iisse_acceptance' => 'string',
         'insurance_acceptance' => 'string',
         'intended_use' => 'string',
         'law_acceptance' => 'string',
@@ -91,6 +93,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'passport_number' => 'string',
         'rurf_blocked_domains' => 'string',
         'self_service' => 'string',
+        'trade_auth_key' => 'string',
         'trademark' => 'string',
         'trademark_id' => 'string',
         'travel_acceptance' => 'string',
@@ -117,6 +120,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'coop_acceptance' => null,
         'customer_uin' => null,
         'customer_uin_doc_type' => null,
+        'dk_acceptance' => null,
         'domain_name_variants' => null,
         'eligibility_type' => null,
         'eligibility_type_relationship' => null,
@@ -127,6 +131,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'id_number' => null,
         'id_type' => null,
         'idn_script' => null,
+        'iisse_acceptance' => null,
         'insurance_acceptance' => null,
         'intended_use' => null,
         'law_acceptance' => null,
@@ -139,6 +144,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'passport_number' => null,
         'rurf_blocked_domains' => null,
         'self_service' => null,
+        'trade_auth_key' => null,
         'trademark' => null,
         'trademark_id' => null,
         'travel_acceptance' => null,
@@ -186,6 +192,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'coop_acceptance' => 'coop_acceptance',
         'customer_uin' => 'customer_uin',
         'customer_uin_doc_type' => 'customer_uin_doc_type',
+        'dk_acceptance' => 'dk_acceptance',
         'domain_name_variants' => 'domain_name_variants',
         'eligibility_type' => 'eligibility_type',
         'eligibility_type_relationship' => 'eligibility_type_relationship',
@@ -196,6 +203,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'id_number' => 'id_number',
         'id_type' => 'id_type',
         'idn_script' => 'idn_script',
+        'iisse_acceptance' => 'iisse_acceptance',
         'insurance_acceptance' => 'insurance_acceptance',
         'intended_use' => 'intended_use',
         'law_acceptance' => 'law_acceptance',
@@ -208,6 +216,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'passport_number' => 'passport_number',
         'rurf_blocked_domains' => 'rurf_blocked_domains',
         'self_service' => 'self_service',
+        'trade_auth_key' => 'trade_auth_key',
         'trademark' => 'trademark',
         'trademark_id' => 'trademark_id',
         'travel_acceptance' => 'travel_acceptance',
@@ -234,6 +243,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'coop_acceptance' => 'setCoopAcceptance',
         'customer_uin' => 'setCustomerUin',
         'customer_uin_doc_type' => 'setCustomerUinDocType',
+        'dk_acceptance' => 'setDkAcceptance',
         'domain_name_variants' => 'setDomainNameVariants',
         'eligibility_type' => 'setEligibilityType',
         'eligibility_type_relationship' => 'setEligibilityTypeRelationship',
@@ -244,6 +254,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'id_number' => 'setIdNumber',
         'id_type' => 'setIdType',
         'idn_script' => 'setIdnScript',
+        'iisse_acceptance' => 'setIisseAcceptance',
         'insurance_acceptance' => 'setInsuranceAcceptance',
         'intended_use' => 'setIntendedUse',
         'law_acceptance' => 'setLawAcceptance',
@@ -256,6 +267,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'passport_number' => 'setPassportNumber',
         'rurf_blocked_domains' => 'setRurfBlockedDomains',
         'self_service' => 'setSelfService',
+        'trade_auth_key' => 'setTradeAuthKey',
         'trademark' => 'setTrademark',
         'trademark_id' => 'setTrademarkId',
         'travel_acceptance' => 'setTravelAcceptance',
@@ -282,6 +294,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'coop_acceptance' => 'getCoopAcceptance',
         'customer_uin' => 'getCustomerUin',
         'customer_uin_doc_type' => 'getCustomerUinDocType',
+        'dk_acceptance' => 'getDkAcceptance',
         'domain_name_variants' => 'getDomainNameVariants',
         'eligibility_type' => 'getEligibilityType',
         'eligibility_type_relationship' => 'getEligibilityTypeRelationship',
@@ -292,6 +305,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'id_number' => 'getIdNumber',
         'id_type' => 'getIdType',
         'idn_script' => 'getIdnScript',
+        'iisse_acceptance' => 'getIisseAcceptance',
         'insurance_acceptance' => 'getInsuranceAcceptance',
         'intended_use' => 'getIntendedUse',
         'law_acceptance' => 'getLawAcceptance',
@@ -304,6 +318,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'passport_number' => 'getPassportNumber',
         'rurf_blocked_domains' => 'getRurfBlockedDomains',
         'self_service' => 'getSelfService',
+        'trade_auth_key' => 'getTradeAuthKey',
         'trademark' => 'getTrademark',
         'trademark_id' => 'getTrademarkId',
         'travel_acceptance' => 'getTravelAcceptance',
@@ -384,10 +399,11 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         $this->container['auth_code'] = isset($data['auth_code']) ? $data['auth_code'] : null;
         $this->container['bank_acceptance'] = isset($data['bank_acceptance']) ? $data['bank_acceptance'] : null;
         $this->container['company_registration_number'] = isset($data['company_registration_number']) ? $data['company_registration_number'] : null;
-        $this->container['coop_acceptance'] = isset($data['coop_acceptance']) ? $data['coop_acceptance'] : null;
         $this->container['consent_for_publishing'] = isset($data['consent_for_publishing']) ? $data['consent_for_publishing'] : null;
+        $this->container['coop_acceptance'] = isset($data['coop_acceptance']) ? $data['coop_acceptance'] : null;
         $this->container['customer_uin'] = isset($data['customer_uin']) ? $data['customer_uin'] : null;
         $this->container['customer_uin_doc_type'] = isset($data['customer_uin_doc_type']) ? $data['customer_uin_doc_type'] : null;
+        $this->container['dk_acceptance'] = isset($data['dk_acceptance']) ? $data['dk_acceptance'] : null;
         $this->container['domain_name_variants'] = isset($data['domain_name_variants']) ? $data['domain_name_variants'] : null;
         $this->container['eligibility_type'] = isset($data['eligibility_type']) ? $data['eligibility_type'] : null;
         $this->container['eligibility_type_relationship'] = isset($data['eligibility_type_relationship']) ? $data['eligibility_type_relationship'] : null;
@@ -398,6 +414,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         $this->container['id_number'] = isset($data['id_number']) ? $data['id_number'] : null;
         $this->container['id_type'] = isset($data['id_type']) ? $data['id_type'] : null;
         $this->container['idn_script'] = isset($data['idn_script']) ? $data['idn_script'] : null;
+        $this->container['iisse_acceptance'] = isset($data['iisse_acceptance']) ? $data['iisse_acceptance'] : null;
         $this->container['insurance_acceptance'] = isset($data['insurance_acceptance']) ? $data['insurance_acceptance'] : null;
         $this->container['intended_use'] = isset($data['intended_use']) ? $data['intended_use'] : null;
         $this->container['law_acceptance'] = isset($data['law_acceptance']) ? $data['law_acceptance'] : null;
@@ -410,6 +427,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         $this->container['passport_number'] = isset($data['passport_number']) ? $data['passport_number'] : null;
         $this->container['rurf_blocked_domains'] = isset($data['rurf_blocked_domains']) ? $data['rurf_blocked_domains'] : null;
         $this->container['self_service'] = isset($data['self_service']) ? $data['self_service'] : null;
+        $this->container['trade_auth_key'] = isset($data['trade_auth_key']) ? $data['trade_auth_key'] : null;
         $this->container['trademark'] = isset($data['trademark']) ? $data['trademark'] : null;
         $this->container['trademark_id'] = isset($data['trademark_id']) ? $data['trademark_id'] : null;
         $this->container['travel_acceptance'] = isset($data['travel_acceptance']) ? $data['travel_acceptance'] : null;
@@ -632,6 +650,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
      *
      * @return string|null
      */
+    #[\ReturnTypeWillChange]
     public function getConsentForPublishing()
     {
         return $this->container['consent_for_publishing'];
@@ -644,6 +663,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
      *
      * @return $this
      */
+    #[\ReturnTypeWillChange]
     public function setConsentForPublishing($consent_for_publishing)
     {
         $this->container['consent_for_publishing'] = $consent_for_publishing;
@@ -725,6 +745,32 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
     public function setCustomerUinDocType($customer_uin_doc_type)
     {
         $this->container['customer_uin_doc_type'] = $customer_uin_doc_type;
+
+        return $this;
+    }
+
+    /**
+     * Gets dk_acceptance
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getDkAcceptance()
+    {
+        return $this->container['dk_acceptance'];
+    }
+
+    /**
+     * Sets dk_acceptance
+     *
+     * @param string|null $dk_acceptance dk_acceptance
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setDkAcceptance($dk_acceptance)
+    {
+        $this->container['dk_acceptance'] = $dk_acceptance;
 
         return $this;
     }
@@ -985,6 +1031,32 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
     public function setIdnScript($idn_script)
     {
         $this->container['idn_script'] = $idn_script;
+
+        return $this;
+    }
+
+    /**
+     * Gets iisse_acceptance
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getIisseAcceptance()
+    {
+        return $this->container['iisse_acceptance'];
+    }
+
+    /**
+     * Sets iisse_acceptance
+     *
+     * @param string|null $iisse_acceptance iisse_acceptance
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setIisseAcceptance($iisse_acceptance)
+    {
+        $this->container['iisse_acceptance'] = $iisse_acceptance;
 
         return $this;
     }
@@ -1297,6 +1369,32 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
     public function setSelfService($self_service)
     {
         $this->container['self_service'] = $self_service;
+
+        return $this;
+    }
+
+    /**
+     * Gets trade_auth_key
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getTradeAuthKey()
+    {
+        return $this->container['trade_auth_key'];
+    }
+
+    /**
+     * Sets trade_auth_key
+     *
+     * @param string|null $trade_auth_key trade_auth_key
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setTradeAuthKey($trade_auth_key)
+    {
+        $this->container['trade_auth_key'] = $trade_auth_key;
 
         return $this;
     }

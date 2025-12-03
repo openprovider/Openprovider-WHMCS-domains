@@ -61,6 +61,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'admin_sing_pass_id' => 'string',
         'auth_code' => 'string',
         'company_registration_number' => 'string',
+        'consent_for_publishing' => 'string',
         'customer_uin' => 'string',
         'customer_uin_doc_type' => '\Openprovider\Api\Rest\Client\Domain\Model\DomainUINDocumentType',
         'domain_name_variants' => 'string[]',
@@ -89,6 +90,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'admin_sing_pass_id' => null,
         'auth_code' => null,
         'company_registration_number' => null,
+        'consent_for_publishing' => null,
         'customer_uin' => null,
         'customer_uin_doc_type' => null,
         'domain_name_variants' => null,
@@ -138,6 +140,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'admin_sing_pass_id' => 'admin_sing_pass_id',
         'auth_code' => 'auth_code',
         'company_registration_number' => 'company_registration_number',
+        'consent_for_publishing' => 'consent_for_publishing',
         'customer_uin' => 'customer_uin',
         'customer_uin_doc_type' => 'customer_uin_doc_type',
         'domain_name_variants' => 'domain_name_variants',
@@ -166,6 +169,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'admin_sing_pass_id' => 'setAdminSingPassId',
         'auth_code' => 'setAuthCode',
         'company_registration_number' => 'setCompanyRegistrationNumber',
+        'consent_for_publishing' => 'setConsentForPublishing',
         'customer_uin' => 'setCustomerUin',
         'customer_uin_doc_type' => 'setCustomerUinDocType',
         'domain_name_variants' => 'setDomainNameVariants',
@@ -194,6 +198,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'admin_sing_pass_id' => 'getAdminSingPassId',
         'auth_code' => 'getAuthCode',
         'company_registration_number' => 'getCompanyRegistrationNumber',
+        'consent_for_publishing' => 'getConsentForPublishing',
         'customer_uin' => 'getCustomerUin',
         'customer_uin_doc_type' => 'getCustomerUinDocType',
         'domain_name_variants' => 'getDomainNameVariants',
@@ -280,6 +285,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         $this->container['admin_sing_pass_id'] = isset($data['admin_sing_pass_id']) ? $data['admin_sing_pass_id'] : null;
         $this->container['auth_code'] = isset($data['auth_code']) ? $data['auth_code'] : null;
         $this->container['company_registration_number'] = isset($data['company_registration_number']) ? $data['company_registration_number'] : null;
+        $this->container['consent_for_publishing'] = isset($data['consent_for_publishing']) ? $data['consent_for_publishing'] : null;
         $this->container['customer_uin'] = isset($data['customer_uin']) ? $data['customer_uin'] : null;
         $this->container['customer_uin_doc_type'] = isset($data['customer_uin_doc_type']) ? $data['customer_uin_doc_type'] : null;
         $this->container['domain_name_variants'] = isset($data['domain_name_variants']) ? $data['domain_name_variants'] : null;
@@ -399,6 +405,32 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
     public function setCompanyRegistrationNumber($company_registration_number)
     {
         $this->container['company_registration_number'] = $company_registration_number;
+
+        return $this;
+    }
+
+    /**
+     * Gets consent_for_publishing
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getConsentForPublishing()
+    {
+        return $this->container['consent_for_publishing'];
+    }
+
+    /**
+     * Sets consent_for_publishing
+     *
+     * @param string|null $consent_for_publishing consent_for_publishing
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setConsentForPublishing($consent_for_publishing)
+    {
+        $this->container['consent_for_publishing'] = $consent_for_publishing;
 
         return $this;
     }

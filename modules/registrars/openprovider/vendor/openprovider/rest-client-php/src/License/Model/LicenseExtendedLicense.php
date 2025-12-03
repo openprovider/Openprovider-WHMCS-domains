@@ -65,6 +65,7 @@ class LicenseExtendedLicense implements ModelInterface, ArrayAccess
         'expiration_date' => 'string',
         'extensions' => '\Openprovider\Api\Rest\Client\License\Model\LicenseExtendedLicense[]',
         'features' => '\Openprovider\Api\Rest\Client\License\Model\LicenseLicenseItem[]',
+        'id' => 'int',
         'ip_address_binding' => 'string',
         'items' => 'string[]',
         'key' => '\Openprovider\Api\Rest\Client\License\Model\LicenseKey',
@@ -92,6 +93,7 @@ class LicenseExtendedLicense implements ModelInterface, ArrayAccess
         'expiration_date' => null,
         'extensions' => null,
         'features' => null,
+        'id' => 'int32',
         'ip_address_binding' => null,
         'items' => null,
         'key' => null,
@@ -140,6 +142,7 @@ class LicenseExtendedLicense implements ModelInterface, ArrayAccess
         'expiration_date' => 'expiration_date',
         'extensions' => 'extensions',
         'features' => 'features',
+        'id' => 'id',
         'ip_address_binding' => 'ip_address_binding',
         'items' => 'items',
         'key' => 'key',
@@ -167,6 +170,7 @@ class LicenseExtendedLicense implements ModelInterface, ArrayAccess
         'expiration_date' => 'setExpirationDate',
         'extensions' => 'setExtensions',
         'features' => 'setFeatures',
+        'id' => 'setId',
         'ip_address_binding' => 'setIpAddressBinding',
         'items' => 'setItems',
         'key' => 'setKey',
@@ -194,6 +198,7 @@ class LicenseExtendedLicense implements ModelInterface, ArrayAccess
         'expiration_date' => 'getExpirationDate',
         'extensions' => 'getExtensions',
         'features' => 'getFeatures',
+        'id' => 'getId',
         'ip_address_binding' => 'getIpAddressBinding',
         'items' => 'getItems',
         'key' => 'getKey',
@@ -279,6 +284,7 @@ class LicenseExtendedLicense implements ModelInterface, ArrayAccess
         $this->container['expiration_date'] = isset($data['expiration_date']) ? $data['expiration_date'] : null;
         $this->container['extensions'] = isset($data['extensions']) ? $data['extensions'] : null;
         $this->container['features'] = isset($data['features']) ? $data['features'] : null;
+        $this->container['id'] = isset($data['id']) ? $data['id'] : null;
         $this->container['ip_address_binding'] = isset($data['ip_address_binding']) ? $data['ip_address_binding'] : null;
         $this->container['items'] = isset($data['items']) ? $data['items'] : null;
         $this->container['key'] = isset($data['key']) ? $data['key'] : null;
@@ -497,6 +503,32 @@ class LicenseExtendedLicense implements ModelInterface, ArrayAccess
     public function setFeatures($features)
     {
         $this->container['features'] = $features;
+
+        return $this;
+    }
+
+    /**
+     * Gets id
+     *
+     * @return int|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getId()
+    {
+        return $this->container['id'];
+    }
+
+    /**
+     * Sets id
+     *
+     * @param int|null $id id
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setId($id)
+    {
+        $this->container['id'] = $id;
 
         return $this;
     }
