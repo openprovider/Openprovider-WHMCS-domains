@@ -343,12 +343,15 @@ function openprovider_ResendIRTPVerificationEmail(array $params)
     return openprovider_registrar_launch_decorator('resendIRTPVerificationEmail', $params);
 }
 
+/**
+ * Admin Manage Dns Zone
+ *
+ * @param array $params
+ * @return mixed
+ */
 function openprovider_AdminManageDnsZone($params)
 {
-    $controller = new \OpenProvider\WhmcsRegistrar\Controllers\Hooks\DnsAuthController();
-    $ok = $controller->redirectDnsManagementPage($params);
-
-    return ['error' => 'Could not redirect to DNS panel'];
+    return openprovider_registrar_launch_decorator('adminManageDnsZone', $params);
 }
 
 function openprovider_config_validate($params)
