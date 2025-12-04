@@ -12,32 +12,32 @@ use OpenProvider\WhmcsRegistrar\helpers\DNS;
  */
 
 class DnsAuthController {
-    public function redirectDnsManagementPage ($params)
+    public function redirectDnsManagementPage($params)
     {
-        if($url = DNS::getDnsUrlOrFail($params['domainid']))
-        {
-            $urlOne = $_SERVER['HTTP_REFERER'];
-            $url_decoded = html_entity_decode($urlOne);
+        if ($url = DNS::getDnsUrlOrFail($params['domainid'])) {
 
-        
-            // JavaScript confirm dialog
+            // Fallback if referer is not set
+            $previousUrl = $_SERVER['HTTP_REFERER'] ?? 'clientarea.php?action=domains';
+
+            // Use json_encode to safely embed URLs in JS strings
+            $urlJs        = json_encode($url);
+            $previousUrlJs = json_encode(html_entity_decode($previousUrl));
+
             echo '<script type="text/javascript">
-                    document.addEventListener("DOMContentLoaded", function() {
-                        var userConfirmed = confirm("Do you want to open in New Tab?");
-                        if (userConfirmed) {
-                            var newWindow = window.open("' . $url . '", "_blank"); // Open OP DNS management page in a new tab
-                            if (newWindow) {
-                                window.location.href = "' . $url_decoded . '"; // Redirect to previous page
-                                newWindow.focus(); // Focus on the new tab
-                            } else {
-                                alert("New tab opening blocked! Please allow it for this site.");
-                                window.location.href = "' . $url . '"; // Redirect to OP DNS management page
-                            }
-                        } else {
-                            window.location.href = "' . $url . '"; // Redirect to OP DNS management page
-                        }
-                    });
-                  </script>';
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Try to open in a new tab, just like target="_blank"
+                    var newWindow = window.open(' . $urlJs . ', "_blank");
+
+                    if (newWindow && !newWindow.closed) {
+                        // New tab opened successfully: go back to previous page in this tab
+                        newWindow.focus();
+                        window.location.href = ' . $previousUrlJs . ';
+                    } else {
+                        // Popup blocked: just redirect this tab instead
+                        window.location.href = ' . $urlJs . ';
+                    }
+                });
+            </script>';
             exit;
         }
     }
