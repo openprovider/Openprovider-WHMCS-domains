@@ -35,7 +35,7 @@ Features
 curl -s https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/refs/heads/master/scripts/install_openprovider.sh | /bin/bash -s
 ```  
 
-## Manuaul Installation - Copy files into the module directories
+## Manual Installation - Copy files into the module directories
 
 - Upload the contents of `/modules/registrars/openprovider` from this repository to  `<your WHMCS directory>/modules/registrars/openprovider`
 - Upload the contents of `/includes/hooks/` to `<your WHMCS directory>/includes/hooks`
