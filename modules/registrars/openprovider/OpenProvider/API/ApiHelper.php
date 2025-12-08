@@ -70,6 +70,11 @@ class ApiHelper
                 return $result['authCode'];
             }
 
+            if ($result['success'] == true) {
+                $message = "The authorization code has been successfully sent to the registrant email. Please check registrant inbox.";
+                return $message;
+            }
+
             if (isset($result['message']) && $result['message'] != "") {
                 throw new \Exception($result['message']);
             }
@@ -582,6 +587,24 @@ class ApiHelper
     {
         return $this->buildResponse($this->apiClient->call('searchPromoMessageRequest'));
     }
+
+    /**
+     * @param string $tld
+     * @return array
+     * @throws \Exception 
+     */
+    public function getTldMeta(string $tld): array
+    {
+        $tld = trim($tld);
+        if ($tld === '') {
+            throw new \InvalidArgumentException('Missing TLD.');
+        }
+
+        return $this->buildResponse(
+            $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
+        );
+    }
+
 
     /**
      * @param ResponseInterface $response

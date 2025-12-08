@@ -1,4 +1,5 @@
 <?php
+
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use OpenProvider\API\ApiInterface;
@@ -10,6 +11,8 @@ use WHMCS\Domain\Registrar\Domain;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use OpenProvider\API\Domain as api_domain;
+use OpenProvider\WhmcsRegistrar\helpers\Cache;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 /**
  * Class DomainInformationController
@@ -17,7 +20,7 @@ use OpenProvider\API\Domain as api_domain;
 class DomainInformationController extends BaseController
 {
     const CC_TLD_LENGTH = 2;
-    
+
     /**
      * @var api_domain
      */
@@ -64,20 +67,19 @@ class DomainInformationController extends BaseController
 
         $domain = $this->api_domain;
         try {
-            $domain->load(array (
+            $domain->load(array(
                 'name' => $params['sld'],
                 'extension' => $params['tld']
             ));
         } catch (\Exception $e) {
-            return array
-            (
+            return array(
                 'error' => $e->getMessage(),
             );
         }
 
         // Get the data
         try {
-            $op_domain = $this->apiHelper->getDomain($domain);
+            $op_domain = $this->apiHelper->getDomain($domain, ['withAdditionalData' => true]);
         } catch (\Exception $e) {
             return [
                 'error' => $e->getMessage(),
@@ -94,9 +96,22 @@ class DomainInformationController extends BaseController
         $response['tld']                    = $op_domain['domain']['extension'];
         $response['nameservers']            = $this->getNameservers($op_domain['nameServers'] ?: []);
         $response['status']                 = api_domain::convertOpStatusToWhmcs($op_domain['status']);
-        $response['transferlock']           = $op_domain['isLocked'];
-        $response['expirydate']             = $op_domain['expirationDate'];
+        $response['transferlock']           = $op_domain['isLocked'];        
         $response['addons']['hasidprotect'] = $op_domain['isPrivateWhoisEnabled'];
+
+        if(Configuration::getOrDefault('renewalDateSync', true)) {
+            $response['expirydate']         = $op_domain['renewalDate'];
+        }else{
+            $response['expirydate']         = $op_domain['expirationDate'];
+        }
+
+        if (!Cache::has($op_domain['domain']['extension'])) {
+            if (($op_domain['isLockable'] ?? false)) {
+                Cache::set($op_domain['domain']['extension'], true);
+            } else {
+                Cache::set($op_domain['domain']['extension'], false);
+            }
+        }
 
         $isCcTld = $this->isCcTld($response['tld']);
 
@@ -145,6 +160,13 @@ class DomainInformationController extends BaseController
             $result->setDomainContactChangeExpiryDate(Carbon::createFromFormat('Y-m-d H:i:s', $verification['domain_contact_change_expiry_date']));
         }
 
+        // Cache for Admin hooks on this page render
+        $_SESSION['admin_area_op_domain_info'][(int)$params['domainid']] = [
+            'consentForPublishing' => $op_domain['additionalData']['consentForPublishing'] ?? false,
+            'opDomainId' => $op_domain['id'] ?? null,
+            'wppEnabled' => $op_domain['isPrivateWhoisEnabled'] ?? false,
+        ];
+
         return $result;
     }
 
@@ -154,7 +176,7 @@ class DomainInformationController extends BaseController
      */
     private function getNameservers(array $nameservers): array
     {
-        $return = array ();
+        $return = array();
         $i = 1;
 
         foreach ($nameservers as $ns) {
@@ -198,13 +220,14 @@ class DomainInformationController extends BaseController
             $result['pending_suspension']                = !!$verification['isSuspended'];
             try {
                 $result['domain_contact_change_expiry_date'] = (
-                isset($verification['expirationDate']) && !empty($verification['expirationDate'])
+                    isset($verification['expirationDate']) && !empty($verification['expirationDate'])
                     ? Carbon::createFromFormat('Y-m-d H:i:s', $verification['expirationDate'])
                     : false
                 );
                 if ($result['domain_contact_change_expiry_date'] && $result['domain_contact_change_expiry_date']->year < 1)
                     $result['domain_contact_change_expiry_date'] = false;
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
 
         return $result;

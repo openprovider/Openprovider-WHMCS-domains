@@ -30,11 +30,12 @@ Check if you downloaded the tld prices from your Openprovider live account, beca
      * @param $shorthandValue
      * @return int
      */
-    protected function convertShorthandToBytes($shorthandValue) {
+    protected function convertShorthandToBytes($shorthandValue)
+    {
         $shorthandValue = trim($shorthandValue);
         $lastChar = strtolower($shorthandValue[strlen($shorthandValue) - 1]);
         $value = (int) $shorthandValue;
-    
+
         switch ($lastChar) {
             case 'g':
                 $value *= 1024;
@@ -44,7 +45,7 @@ Check if you downloaded the tld prices from your Openprovider live account, beca
                 $value *= 1024;
                 break;
         }
-    
+
         return $value;
     }
 
@@ -66,17 +67,17 @@ Check if you downloaded the tld prices from your Openprovider live account, beca
 
             if ($currentMemoryLimitBytes < $minRequiredBytes) {
                 ini_set('memory_limit', '256M');
-            } 
-            
-            if($currentExecutionTime < 300){
+            }
+
+            if ($currentExecutionTime < 300) {
                 ini_set('max_execution_time', 300);
             }
-        } catch(\Exception $e) {            
+        } catch (\Exception $e) {
             $errMsg = "ERROR: Importing pricing failed. Unable to set memory limit and max execution time for importing pricing. Please increase the memory limit and max execution time in your WHMCS installation.";
-            logModuleCall('openprovider', 'insufficient_memory_issue', null, $errMsg, null, null);            
+            logModuleCall('openprovider', 'insufficient_memory_issue', null, $errMsg, null, null);
             throw new \Exception("Error occurred importing TLD prices automatically. The script needs memory_limit=>256M and max_execution_time=>300 to automatically import TLD prices. Please increase the PHP 'memory_limit' and 'max_execution_time' for your WHMCS installation and re-try. Verify values from: Utilities > System > PHP Info");
         }
-        
+
 
         // Perform API call to retrieve extension information
         // A connection error should return a simple array with error key and message
@@ -85,7 +86,7 @@ Check if you downloaded the tld prices from your Openprovider live account, beca
         $tldPriceCache = new TldPriceCache();
 
         if (!$tldPriceCache->has($params))
-            throw new \Exception('The cron for downloading the TLD prices was not run yet. You can run the prices download manually here. If this fails, it is likely that your WHMCS installation does not support a long execution time. <a href="https://github.com/openprovider/OP-WHMCS7/blob/master/docs/TLD_Pricing_sync_Utility.md" target="_blank">Check the manual to run the cron command instead</a>.');
+            throw new \Exception('The cron for downloading the TLD prices was not run yet. You can run the prices download manually here. If this fails, it is likely that your WHMCS installation does not support a long execution time. <a href="https://github.com/openprovider/Openprovider-WHMCS-domains/blob/master/docs/TLD_Pricing_sync_Utility.md" target="_blank">Check the manual to run the cron command instead</a>.');
 
         $extensionData = $tldPriceCache->get();
 
@@ -93,7 +94,14 @@ Check if you downloaded the tld prices from your Openprovider live account, beca
 
         $advancedConfigurationMaxPeriod = Configuration::getOrDefault('maxRegistrationPeriod', 5);
 
+        $testModeTLDs = Configuration::get('test_mode_tlds');
+
         foreach ($extensionData['results'] as $extension) {
+        
+            if((isset($params['test_mode']) && $params['test_mode'] == 'on') && !in_array($extension['name'],$testModeTLDs)) {
+                continue;                
+            }
+            
             if (!isset($extension['prices']) || is_null($extension['prices'])) {
                 throw new \Exception(self::ERROR_MESSAGE_IF_TLDS_WITHOUT_PRICES);
             }

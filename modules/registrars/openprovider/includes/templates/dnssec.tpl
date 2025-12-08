@@ -17,6 +17,7 @@
             <input type="button" class="ml-auto btn-primary hidden" name="turnOnOffDnssec"
                    value="{if $LANG.dnssec.activatednssecbutton}{$LANG.dnssec.activatednssecbutton}{else}Activate DNSSEC{/if}"
                    data-value="1"/>
+            <div class="dnssec-spinner ml-auto hidden"></div>
         {else}
             <input type="button" class="ml-auto btn-primary hidden" name="turnOnOffDnssec"
                    value="{if $LANG.dnssec.deactivatednssecbutton}{$LANG.dnssec.deactivatednssecbutton}{else}Deactivate DNSSEC{/if}"
@@ -24,6 +25,7 @@
             <input type="button" class="ml-auto btn-primary" name="turnOnOffDnssec"
                    value="{if $LANG.dnssec.activatednssecbutton}{$LANG.dnssec.activatednssecbutton}{else}Activate DNSSEC{/if}"
                    data-value="1"/>
+            <div class="dnssec-spinner ml-auto hidden"></div>
         {/if}
 
     </div>

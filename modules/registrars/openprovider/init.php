@@ -1,4 +1,5 @@
 <?php
+
 // Require any libraries needed for the module to function.
 
 use Carbon\Carbon;
@@ -12,6 +13,7 @@ use OpenProvider\API\ApiV1;
 use Psr\Log\LoggerInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Models\Registrar;
@@ -22,9 +24,16 @@ require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/classes/idna_convert.class.php';
 
-const SESSION_EXPIRATION_LIFE_TIME = 300;
-const AUTH_TOKEN_EXPIRATION_LIFE_TIME = 1;
+$expirationTimes = [
+    'SESSION_EXPIRATION_LIFE_TIME'    => 300,
+    'AUTH_TOKEN_EXPIRATION_LIFE_TIME' => 1,
+];
 
+foreach ($expirationTimes as $name => $value) {
+    if (!defined($name)) {
+        define($name, $value);
+    }
+}
 /**
  * Configure and launch the system
  */
@@ -53,7 +62,7 @@ function openprovider_bind_required_classes($launcher)
     $params = (new Registrar())->getRegistrarData()['openprovider'];
 
     $host = $params['test_mode'] == 'on' ?
-        Configuration::get('api_url_cte') :
+        Configuration::get('restapi_url_sandbox') :
         Configuration::get('api_url');
 
     $useApiV1 = true;
@@ -63,7 +72,7 @@ function openprovider_bind_required_classes($launcher)
     });
 
     $launcher->set(Session::class, function (ContainerInterface $c) {
-        return new Session();
+        return new Session(new MockArraySessionStorage());
     });
 
     $launcher->set(CamelCaseToSnakeCaseNameConverter::class, function (ContainerInterface $e) {
@@ -109,16 +118,16 @@ function openprovider_bind_required_classes($launcher)
             $client->getConfiguration()->setToken($token);
         } else {
             Capsule::table('reseller_tokens')->where('username', $params['Username'])->delete();
-            
-            if (!Cache::has('op_auth_generate')) {    
+
+            if (!Cache::has('op_auth_generate')) {
                 $reply = $client->call('generateAuthTokenRequest', [
                     'username' => $params['Username'],
                     'password' => $params['Password']
                 ]);
-    
+
                 Cache::set('op_auth_generate', $reply);
-                
-                $token = $reply->getData()['token']; 
+
+                $token = $reply->getData()['token'];
                 if ($token) {
                     Capsule::table('reseller_tokens')->insert([
                         'username' => $params['Username'],
@@ -126,12 +135,11 @@ function openprovider_bind_required_classes($launcher)
                         'expire_at' => Carbon::now()->addDays(AUTH_TOKEN_EXPIRATION_LIFE_TIME)->toDateTimeString(),
                         'created_at' => Carbon::now()->toDateTimeString()
                     ]);
-    
+
                     $session->getMetadataBag()->stampNew(SESSION_EXPIRATION_LIFE_TIME);
                     $client->getConfiguration()->setToken($token);
                 }
             }
-            
         }
 
         return $client;
