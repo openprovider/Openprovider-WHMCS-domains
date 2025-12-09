@@ -10,13 +10,13 @@
 ## Installation
 
 ```bash
-curl -s https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/refs/heads/version-8.1/scripts/install_openprovider.sh | /bin/bash -s
+curl -s https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/refs/heads/master/scripts/install_openprovider.sh | /bin/bash -s
 ```
 
 ## Upgrade
 
 ```bash
-curl -s https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/refs/heads/version-8.1/scripts/update_openprovider.sh | /bin/bash -s
+curl -s https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/refs/heads/master/scripts/update_openprovider.sh | /bin/bash -s
 ```
 
 **Important**: If you are running the commands as the 'root' user, ensure to correct the ownership of following folders and files to avoid permission issues:
