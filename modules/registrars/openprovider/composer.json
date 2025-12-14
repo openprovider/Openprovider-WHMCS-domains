@@ -13,7 +13,7 @@
             "vendor-static/guzzlehttp/psr7/src/functions_include.php"
         ],
         "exclude-from-classmap": [
-            "modules/registrars/openprovider/vendor/illuminate/"
+            "vendor/illuminate/"
         ]
     },
     "require": {
