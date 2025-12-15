@@ -4,6 +4,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use WHMCS\ClientArea;
 use WHMCS\Authentication\CurrentUser;
+use WHMCS\Config\Setting;
 use OpenProvider\API\APIConfig;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
@@ -139,7 +140,14 @@ class DnssecPageController extends BaseController
                 ->setOrder(50);
         }
 
-        $ca->setTemplate('/modules/registrars/openprovider/includes/templates/dnssec.tpl');
+        $activeTheme = Setting::getValue('Template');
+        $themeTpl = ROOTDIR . "/templates/{$activeTheme}/dnssec.tpl";
+
+        if (is_string($activeTheme) && $activeTheme !== '' && file_exists($themeTpl)) {
+            $ca->setTemplate('dnssec');
+        } else {
+            $ca->setTemplate('/modules/registrars/openprovider/includes/templates/dnssec.tpl');
+        }
 
         $ca->output();
     }
