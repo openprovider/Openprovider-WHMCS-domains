@@ -50,8 +50,10 @@ class DomainLockingEnabledController
         }
 
         $unlockedLabel = \Lang::trans('domaincurrentlyunlocked');
+        if (empty($unlockedLabel)) {
+            $unlockedLabel = 'Domain Currently Unlocked!';
+        }
         $unlockedLabelJs = json_encode($unlockedLabel);
-    
         return '
                 <script>
                 document.addEventListener("DOMContentLoaded", function() {
