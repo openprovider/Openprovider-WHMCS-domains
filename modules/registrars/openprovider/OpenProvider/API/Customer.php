@@ -67,7 +67,7 @@ class Customer
      *
      * @var string
      */
-    public $locale          =   'en_001';
+    public $locale          =   'en_GB';
 
     /**
      *
@@ -312,11 +312,22 @@ class Customer
 
     private function getLocaleByLanguage(?string $language)
     {
-        // en_001 = "English (World)" in the openprovider control panel. Templates should match this. (or be the default)
-        $defaultLanguageCode = 'en_001';
+        // en_GB = "English (United Kingdom)" in the openprovider control panel. Templates should match this. (or be the default)
+        $defaultLanguageCode = 'en_GB';
 
-        if (!$language || $language == 'english') {
+        if (!$language) {
             return $defaultLanguageCode;
+        }
+
+        // Map invalid WHMCS language codes to OpenProvider locale codes 
+        $whmcsCorrectedMappingForOP = [
+            'arabic' => 'ar_SA',
+            'azerbaijani' => 'az_Latn_AZ',
+            'norwegian' => 'nb_NO',
+        ];
+
+        if (isset($whmcsCorrectedMappingForOP[$language])) {
+            return $whmcsCorrectedMappingForOP[$language];
         }
 
         return ClientLanguage::factory(Setting::getValue('Language'), $language)->toArray()['locale'] ?? $defaultLanguageCode;
