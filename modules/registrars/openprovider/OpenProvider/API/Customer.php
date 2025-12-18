@@ -64,7 +64,7 @@ class Customer
     public $handle          =   null;
 
     /**
-     *
+     * The customer's locale code (e.g., en_GB, ar_SA).
      * @var string
      */
     public $locale          =   'en_GB';
