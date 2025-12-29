@@ -3,6 +3,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use OpenProvider\WhmcsRegistrar\helpers\DNS;
+use OpenProvider\WhmcsRegistrar\src\Configuration;
 
 /**
  * Class DnsAuthController
@@ -23,22 +24,31 @@ class DnsAuthController {
             $urlJs        = json_encode($url);
             $previousUrlJs = json_encode(html_entity_decode($previousUrl));
 
-            echo '<script type="text/javascript">
-                document.addEventListener("DOMContentLoaded", function() {
-                    // Try to open in a new tab, just like target="_blank"
-                    var newWindow = window.open(' . $urlJs . ', "_blank");
+            $newDnsInNewWindow = Configuration::getOrDefault('useNewDnsManagerFeatureInNewWindow', true);
 
-                    if (newWindow && !newWindow.closed) {
-                        // New tab opened successfully: go back to previous page in this tab
-                        newWindow.focus();
-                        window.location.href = ' . $previousUrlJs . ';
-                    } else {
-                        // Popup blocked: just redirect this tab instead
-                        window.location.href = ' . $urlJs . ';
-                    }
-                });
-            </script>';
-            exit;
+            if ($newDnsInNewWindow) {
+                // JavaScript confirm dialog
+                echo '<script type="text/javascript">
+                        document.addEventListener("DOMContentLoaded", function() {
+                            var newWindow = window.open(' . $urlJs . ', "_blank"); // Open OP DNS management page in a new tab
+                            if (newWindow) {
+                                window.location.href = ' . $previousUrlJs . '; // Redirect to previous page
+                                newWindow.focus(); // Focus on the new tab
+                            } else {
+                                alert("Pop-up blocked. Allow pop-ups if you want to open this in a new tab.");
+                                window.location.href = ' . $urlJs . '; // Redirect to OP DNS management page
+                            }
+                        });
+                    </script>';
+                exit;
+            } else {
+                echo '<script type="text/javascript">
+                        document.addEventListener("DOMContentLoaded", function() {
+                            window.location.href = ' . $urlJs . '; // Redirect to OP DNS management page
+                        });
+                    </script>';
+                exit;
+            }
         }
     }
 }
