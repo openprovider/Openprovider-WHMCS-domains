@@ -55,7 +55,7 @@ class DnsAuthController {
                                 window.location.href = ' . $previousUrlJs . '; // Redirect to previous page
                                 newWindow.focus(); // Focus on the new tab
                             } else {
-                                alert("Popup blocked. Allow popups if you want to open this in a new tab.");
+                                alert("Popup blocked by your browser. Please allow popups for this site to open DNS management in a new tab.");
                                 window.location.href = ' . $urlJs . '; // Redirect to OP DNS management page
                             }
                         });
