@@ -41,8 +41,8 @@ class DnsAuthController {
             }
 
             // Use json_encode to safely embed URLs in JS strings
-            $urlJs        = json_encode($url);
-            $previousUrlJs = json_encode(html_entity_decode($previousUrl));
+            $urlJs        = json_encode($url, JSON_UNESCAPED_SLASHES);
+            $previousUrlJs = json_encode(html_entity_decode($previousUrl), JSON_UNESCAPED_SLASHES);
 
             $shouldOpenDnsInNewWindow = Configuration::getOrDefault('useNewDnsManagerFeatureInNewWindow', true);
 
