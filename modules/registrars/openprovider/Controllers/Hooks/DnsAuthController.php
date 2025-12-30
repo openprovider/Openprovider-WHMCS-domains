@@ -17,8 +17,28 @@ class DnsAuthController {
     {
         if ($url = DNS::getDnsUrlOrFail($params['domainid'])) {
 
-            // Fallback if referer is not set
-            $previousUrl = $_SERVER['HTTP_REFERER'] ?? 'clientarea.php?action=domains';
+            // Fallback if referer is not set or is not same-origin
+            $defaultPreviousUrl = 'clientarea.php?action=domains';
+            $previousUrl = $defaultPreviousUrl;
+            if (!empty($_SERVER['HTTP_REFERER'])) {
+                $referer = $_SERVER['HTTP_REFERER'];
+                $refererParts = parse_url($referer);
+
+                if ($refererParts !== false) {
+                    $currentHost = $_SERVER['HTTP_HOST'] ?? '';
+                    // Remove port if present
+                    $currentHost = explode(':', $currentHost)[0];
+
+                    // Allow relative URLs or same-host absolute URLs
+                    if (
+                        !isset($refererParts['host']) ||
+                        (isset($refererParts['host']) &&
+                            strcasecmp($refererParts['host'], $currentHost) === 0)
+                    ) {
+                        $previousUrl = $referer;
+                    }
+                }
+            }
 
             // Use json_encode to safely embed URLs in JS strings
             $urlJs        = json_encode($url);
