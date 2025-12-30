@@ -44,9 +44,9 @@ class DnsAuthController {
             $urlJs        = json_encode($url);
             $previousUrlJs = json_encode(html_entity_decode($previousUrl));
 
-            $newDnsInNewWindow = Configuration::getOrDefault('useNewDnsManagerFeatureInNewWindow', true);
+            $shouldOpenDnsInNewWindow = Configuration::getOrDefault('useNewDnsManagerFeatureInNewWindow', true);
 
-            if ($newDnsInNewWindow) {
+            if ($shouldOpenDnsInNewWindow) {
                 // JavaScript confirm dialog
                 echo '<script type="text/javascript">
                         document.addEventListener("DOMContentLoaded", function() {
