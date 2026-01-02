@@ -71,6 +71,10 @@ class DomainLockingEnabledController
 
     public function handleDomainLockingClientSidebar(\WHMCS\View\Menu\Item $primarySidebar): ?string
     {
+        $action = $_REQUEST['action'] ?? '';
+        if ($action !== 'domaindetails') {
+            return "";
+        }
         $id = $_REQUEST['id'] ?? ($_REQUEST['domainid'] ?? null);
         if (!$id) {
             return "";
