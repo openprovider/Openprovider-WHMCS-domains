@@ -435,23 +435,12 @@ $additionaldomainfields[".se"][] = array(
 // .SG
 
 $additionaldomainfields[".sg"][] = array(
-    "Name" => "Company Registration Number /<br>Passport Number / NRIC",
+    "Name" => "Company Registration Number",
     "LangVar" => "companyRegistrationNumber",
     "Type" => "text",
     "Size" => "30",
-    "Required" => true,
-    "op_location" => "customerAdditionalData",
+    "op_location" => "customerExtensionAdditionalData",
     "op_name"  => "companyRegistrationNumber"
-);
-
-$additionaldomainfields[".sg"][] = array(
-    "Name" => "Singapore Personal Access ID",
-    "LangVar" => "adminSingPassId",
-    "Type" => "text",
-    "Size" => "30",
-    "Required" => true,
-    "op_location" => "domainAdditionalData",
-    "op_name"  => "adminSingPassId"
 );
 
 // .COM.SG
@@ -941,7 +930,6 @@ $additionaldomainfields['.fi'][] = array(
 
 );
 
-// .NU
 $additionaldomainfields[".nu"][] = array(
     "Name" => "Owner type",
     "op_dropdown_for_op_name" => "nuIdentificationNumber",
