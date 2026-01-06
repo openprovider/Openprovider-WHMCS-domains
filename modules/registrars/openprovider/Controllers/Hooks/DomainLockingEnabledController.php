@@ -49,6 +49,11 @@ class DomainLockingEnabledController
             return "";
         }
 
+        $unlockedLabel = \Lang::trans('domaincurrentlyunlocked');
+        if (empty($unlockedLabel)) {
+            $unlockedLabel = 'Domain Currently Unlocked!';
+        }
+        $unlockedLabelJs = json_encode($unlockedLabel);
         return '
                 <script>
                 document.addEventListener("DOMContentLoaded", function() {
@@ -61,12 +66,12 @@ class DomainLockingEnabledController
                     var alerts = document.querySelectorAll(\'.alert.alert-danger\');
                     alerts.forEach(function(alert) {
                         var strongTag = alert.querySelector(\'strong\');
-                        if (strongTag && strongTag.textContent.trim() === \'Domain Currently Unlocked!\') {
+                        if (strongTag && strongTag.textContent.trim() === ' . $unlockedLabelJs . ') {
                             alert.remove();
                         }
                     });
                 });
-            </script>';
+                </script>';
     }
 
     public function handleDomainLockingClientSidebar(\WHMCS\View\Menu\Item $primarySidebar): ?string
