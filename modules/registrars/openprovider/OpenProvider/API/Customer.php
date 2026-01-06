@@ -101,6 +101,8 @@ class Customer
 
         if ($getFromContactDetails == true)
         {
+            if ($prefix == '')
+                $prefix = 'owner';
             $indexes = array(
                 'firstname' => 'first name',
                 'lastname' => 'last name',
