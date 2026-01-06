@@ -435,7 +435,7 @@ $additionaldomainfields[".se"][] = array(
 // .SG
 
 $additionaldomainfields[".sg"][] = array(
-    "Name" => "Company Registration Number /</br>Passport Number / NRIC",
+    "Name" => "Company Registration Number /<br>Passport Number / NRIC",
     "LangVar" => "companyRegistrationNumber",
     "Type" => "text",
     "Size" => "30",
