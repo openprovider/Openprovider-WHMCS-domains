@@ -11,7 +11,7 @@ TEMP_DIR="/tmp/openprovider_module"
 # -----------------------------
 # Helpers: horizontal loader
 # -----------------------------
-
+FORCE_WGET=true
 draw_bar() {
     # draw_bar <pct> [width]
     local pct="$1"
@@ -82,7 +82,7 @@ download_with_loader() {
     local width=24
 
     # Pick tool + start download in background (silent)
-    if command -v curl >/dev/null 2>&1; then
+    if [ "${FORCE_WGET:-false}" != "true" ] && command -v curl >/dev/null 2>&1; then
         method="curl"
         curl -fSL -sS "$url" -o "$out" &
         pid=$!
