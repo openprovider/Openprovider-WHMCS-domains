@@ -70,15 +70,18 @@ if [ "$FALLBACK" = true ]; then
     LATEST_URL="${BASE_RELEASE_URL}/${LATEST_TAG}.tar.gz"
     
     echo "Downloading latest release: $LATEST_TAG ..."
-    if command -v curl &> /dev/null; then
-        curl -L "$LATEST_URL" -o "$TEMP_DIR/openprovider_module.tar.gz"
-        if [ $? -ne 0 ]; then
+    if command -v curl >/dev/null 2>&1; then
+        echo "Using curl..."
+        if ! curl -fSL --progress-bar "$LATEST_URL" \
+            -o "$TEMP_DIR/openprovider_module.tar.gz"; then
             echo "Error: Failed to download package using curl."
             exit 1
         fi
-    elif command -v wget &> /dev/null; then
-        wget "$LATEST_URL" -O "$TEMP_DIR/openprovider_module.tar.gz"
-        if [ $? -ne 0 ]; then
+
+    elif command -v wget >/dev/null 2>&1; then
+        echo "Using wget..."
+        if ! wget --show-progress --progress=bar:force:noscroll \
+            "$LATEST_URL" -O "$TEMP_DIR/openprovider_module.tar.gz"; then
             echo "Error: Failed to download package using wget."
             exit 1
         fi
@@ -86,6 +89,8 @@ if [ "$FALLBACK" = true ]; then
         echo "Error: Neither curl nor wget is available. Cannot proceed."
         exit 1
     fi
+
+    echo "Download complete."
     
     if [ ! -s "$TEMP_DIR/openprovider_module.tar.gz" ]; then
         echo "Error: Downloaded file is empty or corrupted."
