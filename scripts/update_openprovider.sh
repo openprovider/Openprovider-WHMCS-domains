@@ -15,14 +15,17 @@ if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modu
 fi
 
 # Prompt user for confirmation to proceed with the update
-read -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. To avoid losing changes, please ensure you have backed up your customizations. Do you want to proceed with the update? (Y/n): " confirm
-
-# Check user input
-if [[ "$confirm" =~ ^[Yy]$ ]]; then
-    echo "Proceeding with the update..."
+if [ -r /dev/tty ]; then
+    read -u 3 -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. Do you want to proceed? (Y/n): " confirm 3</dev/tty
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        echo "Proceeding with the update..."
+    else
+        echo "Update canceled. Please backup your customizations before proceeding."
+        exit 0
+    fi
 else
-    echo "Update canceled. Please backup your customizations before proceeding."
-    exit 0
+    echo "No interactive terminal detected. Update canceled."
+    exit 1
 fi
 
 # Create a temporary directory
@@ -33,17 +36,19 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check if git is installed
-if command -v git &> /dev/null; then
-    echo "Fetching the latest version of Openprovider module using git..."
-    git clone "$GIT_REPO" "$TEMP_DIR"
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to clone repository. Falling back to downloading package."
-        FALLBACK=true
-    fi
-else
-    echo "Git is not installed. Falling back to downloading package."
-    FALLBACK=true
-fi
+# if command -v git &> /dev/null; then
+#     echo "Fetching the latest version of Openprovider module using git..."
+#     git clone "$GIT_REPO" "$TEMP_DIR"
+#     if [ $? -ne 0 ]; then
+#         echo "Error: Failed to clone repository. Falling back to downloading package."
+#         FALLBACK=true
+#     fi
+# else
+#     echo "Git is not installed. Falling back to downloading package."
+#     FALLBACK=true
+# fi
+
+FALLBACK=true
 
 # Fallback to downloading the latest release if git is unavailable or fails
 if [ "$FALLBACK" = true ]; then
