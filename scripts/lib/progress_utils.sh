@@ -60,10 +60,12 @@ download_with_loader() {
     local url="$1"
     local out="$2"
     local method="" pid="" total="" width=24
+    local cur=0 pct=0
+    local pos=0 dir=1 max=0
 
     if command -v curl >/dev/null 2>&1; then
         method="curl"
-        curl -fSL -sS "$url" -o "$out" &
+        curl -fsSL "$url" -o "$out" &
         pid=$!
     elif command -v wget >/dev/null 2>&1; then
         method="wget"
@@ -79,7 +81,8 @@ download_with_loader() {
     if [ -t 1 ]; then
         if [ -n "$total" ] && [ "$total" -gt 0 ] 2>/dev/null; then
             while kill -0 "$pid" 2>/dev/null; do
-                local cur=0 pct=0
+                cur=0
+                pct=0
                 [ -f "$out" ] && cur="$(wc -c < "$out" 2>/dev/null || echo 0)"
                 pct=$((cur * 100 / total))
                 [ "$pct" -gt 99 ] && pct=99
@@ -87,7 +90,9 @@ download_with_loader() {
                 sleep 0.2
             done
         else
-            local pos=0 dir=1 max=$((width-1))
+            pos=0
+            dir=1
+            max=$((width - 1))
             while kill -0 "$pid" 2>/dev/null; do
                 printf "\rUsing %s... %s" "$method" "$(indeterminate_bar "$pos" "$width")"
                 pos=$((pos + dir))
