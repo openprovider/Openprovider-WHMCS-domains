@@ -8,6 +8,141 @@ LATEST_RELEASE_API="https://api.github.com/repos/openprovider/Openprovider-WHMCS
 BASE_RELEASE_URL="https://github.com/openprovider/Openprovider-WHMCS-domains/archive/refs/tags"
 TEMP_DIR="/tmp/openprovider_module"
 
+# -----------------------------
+# Helpers: horizontal loader
+# -----------------------------
+draw_bar() {
+    # draw_bar <pct> [width]
+    local pct="$1"
+    local width="${2:-24}"
+
+    [ "$pct" -lt 0 ] && pct=0
+    [ "$pct" -gt 100 ] && pct=100
+
+    local filled=$((pct * width / 100))
+    local empty=$((width - filled))
+
+    local bar="" i=0
+    while [ $i -lt $filled ]; do bar="${bar}#"; i=$((i+1)); done
+    i=0
+    while [ $i -lt $empty ]; do bar="${bar}-"; i=$((i+1)); done
+
+    printf "[%s] %3s%%" "$bar" "$pct"
+}
+
+get_content_length() {
+    # get_content_length <url>
+    local url="$1"
+    local len=""
+
+    if command -v curl >/dev/null 2>&1; then
+        len="$(curl -sIL "$url" | awk '
+            BEGIN{IGNORECASE=1}
+            /^content-length:/ {gsub("\r",""); print $2}
+        ' | tail -n 1)"
+    elif command -v wget >/dev/null 2>&1; then
+        # wget --spider outputs headers to stderr
+        len="$(wget --spider -S "$url" 2>&1 | awk '
+            BEGIN{IGNORECASE=1}
+            /Content-Length:/ {print $2}
+        ' | tail -n 1)"
+    fi
+
+    # Keep digits only
+    len="$(printf "%s" "$len" | tr -cd '0-9')"
+    printf "%s" "$len"
+}
+
+indeterminate_bar() {
+    # indeterminate_bar <pos> [width]
+    local pos="$1"
+    local width="${2:-24}"
+
+    local bar="" i=0
+    while [ $i -lt $width ]; do
+        if [ $i -eq "$pos" ]; then
+            bar="${bar}#"
+        else
+            bar="${bar}-"
+        fi
+        i=$((i+1))
+    done
+
+    printf "[%s]" "$bar"
+}
+
+download_with_loader() {
+    # download_with_loader <url> <outpath>
+    local url="$1"
+    local out="$2"
+    local method=""
+    local pid=""
+    local total=""
+    local width=24
+
+    # Pick tool + start download in background (silent)
+    if command -v curl >/dev/null 2>&1; then
+        method="curl"
+        curl -fSL -sS "$url" -o "$out" &
+        pid=$!
+    elif command -v wget >/dev/null 2>&1; then
+        method="wget"
+        wget -q "$url" -O "$out" &
+        pid=$!
+    else
+        echo "Error: Neither curl nor wget is available. Cannot proceed."
+        return 127
+    fi
+
+    # Try to get total size for % bar (best UX)
+    total="$(get_content_length "$url")"
+
+    # Only animate if stdout is a TTY (keeps logs clean)
+    if [ -t 1 ]; then
+        if [ -n "$total" ] && [ "$total" -gt 0 ] 2>/dev/null; then
+            # Determinate bar with percentage
+            while kill -0 "$pid" 2>/dev/null; do
+                local cur=0 pct=0
+                if [ -f "$out" ]; then
+                    cur="$(wc -c < "$out" 2>/dev/null || echo 0)"
+                fi
+                pct=$((cur * 100 / total))
+                [ "$pct" -gt 99 ] && pct=99
+                printf "\rUsing %s... %s" "$method" "$(draw_bar "$pct" "$width")"
+                sleep 0.2
+            done
+        else
+            # Indeterminate moving bar (still ONE LINE)
+            local pos=0 dir=1 max=$((width-1))
+            while kill -0 "$pid" 2>/dev/null; do
+                printf "\rUsing %s... %s" "$method" "$(indeterminate_bar "$pos" "$width")"
+                pos=$((pos + dir))
+                if [ "$pos" -ge "$max" ]; then dir=-1; fi
+                if [ "$pos" -le 0 ]; then dir=1; fi
+                sleep 0.08
+            done
+        fi
+    fi
+
+    wait "$pid"
+    local rc=$?
+
+    if [ "$rc" -ne 0 ]; then
+        # Finish line neatly
+        if [ -t 1 ]; then
+            printf "\rUsing %s... %s\n" "$method" "$(draw_bar 0 "$width")"
+        fi
+        echo "Error: Failed to download package using $method."
+        return "$rc"
+    fi
+
+    # Success: finalize to 100% in same line
+    if [ -t 1 ]; then
+        printf "\rUsing %s... %s\n" "$method" "$(draw_bar 100 "$width")"
+    fi
+    return 0
+}
+
 # Check if the current directory is the WHMCS root directory
 if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modules/addons" ]; then
     echo "Error: This script must be run from the WHMCS root directory."
@@ -70,27 +205,10 @@ if [ "$FALLBACK" = true ]; then
     LATEST_URL="${BASE_RELEASE_URL}/${LATEST_TAG}.tar.gz"
     
     echo "Downloading latest release: $LATEST_TAG ..."
-    if command -v curl >/dev/null 2>&1; then
-        echo "Using curl..."
-        if ! curl -fSL --progress-bar "$LATEST_URL" \
-            -o "$TEMP_DIR/openprovider_module.tar.gz"; then
-            echo "Error: Failed to download package using curl."
-            exit 1
-        fi
-
-    elif command -v wget >/dev/null 2>&1; then
-        echo "Using wget..."
-        if ! wget --show-progress --progress=bar:force:noscroll \
-            "$LATEST_URL" -O "$TEMP_DIR/openprovider_module.tar.gz"; then
-            echo "Error: Failed to download package using wget."
-            exit 1
-        fi
-    else
-        echo "Error: Neither curl nor wget is available. Cannot proceed."
+    
+    if ! download_with_loader "$LATEST_URL" "$TEMP_DIR/openprovider_module.tar.gz"; then
         exit 1
     fi
-
-    echo "Download complete."
     
     if [ ! -s "$TEMP_DIR/openprovider_module.tar.gz" ]; then
         echo "Error: Downloaded file is empty or corrupted."
