@@ -12,8 +12,6 @@ TEMP_DIR="/tmp/openprovider_module"
 # Helpers: horizontal loader
 # -----------------------------
 
-FORCE_WGET=true
-
 draw_bar() {
     # draw_bar <pct> [width]
     local pct="$1"
@@ -84,7 +82,7 @@ download_with_loader() {
     local width=24
 
     # Pick tool + start download in background (silent)
-    if [ "${FORCE_WGET:-false}" != "true" ] && command -v curl >/dev/null 2>&1; then
+    if command -v curl >/dev/null 2>&1; then
         method="curl"
         curl -fSL -sS "$url" -o "$out" &
         pid=$!
@@ -111,14 +109,14 @@ download_with_loader() {
                 fi
                 pct=$((cur * 100 / total))
                 [ "$pct" -gt 99 ] && pct=99
-                printf "\rUsing %s... %s" "$method" "$(draw_bar "$pct" "$width")"
+                printf "\rDownload using %s... %s" "$method" "$(draw_bar "$pct" "$width")"
                 sleep 0.2
             done
         else
             # Indeterminate moving bar (still ONE LINE)
             local pos=0 dir=1 max=$((width-1))
             while kill -0 "$pid" 2>/dev/null; do
-                printf "\rUsing %s... %s" "$method" "$(indeterminate_bar "$pos" "$width")"
+                printf "\rDownload using %s... %s" "$method" "$(indeterminate_bar "$pos" "$width")"
                 pos=$((pos + dir))
                 if [ "$pos" -ge "$max" ]; then dir=-1; fi
                 if [ "$pos" -le 0 ]; then dir=1; fi
@@ -133,7 +131,7 @@ download_with_loader() {
     if [ "$rc" -ne 0 ]; then
         # Finish line neatly
         if [ -t 1 ]; then
-            printf "\rUsing %s... %s\n" "$method" "$(draw_bar 0 "$width")"
+            printf "\rDownload using %s... %s\n" "$method" "$(draw_bar 0 "$width")"
         fi
         echo "Error: Failed to download package using $method."
         return "$rc"
@@ -141,10 +139,14 @@ download_with_loader() {
 
     # Success: finalize to 100% in same line
     if [ -t 1 ]; then
-        printf "\rUsing %s... %s\n" "$method" "$(draw_bar 100 "$width")"
+        printf "\rDownload using %s... %s\n" "$method" "$(draw_bar 100 "$width")"
     fi
     return 0
 }
+
+# -----------------------------
+# Main
+# -----------------------------
 
 # Check if the current directory is the WHMCS root directory
 if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modules/addons" ]; then
