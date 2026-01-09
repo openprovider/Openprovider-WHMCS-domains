@@ -11,7 +11,6 @@ SCRIPT_REF="${SCRIPT_REF:-master}"
 HELPER_URL="https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/${SCRIPT_REF}/scripts/lib/progress_utils.sh"
 HELPER_FILE="/tmp/openprovider_progress_utils_${SCRIPT_REF//\//_}.sh"
 
-
 # Load shared helpers (supports curl|bash execution)
 if [ ! -f "$HELPER_FILE" ]; then
     if command -v curl >/dev/null 2>&1; then
@@ -66,19 +65,17 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check if git is installed
-# if command -v git &> /dev/null; then
-#     echo "Fetching the latest version of Openprovider module using git..."
-#     git clone "$GIT_REPO" "$TEMP_DIR"
-#     if [ $? -ne 0 ]; then
-#         echo "Error: Failed to clone repository. Falling back to downloading package."
-#         FALLBACK=true
-#     fi
-# else
-#     echo "Git is not installed. Falling back to downloading package."
-#     FALLBACK=true
-# fi
-
-FALLBACK=true
+if command -v git &> /dev/null; then
+    echo "Fetching the latest version of Openprovider module using git..."
+    git clone "$GIT_REPO" "$TEMP_DIR"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to clone repository. Falling back to downloading package."
+        FALLBACK=true
+    fi
+else
+    echo "Git is not installed. Falling back to downloading package."
+    FALLBACK=true
+fi
 
 # Fallback to downloading the latest release if git is unavailable or fails
 if [ "$FALLBACK" = true ]; then
