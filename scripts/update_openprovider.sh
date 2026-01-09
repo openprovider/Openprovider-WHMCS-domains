@@ -46,7 +46,7 @@ fi
 # Prompt user for confirmation to proceed with the update
 if [ -r /dev/tty ]; then
     read -u 3 -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. Do you want to proceed? (Y/n): " confirm 3</dev/tty
-    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+    if [[ -z "$confirm" || "$confirm" =~ ^[Yy]$ ]]; then
         echo "Proceeding with the update..."
     else
         echo "Update canceled. Please backup your customizations before proceeding."
