@@ -7,7 +7,7 @@ GIT_REPO="https://github.com/openprovider/Openprovider-WHMCS-domains.git"
 LATEST_RELEASE_API="https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest"
 BASE_RELEASE_URL="https://github.com/openprovider/Openprovider-WHMCS-domains/archive/refs/tags"
 TEMP_DIR="/tmp/openprovider_module"
-SCRIPT_REF="${SCRIPT_REF:-INTGRTNS-402-WHMCS-Domain-Module-Improve-WHMCS-install-update-scripts}"
+SCRIPT_REF="${SCRIPT_REF:-master}"
 HELPER_URL="https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/${SCRIPT_REF}/scripts/lib/progress_utils.sh"
 HELPER_FILE="/tmp/openprovider_progress_utils_${SCRIPT_REF//\//_}.sh"
 
@@ -37,11 +37,6 @@ command -v download_with_loader >/dev/null 2>&1 || {
     echo "Error: Failed to load helper utilities (download_with_loader missing)."
     exit 1
 }
-
-
-# -----------------------------
-# Main
-# -----------------------------
 
 # Check if the current directory is the WHMCS root directory
 if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modules/addons" ]; then
