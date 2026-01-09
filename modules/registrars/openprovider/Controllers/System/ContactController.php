@@ -14,6 +14,7 @@ use WeDevelopCoffee\wPower\Core\Core;
 use WHMCS\Database\Capsule;
 
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
+use OpenProvider\WhmcsRegistrar\Helpers\DbCacheHelper;
 
 /**
  * Class ContactControllerView
@@ -176,8 +177,12 @@ class ContactController extends BaseController
         if (empty($domainOp)) {
             return [];
         }
-
-        $tldMetaData = $this->apiHelper->getTldMeta($this->domain->extension);
+        
+        $tldMetaData = DbCacheHelper::remember(
+            'tld_meta_' . $this->domain->extension,
+            86400,
+            fn() => $this->apiHelper->getTldMeta($this->domain->extension)
+        );
 
         $contacts = [];
         foreach (APIConfig::$handlesNames as $key => $name) {
