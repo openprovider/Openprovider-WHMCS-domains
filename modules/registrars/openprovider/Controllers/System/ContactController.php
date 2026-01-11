@@ -64,7 +64,7 @@ class ContactController extends BaseController
         ));
 
         try {
-            $values = $this->getContactDetails($this->domain);
+            $values = $this->getContactDetails($params);
         } catch (\Exception $e) {
             return [
                 'error' => $e->getMessage()
@@ -166,20 +166,24 @@ class ContactController extends BaseController
     }
 
     /**
+     * @param $params
      * @return array
      *
      * @throws \Exception
      */
-    private function getContactDetails(): array
+    private function getContactDetails($params): array
     {
         $domainOp = $this->apiHelper->getDomain($this->domain);
 
         if (empty($domainOp)) {
             return [];
         }
-        
+
+        $mode = ($params['test_mode'] ?? false) === 'on' ? 'test' : 'live';
+
         $tldMetaData = DbCacheHelper::remember(
             'tld_meta_' . $this->domain->extension,
+            $mode,
             86400,
             fn() => $this->apiHelper->getTldMeta($this->domain->extension)
         );
