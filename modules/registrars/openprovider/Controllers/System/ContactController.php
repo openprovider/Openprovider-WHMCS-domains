@@ -188,22 +188,25 @@ class ContactController extends BaseController
             fn() => $this->apiHelper->getTldMeta($this->domain->extension)
         );
 
-        $contacts = [];
+        $handlesToFetch = [];
         foreach (APIConfig::$handlesNames as $key => $name) {
             $handleSupportedKey = $key . 'Supported';
 
-            if (!isset($tldMetaData[$handleSupportedKey]) || !$tldMetaData[$handleSupportedKey] || empty($domainOp[$key])) {
-                continue;
+            if (
+                isset($tldMetaData[$handleSupportedKey]) &&
+                $tldMetaData[$handleSupportedKey] &&
+                !empty($domainOp[$key])
+            ) {
+                $handlesToFetch[$name] = $domainOp[$key];
             }
-
-            $customerOp = $this->apiHelper->getCustomer($domainOp[$key]) ?? false;
-
-            if (!$customerOp) {
-                continue;
-            }
-
-            $contacts[$name] = $customerOp;
         }
+
+        if (empty($handlesToFetch)) {
+            return [];
+        }
+
+        // Parallel contacts fetch
+        $contacts = $this->apiHelper->getCustomersAsync($handlesToFetch);
 
         unset($contacts['Reseller']);
         unset($contacts['reseller']);
