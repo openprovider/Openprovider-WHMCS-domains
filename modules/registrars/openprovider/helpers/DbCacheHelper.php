@@ -32,7 +32,7 @@ class DbCacheHelper
             return json_decode($row->data, true);
         }
 
-        //Cache miss or expired
+        // Cache miss or expired
         $value = $callback();
 
         Capsule::table(DatabaseTable::ModOpenProviderCache)->updateOrInsert(
