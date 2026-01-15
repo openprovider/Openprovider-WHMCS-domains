@@ -45,13 +45,18 @@ class DbCacheHelper
         // Cache miss or expired
         $value = $callback();
 
+        $encodedValue = json_encode($value);
+        // If encoding fails, do not cache the value to avoid corrupt entries.
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return $value;
+        }
         Capsule::table(DatabaseTable::ModOpenProviderCache)->updateOrInsert(
             [
                 'cache_key' => $key,
                 'mode'      => $mode,
             ],
             [
-                'data'       => json_encode($value),
+                'data'       => $encodedValue,
                 'expires_at' => $now + $ttl,
             ]
         );
