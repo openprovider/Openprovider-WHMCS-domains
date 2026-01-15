@@ -35,6 +35,8 @@ class ContactController extends BaseController
      */
     private $apiHelper;
 
+    private const TLD_METADATA_CACHE_TTL = 86400; // 24 hours
+
     /**
      * ConfigController constructor.
      */
@@ -184,7 +186,7 @@ class ContactController extends BaseController
         $tldMetaData = DbCacheHelper::remember(
             'tld_meta_' . $this->domain->extension,
             $mode,
-            86400,
+            self::TLD_METADATA_CACHE_TTL,
             fn() => $this->apiHelper->getTldMeta($this->domain->extension)
         );
 
