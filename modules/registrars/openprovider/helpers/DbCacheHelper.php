@@ -29,7 +29,17 @@ class DbCacheHelper
 
         // Cache hit and not expired
         if ($row && (int) $row->expires_at > $now) {
-            return json_decode($row->data, true);
+            $decoded = json_decode($row->data, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return $decoded;
+            }
+
+            // Corrupted or invalid JSON in cache: remove entry and treat as cache miss
+            Capsule::table(DatabaseTable::ModOpenProviderCache)
+                ->where('cache_key', $key)
+                ->where('mode', $mode)
+                ->delete();
         }
 
         // Cache miss or expired
