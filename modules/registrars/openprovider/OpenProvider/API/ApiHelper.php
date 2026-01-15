@@ -563,9 +563,7 @@ class ApiHelper
                 $customerOp['address']['number'] ?? '',
                 $customerOp['address']['suffix'] ?? '',
             ],
-            static function ($part) {
-                return $part !== '';
-            }
+            'strlen'
         );
         $customerInfo['Address'] = implode(' ', $addressParts);
 
