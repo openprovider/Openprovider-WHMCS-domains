@@ -98,6 +98,10 @@ class DbCacheHelper
             return;
         }
 
+        // WHMCS modules do not support deploy-time migrations.
+        // Table creation is intentionally handled at runtime to ensure
+        // the cache table exists even if the module is enabled without
+        // an installation/activation hook being executed.
         Capsule::schema()->create(DatabaseTable::ModOpenProviderCache, function ($table) {
             $table->string('cache_key', 255);
             $table->string('mode', 10);
