@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\Serializer;
 use Carbon\Carbon;
 use WHMCS\Database\Capsule;
 use GuzzleHttp6\Promise\PromiseInterface;
+use GuzzleHttp6\Promise\Create;
 
 class ApiV1 implements ApiInterface
 {
@@ -154,7 +155,7 @@ class ApiV1 implements ApiInterface
             $this->log($cmd, $args, $response);
 
             // Return a fulfilled promise with failure response (no throwing)
-            return \GuzzleHttp6\Promise\promise_for($response);
+            return Create::promiseFor($response);
         }
 
         $service = new $apiClass($this->httpClient, $this->configuration);
@@ -180,7 +181,7 @@ class ApiV1 implements ApiInterface
             );
             $this->log($cmd, $args, $response);
 
-            return \GuzzleHttp6\Promise\promise_for($response);
+            return Create::promiseFor($response);
         }
 
         // Convert promise result into your ResponseInterface
