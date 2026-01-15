@@ -557,10 +557,17 @@ class ApiHelper
         $customerInfo['Company Name'] = $customerOp['companyName'];
         $customerInfo['Email Address'] = $customerOp['email'];
 
-        $customerInfo['Address'] =
-            $customerOp['address']['street'] . ' ' .
-            $customerOp['address']['number'] . ' ' .
-            $customerOp['address']['suffix'];
+        $addressParts = array_filter(
+            [
+                $customerOp['address']['street'] ?? '',
+                $customerOp['address']['number'] ?? '',
+                $customerOp['address']['suffix'] ?? '',
+            ],
+            static function ($part) {
+                return $part !== null && $part !== '';
+            }
+        );
+        $customerInfo['Address'] = implode(' ', $addressParts);
 
         $customerInfo['City'] = $customerOp['address']['city'];
         $customerInfo['State'] = $customerOp['address']['state'];
