@@ -15,14 +15,17 @@ if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modu
 fi
 
 # Prompt user for confirmation to proceed with the update
-read -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. To avoid losing changes, please ensure you have backed up your customizations. Do you want to proceed with the update? (Y/n): " confirm
-
-# Check user input
-if [[ "$confirm" =~ ^[Yy]$ ]]; then
-    echo "Proceeding with the update..."
+if [ -r /dev/tty ]; then
+    read -u 3 -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. Do you want to proceed? (Y/n): " confirm 3</dev/tty
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        echo "Proceeding with the update..."
+    else
+        echo "Update canceled. Please backup your customizations before proceeding."
+        exit 0
+    fi
 else
-    echo "Update canceled. Please backup your customizations before proceeding."
-    exit 0
+    echo "No interactive terminal detected. Update canceled."
+    exit 1
 fi
 
 # Create a temporary directory
