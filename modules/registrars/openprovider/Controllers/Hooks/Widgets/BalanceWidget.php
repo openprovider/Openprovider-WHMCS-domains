@@ -138,13 +138,14 @@ EOF;
         }
         $availableBalance = $data['balance'] - $data['reservedBalance'];
         $balance = number_format((float) $data['balance'], 2);
-        $availableBalance = number_format((float) $availableBalance, 2);
 
         if ($data['balance'] <= 100)
             $balance_css = 'text-danger';
 
         if ($availableBalance <= 100)
             $reservedBalance_css = 'text-danger';
+
+        $availableBalance = number_format((float) $availableBalance, 2);
 
 
         return <<<EOF
