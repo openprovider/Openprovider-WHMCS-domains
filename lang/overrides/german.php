@@ -15,7 +15,7 @@ $_LANG['dnssec']['alertdnssecactivated'] = 'DNSSEC ist auf dieser Domain aktiv. 
 
 $_LANG['dnssec']['tableheaderflags'] = 'Flags';
 $_LANG['dnssec']['tableheaderalgorithms'] = 'Algorithmus';
-$_LANG['dnssec']['tableheaderpublickeys'] = 'Öffentlicher Schlüssel';
+$_LANG['dnssec']['tableheaderpublickeys'] = 'Öffentliche Schlüssel';
 $_LANG['dnssec']['tableheaderactions'] = 'Aktionen';
 
 
