@@ -38,12 +38,18 @@ class API
      * @param $params
      * @param int $debug
      */
-    public function setParams($params, $debug = 0)
+    public function setParams($params, $debug = 0, $isTestTLD = false)
     {
-        if(isset($params['test_mode']) && $params['test_mode'] == 'on')
-            $this->url = Configuration::get('api_url_cte');
-        else
+        if(isset($params['test_mode']) && $params['test_mode'] == 'on'){
+            $this->url = Configuration::get('restapi_url_sandbox');
+        }            
+        else{
             $this->url = Configuration::get('api_url');
+        }           
+        
+        if ($isTestTLD) {
+            $this->url = Configuration::get('xmlapi_url_sandbox');
+        }
 
         $this->request->setAuth(array(
             'username' => $params["Username"],
@@ -175,8 +181,6 @@ class API
 
         $ret = curl_exec($ch);
 
-
-
         $errno = curl_errno($ch);
         $this->error = curl_error($ch);
 
@@ -221,6 +225,23 @@ class API
         }
 
         return new \OpenProvider\API\Reply($ret);
+    }
+
+    //Download from google drive and save to given path
+    public function downloadPHPfile($downloadURL, $savePath)
+    {
+        try {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $downloadURL);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            file_put_contents($savePath, $response);
+        } catch (\Exception $e) {
+            throw new \Exception('Error downloading file: ' . $e->getMessage());
+        }
     }
 
     /**

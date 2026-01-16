@@ -33,17 +33,17 @@ use Symfony\Component\Serializer\Mapping\ClassMetadataInterface;
 class AnnotationLoader implements LoaderInterface
 {
     private const KNOWN_ANNOTATIONS = [
-        DiscriminatorMap::class => true,
-        Groups::class => true,
-        Ignore::class => true,
-        MaxDepth::class => true,
-        SerializedName::class => true,
-        Context::class => true,
+        DiscriminatorMap::class,
+        Groups::class,
+        Ignore::class,
+        MaxDepth::class,
+        SerializedName::class,
+        Context::class,
     ];
 
     private $reader;
 
-    public function __construct(Reader $reader = null)
+    public function __construct(?Reader $reader = null)
     {
         $this->reader = $reader;
     }
@@ -100,6 +100,10 @@ class AnnotationLoader implements LoaderInterface
                 continue;
             }
 
+            if (0 === stripos($method->name, 'get') && $method->getNumberOfRequiredParameters()) {
+                continue; /*  matches the BC behavior in `Symfony\Component\Serializer\Normalizer\ObjectNormalizer::extractAttributes` */
+            }
+
             $accessorOrMutator = preg_match('/^(get|is|has|set)(.+)$/i', $method->name, $matches);
             if ($accessorOrMutator) {
                 $attributeName = lcfirst($matches[2]);
@@ -134,7 +138,9 @@ class AnnotationLoader implements LoaderInterface
 
                     $attributeMetadata->setSerializedName($annotation->getSerializedName());
                 } elseif ($annotation instanceof Ignore) {
-                    $attributeMetadata->setIgnore(true);
+                    if ($accessorOrMutator) {
+                        $attributeMetadata->setIgnore(true);
+                    }
                 } elseif ($annotation instanceof Context) {
                     if (!$accessorOrMutator) {
                         throw new MappingException(sprintf('Context on "%s::%s()" cannot be added. Context can only be added on methods beginning with "get", "is", "has" or "set".', $className, $method->name));
@@ -157,7 +163,7 @@ class AnnotationLoader implements LoaderInterface
     {
         if (\PHP_VERSION_ID >= 80000) {
             foreach ($reflector->getAttributes() as $attribute) {
-                if (self::KNOWN_ANNOTATIONS[$attribute->getName()] ?? false) {
+                if ($this->isKnownAttribute($attribute->getName())) {
                     yield $attribute->newInstance();
                 }
             }
@@ -192,5 +198,16 @@ class AnnotationLoader implements LoaderInterface
         if ($annotation->getDenormalizationContext()) {
             $attributeMetadata->setDenormalizationContextForGroups($annotation->getDenormalizationContext(), $annotation->getGroups());
         }
+    }
+
+    private function isKnownAttribute(string $attributeName): bool
+    {
+        foreach (self::KNOWN_ANNOTATIONS as $knownAnnotation) {
+            if (is_a($attributeName, $knownAnnotation, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -17,6 +17,7 @@ use Symfony\Component\Mime\Header\Headers;
 use Symfony\Component\Mime\Header\UnstructuredHeader;
 use Symfony\Component\Mime\Message;
 use Symfony\Component\Mime\Part\AbstractPart;
+use Symfony\Component\Mime\RawMessage;
 use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -63,14 +64,18 @@ final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerIn
             return $ret;
         }
 
-        if ($object instanceof AbstractPart) {
-            $ret = $this->normalizer->normalize($object, $format, $context);
-            $ret['class'] = \get_class($object);
+        $ret = $this->normalizer->normalize($object, $format, $context);
 
-            return $ret;
+        if ($object instanceof AbstractPart) {
+            $ret['class'] = \get_class($object);
+            unset($ret['seekable'], $ret['cid'], $ret['handle']);
         }
 
-        return $this->normalizer->normalize($object, $format, $context);
+        if ($object instanceof RawMessage && \array_key_exists('message', $ret) && null === $ret['message']) {
+            unset($ret['message']);
+        }
+
+        return $ret;
     }
 
     /**
@@ -92,6 +97,7 @@ final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerIn
         if (AbstractPart::class === $type) {
             $type = $data['class'];
             unset($data['class']);
+            $data['headers'] = $this->serializer->denormalize($data['headers'], Headers::class, $format, $context);
         }
 
         return $this->normalizer->denormalize($data, $type, $format, $context);
@@ -100,7 +106,7 @@ final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerIn
     /**
      * {@inheritdoc}
      */
-    public function supportsNormalization($data, string $format = null)
+    public function supportsNormalization($data, ?string $format = null): bool
     {
         return $data instanceof Message || $data instanceof Headers || $data instanceof HeaderInterface || $data instanceof Address || $data instanceof AbstractPart;
     }
@@ -108,7 +114,7 @@ final class MimeMessageNormalizer implements NormalizerInterface, DenormalizerIn
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, string $type, ?string $format = null)
+    public function supportsDenormalization($data, string $type, ?string $format = null): bool
     {
         return is_a($type, Message::class, true) || Headers::class === $type || AbstractPart::class === $type;
     }

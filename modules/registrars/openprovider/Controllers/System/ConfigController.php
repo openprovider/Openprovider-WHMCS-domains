@@ -179,7 +179,7 @@ class ConfigController extends BaseController
     protected function checkCredentials($configarray, $params)
     {
         $differentHost = $params['test_mode'] == 'on' ?
-            Configuration::get('api_url_cte') :
+            Configuration::get('restapi_url_sandbox') :
             Configuration::get('api_url');
 
 

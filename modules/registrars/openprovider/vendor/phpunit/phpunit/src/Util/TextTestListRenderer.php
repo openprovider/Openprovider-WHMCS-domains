@@ -9,22 +9,34 @@
  */
 namespace PHPUnit\Util;
 
+use const PHP_EOL;
+use function get_class;
+use function sprintf;
+use function str_replace;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\TestSuite;
 use PHPUnit\Runner\PhptTestCase;
+use RecursiveIteratorIterator;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
+/**
+ * @internal This class is not covered by the backward compatibility promise for PHPUnit
+ */
 final class TextTestListRenderer
 {
+    /**
+     * @throws InvalidArgumentException
+     */
     public function render(TestSuite $suite): string
     {
-        $buffer = 'Available test(s):' . \PHP_EOL;
+        $buffer = 'Available test(s):' . PHP_EOL;
 
-        foreach (new \RecursiveIteratorIterator($suite->getIterator()) as $test) {
+        foreach (new RecursiveIteratorIterator($suite->getIterator()) as $test) {
             if ($test instanceof TestCase) {
-                $name = \sprintf(
+                $name = sprintf(
                     '%s::%s',
-                    \get_class($test),
-                    \str_replace(' with data set ', '', $test->getName())
+                    get_class($test),
+                    str_replace(' with data set ', '', $test->getName()),
                 );
             } elseif ($test instanceof PhptTestCase) {
                 $name = $test->getName();
@@ -32,9 +44,9 @@ final class TextTestListRenderer
                 continue;
             }
 
-            $buffer .= \sprintf(
-                ' - %s' . \PHP_EOL,
-                $name
+            $buffer .= sprintf(
+                ' - %s' . PHP_EOL,
+                $name,
             );
         }
 

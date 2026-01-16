@@ -14,7 +14,6 @@ use PHPUnit\Framework\TestCase;
  */
 class ParameterBuilderTest extends TestCase
 {
-
     /**
      * Tests build().
      *
@@ -23,14 +22,14 @@ class ParameterBuilderTest extends TestCase
      * @param string $function          The function name.
      *
      * @dataProvider provideTestBuild
-     * @test
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideTestBuild')]
     public function testBuild($expectedSignature, $expectedBody, $function)
     {
         $builder = new ParameterBuilder();
         $builder->build($function);
-        $this->assertEquals($expectedSignature, $builder->getSignatureParameters());
-        $this->assertEquals($expectedBody, $builder->getBodyParameters());
+        $this->assertSame($expectedSignature, $builder->getSignatureParameters());
+        $this->assertSame($expectedBody, $builder->getBodyParameters());
     }
 
     /**
@@ -38,7 +37,7 @@ class ParameterBuilderTest extends TestCase
      *
      * @return string[][][] The test cases.
      */
-    public function provideTestBuild()
+    public static function provideTestBuild()
     {
         // @codingStandardsIgnoreStart
 
@@ -85,7 +84,7 @@ class ParameterBuilderTest extends TestCase
         function testCombined($one, &$two, $three = 3, &$four = 4)
         {
         }
-        
+
         function testPHPVariadics1(...$one)
         {
         }
@@ -114,7 +113,7 @@ class ParameterBuilderTest extends TestCase
                }'
           );
         }
-        
+
         // @codingStandardsIgnoreEnd
 
         // PHP8.0+ has a different signature wording.
@@ -125,6 +124,7 @@ class ParameterBuilderTest extends TestCase
         }
 
         $cases = [
+            ["", "", __NAMESPACE__ . "\\testDoesNotExist"],
             ["", "", __NAMESPACE__ . "\\testNoParameter"],
             ['$one', '$one', __NAMESPACE__ . "\\testOneParameter"],
             ['$one, $two', '$one, $two', __NAMESPACE__ . "\\testTwoParameters"],

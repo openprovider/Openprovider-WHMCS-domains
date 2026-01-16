@@ -14,16 +14,14 @@ use PHPUnit\Framework\TestCase;
  */
 class MockFunctionGeneratorTest extends TestCase
 {
-
     /**
      * Tests removeDefaultArguments().
      *
      * @param array $expected  The expected result.
      * @param array $arguments The input arguments.
-     *
-     * @test
      * @dataProvider provideTestRemoveDefaultArguments
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideTestRemoveDefaultArguments')]
     public function testRemoveDefaultArguments(array $expected, array $arguments)
     {
         MockFunctionGenerator::removeDefaultArguments($arguments);
@@ -35,7 +33,7 @@ class MockFunctionGeneratorTest extends TestCase
      *
      * @return The test cases.
      */
-    public function provideTestRemoveDefaultArguments()
+    public static function provideTestRemoveDefaultArguments()
     {
         return[
             [[], []],
