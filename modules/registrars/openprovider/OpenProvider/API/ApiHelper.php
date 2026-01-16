@@ -485,6 +485,22 @@ class ApiHelper
     }
 
     /**
+     * @param string $domain
+     * @param string $zone_provider
+     * @return array
+     * @throws \Exception 
+     */
+    public function getDnsDomainToken(string $domain, string $zone_provider): array
+    {
+        $args = [
+            'domain' => $domain,
+            'zone_provider' => $zone_provider,
+        ];
+
+        return $this->buildResponse($this->apiClient->call('createDomainTokenRequest', $args));
+    }
+    
+    /**
      * @param string $handle
      * @param bool $formattedForWhmcs
      * @return array
@@ -662,7 +678,6 @@ class ApiHelper
             $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
         );
     }
-
 
     /**
      * @param ResponseInterface $response

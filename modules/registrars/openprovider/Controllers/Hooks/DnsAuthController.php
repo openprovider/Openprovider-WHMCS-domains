@@ -12,9 +12,22 @@ use OpenProvider\WhmcsRegistrar\helpers\DNS;
  */
 
 class DnsAuthController {
+
+    /**
+     * @var DNS
+     */
+    private $dnsHelper;
+    /**
+     * ConfigController constructor.
+     */
+    public function __construct(DNS $dnsHelper)
+    {
+        $this->dnsHelper = $dnsHelper;
+    }
+
     public function redirectDnsManagementPage ($params)
     {
-        if($url = DNS::getDnsUrlOrFail($params['domainid']))
+        if($url = $this->dnsHelper->getDnsUrlOrFail($params['domainid']))
         {
             $urlOne = $_SERVER['HTTP_REFERER'];
             $url_decoded = html_entity_decode($urlOne);
