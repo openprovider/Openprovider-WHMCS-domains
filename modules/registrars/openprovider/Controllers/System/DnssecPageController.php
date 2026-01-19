@@ -141,14 +141,22 @@ class DnssecPageController extends BaseController
         }
 
         $activeTheme = Setting::getValue('Template');
+
+        // Sanitize theme name (defense-in-depth)
         $activeTheme = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $activeTheme);
 
-        // Default to module fallback template; override only if a theme template exists.
+        // Default to module fallback template
         $template = '/modules/registrars/openprovider/includes/templates/dnssec.tpl';
-        
-        if ($activeTheme !== null && $activeTheme !== '') {
-            $themeTpl = ROOTDIR . "/templates/{$activeTheme}/dnssec.tpl";
-            if (file_exists($themeTpl)) {
+
+        $templatesDir = ROOTDIR . '/templates';
+        $templatesDirReal = realpath($templatesDir);
+
+        if ($templatesDirReal !== false && $activeTheme !== '') {
+            $candidate = $templatesDir . '/' . $activeTheme . '/dnssec.tpl';
+            $resolved = realpath($candidate);
+
+            // realpath() only works if the file exists; if it exists, no need to call file_exists again.
+            if ($resolved !== false && str_starts_with($resolved, $templatesDirReal . DIRECTORY_SEPARATOR)) {
                 $template = 'dnssec';
             }
         }
