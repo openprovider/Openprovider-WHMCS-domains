@@ -63,8 +63,6 @@ else
     FALLBACK=true
 fi
 
-FALLBACK=true
-
 # Fallback to downloading the latest release if git is unavailable or fails
 if [ "$FALLBACK" = true ]; then
     echo "Fetching the latest release version..."
