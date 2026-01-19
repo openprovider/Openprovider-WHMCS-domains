@@ -142,7 +142,7 @@ class DnssecPageController extends BaseController
 
         $activeTheme = Setting::getValue('Template');
 
-        if ($activeTheme !== null && $activeTheme !== '') {
+        if (!empty($activeTheme)) {
             $themeTpl = ROOTDIR . "/templates/{$activeTheme}/dnssec.tpl";
             if (file_exists($themeTpl)) {
                 $ca->setTemplate('dnssec');
