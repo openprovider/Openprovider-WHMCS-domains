@@ -141,8 +141,6 @@ class DnssecPageController extends BaseController
         }
 
         $activeTheme = Setting::getValue('Template');
-
-        // Sanitize theme name (defense-in-depth)
         $activeTheme = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $activeTheme);
 
         // Default to module fallback template
@@ -152,10 +150,8 @@ class DnssecPageController extends BaseController
         $templatesDirReal = realpath($templatesDir);
 
         if ($templatesDirReal !== false && $activeTheme !== '') {
-            $candidate = $templatesDir . '/' . $activeTheme . '/dnssec.tpl';
+            $candidate = $templatesDirReal . '/' . $activeTheme . '/dnssec.tpl';
             $resolved = realpath($candidate);
-
-            // realpath() only works if the file exists; if it exists, no need to call file_exists again.
             if ($resolved !== false && str_starts_with($resolved, $templatesDirReal . DIRECTORY_SEPARATOR)) {
                 $template = 'dnssec';
             }
