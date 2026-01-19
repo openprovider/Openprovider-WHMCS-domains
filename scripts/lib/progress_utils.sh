@@ -5,6 +5,10 @@ draw_bar() {
     local pct="$1"
     local width="${2:-24}"
 
+    if ! [[ "$pct" =~ ^[0-9]+$ ]]; then
+        pct=0
+    fi
+
     [ "$pct" -lt 0 ] && pct=0
     [ "$pct" -gt 100 ] && pct=100
 
@@ -35,8 +39,9 @@ get_content_length() {
         ' | tail -n 1)"
     fi
 
-    len="$(printf "%s" "$len" | tr -cd '0-9')"
-    printf "%s" "$len"
+    local clean_len
+    clean_len="$(printf "%s" "$len" | tr -cd '0-9')"
+    printf "%s" "$clean_len"
 }
 
 indeterminate_bar() {
@@ -84,7 +89,11 @@ download_with_loader() {
                 cur=0
                 pct=0
                 [ -f "$out" ] && cur="$(wc -c < "$out" 2>/dev/null || echo 0)"
-                pct=$((cur * 100 / total))
+                if [ "$total" -gt 0 ] 2>/dev/null; then
+                    pct=$((cur * 100 / total))
+                else
+                    pct=0
+                fi
                 [ "$pct" -gt 99 ] && pct=99
                 printf "\rUsing %s... %s" "$method" "$(draw_bar "$pct" "$width")"
                 sleep 0.2
