@@ -11,8 +11,8 @@ When a domain expires in Openprovider, depending on the TLD, it can be put into 
 **Scenario 1 (WHMCS Recommended)**  
 
 * Openprovider Global Auto renew - **Off**
-* [WHMCS Auto Registration](https://docs.whmcs.com/Domains_Configuration#Automatic_Domain_Registration) - **On**
-* [WHMCS Automatic renewal](https://docs.whmcs.com/Domains_Configuration#Automatic_Renewal) - **On**
+* [WHMCS Auto Registration](https://docs.whmcs.com/domains/pricing-and-configuration/domain-pricing/#auto-registration) - **On**
+* [WHMCS Automatic renewal](https://docs.whmcs.com/domains/domain-registration-tutorials/automatically-renew-on-payment/) - **On**
 
 1. End-user receives an invoice based on the due date. 
 2. If the invoice is paid before expiration, WHMCS automatically sends a renewal command to the module and the domain's registration period extends.
@@ -23,20 +23,22 @@ When a domain expires in Openprovider, depending on the TLD, it can be put into 
 **Scenario 2. Not recommended by WHMCS**
 
 * Openprovider Global Auto renew - **On**
-* [WHMCS Auto Registration](https://docs.whmcs.com/Domains_Configuration#Automatic_Domain_Registration) - **On**
-* [WHMCS Automatic renewal](https://docs.whmcs.com/Domains_Configuration#Automatic_Renewal) - **Off**
+* [WHMCS Auto Registration](https://docs.whmcs.com/domains/pricing-and-configuration/domain-pricing/#auto-registration) - **On**
+* [WHMCS Automatic renewal](https://docs.whmcs.com/domains/domain-registration-tutorials/automatically-renew-on-payment/) - **Off**
 
 1. The domain will be renewed at Openprovider on the expiration date, regardless of the invoice status (paid/unpaid).
 2. When the end-user pays an invoice to renew a domain, the WHMCS next due date will increment one year. 
 3. No renewal commands are sent to Openprovider from WHMCS via the module.
 
-**Important**: If a client doesn't pay the renewal invoice before expiry date, the domain's status in WHMCS will cycle from Active to Grace >> Redemption >> Expired, even though it was auto-renewed at Openprovider. To trigger the updating of the domain status and expiry date, the invoice would need to be paid in WHMCS, the renewal command successfully sent to your registrar and successfully processed.
+**Important**: If a client doesn't pay the renewal invoice before expiry date, the domain's status in WHMCS will cycle from Active to Grace >> Redemption >> Expired, even though it was auto-renewed at Openprovider.
+
+To trigger the updating of the domain status and expiry date, the invoice would need to be paid in WHMCS, the renewal command successfully sent to your registrar and successfully processed.
 
 **Scenario 3. Not recommended!**
 
 * Openprovider Global Auto renew - **On**
-* [WHMCS Auto Registration](https://docs.whmcs.com/Domains_Configuration#Automatic_Domain_Registration) - **On**
-* [WHMCS Automatic renewal](https://docs.whmcs.com/Domains_Configuration#Automatic_Renewal) - **On**
+* [WHMCS Auto Registration](https://docs.whmcs.com/domains/pricing-and-configuration/domain-pricing/#auto-registration) - **On**
+* [WHMCS Automatic renewal](https://docs.whmcs.com/domains/domain-registration-tutorials/automatically-renew-on-payment/) - **On**
 
 1.  If the invoice is paid before expiration, WHMCS automatically sends a renewal command to the module and the domain's registration period extends.
 2.  If the end-user misses payment due date, the domain will be renewed at Openprovider automatically.

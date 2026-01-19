@@ -35,7 +35,7 @@ return [
     [
         'hookPoint' => 'AdminHomeWidgets',
         'priority' =>  1,
-        'controller' => 'AdminWidgetController@showBalance'
+        'controller' => 'AdminWidgetController@showBalanceWidget'
     ],
     [
         'hookPoint' => 'ClientAreaPageDomainDNSManagement',
@@ -121,5 +121,25 @@ return [
         'hookPoint' => 'AdminAreaHeaderOutput',
         'priority'  => 1,
         'controller'=> 'AdminAreaHeaderOutputController@output',
+    ],
+    [
+        'hookPoint' => 'AfterRegistrarRegistration',
+        'priority'  => 1,
+        'controller' => 'DomainController@updateExpiryDateAfterRegistration',
+    ],
+    [
+        'hookPoint' => 'AfterRegistrarTransfer',
+        'priority'  => 1,
+        'controller' => 'DomainController@updateExpiryDateAfterTransfer',
+    ],
+    [
+        'hookPoint' => 'AdminAreaFooterOutput',
+        'priority'  => 1,
+        'controller' => 'AdminAreaFooterController@output',
+    ],
+    [
+        'hookPoint' => 'AdminClientDomainsTabFieldsSave',
+        'priority'  => 1,
+        'controller' => 'AdminClientDomainsTabController@save',
     ],
 ];

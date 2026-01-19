@@ -1,15 +1,30 @@
 <?php
 
+$__op_premium_setting = null;
+if (class_exists('\WHMCS\Config\Setting')) {
+    try {
+        $__op_premium_setting = \WHMCS\Config\Setting::getValue('PremiumDomains');
+    } catch (\Throwable $e) {
+        $__op_premium_setting = null;
+    }
+}
+$premiumEnabled = false;
+if ($__op_premium_setting !== null) {
+    $premiumEnabled = in_array(strtolower((string)$__op_premium_setting), ['1','on','true','yes'], true);
+}
+
 return [
     //Openprovider Production and CTE API endpoints
     'api_url'                           => 'https://api.openprovider.eu',
     'restapi_url_sandbox'               => 'http://api.sandbox.openprovider.nl:8480',
     'xmlapi_url_sandbox'                => 'https://api.sandbox.openprovider.nl/',
 
-    //  Default: false, boolean - Set to true to allow support for premium domains
-    'OpenproviderPremium'               => false,
+    // OpenproviderPremium (READ-ONLY):
+    // This value is computed from WHMCS Configuration > System Settings > Domain Pricing.
+    // Do NOT edit here; it is set automatically by the Openprovider module.
+    'OpenproviderPremium'               => $premiumEnabled,
     //  Default: true,  boolean - Set to true to Require Openprovider DNS servers for DNS management
-    'require_op_dns_servers'            => false,
+    'require_op_dns_servers'            => true,
     //  Default: '',    string -Enter TLDs split by a comma ("nl,eu,be") The module will alway try to renew TLDs in this list as soon as transfer is completed. This is useful for TLDs which don't include an automatic renewal with domain transfer. Note that this will incur a cost in your Openprovider account
     'renewTldsUponTransferCompletion'   => '',
     //  Default: '', string - Choose a DNS template

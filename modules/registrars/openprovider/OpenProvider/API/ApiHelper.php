@@ -5,6 +5,7 @@ namespace OpenProvider\API;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
+use GuzzleHttp6\Promise\Utils;
 
 class ApiHelper
 {
@@ -48,6 +49,39 @@ class ApiHelper
         }
         
         throw new \Exception('Domain does not exist in Openprovider!');
+    }
+
+    /**
+     * @param int $id
+     * @return string
+     * @throws \Exception
+     */
+    public function getEPPCode(int $id): string
+    {
+        $args = [
+            'id'     => $id,
+        ];
+
+        $result = '';
+
+        try {
+            $result = $this->buildResponse($this->apiClient->call('getEPPCodeRequest', $args));
+
+            if (isset($result['authCode'])) {
+                return $result['authCode'];
+            }
+
+            if ($result['success'] == true) {
+                $message = "The authorization code has been successfully sent to the registrant email. Please check registrant inbox.";
+                return $message;
+            }
+
+            if (isset($result['message']) && $result['message'] != "") {
+                throw new \Exception($result['message']);
+            }
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage(), $e->getCode());
+        }
     }
 
     /**
@@ -469,22 +503,79 @@ class ApiHelper
             return $customerOp;
         }
 
+        $customerInfo = $this->formatCustomerForWhmcs($customerOp);
+
+        return $customerInfo;
+    }
+
+    /**
+     * @param array $handles
+     * @param bool $formattedForWhmcs
+     * @return array
+     * @throws \Exception
+     */
+    public function getCustomersAsync(array $handles, bool $formattedForWhmcs = true): array
+    {
+        $promises = [];
+
+        foreach ($handles as $key => $handle) {
+            $promises[$key] = $this->apiClient->callAsync('retrieveCustomerRequestAsync', [
+                'handle' => $handle,
+                'with_additional_data' => 1,
+            ]);
+        }
+
+        $responses = Utils::settle($promises)->wait();
+
+        $customers = [];
+
+        foreach ($responses as $key => $result) {
+            if ($result['state'] !== 'fulfilled') {
+                continue;
+            }
+
+            $customerOp = $this->buildResponse($result['value']);
+
+            if (!$formattedForWhmcs) {
+                $customers[$key] = $customerOp;
+                continue;
+            }
+
+            $customers[$key] = $this->formatCustomerForWhmcs($customerOp);
+        }
+
+        return $customers;
+    }
+
+
+    private function formatCustomerForWhmcs(array $customerOp): array
+    {
         $customerInfo = [];
+
         $customerInfo['First Name'] = $customerOp['name']['firstName'];
         $customerInfo['Last Name'] = $customerOp['name']['lastName'];
         $customerInfo['Company Name'] = $customerOp['companyName'];
         $customerInfo['Email Address'] = $customerOp['email'];
-        $customerInfo['Address'] = $customerOp['address']['street'] . ' ' .
-            $customerOp['address']['number'] . ' ' .
-            $customerOp['address']['suffix'];
+
+        $addressParts = array_filter(
+            [
+                $customerOp['address']['street'] ?? '',
+                $customerOp['address']['number'] ?? '',
+                $customerOp['address']['suffix'] ?? '',
+            ],
+            'strlen'
+        );
+        $customerInfo['Address'] = implode(' ', $addressParts);
+
         $customerInfo['City'] = $customerOp['address']['city'];
         $customerInfo['State'] = $customerOp['address']['state'];
         $customerInfo['Zip Code'] = $customerOp['address']['zipcode'];
         $customerInfo['Country'] = $customerOp['address']['country'];
-        $customerInfo['Phone Number'] = $customerOp['phone']['countryCode'] . '.' .
+
+        $customerInfo['Phone Number'] =
+            $customerOp['phone']['countryCode'] . '.' .
             $customerOp['phone']['areaCode'] .
             $customerOp['phone']['subscriberNumber'];
-
 
         if (!empty($customerOp['companyName'])) {
             if (empty($customerOp['additionalData']['companyRegistrationNumber'])) {
@@ -554,6 +645,24 @@ class ApiHelper
     {
         return $this->buildResponse($this->apiClient->call('searchPromoMessageRequest'));
     }
+
+    /**
+     * @param string $tld
+     * @return array
+     * @throws \Exception 
+     */
+    public function getTldMeta(string $tld): array
+    {
+        $tld = trim($tld);
+        if ($tld === '') {
+            throw new \InvalidArgumentException('Missing TLD.');
+        }
+
+        return $this->buildResponse(
+            $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
+        );
+    }
+
 
     /**
      * @param ResponseInterface $response

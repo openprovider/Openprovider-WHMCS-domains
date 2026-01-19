@@ -5,4 +5,4 @@
 */
 
 if (function_exists('openprovider_additional_fields'))
-    $additionaldomainfields = openprovider_additional_fields();
+    $additionaldomainfields = openprovider_additional_fields() ?? [];

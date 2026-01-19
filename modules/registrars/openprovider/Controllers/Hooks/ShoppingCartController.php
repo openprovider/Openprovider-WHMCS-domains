@@ -24,7 +24,6 @@ class ShoppingCartController
         global $_LANG;
 
         $idnumbermod = Configuration::get('idnumbermod');
-
         if ($idnumbermod) {
             $data = [];
             $domainTlds = [];
@@ -119,8 +118,10 @@ class ShoppingCartController
 
             return $output;
         }
-    }
 
+        return ''; // Return empty string if no output
+    }
+    
     public function preCheckout($vars)
     {
         $idnumbermod = Configuration::get('idnumbermod');

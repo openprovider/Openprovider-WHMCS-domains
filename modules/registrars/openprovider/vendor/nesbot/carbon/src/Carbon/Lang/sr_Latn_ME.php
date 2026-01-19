@@ -14,6 +14,18 @@
  * - Glavić
  * - Milos Sakovic
  */
+
+use Carbon\CarbonInterface;
+use Symfony\Component\Translation\PluralizationRules;
+
+// @codeCoverageIgnoreStart
+if (class_exists(PluralizationRules::class)) {
+    PluralizationRules::set(static function ($number) {
+        return PluralizationRules::get($number, 'sr');
+    }, 'sr_Latn_ME');
+}
+// @codeCoverageIgnoreEnd
+
 return array_replace_recursive(require __DIR__.'/sr.php', [
     'month' => ':count mjesec|:count mjeseca|:count mjeseci',
     'week' => ':count nedjelja|:count nedjelje|:count nedjelja',
@@ -24,10 +36,11 @@ return array_replace_recursive(require __DIR__.'/sr.php', [
     'before' => ':time prije',
     'week_from_now' => ':count nedjelju|:count nedjelje|:count nedjelja',
     'week_ago' => ':count nedjelju|:count nedjelje|:count nedjelja',
+    'second_ago' => ':count sekund|:count sekunde|:count sekundi',
     'diff_tomorrow' => 'sjutra',
     'calendar' => [
         'nextDay' => '[sjutra u] LT',
-        'nextWeek' => function (\Carbon\CarbonInterface $date) {
+        'nextWeek' => function (CarbonInterface $date) {
             switch ($date->dayOfWeek) {
                 case 0:
                     return '[u nedjelju u] LT';
@@ -39,7 +52,7 @@ return array_replace_recursive(require __DIR__.'/sr.php', [
                     return '[u] dddd [u] LT';
             }
         },
-        'lastWeek' => function (\Carbon\CarbonInterface $date) {
+        'lastWeek' => function (CarbonInterface $date) {
             switch ($date->dayOfWeek) {
                 case 0:
                     return '[prošle nedjelje u] LT';

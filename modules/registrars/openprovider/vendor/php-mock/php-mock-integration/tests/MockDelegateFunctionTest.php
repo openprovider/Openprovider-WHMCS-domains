@@ -35,11 +35,21 @@ class MockDelegateFunctionTest extends TestCase
      *
      * @test
      */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function testDelegateReturnsMockResult()
     {
-        $expected = 3;
-        $mock     = $this->getMockForAbstractClass($this->className);
-        
+        $expected    = 3;
+        $mockBuilder = $this->getMockBuilder($this->className);
+
+        // `setMethods` is gone from phpunit 10, alternative is `onlyMethods`
+        if (method_exists($mockBuilder, 'onlyMethods')) {
+            $mockBuilder->onlyMethods([MockDelegateFunctionBuilder::METHOD]);
+        } else {
+            $mockBuilder->setMethods([MockDelegateFunctionBuilder::METHOD]);
+        }
+
+        $mock = $mockBuilder->getMock();
+
         $mock->expects($this->once())
              ->method(MockDelegateFunctionBuilder::METHOD)
              ->willReturn($expected);
@@ -53,14 +63,24 @@ class MockDelegateFunctionTest extends TestCase
      *
      * @test
      */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function testDelegateForwardsArguments()
     {
-        $mock = $this->getMockForAbstractClass($this->className);
-        
+        $mockBuilder = $this->getMockBuilder($this->className);
+
+        // `setMethods` is gone from phpunit 10, alternative is `onlyMethods`
+        if (method_exists($mockBuilder, 'onlyMethods')) {
+            $mockBuilder->onlyMethods([MockDelegateFunctionBuilder::METHOD]);
+        } else {
+            $mockBuilder->setMethods([MockDelegateFunctionBuilder::METHOD]);
+        }
+
+        $mock = $mockBuilder->getMock();
+
         $mock->expects($this->once())
              ->method(MockDelegateFunctionBuilder::METHOD)
              ->with(1, 2);
-        
+
         call_user_func($mock->getCallable(), 1, 2);
     }
 }

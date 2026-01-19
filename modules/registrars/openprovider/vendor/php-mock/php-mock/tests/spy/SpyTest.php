@@ -3,7 +3,7 @@
 namespace phpmock\spy;
 
 use phpmock\Mock;
-use phpmock\AbstractMockTest;
+use phpmock\AbstractMockTestCase;
 
 /**
  * Tests the Spy.
@@ -13,9 +13,8 @@ use phpmock\AbstractMockTest;
  * @license http://www.wtfpl.net/txt/copying/ WTFPL
  * @see Spy
  */
-class SpyTest extends AbstractMockTest
+class SpyTest extends AbstractMockTestCase
 {
-
     protected function defineFunction($namespace, $functionName)
     {
         $mock = new Spy($namespace, $functionName, function () {
@@ -40,10 +39,9 @@ class SpyTest extends AbstractMockTest
      * @param array    $expected
      * @param string   $name
      * @param callable $invocations
-     *
-     * @test
      * @dataProvider provideTestGetInvocations
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideTestGetInvocations')]
     public function testGetInvocations(array $expected, $name, callable $invocations)
     {
         $spy = new Spy(__NAMESPACE__, $name);
@@ -57,7 +55,7 @@ class SpyTest extends AbstractMockTest
      *
      * @return array Test cases for testGetInvocations.
      */
-    public function provideTestGetInvocations()
+    public static function provideTestGetInvocations()
     {
         eval("function testGetInvocations_noParameters() { return 123; }");
         eval("function testGetInvocations_oneParameter(\$a) { return \$a + 1; }");
@@ -122,8 +120,6 @@ class SpyTest extends AbstractMockTest
 
     /**
      * Tests the default function.
-     *
-     * @test
      */
     public function testDefaultFunction()
     {
@@ -137,8 +133,6 @@ class SpyTest extends AbstractMockTest
 
     /**
      * An exception should still be recorded.
-     *
-     * @test
      */
     public function testException()
     {
@@ -161,8 +155,6 @@ class SpyTest extends AbstractMockTest
 
     /**
      * Test the invocation of a none exception call.
-     *
-     * @test
      */
     public function testNoException()
     {
