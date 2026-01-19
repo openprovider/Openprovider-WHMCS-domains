@@ -60,17 +60,4 @@ final class Return_ extends TagWithType implements Factory\StaticMethod
 
         return new static($type, $description);
     }
-
-    public function __toString(): string
-    {
-        if ($this->description) {
-            $description = $this->description->render();
-        } else {
-            $description = '';
-        }
-
-        $type = $this->type ? '' . $this->type : 'mixed';
-
-        return $type . ($description !== '' ? ' ' . $description : '');
-    }
 }

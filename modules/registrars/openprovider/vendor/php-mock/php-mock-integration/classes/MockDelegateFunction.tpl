@@ -10,7 +10,7 @@ use phpmock\functions\FunctionProvider;
  * @license http://www.wtfpl.net/txt/copying/ WTFPL
  * @internal
  */
-abstract class MockDelegateFunction implements FunctionProvider
+class MockDelegateFunction implements FunctionProvider
 {
     
     /**
@@ -18,10 +18,14 @@ abstract class MockDelegateFunction implements FunctionProvider
      *
      * @return mixed Returns the function output.
      */
-    abstract public function delegate({signatureParameters});
+    public function delegate({signatureParameters})
+    {
+    }
 
     public function getCallable()
     {
         return [$this, "delegate"];
     }
+
+    {function}
 }

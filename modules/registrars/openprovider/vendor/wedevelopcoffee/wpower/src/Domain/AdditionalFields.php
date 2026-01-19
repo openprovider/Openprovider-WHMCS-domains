@@ -1,7 +1,10 @@
 <?php
+
 namespace WeDevelopCoffee\wPower\Domain;
+
 use WeDevelopCoffee\wPower\Core\Path;
 use WeDevelopCoffee\wPower\Models\Registrar;
+
 /**
  * Replace the additional fields.
  *
@@ -45,7 +48,7 @@ class AdditionalFields
      *
      * @return
      */
-    public function __construct (Path $path, Registrar $registrar)
+    public function __construct(Path $path, Registrar $registrar)
     {
         $this->path = $path;
         $this->registrar = $registrar;
@@ -56,7 +59,7 @@ class AdditionalFields
      *
      * @return void
      */
-    public function getDistAdditionalFields ()
+    public function getDistAdditionalFields()
     {
         include($this->path->getDocRoot() . '/resources/domains/dist.additionalfields.php');
         $this->distAdditionalFields = $additionaldomainfields;
@@ -115,7 +118,7 @@ class AdditionalFields
      *
      * @return $this
      */
-    public function setRegistrarAdditionalFields ($additionalFields)
+    public function setRegistrarAdditionalFields($additionalFields)
     {
         $this->registrarAdditionalFields = $additionalFields;
 
@@ -127,7 +130,7 @@ class AdditionalFields
      *
      * @return $this
      */
-    public function setRegistrarName ($registrar)
+    public function setRegistrarName($registrar)
     {
         $this->registrarName    = $registrar;
         $this->registrarTlds    = $this->registrar->getTlds($registrar);

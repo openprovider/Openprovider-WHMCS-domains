@@ -14,6 +14,7 @@ use Openprovider\Api\Rest\Client\Person\Api\EmailVerificationApi;
 use Openprovider\Api\Rest\Client\Person\Api\PromoMessageServiceApi;
 use Openprovider\Api\Rest\Client\Person\Api\ResellerServiceApi;
 use Openprovider\Api\Rest\Client\Tld\Api\TldServiceApi;
+use Openprovider\Api\Rest\Client\Domain\Api\AuthCodeApi;
 
 class CommandMapping
 {
@@ -30,6 +31,10 @@ class CommandMapping
         // CUSTOMER
         'retrieveCustomerRequest' => [
             self::COMMAND_MAP_METHOD => 'getCustomer',
+            self::COMMAND_MAP_CLASS => CustomerApi::class,
+        ],
+        'retrieveCustomerRequestAsync' => [
+            self::COMMAND_MAP_METHOD => 'getCustomerAsync',
             self::COMMAND_MAP_CLASS => CustomerApi::class,
         ],
         'createCustomerRequest' => [
@@ -134,7 +139,7 @@ class CommandMapping
         'searchNsRequest' => [
             self::COMMAND_MAP_METHOD => 'getNameserver',
             self::COMMAND_MAP_CLASS => NameserverServiceApi::class,
-        ],      
+        ],
         'listNsRequest' => [
             self::COMMAND_MAP_METHOD => 'listNameservers',
             self::COMMAND_MAP_CLASS => NameserverServiceApi::class,
@@ -168,6 +173,12 @@ class CommandMapping
         'searchPromoMessageRequest' => [
             self::COMMAND_MAP_METHOD => 'listPromoMessages',
             self::COMMAND_MAP_CLASS => PromoMessageServiceApi::class
+        ],
+
+        // EPP Code
+        'getEPPCodeRequest' => [
+            self::COMMAND_MAP_METHOD => 'getAuthCode',
+            self::COMMAND_MAP_CLASS => AuthCodeApi::class
         ]
     ];
 
