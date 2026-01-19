@@ -39,9 +39,9 @@ get_content_length() {
         ' | tail -n 1)"
     fi
 
-    local clean_len
-    clean_len="$(printf "%s" "$len" | tr -cd '0-9')"
-    printf "%s" "$clean_len"
+    local numeric_length
+    numeric_length="$(printf "%s" "$len" | tr -cd '0-9')"
+    printf "%s" "$numeric_length"
 }
 
 indeterminate_bar() {
@@ -94,7 +94,7 @@ download_with_loader() {
                 else
                     pct=0
                 fi
-                [ "$pct" -gt 99 ] && pct=99
+                [ "$pct" -gt 99 ] && pct=99 # Cap in-loop progress at 99% so that 100% is only shown after the download has fully completed (see final draw_bar 100 call after wait).
                 printf "\rUsing %s... %s" "$method" "$(draw_bar "$pct" "$width")"
                 sleep 0.2
             done
