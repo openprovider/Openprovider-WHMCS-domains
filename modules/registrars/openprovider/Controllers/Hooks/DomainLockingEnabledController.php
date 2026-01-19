@@ -76,6 +76,10 @@ class DomainLockingEnabledController
 
     public function handleDomainLockingClientSidebar(\WHMCS\View\Menu\Item $primarySidebar): ?string
     {
+        $action = $_REQUEST['action'] ?? '';
+        if ($action !== 'domaindetails') {
+            return "";
+        }
         $id = $_REQUEST['id'] ?? ($_REQUEST['domainid'] ?? null);
         if (!$id) {
             return "";
@@ -127,6 +131,9 @@ class DomainLockingEnabledController
 
     private function isDomainLockingEnabled(Domain $domain): bool
     {
+        if (!in_array($domain->status, ['Active', 'Pending Transfer'], true)) {
+            return false;
+        }
         try {
             $op_domain_obj = DomainFullNameToDomainObject::convert($domain->domain);
             $lockable_state = Cache::get($op_domain_obj->extension);
