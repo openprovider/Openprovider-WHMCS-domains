@@ -141,17 +141,19 @@ class DnssecPageController extends BaseController
         }
 
         $activeTheme = Setting::getValue('Template');
+        $activeTheme = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $activeTheme);
 
         // Default to module fallback template; override only if a theme template exists.
         $template = '/modules/registrars/openprovider/includes/templates/dnssec.tpl';
-        if (!empty($activeTheme)) {
+        
+        if ($activeTheme !== null && $activeTheme !== '') {
             $themeTpl = ROOTDIR . "/templates/{$activeTheme}/dnssec.tpl";
             if (file_exists($themeTpl)) {
                 $template = 'dnssec';
             }
         }
-        $ca->setTemplate($template);
 
+        $ca->setTemplate($template);
         $ca->output();
     }
 
