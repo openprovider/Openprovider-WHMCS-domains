@@ -142,16 +142,15 @@ class DnssecPageController extends BaseController
 
         $activeTheme = Setting::getValue('Template');
 
+        // Default to module fallback template; override only if a theme template exists.
+        $template = '/modules/registrars/openprovider/includes/templates/dnssec.tpl';
         if (!empty($activeTheme)) {
             $themeTpl = ROOTDIR . "/templates/{$activeTheme}/dnssec.tpl";
             if (file_exists($themeTpl)) {
-                $ca->setTemplate('dnssec');
-            } else {
-                $ca->setTemplate('/modules/registrars/openprovider/includes/templates/dnssec.tpl');
+                $template = 'dnssec';
             }
-        } else {
-            $ca->setTemplate('/modules/registrars/openprovider/includes/templates/dnssec.tpl');
         }
+        $ca->setTemplate($template);
 
         $ca->output();
     }
