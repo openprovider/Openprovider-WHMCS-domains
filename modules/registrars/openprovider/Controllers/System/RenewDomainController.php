@@ -39,7 +39,7 @@ class RenewDomainController extends BaseController
     {
         // Prepare the renewal
         $this->domain->load(array(
-            'name' => $params['original']['domainObj']->getSecondLevel(),
+            'name'      => $params['original']['domainObj']->getSecondLevel(),
             'extension' => $params['original']['domainObj']->getTopLevel()
         ));
         $domain = $this->domain;
@@ -67,7 +67,18 @@ class RenewDomainController extends BaseController
         if (isset($params['isInRedemptionGracePeriod']) && $params['isInRedemptionGracePeriod'] == true) {
             try {
                 if ($domainOp['hardQuarantineExpiryDate'] && (new Carbon($domainOp['hardQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
-                    return ['error' => "Domain is past the grace period and additional costs may be applied. Please check the domain in your reseller control panel for more information"];
+                    $tld    = $params['original']['domainObj']->getTopLevel();
+                    $policy = $this->apiHelper->getExtensionRestorePolicy($tld);
+
+                    if ($this->isZeroFeeRestoreAllowed($policy)) {
+                        $this->apiHelper->restoreDomain($domainOp['id']);
+                        return [];
+                    }
+
+                    return ['error' =>
+                        "Domain is past the grace period and additional costs may be applied. " .
+                        "Please check the domain in your reseller control panel for more information"
+                    ];
                 }
             } catch (\Exception $e) {
                 return ['error' => $e->getMessage()];
@@ -78,13 +89,23 @@ class RenewDomainController extends BaseController
 
         // We did not have a true isInRedemptionGracePeriod or isInGracePeriod. Fall back on the legacy code
         // for older WHMCS versions.
-
         try {
             if ($domainOp['status'] == 'DEL') {
                 if ($domainOp['softQuarantineExpiryDate'] && (new Carbon($domainOp['softQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
                     $this->apiHelper->restoreDomain($domainOp['id']);
                 } elseif ($domainOp['hardQuarantineExpiryDate'] && (new Carbon($domainOp['hardQuarantineExpiryDate'], 'Europe/Amsterdam'))->gt(Carbon::now('Europe/Amsterdam'))) {
-                    return ['error' => "Domain is past the grace period and additional costs may be applied. Please check the domain in your reseller control panel for more information"];
+                    $tld    = $params['original']['domainObj']->getTopLevel();
+                    $policy = $this->apiHelper->getExtensionRestorePolicy($tld);
+
+                    if ($this->isZeroFeeRestoreAllowed($policy)) {
+                        $this->apiHelper->restoreDomain($domainOp['id']);
+                        return [];
+                    }
+
+                    return ['error' =>
+                        "Domain is past the grace period and additional costs may be applied. " .
+                        "Please check the domain in your reseller control panel for more information"
+                    ];
                 } else {
                     return ['error' => "Domain has been deleted Please check the domain in your reseller control panel"];
                 }
@@ -96,5 +117,17 @@ class RenewDomainController extends BaseController
         }
 
         return [];
+    }
+
+    private function isZeroFeeRestoreAllowed(array $policy): bool
+    {
+        if (!($policy['restore_allowed'])) {
+            return false;
+        }
+        if (!array_key_exists('restore_fee', $policy) || $policy['restore_fee'] === null) {
+            return false;
+        }
+
+        return (float)$policy['restore_fee'] === 0.0;
     }
 }
