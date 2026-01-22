@@ -16,7 +16,7 @@ class DnssecToggleController
 {
     private const EXTRA_KEY = 'openprovider_dnssecmanagement';
     private const DEFAULT_DNSSEC_MGMT = 1; // keep same default as your old column default(1)
-    
+
     /**
      * @var ApiHelper
      */
@@ -286,15 +286,31 @@ class DnssecToggleController
     private function setDnssecFlag(int $domainId, int $value): void
     {
         $value = ($value === 1) ? '1' : '0';
+        $now   = date('Y-m-d H:i:s');
 
         try {
-            Capsule::table('tbldomains_extra')->updateOrInsert(
-                ['domain_id' => $domainId, 'name' => self::EXTRA_KEY],
-                ['value' => $value]
-            );
+            $query = Capsule::table('tbldomains_extra')
+                ->where('domain_id', $domainId)
+                ->where('name', self::EXTRA_KEY);
+
+            if ($query->exists()) {
+                // Update existing row: don't touch created_at
+                $query->update([
+                    'value'      => $value,
+                    'updated_at' => $now,
+                ]);
+            } else {
+                // Insert new row: set both timestamps
+                Capsule::table('tbldomains_extra')->insert([
+                    'domain_id'  => $domainId,
+                    'name'       => self::EXTRA_KEY,
+                    'value'      => $value,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]);
+            }
         } catch (\Exception $e) {}
     }
-
 
     private function setDnssecPopup(
         int $domainId,
