@@ -7,6 +7,35 @@ GIT_REPO="https://github.com/openprovider/Openprovider-WHMCS-domains.git"
 LATEST_RELEASE_API="https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest"
 BASE_RELEASE_URL="https://github.com/openprovider/Openprovider-WHMCS-domains/archive/refs/tags"
 TEMP_DIR="/tmp/openprovider_module"
+SCRIPT_REF="${SCRIPT_REF:-master}"
+HELPER_URL="https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/${SCRIPT_REF}/scripts/lib/progress_utils.sh"
+HELPER_FILE="/tmp/openprovider_progress_utils_${SCRIPT_REF//\//_}.sh"
+
+# Load shared helpers (supports curl|bash execution)
+if [ ! -f "$HELPER_FILE" ]; then
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL "$HELPER_URL" -o "$HELPER_FILE" || {
+            echo "Error: Failed to download helper utilities using curl."
+            exit 1
+        }
+    elif command -v wget >/dev/null 2>&1; then
+        wget -q "$HELPER_URL" -O "$HELPER_FILE" || {
+            echo "Error: Failed to download helper utilities using wget."
+            exit 1
+        }
+    else
+        echo "Error: Neither curl nor wget is available to load helper utilities."
+        exit 1
+    fi
+fi
+
+# shellcheck disable=SC1090
+source "$HELPER_FILE"
+
+command -v download_with_loader >/dev/null 2>&1 || {
+    echo "Error: Failed to load helper utilities (download_with_loader missing)."
+    exit 1
+}
 
 # Check if the current directory is the WHMCS root directory
 if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modules/addons" ]; then
@@ -17,7 +46,7 @@ fi
 # Prompt user for confirmation to proceed with the update
 if [ -r /dev/tty ]; then
     read -u 3 -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. Do you want to proceed? (Y/n): " confirm 3</dev/tty
-    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+    if [[ -z "$confirm" || "$confirm" =~ ^[Yy]$ ]]; then
         echo "Proceeding with the update..."
     else
         echo "Update canceled. Please backup your customizations before proceeding."
@@ -68,20 +97,8 @@ if [ "$FALLBACK" = true ]; then
     LATEST_URL="${BASE_RELEASE_URL}/${LATEST_TAG}.tar.gz"
     
     echo "Downloading latest release: $LATEST_TAG ..."
-    if command -v curl &> /dev/null; then
-        curl -L "$LATEST_URL" -o "$TEMP_DIR/openprovider_module.tar.gz"
-        if [ $? -ne 0 ]; then
-            echo "Error: Failed to download package using curl."
-            exit 1
-        fi
-    elif command -v wget &> /dev/null; then
-        wget "$LATEST_URL" -O "$TEMP_DIR/openprovider_module.tar.gz"
-        if [ $? -ne 0 ]; then
-            echo "Error: Failed to download package using wget."
-            exit 1
-        fi
-    else
-        echo "Error: Neither curl nor wget is available. Cannot proceed."
+    
+    if ! download_with_loader "$LATEST_URL" "$TEMP_DIR/openprovider_module.tar.gz"; then
         exit 1
     fi
     
