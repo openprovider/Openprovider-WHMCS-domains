@@ -14,6 +14,9 @@ use WHMCS\Database\Capsule;
 
 class DnssecToggleController
 {
+    private const EXTRA_KEY = 'openprovider_dnssecmanagement';
+    private const DEFAULT_DNSSEC_MGMT = 1; // keep same default as your old column default(1)
+    
     /**
      * @var ApiHelper
      */
@@ -35,10 +38,8 @@ class DnssecToggleController
             return [];
         }
 
-        $this->ensureDnssecColumn();
-
         $row = Capsule::table('tbldomains')
-            ->select('id','domain','dnssecmanagement')
+            ->select('id','domain')
             ->where('id', $domainId)
             ->first();
 
@@ -51,7 +52,9 @@ class DnssecToggleController
             $tld_enabled = false;
         }
 
-        $admin_enabled = $row && (int)($row->dnssecmanagement ?? 0) === 1;
+        // $admin_enabled = $row && (int)($row->dnssecmanagement ?? 0) === 1;
+        $admin_enabled = $this->getDnssecFlag((int)$row->id) === 1;
+
 
         $enabled = $tld_enabled && $admin_enabled;
 
@@ -78,10 +81,8 @@ class DnssecToggleController
 
         unset($_SESSION['op_dnssec_popup']);
 
-        $this->ensureDnssecColumn();
-
         $row = Capsule::table('tbldomains')
-            ->select('id','domain','dnssecmanagement')
+            ->select('id','domain')
             ->where('id', $domainId)
             ->first();
 
@@ -89,7 +90,8 @@ class DnssecToggleController
             return;
         }
 
-        $current = (int)($row->dnssecmanagement ?? 0); 
+        // $current = (int)($row->dnssecmanagement ?? 0); 
+        $current = $this->getDnssecFlag((int)$row->id);
         $checkEnable = isset($_REQUEST['op_dnssec_management']) && $_REQUEST['op_dnssec_management'] == '1';
         $wantsEnable = $checkEnable ? 1 : 0; 
         $tld = $this->extractTldFromFqdn((string)$row->domain);
@@ -102,7 +104,7 @@ class DnssecToggleController
 
         if ($wantsEnable === $current) {
             if ($wantsEnable === 1 && !$allowed) {
-                $this->updateDnssecFlag((int) $row->id, 0);
+                $this->setDnssecFlag((int) $row->id, 0);
                 $this->setDnssecPopup(
                     (int) $row->id,
                     'warning',
@@ -116,12 +118,12 @@ class DnssecToggleController
         }
 
         if (!$allowed && $wantsEnable === 0 && $current === 1) {
-            $this->updateDnssecFlag((int) $row->id, 0);
+            $this->setDnssecFlag((int) $row->id, 0);
             return;
         }
 
         if ($wantsEnable === 0) {
-            $this->updateDnssecFlag((int) $row->id, 0);
+            $this->setDnssecFlag((int) $row->id, 0);
             $this->setDnssecPopup(
                 (int) $row->id,
                 'success',
@@ -132,7 +134,7 @@ class DnssecToggleController
         }
 
         if ($allowed) {
-            $this->updateDnssecFlag((int) $row->id, 1);
+            $this->setDnssecFlag((int) $row->id, 1);
             $this->setDnssecPopup(
                 (int) $row->id,
                 'success',
@@ -140,7 +142,7 @@ class DnssecToggleController
                 'DNSSEC management has been successfully enabled for the domain. The client can now manage DNSSEC from the client area.'
             );
         } else {
-            $this->updateDnssecFlag((int) $row->id, 0);
+            $this->setDnssecFlag((int) $row->id, 0);
             $this->setDnssecPopup(
                 (int) $row->id,
                 'warning',
@@ -261,29 +263,38 @@ class DnssecToggleController
         return json_encode((string)$str, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT);
     }
 
-    private function ensureDnssecColumn(): void
+    private function getDnssecFlag(int $domainId): int
     {
-        $table = 'tbldomains';
-        $col   = 'dnssecmanagement';
-
         try {
-            if (!Capsule::schema()->hasTable($table) || Capsule::schema()->hasColumn($table, $col)) {
-                return;
+            $val = Capsule::table('tbldomains_extra')
+                ->where('domain_id', $domainId)
+                ->where('name', self::EXTRA_KEY)
+                ->value('value');
+
+            // no row = default behavior
+            if ($val === null) {
+                return self::DEFAULT_DNSSEC_MGMT;
             }
-            Capsule::schema()->table($table, function ($t) use ($col) {
-                $t->tinyInteger($col)->unsigned()->default(1);
-            });
+
+            return ((string)$val === '1') ? 1 : 0;
+        } catch (\Exception $e) {
+            // fail-safe: keep previous default behavior
+            return self::DEFAULT_DNSSEC_MGMT;
+        }
+    }
+
+    private function setDnssecFlag(int $domainId, int $value): void
+    {
+        $value = ($value === 1) ? '1' : '0';
+
+        try {
+            Capsule::table('tbldomains_extra')->updateOrInsert(
+                ['domain_id' => $domainId, 'name' => self::EXTRA_KEY],
+                ['value' => $value]
+            );
         } catch (\Exception $e) {}
     }
 
-    private function updateDnssecFlag(int $domainId, int $value): void
-    {
-        try {
-            Capsule::table('tbldomains')
-                ->where('id', $domainId)
-                ->update(['dnssecmanagement' => $value]);
-        } catch (\Exception $e) {}
-    }
 
     private function setDnssecPopup(
         int $domainId,

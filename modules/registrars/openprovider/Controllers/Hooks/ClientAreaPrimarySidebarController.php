@@ -16,6 +16,7 @@ use WHMCS\Database\Capsule;
 class ClientAreaPrimarySidebarController
 {
     const DNSSEC_PAGE_NAME = '/dnssec.php';
+    private const EXTRA_KEY_DNSSEC_MGMT = 'openprovider_dnssecmanagement';
 
     /**
      * @var ApiHelper
@@ -82,10 +83,15 @@ jQuery( document ).ready(function() {
             $domainId        = isset($_REQUEST['domainid']) ? $_REQUEST['domainid'] : $_REQUEST['id'];
             $isDomainEnabled = Capsule::table('tbldomains')
                 ->where('id', $domainId)
-                ->select('status', 'dnssecmanagement', 'domain')
+                ->select('status','domain')
                 ->first();
             
-            if ($isDomainEnabled->dnssecmanagement != 1){
+            if (!$isDomainEnabled) {
+                return;
+            }
+            
+            $dnssecMgmt = $this->getDnssecManagementFlag((int)$domainId); // 0/1
+            if ($dnssecMgmt !== 1) {
                 return;
             }
 
@@ -133,4 +139,25 @@ jQuery( document ).ready(function() {
                 ->setOrder(100);
         }
     }
+
+    private function getDnssecManagementFlag(int $domainId): int
+    {
+        try {
+            $val = Capsule::table('tbldomains_extra')
+                ->where('domain_id', $domainId)
+                ->where('name', self::EXTRA_KEY_DNSSEC_MGMT)
+                ->value('value');
+
+            // No row = default behavior
+            if ($val === null) {
+                return self::DEFAULT_DNSSEC_MGMT;
+            }
+
+            return ((string)$val === '1') ? 1 : 0;
+        } catch (\Exception $e) {
+            // Fail-safe: keep old behavior (default enabled)
+            return self::DEFAULT_DNSSEC_MGMT;
+        }
+    }
+
 }
