@@ -15,7 +15,7 @@ use WHMCS\Database\Capsule;
 class DnssecToggleController
 {
     private const EXTRA_KEY = 'openprovider_dnssecmanagement';
-    private const DEFAULT_DNSSEC_MGMT = 1; // keep same default as your old column default(1)
+    private const DEFAULT_DNSSEC_MGMT = 1; // keep default(1)
 
     /**
      * @var ApiHelper
@@ -52,10 +52,7 @@ class DnssecToggleController
             $tld_enabled = false;
         }
 
-        // $admin_enabled = $row && (int)($row->dnssecmanagement ?? 0) === 1;
         $admin_enabled = $this->getDnssecFlag((int)$row->id) === 1;
-
-
         $enabled = $tld_enabled && $admin_enabled;
 
         $html = '
@@ -90,7 +87,6 @@ class DnssecToggleController
             return;
         }
 
-        // $current = (int)($row->dnssecmanagement ?? 0); 
         $current = $this->getDnssecFlag((int)$row->id);
         $checkEnable = isset($_REQUEST['op_dnssec_management']) && $_REQUEST['op_dnssec_management'] == '1';
         $wantsEnable = $checkEnable ? 1 : 0; 
@@ -278,7 +274,6 @@ class DnssecToggleController
 
             return ((string)$val === '1') ? 1 : 0;
         } catch (\Exception $e) {
-            // fail-safe: keep previous default behavior
             return self::DEFAULT_DNSSEC_MGMT;
         }
     }

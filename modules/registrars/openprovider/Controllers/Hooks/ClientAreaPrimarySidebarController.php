@@ -155,7 +155,6 @@ jQuery( document ).ready(function() {
 
             return ((string)$val === '1') ? 1 : 0;
         } catch (\Exception $e) {
-            // Fail-safe: keep old behavior (default enabled)
             return self::DEFAULT_DNSSEC_MGMT;
         }
     }
