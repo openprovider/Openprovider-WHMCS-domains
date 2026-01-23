@@ -103,13 +103,26 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
                 'User-Agent: MyPHPApp' // GitHub API requires a user agent
             ]);
 
+            $versionResult = "<span style=\"color:#999;\">Version check unavailable</span>";
+
             $response = curl_exec($ch);
+            if ($response === false) {
+                $curlError = curl_error($ch);
+                curl_close($ch);
+                logModuleCall(
+                    'Openprovider',
+                    'module version retrieval',
+                    'cURL error while retrieving Openprovider version',
+                    $curlError,
+                    null,
+                    null
+                );
+                return $versionResult;
+            }
 
             curl_close($ch);
 
             $responseData = json_decode($response, true);
-
-            $versionResult = "<span style=\"color:#999;\">Version check unavailable</span>";
 
             // Check if tag_name exists in the response
             if (isset($responseData['tag_name'])) {
