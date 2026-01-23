@@ -109,11 +109,13 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 
             $responseData = json_decode($response, true);
 
+            $versionResult = "<span style=\"color:#999;\">Version check unavailable</span>";
+
             // Check if tag_name exists in the response
             if (isset($responseData['tag_name'])) {
                 $availableVersion = $responseData['tag_name'];
             } else {
-                return "<span style=\"color:#999;\">Version check unavailable</span>";
+                return $versionResult;
             }
 
             $installedVersion = explode('-', APIConfig::getModuleVersion())[0];
@@ -122,8 +124,6 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
             if (empty($installedVersion) || empty($availableVersion)) {
                 logModuleCall('Openprovider', 'module version retrieval', "Failed to retrieve openprovider version", null, null, null);
             }
-
-            $versionResult = "";
 
             // Compare versions
             if (version_compare($availableVersion, $installedVersion, '>')) {
