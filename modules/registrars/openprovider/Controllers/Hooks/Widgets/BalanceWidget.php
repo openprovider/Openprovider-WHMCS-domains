@@ -31,42 +31,6 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 
     public function getData()
     {
-        $url = "https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest";
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'User-Agent: MyPHPApp' // GitHub API requires a user agent
-        ]);
-
-        $response = curl_exec($ch);
-
-        curl_close($ch);
-
-        $responseData = json_decode($response, true);
-
-        // Check if tag_name exists in the response
-        if (isset($responseData['tag_name'])) {
-            $availableVersion = $responseData['tag_name'];
-        }
-
-        $installedVersion = explode('-', APIConfig::getModuleVersion())[0];
-
-        // Check if both versions are valid
-        if (empty($installedVersion) || empty($availableVersion)) {
-            logModuleCall('Openprovider', 'module version retrieval', "Failed to retrieve openprovider version", null, null, null);
-        }
-
-        $versionResult = "";
-
-        // Compare versions
-        if (version_compare($availableVersion, $installedVersion, '>')) {
-            $versionResult = "<a href=\"https://github.com/openprovider/Openprovider-WHMCS-domains/releases/tag/$availableVersion\" target=\"_blank\" style=\"color:red;\">Update to version $availableVersion</a>";
-        } else {
-            $versionResult = "<span style=\"color:green;\">Module is up to date {$availableVersion}</span>";
-        }
-
         $command = 'GetRegistrars';
         $postData = array();
         $results = localAPI($command, $postData);
@@ -107,11 +71,13 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
                 if (isset($messages['results'])) {
                     foreach ($messages['results'] as $message) {
                         $html .= "<div class=\"row\">
-            <div class=\"col-sm-12\">" . $message['html'] . "
-            </div>
-        </div>";
+                            <div class=\"col-sm-12\">" . $message['html'] . "
+                            </div>
+                        </div>";
                     }
                 }
+
+                $versionResult = $this->getModuleVersionStatus();
 
                 return [
                     'balance' => $balance,
@@ -125,16 +91,72 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
         return ['error' => "The Openprovider module could not be found, please ensure that you have <a href='https://support.openprovider.eu/hc/en-us/articles/360012991620-Install-and-configure-Openprovider-module-in-WHMCS-8-X'>installed and activated the Openprovider domain registrar module</a>"];
     }
 
+    private function getModuleVersionStatus(): string
+    {
+        try {
+            $url = "https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest";
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'User-Agent: MyPHPApp' // GitHub API requires a user agent
+            ]);
+
+            $response = curl_exec($ch);
+
+            curl_close($ch);
+
+            $responseData = json_decode($response, true);
+
+            // Check if tag_name exists in the response
+            if (isset($responseData['tag_name'])) {
+                $availableVersion = $responseData['tag_name'];
+            } else {
+                return "<span style=\"color:#999;\">Version check unavailable</span>";
+            }
+
+            $installedVersion = explode('-', APIConfig::getModuleVersion())[0];
+
+            // Check if both versions are valid
+            if (empty($installedVersion) || empty($availableVersion)) {
+                logModuleCall('Openprovider', 'module version retrieval', "Failed to retrieve openprovider version", null, null, null);
+            }
+
+            $versionResult = "";
+
+            // Compare versions
+            if (version_compare($availableVersion, $installedVersion, '>')) {
+                $versionResult = "<a href=\"https://github.com/openprovider/Openprovider-WHMCS-domains/releases/tag/$availableVersion\" target=\"_blank\" style=\"color:red;\">Update to version $availableVersion</a>";
+            } else {
+                $versionResult = "<span style=\"color:green;\">Module is up to date {$availableVersion}</span>";
+            }
+            return $versionResult;
+        } catch (\Throwable $e) {
+            logModuleCall(
+                'Openprovider',
+                'module version retrieval',
+                'Failed to retrieve Openprovider version',
+                $e->getMessage(),
+                null,
+                null
+            );
+
+            return "<span style=\"color:#999;\">Version check unavailable</span>";
+        }
+    }
+
+
     public function generateOutput($data)
     {
         if (isset($data['error'])) {
             return <<<EOF
-<div class="widget-content-padded">
-            <div style="color:red; font-weight: bold">
-                {$data['error']}
-            </div>
-</div>
-EOF;
+                <div class="widget-content-padded">
+                            <div style="color:red; font-weight: bold">
+                                {$data['error']}
+                            </div>
+                </div>
+            EOF;
         }
         $availableBalance = $data['balance'] - $data['reservedBalance'];
         $balance = number_format((float) $data['balance'], 2);
@@ -149,30 +171,30 @@ EOF;
 
 
         return <<<EOF
-<div class="widget-content-padded">
-    {$data['html']}
-    <div class="row">
-        <div class="col-sm-6 bordered-right">
-            <div class="item">
-                <div class="data $balance_css" style="display:inline-block;">€$balance</div> <div class="data $reservedBalance_css"  style="display:inline-block;"><small>(€$availableBalance available)</small></div>
-                <div class="note">Balance</div>
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="item">
-                <div class="data color-orange">{$data['domainsTotal']}</div>
-                <div class="note">Domains</div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="item">
-                <div class="data">{$data['versionResult']}</div>
-            </div> 
-        </div>
-    </div>
-</div>
-EOF;
+                    <div class="widget-content-padded">
+                        {$data['html']}
+                        <div class="row">
+                            <div class="col-sm-6 bordered-right">
+                                <div class="item">
+                                    <div class="data $balance_css" style="display:inline-block;">€$balance</div> <div class="data $reservedBalance_css"  style="display:inline-block;"><small>(€$availableBalance available)</small></div>
+                                    <div class="note">Balance</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="item">
+                                    <div class="data color-orange">{$data['domainsTotal']}</div>
+                                    <div class="note">Domains</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="item">
+                                    <div class="data">{$data['versionResult']}</div>
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                EOF;
     }
 }
