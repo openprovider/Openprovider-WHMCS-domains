@@ -5,6 +5,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\helpers\DNS;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
+use OpenProvider\WhmcsRegistrar\helpers\DnssecManagement;
 use WHMCS\Database\Capsule;
 
 /**
@@ -91,7 +92,7 @@ jQuery( document ).ready(function() {
                 return;
             }
             
-            $dnssecMgmt = $this->getDnssecManagementFlag((int)$domainId); // 0/1
+            $dnssecMgmt = DnssecManagement::getFlag((int)$domainId); // 0/1
             if ($dnssecMgmt !== 1) {
                 return;
             }
@@ -140,24 +141,4 @@ jQuery( document ).ready(function() {
                 ->setOrder(100);
         }
     }
-
-    private function getDnssecManagementFlag(int $domainId): int
-    {
-        try {
-            $val = Capsule::table('tbldomains_extra')
-                ->where('domain_id', $domainId)
-                ->where('name', self::EXTRA_KEY_DNSSEC_MGMT)
-                ->value('value');
-
-            // No row = default behavior
-            if ($val === null) {
-                return self::DEFAULT_DNSSEC_MGMT;
-            }
-
-            return ((string)$val === '1') ? 1 : 0;
-        } catch (\Exception $e) {
-            return self::DEFAULT_DNSSEC_MGMT;
-        }
-    }
-
 }

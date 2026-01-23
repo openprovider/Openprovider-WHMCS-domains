@@ -4,6 +4,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use OpenProvider\API\ApiHelper;
 use WHMCS\Database\Capsule;
+use OpenProvider\WhmcsRegistrar\helpers\DnssecManagement;
 
 /**
  * Class DnssecToggleController
@@ -52,7 +53,7 @@ class DnssecToggleController
             $tld_enabled = false;
         }
 
-        $admin_enabled = $this->getDnssecFlag((int)$row->id) === 1;
+        $admin_enabled = DnssecManagement::getFlag((int)$row->id) === 1;
         $enabled = $tld_enabled && $admin_enabled;
 
         $html = '
@@ -87,7 +88,7 @@ class DnssecToggleController
             return;
         }
 
-        $current = $this->getDnssecFlag((int)$row->id);
+        $current = DnssecManagement::getFlag((int)$row->id);
         $checkEnable = isset($_REQUEST['op_dnssec_management']) && $_REQUEST['op_dnssec_management'] == '1';
         $wantsEnable = $checkEnable ? 1 : 0; 
         $tld = $this->extractTldFromFqdn((string)$row->domain);
@@ -100,7 +101,7 @@ class DnssecToggleController
 
         if ($wantsEnable === $current) {
             if ($wantsEnable === 1 && !$allowed) {
-                $this->setDnssecFlag((int) $row->id, 0);
+                DnssecManagement::setFlag((int) $row->id, 0);
                 $this->setDnssecPopup(
                     (int) $row->id,
                     'warning',
@@ -114,12 +115,12 @@ class DnssecToggleController
         }
 
         if (!$allowed && $wantsEnable === 0 && $current === 1) {
-            $this->setDnssecFlag((int) $row->id, 0);
+            DnssecManagement::setFlag((int) $row->id, 0);
             return;
         }
 
         if ($wantsEnable === 0) {
-            $this->setDnssecFlag((int) $row->id, 0);
+            DnssecManagement::setFlag((int) $row->id, 0);
             $this->setDnssecPopup(
                 (int) $row->id,
                 'success',
@@ -130,7 +131,7 @@ class DnssecToggleController
         }
 
         if ($allowed) {
-            $this->setDnssecFlag((int) $row->id, 1);
+            DnssecManagement::setFlag((int) $row->id, 1);
             $this->setDnssecPopup(
                 (int) $row->id,
                 'success',
@@ -138,7 +139,7 @@ class DnssecToggleController
                 'DNSSEC management has been successfully enabled for the domain. The client can now manage DNSSEC from the client area.'
             );
         } else {
-            $this->setDnssecFlag((int) $row->id, 0);
+            DnssecManagement::setFlag((int) $row->id, 0);
             $this->setDnssecPopup(
                 (int) $row->id,
                 'warning',
@@ -257,54 +258,6 @@ class DnssecToggleController
     private function jsonInline($str)
     {
         return json_encode((string)$str, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT);
-    }
-
-    private function getDnssecFlag(int $domainId): int
-    {
-        try {
-            $val = Capsule::table('tbldomains_extra')
-                ->where('domain_id', $domainId)
-                ->where('name', self::EXTRA_KEY)
-                ->value('value');
-
-            // no row = default behavior
-            if ($val === null) {
-                return self::DEFAULT_DNSSEC_MGMT;
-            }
-
-            return ((string)$val === '1') ? 1 : 0;
-        } catch (\Exception $e) {
-            return self::DEFAULT_DNSSEC_MGMT;
-        }
-    }
-
-    private function setDnssecFlag(int $domainId, int $value): void
-    {
-        $value = ($value === 1) ? '1' : '0';
-        $now   = date('Y-m-d H:i:s');
-
-        try {
-            $query = Capsule::table('tbldomains_extra')
-                ->where('domain_id', $domainId)
-                ->where('name', self::EXTRA_KEY);
-
-            if ($query->exists()) {
-                // Update existing row: don't touch created_at
-                $query->update([
-                    'value'      => $value,
-                    'updated_at' => $now,
-                ]);
-            } else {
-                // Insert new row: set both timestamps
-                Capsule::table('tbldomains_extra')->insert([
-                    'domain_id'  => $domainId,
-                    'name'       => self::EXTRA_KEY,
-                    'value'      => $value,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ]);
-            }
-        } catch (\Exception $e) {}
     }
 
     private function setDnssecPopup(
