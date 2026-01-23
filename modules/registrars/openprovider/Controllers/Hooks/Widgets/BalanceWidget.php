@@ -136,6 +136,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
             // Check if both versions are valid
             if (empty($installedVersion) || empty($availableVersion)) {
                 logModuleCall('Openprovider', 'module version retrieval', "Failed to retrieve openprovider version", null, null, null);
+                return $versionResult;
             }
 
             // Compare versions
