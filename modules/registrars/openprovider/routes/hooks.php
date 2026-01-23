@@ -118,9 +118,19 @@ return [
         'controller'=> 'AdminAreaHeaderOutputController@output',
     ],
     [
-        'hookPoint' => 'AdminAreaHeaderOutput',
+        'hookPoint' => 'AdminClientDomainsTabFields',
         'priority'  => 1,
-        'controller'=> 'AdminAreaHeaderOutputController@output',
+        'controller'=> 'DnssecToggleController@output',
+    ],
+    [
+        'hookPoint' => 'AdminClientDomainsTabFieldsSave',
+        'priority'  => 1,
+        'controller'=> 'DnssecToggleController@save',
+    ],
+    [
+        'hookPoint' => 'AdminAreaFooterOutput',
+        'priority' => 1,
+        'controller' => 'DnssecToggleController@footer',
     ],
     [
         'hookPoint' => 'AfterRegistrarRegistration',

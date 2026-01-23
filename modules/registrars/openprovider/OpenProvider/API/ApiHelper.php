@@ -657,12 +657,25 @@ class ApiHelper
         if ($tld === '') {
             throw new \InvalidArgumentException('Missing TLD.');
         }
-
+        
         return $this->buildResponse(
             $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
         );
     }
 
+    /**
+     * @param string $tld
+     * @return bool
+     */
+    public function supportsDnssec(string $tld): bool
+    {
+        try {
+            $meta = $this->getTldMeta($tld);
+            return (bool)($meta['dnssec_allowed'] ?? $meta['dnssecAllowed'] ?? false);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 
     /**
      * @param ResponseInterface $response
