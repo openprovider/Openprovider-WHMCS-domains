@@ -7,10 +7,13 @@
             "GuzzleHttp6\\Psr7\\": "vendor-static/guzzlehttp/psr7/src/",
             "GuzzleHttp6\\Promise\\": "vendor-static/guzzlehttp/promises/src/"
         },
-        "files":  [
+        "files": [
             "helpers.php",
             "vendor-static/guzzlehttp/guzzle/src/functions_include.php",
             "vendor-static/guzzlehttp/psr7/src/functions_include.php"
+        ],
+        "exclude-from-classmap": [
+            "vendor/illuminate/"
         ]
     },
     "require": {
@@ -26,7 +29,6 @@
         "phpunit/phpunit": "^9.5",
         "mockery/mockery": "^1.0",
         "php-mock/php-mock-mockery": "^1.2",
-        "illuminate/database": "6.20.*",
         "phpdocumentor/reflection-docblock": "^5.4"
     },
     "repositories": [
