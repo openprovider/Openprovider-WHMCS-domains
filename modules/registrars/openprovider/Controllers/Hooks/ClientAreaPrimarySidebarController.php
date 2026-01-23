@@ -17,8 +17,6 @@ use WHMCS\Database\Capsule;
 class ClientAreaPrimarySidebarController
 {
     const DNSSEC_PAGE_NAME = '/dnssec.php';
-    private const DEFAULT_DNSSEC_MGMT = 1; 
-    private const EXTRA_KEY_DNSSEC_MGMT = 'openprovider_dnssecmanagement';
 
     /**
      * @var ApiHelper

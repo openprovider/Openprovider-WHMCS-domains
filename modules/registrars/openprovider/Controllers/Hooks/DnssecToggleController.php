@@ -15,9 +15,6 @@ use OpenProvider\WhmcsRegistrar\helpers\DnssecManagement;
 
 class DnssecToggleController
 {
-    private const EXTRA_KEY = 'openprovider_dnssecmanagement';
-    private const DEFAULT_DNSSEC_MGMT = 1; // keep default(1)
-
     /**
      * @var ApiHelper
      */
