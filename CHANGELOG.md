@@ -1,4 +1,20 @@
 # Changelog
+## v5.9.1
+
+###### Features and improvements
+- Added support for WHMCS 9.0.0.
+- Added a progress bar to the Openprovider install and update scripts.
+- Added a configuration option to open the new DNS Manager in a new browser tab (useNewDnsManagerFeatureInNewWindow in advanced-module-configurations.php).
+- Removed the unnecessary Company Registration Number additional field for .it domains.
+- Added support for overriding dnssec.tpl in custom WHMCS themes.
+
+###### Bugfixes
+- Fixed: DomainLockingEnabledController being triggered on non-domain pages.
+- Fixed: Sync cron failures due to outdated library.
+- Fixed: Update script confirmation not displaying when executed via curl or bash.
+- Fixed: Registrar lock status not displaying correctly for non-English languages.
+- Fixed: Domain creation issues in sandbox environments.
+- Fixed: Balance widget warning styling for specific balance ranges (e.g. 1,000–2,000 and 10,000–10,200).
 
 ## v5.9.0
 
