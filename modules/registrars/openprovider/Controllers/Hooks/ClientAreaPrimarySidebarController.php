@@ -5,6 +5,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\helpers\DNS;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
+use OpenProvider\WhmcsRegistrar\helpers\DnssecManagement;
 use WHMCS\Database\Capsule;
 
 /**
@@ -82,10 +83,15 @@ jQuery( document ).ready(function() {
             $domainId        = isset($_REQUEST['domainid']) ? $_REQUEST['domainid'] : $_REQUEST['id'];
             $isDomainEnabled = Capsule::table('tbldomains')
                 ->where('id', $domainId)
-                ->select('status', 'dnssecmanagement', 'domain')
+                ->select('status','domain')
                 ->first();
             
-            if ($isDomainEnabled->dnssecmanagement != 1){
+            if (!$isDomainEnabled) {
+                return;
+            }
+            
+            $dnssecMgmt = DnssecManagement::getFlag((int)$domainId); // 0/1
+            if ($dnssecMgmt !== 1) {
                 return;
             }
 
