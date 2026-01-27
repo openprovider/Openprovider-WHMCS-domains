@@ -1,6 +1,6 @@
 <?php
 
-namespace OpenProvider\WhmcsRegistrar\Helpers;
+namespace OpenProvider\WhmcsRegistrar\helpers;
 
 use WHMCS\Database\Capsule;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;

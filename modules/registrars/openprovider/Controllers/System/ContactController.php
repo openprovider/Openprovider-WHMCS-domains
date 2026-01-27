@@ -14,7 +14,7 @@ use WeDevelopCoffee\wPower\Core\Core;
 use WHMCS\Database\Capsule;
 
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
-use OpenProvider\WhmcsRegistrar\Helpers\DbCacheHelper;
+use OpenProvider\WhmcsRegistrar\helpers\DbCacheHelper;
 
 /**
  * Class ContactControllerView
