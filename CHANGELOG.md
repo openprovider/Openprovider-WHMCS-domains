@@ -1,4 +1,10 @@
 # Changelog
+## v5.9.2
+
+###### Features and improvements
+- Optimized Admin Domain Contacts page by fetching contact details using parallel API calls.
+- Added database caching for TLD metadata to reduce repeated API requests.
+  
 ## v5.9.1
 
 ###### Features and improvements
