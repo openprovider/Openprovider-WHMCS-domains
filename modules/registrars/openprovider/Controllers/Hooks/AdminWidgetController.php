@@ -30,7 +30,7 @@ class AdminWidgetController
             @unlink($legacyWidgetPath);
 
             logModuleCall(
-                'openprovider nl',
+                'OpenProvider NL',
                 'cleanupLegacyBalanceWidget',
                 null,
                 'Removed legacy BalanceWidget file to prevent duplicate widgets.',

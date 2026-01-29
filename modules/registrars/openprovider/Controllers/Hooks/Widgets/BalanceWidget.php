@@ -135,7 +135,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 
             // Check if both versions are valid
             if (empty($installedVersion) || empty($availableVersion)) {
-                logModuleCall('Openprovider', 'module version retrieval', "Failed to retrieve openprovider version", null, null, null);
+                logModuleCall('OpenProvider NL', 'module version retrieval', "Failed to retrieve openprovider version", null, null, null);
                 return $versionResult;
             }
 
@@ -148,7 +148,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
             return $versionResult;
         } catch (\Throwable $e) {
             logModuleCall(
-                'Openprovider',
+                'OpenProvider NL',
                 'module version retrieval',
                 'Failed to retrieve Openprovider version',
                 $e->getMessage(),
