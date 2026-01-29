@@ -5,6 +5,7 @@ namespace OpenProvider\API;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
+use GuzzleHttp6\Promise\Utils;
 
 class ApiHelper
 {
@@ -502,22 +503,79 @@ class ApiHelper
             return $customerOp;
         }
 
+        $customerInfo = $this->formatCustomerForWhmcs($customerOp);
+
+        return $customerInfo;
+    }
+
+    /**
+     * @param array $handles
+     * @param bool $formattedForWhmcs
+     * @return array
+     * @throws \Exception
+     */
+    public function getCustomersAsync(array $handles, bool $formattedForWhmcs = true): array
+    {
+        $promises = [];
+
+        foreach ($handles as $key => $handle) {
+            $promises[$key] = $this->apiClient->callAsync('retrieveCustomerRequestAsync', [
+                'handle' => $handle,
+                'with_additional_data' => 1,
+            ]);
+        }
+
+        $responses = Utils::settle($promises)->wait();
+
+        $customers = [];
+
+        foreach ($responses as $key => $result) {
+            if ($result['state'] !== 'fulfilled') {
+                continue;
+            }
+
+            $customerOp = $this->buildResponse($result['value']);
+
+            if (!$formattedForWhmcs) {
+                $customers[$key] = $customerOp;
+                continue;
+            }
+
+            $customers[$key] = $this->formatCustomerForWhmcs($customerOp);
+        }
+
+        return $customers;
+    }
+
+
+    private function formatCustomerForWhmcs(array $customerOp): array
+    {
         $customerInfo = [];
+
         $customerInfo['First Name'] = $customerOp['name']['firstName'];
         $customerInfo['Last Name'] = $customerOp['name']['lastName'];
         $customerInfo['Company Name'] = $customerOp['companyName'];
         $customerInfo['Email Address'] = $customerOp['email'];
-        $customerInfo['Address'] = $customerOp['address']['street'] . ' ' .
-            $customerOp['address']['number'] . ' ' .
-            $customerOp['address']['suffix'];
+
+        $addressParts = array_filter(
+            [
+                $customerOp['address']['street'] ?? '',
+                $customerOp['address']['number'] ?? '',
+                $customerOp['address']['suffix'] ?? '',
+            ],
+            'strlen'
+        );
+        $customerInfo['Address'] = implode(' ', $addressParts);
+
         $customerInfo['City'] = $customerOp['address']['city'];
         $customerInfo['State'] = $customerOp['address']['state'];
         $customerInfo['Zip Code'] = $customerOp['address']['zipcode'];
         $customerInfo['Country'] = $customerOp['address']['country'];
-        $customerInfo['Phone Number'] = $customerOp['phone']['countryCode'] . '.' .
+
+        $customerInfo['Phone Number'] =
+            $customerOp['phone']['countryCode'] . '.' .
             $customerOp['phone']['areaCode'] .
             $customerOp['phone']['subscriberNumber'];
-
 
         if (!empty($customerOp['companyName'])) {
             if (empty($customerOp['additionalData']['companyRegistrationNumber'])) {

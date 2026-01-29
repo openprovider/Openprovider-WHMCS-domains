@@ -14,6 +14,7 @@ use WeDevelopCoffee\wPower\Core\Core;
 use WHMCS\Database\Capsule;
 
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
+use OpenProvider\WhmcsRegistrar\helpers\DbCacheHelper;
 
 /**
  * Class ContactControllerView
@@ -33,6 +34,8 @@ class ContactController extends BaseController
      * @var ApiHelper
      */
     private $apiHelper;
+
+    private const TLD_METADATA_CACHE_TTL = 60 * 60 * 24; // 24 hours (in seconds)
 
     /**
      * ConfigController constructor.
@@ -63,7 +66,7 @@ class ContactController extends BaseController
         ));
 
         try {
-            $values = $this->getContactDetails($this->domain);
+            $values = $this->getContactDetails($params);
         } catch (\Exception $e) {
             return [
                 'error' => $e->getMessage()
@@ -165,11 +168,12 @@ class ContactController extends BaseController
     }
 
     /**
+     * @param $params
      * @return array
      *
      * @throws \Exception
      */
-    private function getContactDetails(): array
+    private function getContactDetails($params): array
     {
         $domainOp = $this->apiHelper->getDomain($this->domain);
 
@@ -177,24 +181,34 @@ class ContactController extends BaseController
             return [];
         }
 
-        $tldMetaData = $this->apiHelper->getTldMeta($this->domain->extension);
+        $mode = ($params['test_mode'] ?? false) === 'on' ? 'test' : 'live';
 
-        $contacts = [];
+        $tldMetaData = DbCacheHelper::remember(
+            'tld_meta_' . $this->domain->extension,
+            $mode,
+            self::TLD_METADATA_CACHE_TTL,
+            fn() => $this->apiHelper->getTldMeta($this->domain->extension)
+        );
+
+        $handlesToFetch = [];
         foreach (APIConfig::$handlesNames as $key => $name) {
             $handleSupportedKey = $key . 'Supported';
 
-            if (!isset($tldMetaData[$handleSupportedKey]) || !$tldMetaData[$handleSupportedKey] || empty($domainOp[$key])) {
-                continue;
+            if (
+                isset($tldMetaData[$handleSupportedKey]) &&
+                $tldMetaData[$handleSupportedKey] &&
+                !empty($domainOp[$key])
+            ) {
+                $handlesToFetch[$name] = $domainOp[$key];
             }
-
-            $customerOp = $this->apiHelper->getCustomer($domainOp[$key]) ?? false;
-
-            if (!$customerOp) {
-                continue;
-            }
-
-            $contacts[$name] = $customerOp;
         }
+
+        if (empty($handlesToFetch)) {
+            return [];
+        }
+
+        // Parallel contacts fetch
+        $contacts = $this->apiHelper->getCustomersAsync($handlesToFetch);
 
         unset($contacts['Reseller']);
         unset($contacts['reseller']);
