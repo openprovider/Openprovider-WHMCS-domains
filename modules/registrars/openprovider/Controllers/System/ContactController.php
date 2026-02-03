@@ -14,7 +14,7 @@ use WeDevelopCoffee\wPower\Core\Core;
 use WHMCS\Database\Capsule;
 
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
-use OpenProvider\WhmcsRegistrar\Helpers\DbCacheHelper;
+use OpenProvider\WhmcsRegistrar\helpers\DbCacheHelper;
 
 /**
  * Class ContactControllerView
@@ -35,7 +35,7 @@ class ContactController extends BaseController
      */
     private $apiHelper;
 
-    private const TLD_METADATA_CACHE_TTL = 86400; // 24 hours
+    private const TLD_METADATA_CACHE_TTL = 60 * 60 * 24; // 24 hours (in seconds)
 
     /**
      * ConfigController constructor.
