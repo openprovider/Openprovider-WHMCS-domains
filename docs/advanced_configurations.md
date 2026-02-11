@@ -17,7 +17,7 @@ Advanced configurations can be found in the file `/modules/registrars/openprovid
 | useNewDnsManagerFeature         | boolean: false                             | Set to true to enable the Openprovider [single domain DNS panel](https://support.openprovider.eu/hc/en-us/articles/360014539999-Single-Domain-DNS-panel) for your customers who you have given the right to edit DNS zones for their domain. |
 | useNewDnsManagerFeatureInNewWindow | boolean: true                             | When this option is enabled, the DNS Manager will open in a new window. This requires the "useNewDnsManagerFeature" configuration to be enabled. |
 | requestTrusteeService           | array: ["ba","co.uk"]                      | Indicates which TLDs will automatically have the trustee option selected upon registration. |
-| idnumbermod                     | boolean: false                             | Indicates whether to use the [advanced additional data handling for .es and .pt domains](/docs/advanced_additional_data.md) |
+| idnumbermod                     | boolean                                    | Indicates whether to enable [advanced customer additional data handling for .es, .pt, .se, .com.es, .nom.es, .edu.es, .org.es, .it and .fi domains](/docs/advanced_additional_data.md) |
 
 
 
