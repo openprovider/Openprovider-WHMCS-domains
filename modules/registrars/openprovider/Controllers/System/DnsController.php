@@ -45,8 +45,12 @@ class DnsController extends BaseController
      */
     public function get($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        if (isset($params['sld'], $params['tld'])) {
+        // custom page provides these
+        } else {
+            $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+            $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        }
 
         $this->domain->load(array(
             'name'      => $params['sld'],
@@ -79,8 +83,12 @@ class DnsController extends BaseController
      */
     public function save($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        if (isset($params['sld'], $params['tld'])) {
+            // custom page provides these
+        } else {
+            $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+            $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        }
 
         $records = $this->convertToObjects($params['dnsrecords']);
 
