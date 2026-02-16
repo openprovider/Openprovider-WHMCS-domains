@@ -16,6 +16,7 @@ use WHMCS\Database\Capsule;
 class ClientAreaPrimarySidebarController
 {
     const DNSSEC_PAGE_NAME = '/dnssec.php';
+    const DNS_MANAGEMENT_PAGE_NAME = '/dnsmanagement.php';
 
     /**
      * @var ApiHelper
@@ -29,6 +30,8 @@ class ClientAreaPrimarySidebarController
 
     public function show($primarySidebar)
     {
+        $this->ensureDnsManagementPageExists();
+
         $this->replaceDnsMenuItem($primarySidebar);
 
         $this->addDNSSECMenuItem($primarySidebar);
@@ -42,6 +45,11 @@ class ClientAreaPrimarySidebarController
 
         if (!$dnsManagement = $domainDetailsManagement->getChild('Manage DNS Host Records'))
             return;
+
+        $domainId = $_REQUEST['domainid'] ?? $_REQUEST['id'] ?? null;
+        if (!$domainId) {
+            return;
+        }
 
         if ($url = DNS::getDnsUrlOrFail($_REQUEST['domainid'])) {
             // Update the URL.
@@ -57,7 +65,9 @@ jQuery( document ).ready(function() {
 </script>
 <a href=\'#\' style=\'display:none;\'>';
             $dnsManagement->setLabel($label);
+            return;
         }
+        $dnsManagement->setUri("dnsmanagement.php?domainid={$domainId}");
     }
 
     private function addDNSSECMenuItem($primarySidebar)
@@ -107,6 +117,30 @@ jQuery( document ).ready(function() {
                 ->setUri("dnssec.php?domainid={$domainId}")
                 ->setClass($dnssecItemClass)
                 ->setOrder(100);
+        }
+    }
+
+    private function ensureDnsManagementPageExists()
+    {
+        $rootDir = $GLOBALS['whmcsAppConfig']->getRootDir();
+        $destination = $rootDir . self::DNS_MANAGEMENT_PAGE_NAME;
+
+        if (
+            !file_exists($destination) ||
+            empty(file_get_contents($destination))
+        ) {
+            $source = $rootDir . "/modules/registrars/openprovider/custom-pages" . self::DNS_MANAGEMENT_PAGE_NAME;
+
+            if (!copy($source, $destination)) {
+                logModuleCall(
+                    'openprovider',
+                    'copydnsmanagementfile',
+                    null,
+                    "Failed to add dnsmanagement.php to WHMCS root directory. Please manually upload it.",
+                    null,
+                    null
+                );
+            }
         }
     }
 }
