@@ -255,11 +255,18 @@ class DnsManagementPageController extends BaseController
 
     private function redirectUserAway()
     {
+        $defaultUrl = Configuration::getServerUrl();
+
         if (isset($_SERVER['HTTP_REFERER'])) {
-            header('Location: ' . $_SERVER['HTTP_REFERER']);
-            return;
+            $referer = $_SERVER['HTTP_REFERER'];
+
+            // Only allow redirects within same WHMCS base URL
+            if (is_string($referer) && $referer !== '' && strpos($referer, $defaultUrl) === 0) {
+                header('Location: ' . $referer);
+                return;
+            }
         }
 
-        header('Location: ' . Configuration::getServerUrl());
+        header('Location: ' . $defaultUrl);
     }
 }
