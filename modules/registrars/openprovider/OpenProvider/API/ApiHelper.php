@@ -450,11 +450,11 @@ class ApiHelper
      */
     public function removeDnsRecord(Domain $domain, array $record): array
     {
-        $zoneName = $domain->getFullName(); 
+        $zoneName = $domain->getFullName();
 
         $payload = [
             'type'  => strtoupper((string)$record['type']),
-            'name'  => (string)$record['name'],   
+            'name'  => (string)$record['name'],
             'value' => (string)$record['value'],
         ];
 

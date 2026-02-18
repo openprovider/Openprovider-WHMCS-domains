@@ -105,7 +105,7 @@ class DnsManagementPageController extends BaseController
 
                 $rec = [
                     'type'  => $type,
-                    'name'  => $hostname, 
+                    'name'  => $hostname,
                     'value' => $address,
                     'ttl'   => \OpenProvider\API\APIConfig::$dnsRecordTtl,
                 ];
