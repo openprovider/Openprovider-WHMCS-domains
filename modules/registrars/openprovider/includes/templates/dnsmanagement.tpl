@@ -14,7 +14,8 @@
             </div>
         {else}
 
-            <form method="post" action="dnsmanagement.php?domainid={$domainId}">
+            <form id="opDnsForm" method="post" action="dnsmanagement.php?domainid={$domainId}">
+                <input type="hidden" name="token" value="{$csrfToken}" />
                 <input type="hidden" name="sub" value="save" />
                 <input type="hidden" name="domainid" value="{$domainId}" />
 
@@ -110,7 +111,11 @@ document.addEventListener('click', async function (e) {
   if (!confirm('Delete this DNS record now?')) return;
 
   const row = btn.closest('tr');
-  const domainId = document.querySelector('input[name="domainid"]')?.value || '';
+  const domainId =
+    new URLSearchParams(window.location.search).get('domainid') ||
+    document.querySelector('#opDnsForm input[name="domainid"]')?.value ||
+    document.querySelector('input[name="domainid"]')?.value ||
+    '';
 
   const payload = new URLSearchParams();
   payload.set('op_action', 'deleteRecord');
@@ -120,8 +125,8 @@ document.addEventListener('click', async function (e) {
   payload.set('address', btn.dataset.address || '');
   payload.set('priority', btn.dataset.priority || '');
 
-  // WHMCS CSRF token (from includes/token.tpl)
-  const token = document.querySelector('input[name="token"]')?.value;
+  // CSRF token: read ONLY from our DNS form 
+  const token = document.querySelector('#opDnsForm input[name="token"]')?.value;
   if (token) payload.set('token', token);
 
   btn.disabled = true;
@@ -129,24 +134,33 @@ document.addEventListener('click', async function (e) {
   try {
     const res = await fetch('dnsmanagement.php?domainid=' + encodeURIComponent(domainId), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
       body: payload.toString(),
       credentials: 'same-origin'
     });
+
+    // If WHMCS redirects to login, response will be HTML not JSON
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      alert('Your session may have expired. Please refresh the page and try again.');
+      return;
+    }
 
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok || !data.success) {
       alert(data.error || 'Failed to delete DNS record');
-      btn.disabled = false;
       return;
     }
 
     // remove row only after API success
     if (row) row.remove();
-
   } catch (err) {
     alert('Failed to delete DNS record');
+  } finally {
     btn.disabled = false;
   }
 });

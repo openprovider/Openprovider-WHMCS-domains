@@ -70,6 +70,22 @@ class DnsManagementPageController extends BaseController
 
             header('Content-Type: application/json; charset=utf-8');
 
+            $currentUser = new \WHMCS\Authentication\CurrentUser();
+            if (!$currentUser->user() || !$currentUser->client()) {
+                http_response_code(401);
+                echo json_encode(['success' => false, 'error' => 'Not authenticated']);
+                return;
+            }
+
+            // WHMCS CSRF validation
+            try {
+                check_token('WHMCS.default', true); 
+            } catch (\Throwable $e) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'error' => 'Invalid CSRF token']);
+                return;
+            }
+
             try {
                 $hostname = trim((string)($_POST['hostname'] ?? '')); // "www" or ""
                 $type     = strtoupper(trim((string)($_POST['type'] ?? '')));
@@ -208,6 +224,7 @@ class DnsManagementPageController extends BaseController
         }
 
         $ca->setTemplate($template);
+        $ca->assign('csrfToken', $_SESSION['token'] ?? \WHMCS\Session::get('token') ?? '');
         $ca->output();
     }
 
