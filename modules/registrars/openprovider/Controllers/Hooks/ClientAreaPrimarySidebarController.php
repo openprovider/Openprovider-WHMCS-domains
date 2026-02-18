@@ -125,22 +125,36 @@ jQuery( document ).ready(function() {
         $rootDir = $GLOBALS['whmcsAppConfig']->getRootDir();
         $destination = $rootDir . self::DNS_MANAGEMENT_PAGE_NAME;
 
-        if (
-            !file_exists($destination) ||
-            empty(file_get_contents($destination))
-        ) {
-            $source = $rootDir . "/modules/registrars/openprovider/custom-pages" . self::DNS_MANAGEMENT_PAGE_NAME;
+        // Check if dnsmanagement.php file exists in the root directory
+        if (file_exists($destination) && !empty(trim((string) @file_get_contents($destination)))) {
+            return;
+        }
 
-            if (!copy($source, $destination)) {
-                logModuleCall(
-                    'openprovider',
-                    'copydnsmanagementfile',
-                    null,
-                    "Failed to add dnsmanagement.php to WHMCS root directory. Please manually upload it.",
-                    null,
-                    null
-                );
-            }
+        $source = $rootDir . "/modules/registrars/openprovider/custom-pages" . self::DNS_MANAGEMENT_PAGE_NAME;
+
+        // Explicitly check source exists
+        if (!file_exists($source)) {
+            logModuleCall(
+                'openprovider',
+                'copydnsmanagementfile',
+                ['source' => $source, 'destination' => $destination],
+                "Source dnsmanagement.php not found. Please upload it manually.",
+                null,
+                null
+            );
+            return;
+        }
+
+        // copy
+        if (!copy($source, $destination)) {
+            logModuleCall(
+                'openprovider',
+                'copydnsmanagementfile',
+                ['source' => $source, 'destination' => $destination],
+                "Failed to copy dnsmanagement.php to WHMCS root directory. Please upload it manually.",
+                null,
+                null
+            );
         }
     }
 }
