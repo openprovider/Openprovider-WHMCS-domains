@@ -64,7 +64,7 @@ class DnsManagementPageController extends BaseController
         $params['sld'] = $domainObj->name;
         $params['tld'] = $domainObj->extension;
 
-        // Delete record via AJAX (POST) 
+        // Delete records
         if ($_SERVER['REQUEST_METHOD'] === 'POST'
             && ($_POST['op_action'] ?? '') === 'deleteRecord') {
 
@@ -128,7 +128,7 @@ class DnsManagementPageController extends BaseController
             return; 
         }
 
-        // save DNS records via POST
+        // save DNS records
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['op_action'])) {
 
             $params['dnsrecords'] = $this->buildDnsRecordsFromPost();
