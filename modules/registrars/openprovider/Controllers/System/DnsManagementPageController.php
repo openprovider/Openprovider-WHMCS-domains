@@ -48,7 +48,7 @@ class DnsManagementPageController extends BaseController
             return;
         }
 
-        $domainId = (int) ($_REQUEST['domainid'] ?? 0);
+        $domainId = (int) ($_GET['domainid'] ?? 0);
 
         $domain = Capsule::table('tbldomains')
             ->where('id', $domainId)
