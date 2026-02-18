@@ -67,6 +67,7 @@ jQuery( document ).ready(function() {
             $dnsManagement->setLabel($label);
             return;
         }
+        // Fallback to custom DNS Management page if single-domain DNS URL is not available
         $dnsManagement->setUri("dnsmanagement.php?domainid={$domainId}");
     }
 
