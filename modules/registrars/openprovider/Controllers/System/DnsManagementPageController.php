@@ -194,11 +194,13 @@ class DnsManagementPageController extends BaseController
             ->setUri("clientarea.php?action=domaincontacts&domainid={$domainId}")
             ->setOrder(40);
 
-        $primarySidebar->getChild('Domain Details Management')
-            ->addChild('DNS Management')
-            ->setLabel(\Lang::trans('domaindnsmanagement'))
-            ->setUri("dnsmanagement.php?domainid={$domainId}")
-            ->setOrder(50);
+        if (isset($domain) && $domain->dnsmanagement) {
+            $primarySidebar->getChild('Domain Details Management')
+                ->addChild('DNS Management')
+                ->setLabel(\Lang::trans('domaindnsmanagement'))
+                ->setUri("dnsmanagement.php?domainid={$domainId}")
+                ->setOrder(50);
+        }
 
         $primarySidebar->getChild('Domain Details Management')
             ->addChild('DNSSEC')
