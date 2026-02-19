@@ -130,6 +130,12 @@ class DnsManagementPageController extends BaseController
 
         // save DNS records
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['op_action'])) {
+            try {
+                check_token('WHMCS.default', true);
+            } catch (\Throwable $e) {
+                $ca->assign('error', 'Invalid CSRF token');
+                goto render_page;
+            }
 
             $params['dnsrecords'] = $this->buildDnsRecordsFromPost();
             $result = $this->dnsController->save($params);
@@ -141,6 +147,8 @@ class DnsManagementPageController extends BaseController
                 exit;
             }
         }
+
+        render_page:
 
         // load DNS records for the domain
         $dnsRecords = $this->dnsController->get($params);
