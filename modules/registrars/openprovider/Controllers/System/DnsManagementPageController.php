@@ -248,15 +248,26 @@ class DnsManagementPageController extends BaseController
         $priority  = $_POST['dnsrecordpriority'] ?? [];
 
         foreach ($hosts as $i => $host) {
-            if (!$host && empty($addresses[$i])) {
+            $host    = trim((string)$host);
+            $type    = strtoupper(trim((string)($types[$i] ?? '')));
+            $address = trim((string)($addresses[$i] ?? ''));
+            $prio    = trim((string)($priority[$i] ?? ''));
+
+            // Skip completely empty rows
+            if ($host === '' && $address === '') {
+                continue;
+            }
+
+            // Skip invalid records (no type or no address)
+            if ($type === '' || $address === '') {
                 continue;
             }
 
             $records[] = [
                 'hostname' => $host,
-                'type'     => $types[$i] ?? '',
-                'address'  => $addresses[$i] ?? '',
-                'priority' => $priority[$i] ?? '',
+                'type'     => $type,
+                'address'  => $address,
+                'priority' => $prio,
             ];
         }
 
