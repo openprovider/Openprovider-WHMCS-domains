@@ -136,7 +136,7 @@ jQuery( document ).ready(function() {
         // Explicitly check source exists
         if (!file_exists($source)) {
             logModuleCall(
-                'openprovider',
+                'openprovider nl',
                 'copydnsmanagementfile',
                 ['source' => $source, 'destination' => $destination],
                 "Source dnsmanagement.php not found. Please upload it manually.",
@@ -149,7 +149,7 @@ jQuery( document ).ready(function() {
         // copy
         if (!copy($source, $destination)) {
             logModuleCall(
-                'openprovider',
+                'openprovider nl',
                 'copydnsmanagementfile',
                 ['source' => $source, 'destination' => $destination],
                 "Failed to copy dnsmanagement.php to WHMCS root directory. Please upload it manually.",
