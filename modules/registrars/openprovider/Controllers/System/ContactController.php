@@ -177,26 +177,35 @@ class ContactController extends BaseController
      */
     private function addLanguageToContactDetails(array $params): array
     {
+        // Safely fetch expected POST arrays.
+        $wc  = filter_input(INPUT_POST, 'wc', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        $sel = filter_input(INPUT_POST, 'sel', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+
         if (
             empty($params['language']) ||
             empty($params['contactdetails']) ||
             !is_array($params['contactdetails']) ||
-            empty($_POST['wc']) ||
-            empty($_POST['sel']) ||
-            !is_array($_POST['wc']) ||
-            !is_array($_POST['sel'])
+            empty($wc) ||
+            empty($sel) ||
+            !is_array($wc) ||
+            !is_array($sel)
         ) {
             return $params;
         }
-
-        foreach ($_POST['wc'] as $role => $mode) {
-
+        foreach ($wc as $role => $mode) {
+            // Validate role name format to avoid unexpected keys from user input.
+            if (!is_string($role) || !preg_match('/^[a-zA-Z0-9_]+$/', $role)) {
+                continue;
+            }
+            // Normalize mode to string and only allow expected value.
+            if (!is_string($mode)) {
+                $mode = (string) $mode;
+            }
             // Only roles using existing contact
             if ($mode !== 'contact') {
                 continue;
             }
-
-            $selected = $_POST['sel'][$role] ?? '';
+            $selected = $sel[$role] ?? '';
 
             // Only when selected value is like "uXX"
             if (!is_string($selected) || !preg_match('/^u\d+$/', $selected)) {
