@@ -45,9 +45,7 @@ class DnsController extends BaseController
      */
     public function get($params)
     {
-        if (isset($params['sld'], $params['tld'])) {
-        // custom page provides these
-        } else {
+        if (!isset($params['sld'], $params['tld'])) {
             $params['sld'] = $params['original']['domainObj']->getSecondLevel();
             $params['tld'] = $params['original']['domainObj']->getTopLevel();
         }
@@ -83,9 +81,7 @@ class DnsController extends BaseController
      */
     public function save($params)
     {
-        if (isset($params['sld'], $params['tld'])) {
-            // custom page provides these
-        } else {
+        if (!isset($params['sld'], $params['tld'])) {
             $params['sld'] = $params['original']['domainObj']->getSecondLevel();
             $params['tld'] = $params['original']['domainObj']->getTopLevel();
         }
