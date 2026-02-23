@@ -17,6 +17,7 @@ class DnsManagementPageController extends BaseController
 {
     const PAGE_TITLE = 'DNS Management';
     const PAGE_NAME  = 'DNS Management';
+    const MODULE_NAME = 'dnsmanagement';
 
     /**
      * @var ApiHelper
@@ -155,6 +156,7 @@ class DnsManagementPageController extends BaseController
 
         $ca->assign('dnsrecords', $dnsRecords);
         $ca->assign('domainId', $domainId);
+        $ca->assign('jsModuleUrl', Configuration::getJsModuleUrl(self::MODULE_NAME));
 
         //  Breadcrumbs 
         $ca->addToBreadCrumb('index.php', \Lang::trans('globalsystemname'));
