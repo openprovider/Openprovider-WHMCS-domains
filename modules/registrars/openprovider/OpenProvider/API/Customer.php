@@ -123,6 +123,7 @@ class Customer
                 'phone country code' => 'phone country code',
                 'email' => 'email address',
                 'companyname' => 'company name',
+                'language' => 'language'
             );
 
             if(!isset($params["contactdetails"][$prefix]['fullstate']))

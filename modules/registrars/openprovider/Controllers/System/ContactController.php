@@ -133,6 +133,8 @@ class ContactController extends BaseController
             $handle = $this->handle;
             $handle->setApiHelper($this->apiHelper);
 
+            $params = $this->addLanguageToContactDetails($params);
+
             if (isset($params['contactdetails']['Owner']))
                 $customers['ownerHandle']   = $handle->updateOrCreate($params, 'registrant');
             if (isset($params['contactdetails']['Admin']))
@@ -165,6 +167,49 @@ class ContactController extends BaseController
             $values["error"] = $e->getMessage();
         }
         return $values;
+    }
+
+    /**
+     * Add language to contactdetails for roles using existing contacts (uXX format).
+     *
+     * @param array $params
+     * @return array
+     */
+    private function addLanguageToContactDetails(array $params): array
+    {
+        if (
+            empty($params['language']) ||
+            empty($params['contactdetails']) ||
+            !is_array($params['contactdetails']) ||
+            empty($_POST['wc']) ||
+            empty($_POST['sel']) ||
+            !is_array($_POST['wc']) ||
+            !is_array($_POST['sel'])
+        ) {
+            return $params;
+        }
+
+        foreach ($_POST['wc'] as $role => $mode) {
+
+            // Only roles using existing contact
+            if ($mode !== 'contact') {
+                continue;
+            }
+
+            $selected = $_POST['sel'][$role] ?? '';
+
+            // Only when selected value is like "uXX"
+            if (!is_string($selected) || !preg_match('/^u\d+$/', $selected)) {
+                continue;
+            }
+
+            // Inject language into contactdetails
+            if (isset($params['contactdetails'][$role]) && is_array($params['contactdetails'][$role])) {
+                $params['contactdetails'][$role]['language'] = $params['language'];
+            }
+        }
+
+        return $params;
     }
 
     /**
