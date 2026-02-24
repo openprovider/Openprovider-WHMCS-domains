@@ -213,7 +213,7 @@ class ContactController extends BaseController
             }
 
             // Inject language into contactdetails
-            if (isset($params['contactdetails'][$role]) && is_array($params['contactdetails'][$role])) {
+            if (!empty($params['language']) && isset($params['contactdetails'][$role]) && is_array($params['contactdetails'][$role])) {
                 $params['contactdetails'][$role]['language'] = $params['language'];
             }
         }
