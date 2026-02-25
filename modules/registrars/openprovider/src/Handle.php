@@ -344,11 +344,22 @@ class Handle
             return 'create';
         }
 
+        $addressParts = array_filter(
+            [
+                trim($this->customer->address->street) ?? '',
+                trim($this->customer->address->number) ?? '',
+                trim($this->customer->address->suffix) ?? '',
+            ],
+            'strlen'
+        );
+
+        $customerAddress = implode(' ', $addressParts);
+
         if(
             $this->customer->name->firstName == $opCustomer['First Name'] &&
             $this->customer->name->lastName == $opCustomer['Last Name'] &&
             $this->customer->companyName == $opCustomer['Company Name']  &&
-            $this->customer->address->street . ' ' . $this->customer->address->number . ' ' . $this->customer->address->suffix == $opCustomer['Address'] &&
+            $customerAddress == $opCustomer['Address'] &&
             $this->customer->address->city == $opCustomer['City'] &&
             $this->customer->address->state == $opCustomer['State'] &&
             $this->customer->address->country == $opCustomer['Country'] &&

@@ -179,7 +179,7 @@ class Customer
         }
 
         $address            =   new \OpenProvider\API\CustomerAddress(array(
-            'fulladdress'   =>  $fullAddress ?: null,
+            'fulladdress'   =>  trim($fullAddress) ?: null,
             'zipcode'       =>  $params[$indexes['postcode']],
             'city'          =>  $params[$indexes['city']],
             'state'         =>  $params[$indexes['state']],
