@@ -346,9 +346,9 @@ class Handle
 
         $addressParts = array_filter(
             [
-                trim($this->customer->address->street) ?? '',
-                trim($this->customer->address->number) ?? '',
-                trim($this->customer->address->suffix) ?? '',
+                trim($this->customer->address->street ?? ''),
+                trim($this->customer->address->number ?? ''),
+                trim($this->customer->address->suffix ?? ''),
             ],
             'strlen'
         );
