@@ -1,4 +1,9 @@
 # Changelog
+## v5.9.3
+
+###### Bugfixes
+- Fixed: Duplicate handle creation when modifying contacts in the Admin Area.
+  
 ## v5.9.2
 
 ###### Features and improvements
