@@ -169,6 +169,7 @@ class Handle
         try
         {
             $this->model    = $domain->handles()->wherePivot('type', $type)->firstOrFail();
+            $currentHandleType = $this->model->type;
 
             // No domain found with this handle, let's continue
             $this->prepareHandle($params, $type);
@@ -180,7 +181,7 @@ class Handle
                 return $this->model->handle;
             }
 
-            if($action == 'update')
+            if ($action == 'update' && $currentHandleType != 'all')
             {
                 try
                 {
@@ -207,9 +208,13 @@ class Handle
         {
             if ($type == 'registrant') {
                 $this->findOrCreate($params);
+            } else {
+                $this->findOrCreate($params, $type);
             }
-            $this->findOrCreate($params, $type);
         }else{
+            if ($currentHandleType == 'all') {
+                $this->model->type = 'all';
+            }
             $this->update($params);
         }
         return $this->model->handle;
@@ -344,11 +349,22 @@ class Handle
             return 'create';
         }
 
+        $addressParts = array_filter(
+            [
+                trim($this->customer->address->street ?? ''),
+                trim($this->customer->address->number ?? ''),
+                trim($this->customer->address->suffix ?? ''),
+            ],
+            'strlen'
+        );
+
+        $customerAddress = implode(' ', $addressParts);
+
         if(
             $this->customer->name->firstName == $opCustomer['First Name'] &&
             $this->customer->name->lastName == $opCustomer['Last Name'] &&
             $this->customer->companyName == $opCustomer['Company Name']  &&
-            $this->customer->address->street . ' ' . $this->customer->address->number . ' ' . $this->customer->address->suffix == $opCustomer['Address'] &&
+            $customerAddress == $opCustomer['Address'] &&
             $this->customer->address->city == $opCustomer['City'] &&
             $this->customer->address->state == $opCustomer['State'] &&
             $this->customer->address->country == $opCustomer['Country'] &&

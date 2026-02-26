@@ -559,9 +559,9 @@ class ApiHelper
 
         $addressParts = array_filter(
             [
-                $customerOp['address']['street'] ?? '',
-                $customerOp['address']['number'] ?? '',
-                $customerOp['address']['suffix'] ?? '',
+                trim($customerOp['address']['street'] ?? ''),
+                trim($customerOp['address']['number'] ?? ''),
+                trim($customerOp['address']['suffix'] ?? ''),
             ],
             'strlen'
         );
