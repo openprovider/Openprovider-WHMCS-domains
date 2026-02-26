@@ -169,6 +169,7 @@ class Handle
         try
         {
             $this->model    = $domain->handles()->wherePivot('type', $type)->firstOrFail();
+            $currentHandleType = $this->model->type;
 
             // No domain found with this handle, let's continue
             $this->prepareHandle($params, $type);
@@ -180,7 +181,7 @@ class Handle
                 return $this->model->handle;
             }
 
-            if($action == 'update')
+            if ($action == 'update' && $currentHandleType != 'all')
             {
                 try
                 {
@@ -207,10 +208,14 @@ class Handle
         {
             if ($type == 'registrant') {
                 $this->findOrCreate($params);
+            } else {
+                $this->findOrCreate($params, $type);
             }
-            $this->findOrCreate($params, $type);
         }else{
-            $this->update($params);
+            if ($currentHandleType == 'all') {
+                $this->model->type = 'all';
+                $this->update($params);
+            }
         }
         return $this->model->handle;
     }
