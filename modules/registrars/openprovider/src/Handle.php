@@ -214,8 +214,8 @@ class Handle
         }else{
             if ($currentHandleType == 'all') {
                 $this->model->type = 'all';
-                $this->update($params);
             }
+            $this->update($params);
         }
         return $this->model->handle;
     }
