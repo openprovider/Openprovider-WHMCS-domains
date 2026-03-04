@@ -444,6 +444,37 @@ class ApiHelper
 
     /**
      * @param Domain $domain
+     * @param array $record
+     * @return array
+     * @throws \Exception
+     */
+    public function removeDnsRecord(Domain $domain, array $record): array
+    {
+        $zoneName = $domain->getFullName();
+
+        $payload = [
+            'type'  => strtoupper((string)$record['type']),
+            'name'  => (string)$record['name'],
+            'value' => (string)$record['value'],
+        ];
+
+        // Only include prio for MX/SRV (and only if provided)
+        if (in_array($payload['type'], ['MX', 'SRV'], true) && isset($record['prio']) && $record['prio'] !== '' && $record['prio'] !== null) {
+            $payload['prio'] = (int)$record['prio'];
+        }
+
+        $args = [
+            'name'    => $zoneName,
+            'type'    => 'master',
+            'records' => [
+                'remove' => [$payload],
+            ],
+        ];
+        return $this->buildResponse($this->apiClient->call('modifyZoneDnsRequest', $args));
+    }
+
+    /**
+     * @param Domain $domain
      * @param $records
      * @return array
      * @throws \Exception
