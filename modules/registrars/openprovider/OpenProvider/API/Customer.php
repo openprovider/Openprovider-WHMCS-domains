@@ -230,7 +230,7 @@ class Customer
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
         $this->tags         =   $tags->getTags();
-        $this->locale       =   $this->getLocaleByLanguage($params[$indexes['language']] ?? null);;
+        $this->locale       =   $this->getLocaleByLanguage($params[$indexes['language']] ?? null);
 
         $this->additionalData = new CustomerAdditionalData();
 
