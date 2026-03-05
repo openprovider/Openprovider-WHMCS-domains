@@ -452,6 +452,13 @@ class ApiHelper
     {
         $zoneName = $domain->getFullName();
 
+        $required = ['type', 'name', 'value'];
+        foreach ($required as $key) {
+            if (!array_key_exists($key, $record)) {
+                throw new \InvalidArgumentException("Missing required DNS record field: {$key}");
+            }
+        }
+
         $payload = [
             'type'  => strtoupper((string)$record['type']),
             'name'  => (string)$record['name'],
