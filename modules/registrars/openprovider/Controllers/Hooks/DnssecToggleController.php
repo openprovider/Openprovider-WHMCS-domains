@@ -96,7 +96,7 @@ class DnssecToggleController
 
         // avoid non Openprovider domains
         if ((string) $row->registrar !== 'openprovider') {
-            return [];
+            return;
         }
 
         $current = DnssecManagement::getFlag((int)$row->id);

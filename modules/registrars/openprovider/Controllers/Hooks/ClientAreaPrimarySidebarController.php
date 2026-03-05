@@ -52,7 +52,7 @@ class ClientAreaPrimarySidebarController
             return;
         }
 
-        if ($url = DNS::getDnsUrlOrFail($_REQUEST['domainid'])) {
+        if ($url = DNS::getDnsUrlOrFail($domainId)) {
             // Update the URL.
             $dnsManagement->setUri($url);
 
