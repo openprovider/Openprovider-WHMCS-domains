@@ -1,4 +1,10 @@
 # Changelog
+## v5.9.4
+
+###### Features and improvements
+- Added support for deleting individual DNS records.
+- Introduced a dedicated DNSSEC management implementation and removed the dependency between DNS Management and DNSSEC Management client area buttons.
+
 ## v5.9.3
 
 ###### Bugfixes
