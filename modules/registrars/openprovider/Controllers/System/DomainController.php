@@ -136,6 +136,15 @@ class DomainController extends BaseController
 
             $adminHandle = null;
             if (isset($tldMetaData['adminHandleSupported']) && $tldMetaData['adminHandleSupported']) {
+                $useClientDetails = Capsule::table('tblconfiguration')
+                    ->where('setting', 'RegistrarAdminUseClientDetails')
+                    ->value('value');
+
+                // If admin is same as client, use same language as owner
+                if ($useClientDetails === 'on' && !empty($params['language'])) {
+                    $params['adminlanguage'] = $params['language'];
+                }
+
                 $adminHandle = $handle->findOrCreate($params, 'admin');
                 $domainRegistration->adminHandle = $adminHandle;
             }
@@ -261,6 +270,14 @@ class DomainController extends BaseController
 
             $adminHandle = null;
             if (isset($tldMetaData['adminHandleSupported']) && $tldMetaData['adminHandleSupported']) {
+                $useClientDetails = Capsule::table('tblconfiguration')
+                    ->where('setting', 'RegistrarAdminUseClientDetails')
+                    ->value('value');
+
+                // If admin is same as client, use same language as owner
+                if ($useClientDetails === 'on' && !empty($params['language'])) {
+                    $params['adminlanguage'] = $params['language'];
+                }
                 $adminHandle = $handle->findOrCreate($params, 'admin');
                 $domainTransfer->adminHandle = $adminHandle;
             }
