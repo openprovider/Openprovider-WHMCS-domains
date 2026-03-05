@@ -9,6 +9,7 @@ use WHMCS\Database\Capsule;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\Domain;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
+use OpenProvider\WhmcsRegistrar\helpers\DnssecManagement;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Controllers\BaseController;
@@ -60,7 +61,7 @@ class DnsManagementPageController extends BaseController
             $this->redirectUserAway();
             return;
         }
-
+        $dnssecEnabled = DnssecManagement::getFlag((int)$domainId) === 1;
         $domainObj = DomainFullNameToDomainObject::convert($domain->domain);
         $params['sld'] = $domainObj->name;
         $params['tld'] = $domainObj->extension;
@@ -151,6 +152,14 @@ class DnsManagementPageController extends BaseController
 
         render_page:
 
+        $supportsDnssec = false;
+
+        try {
+            $supportsDnssec = $this->apiHelper->supportsDnssec($params['tld']);
+        } catch (\Throwable $e) {
+            $supportsDnssec = false;
+        }
+
         // load DNS records for the domain
         $dnsRecords = $this->dnsController->get($params);
 
@@ -211,12 +220,13 @@ class DnsManagementPageController extends BaseController
                 ->setUri("dnsmanagement.php?domainid={$domainId}")
                 ->setOrder(50);
         }
-
-        $primarySidebar->getChild('Domain Details Management')
-            ->addChild('DNSSEC')
-            ->setLabel(\Lang::trans('dnssectabname'))
-            ->setUri("dnssec.php?domainid={$domainId}")
-            ->setOrder(100);
+        if ($dnssecEnabled && $supportsDnssec) {
+            $primarySidebar->getChild('Domain Details Management')
+                ->addChild('DNSSEC')
+                ->setLabel(\Lang::trans('dnssectabname'))
+                ->setUri("dnssec.php?domainid={$domainId}")
+                ->setOrder(100);
+        }
 
         $activeTheme = Setting::getValue('Template');
         $activeTheme = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $activeTheme);
