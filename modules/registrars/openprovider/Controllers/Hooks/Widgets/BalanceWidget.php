@@ -8,7 +8,7 @@ use OpenProvider\API\ApiHelper;
 /**
  * Show OP balance
  *
- * //Need move this file into /modules/widgets folder
+ *
  */
 class BalanceWidget extends \WHMCS\Module\AbstractWidget
 {
