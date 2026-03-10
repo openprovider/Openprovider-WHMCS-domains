@@ -119,7 +119,7 @@ document.addEventListener("submit", async function (e) {
           renderDnsTable(data.dnsrecords);
           showMsg('success', 'DNS records saved successfully.');
         }
-        
+
     } catch (err) {
         showMsg("danger", "Failed to save DNS records");
     } finally {
@@ -210,36 +210,6 @@ function renderEmptyRow() {
       <td class="text-center"></td>
     </tr>
   `;
-}
-
-function showMsg(type, msg) {
-  const form = document.querySelector("#opDnsForm");
-  if (!form) return;
-
-  let el = document.getElementById('opDnsAlert');
-
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'opDnsAlert';
-    form.parentNode.insertBefore(el, form);
-  }
-
-  el.className = `alert alert-${type}`;
-  el.textContent = msg;
-
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  if (type === 'success') {
-    setTimeout(() => {
-      el.classList.add('fade');
-      el.style.transition = 'opacity 0.4s ease';
-      el.style.opacity = '0';
-
-      setTimeout(() => {
-        el.remove();
-      }, 400);
-    }, 5000);
-  }
 }
 
 let opDnsAlertTimeout = null;
