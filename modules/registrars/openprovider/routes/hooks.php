@@ -152,4 +152,9 @@ return [
         'priority'  => 1,
         'controller' => 'AdminClientDomainsTabController@save',
     ],
+    [
+        'hookPoint' => 'ClientAreaPageCart',
+        'priority'  => 1,
+        'controller'=> 'ShoppingCartController@hideIdnScriptForNonIdnDomains',
+    ],
 ];
