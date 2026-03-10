@@ -131,22 +131,49 @@ class DnsManagementPageController extends BaseController
         }
 
         // save DNS records
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['op_action'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['op_action'] ?? '') === 'saveRecords') {
+
+            header('Content-Type: application/json; charset=utf-8');
+
+            // auth check
+            $currentUser = new \WHMCS\Authentication\CurrentUser();
+            if (!$currentUser->user() || !$currentUser->client()) {
+                http_response_code(401);
+                echo json_encode(['success' => false, 'error' => 'Not authenticated']);
+                return;
+            }
+
+            // CSRF
             try {
                 check_token('WHMCS.default', true);
             } catch (\Throwable $e) {
-                $ca->assign('error', 'Invalid CSRF token');
-                goto render_page;
+                http_response_code(403);
+                echo json_encode(['success' => false, 'error' => 'Invalid CSRF token']);
+                return;
             }
 
-            $params['dnsrecords'] = $this->buildDnsRecordsFromPost();
-            $result = $this->dnsController->save($params);
+            try {
+                $params['dnsrecords'] = $this->buildDnsRecordsFromPost();
+                $result = $this->dnsController->save($params);
 
-            if (is_array($result) && isset($result['error'])) {
-                $ca->assign('error', $result['error']);
-            } else {
-                header("Location: dnsmanagement.php?domainid={$domainId}&saved=1");
-                exit;
+                if (is_array($result) && isset($result['error'])) {
+                    http_response_code(400);
+                    echo json_encode(['success' => false, 'error' => $result['error']]);
+                    return;
+                }
+
+                // Get updated records (fresh from API)
+                $dnsRecords = $this->dnsController->get($params);
+
+                echo json_encode([
+                    'success' => true,
+                    'dnsrecords' => $dnsRecords,
+                ]);
+                return;
+            } catch (\Throwable $e) {
+                http_response_code(500);
+                echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+                return;
             }
         }
 
