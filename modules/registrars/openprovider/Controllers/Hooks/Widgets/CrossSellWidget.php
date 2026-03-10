@@ -144,8 +144,8 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
                 * $config['margin_per_unit'];
 
             // Build tracked CTA URL
-            $resellerId = $this->getResellerId();
-            $ctaUrl = $this->buildCtaUrl($resellerId, $selectedProduct, $config['setup_guide_url']);
+            $resellerHashId = $this->getResellerHashId();
+            $ctaUrl = $this->buildCtaUrl($resellerHashId, $selectedProduct, $config['setup_guide_url']);
 
             $result = [
                 'hidden'            => false,
@@ -158,7 +158,7 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
                 'estimated_revenue' => number_format($estimatedRevenue, 0, ',', ','),
                 'cta_url'           => $ctaUrl,
                 'dismiss_url'       => 'index.php?op_crosssell_action=dismiss&crosssell_product=' . $selectedProduct . '&token=' . generate_token('link'),
-                'reseller_hash_id'       => $resellerId,
+                'reseller_hash_id'       => $resellerHashId,
             ];;
 
             return $result;
@@ -589,7 +589,7 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
      *
      * @return string
      */
-    private function getResellerId()
+    private function getResellerHashId()
     {
         try {
             $license = Capsule::table('tblconfiguration')
@@ -605,17 +605,17 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
     /**
      * Build the CTA URL with tracking parameters.
      *
-     * @param string $resellerId
+     * @param string $resellerHashId
      * @param string $product 'email' or 'pdns'
      * @param string $fallbackUrl Direct setup guide URL
      * @return string
      */
-    private function buildCtaUrl($resellerId, $product, $fallbackUrl)
+    private function buildCtaUrl($resellerHashId, $product, $fallbackUrl)
     {
         $baseUrl = self::USE_TRACKING_URL ? self::TRACKING_URL : $fallbackUrl;
 
         $params = http_build_query([
-            'reseller_hash_id' => $resellerId,
+            'reseller_hash_id' => $resellerHashId,
             'product'     => $product,
             'source'      => 'WHMCSCrossSellWidget',
         ]);
