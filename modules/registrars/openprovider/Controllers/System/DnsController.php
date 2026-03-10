@@ -108,7 +108,6 @@ class DnsController extends BaseController
                 }
                 throw $e;
             }
-            return self::RETURN_SUCCESS;
         } catch (\Exception $e) {
             return [
                 'error' => $e->getMessage(),
