@@ -45,19 +45,19 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
             'units_per_domain'=> 2,       // 2 mailboxes per domain
             'margin_per_unit' => 20,      // €20/mailbox/year
             'module_name'     => 'email_solution',
-            'setup_guide_url' => 'https://support.openprovider.com/hc/en-us/articles/email-module-whmcs-setup',
+            'setup_guide_url' => 'https://support.openprovider.eu/hc/en-us/articles/30203886347282-WHMCS-Email-Solution-Module-Installation-and-configuration',
             'dismiss_key'     => 'op_crosssell_email_dismissed',
         ],
-        'dns' => [
+        'pdns' => [
             'title'           => 'Improve reliability and earn more per domain',
-            'body'            => 'Many resellers and agencies attach Premium DNS to ~10%% of domains to improve uptime and performance. Typical profit is €15–40 per domain/year.',
+            'body'            => 'Many resellers and agencies attach Premium DNS to ~10%% of domains to improve uptime and performance. Typical profit is €15-40 per domain/year.',
             'cta_text'        => '👉 Enable Premium DNS Module (5-minute setup)',
             'footer'          => 'Anycast DNS. Auto-provisioned in WHMCS. No migrations needed.',
             'adoption_rate'   => 0.10,
             'units_per_domain'=> 1,       // 1 DNS zone per domain
             'margin_per_unit' => 20,      // €20/domain/year
             'module_name'     => 'openproviderpremiumdns',
-            'setup_guide_url' => 'https://support.openprovider.com/hc/en-us/articles/dns-module-whmcs-setup',
+            'setup_guide_url' => 'https://support.openprovider.eu/hc/en-us/articles/32384594691730-WHMCS-Premium-Global-Anycast-DNS-module-Installation-configuration-and-management',
             'dismiss_key'     => 'op_crosssell_dns_dismissed',
         ],
     ];
@@ -67,15 +67,15 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
     // =========================================================================
 
     /**
-     * Weight for product rotation: probability of showing email vs dns.
-     * 50 = 50/50 even split. 70 = 70% email, 30% dns.
+     * Weight for product rotation: probability of showing email vs pdns.
+     * 50 = 50/50 even split. 70 = 70% email, 30% pdns.
      * Set to 50 for a clean A/B test.
      */
     const EMAIL_WEIGHT = 50;
 
     /**
      * Tracking redirect base URL on your server.
-     * Query params appended: ?reseller_id=X&product=email|dns&source=widget
+     * Query params appended: ?reseller_hash_id=X&product=email|pdns&source=WHMCSCrossSellWidget
      */
     const TRACKING_URL = 'https://www.openprovider.com/crosssell/track';
 
@@ -124,67 +124,49 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
      */
     public function getData()
     {
-        // Pick which product to show (random, weighted)
-        $selectedProduct = $this->pickProduct();
+        try {
 
-        // If both products are dismissed or installed, nothing to show
-        if ($selectedProduct === null) {
-            return ['hidden' => true];
-        }
+            $selectedProduct = $this->pickProduct();
 
-        $config = self::PRODUCTS[$selectedProduct];
-
-        // Check if this specific product was dismissed
-        if ($this->isDismissed($config['module_name'])) {
-            // Try the other product
-            $selectedProduct = $this->getOtherProduct($selectedProduct);
             if ($selectedProduct === null) {
                 return ['hidden' => true];
             }
+
             $config = self::PRODUCTS[$selectedProduct];
+
+            // Count active domains
+            $domainCount = $this->getOpenproviderDomainCount();
+
+            // Calculate estimated revenue using this product's formula
+            $estimatedRevenue = $domainCount
+                * $config['adoption_rate']
+                * $config['units_per_domain']
+                * $config['margin_per_unit'];
+
+            // Build tracked CTA URL
+            $resellerId = $this->getResellerId();
+            $ctaUrl = $this->buildCtaUrl($resellerId, $selectedProduct, $config['setup_guide_url']);
+
+            $result = [
+                'hidden'            => false,
+                'product'           => $selectedProduct,
+                'title'             => $config['title'],
+                'body'              => $config['body'],
+                'cta_text'          => $config['cta_text'],
+                'footer'            => $config['footer'],
+                'domain_count'      => $domainCount,
+                'estimated_revenue' => number_format($estimatedRevenue, 0, ',', ','),
+                'cta_url'           => $ctaUrl,
+                'dismiss_url'       => 'index.php?op_crosssell_action=dismiss&crosssell_product=' . $selectedProduct . '&token=' . generate_token('link'),
+                'reseller_hash_id'       => $resellerId,
+            ];;
+
+            return $result;
+        } catch (\Throwable $e) {
+            return [
+                'error' => 'Unable to load widget data.',
+            ];
         }
-
-        // Check if this product's module is already installed
-        if ($this->isModuleInstalled($config['module_name'])) {
-            // Try the other product
-            $selectedProduct = $this->getOtherProduct($selectedProduct);
-            if ($selectedProduct === null) {
-                return ['hidden' => true];
-            }
-            $config = self::PRODUCTS[$selectedProduct];
-        }
-
-        // Count active domains
-        $domainCount = $this->getOpenproviderDomainCount();
-
-        // Calculate estimated revenue using this product's formula
-        $estimatedRevenue = $domainCount
-            * $config['adoption_rate']
-            * $config['units_per_domain']
-            * $config['margin_per_unit'];
-
-        // Build tracked CTA URL
-        $resellerId = $this->getResellerId();
-        $ctaUrl = $this->buildCtaUrl($resellerId, $selectedProduct, $config['setup_guide_url']);
-
-        // Build dismiss URL (registrar module, not addon module)
-        $dismissUrl = 'index.php?op_crosssell_action=dismiss'
-            . '&crosssell_product=' . $selectedProduct
-            . '&token=' . generate_token('link');
-
-        return [
-            'hidden'             => false,
-            'product'            => $selectedProduct,
-            'title'              => $config['title'],
-            'body'               => $config['body'],
-            'cta_text'           => $config['cta_text'],
-            'footer'             => $config['footer'],
-            'domain_count'       => $domainCount,
-            'estimated_revenue'  => number_format($estimatedRevenue, 0, ',', ','),
-            'cta_url'            => $ctaUrl,
-            'dismiss_url'        => $dismissUrl,
-            'reseller_id'        => $resellerId,
-        ];
     }
 
     /**
@@ -197,12 +179,12 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
     {
         if (isset($data['error'])) {
             return <<<EOF
-<div class="widget-content-padded">
-            <div style="color:red; font-weight: bold">
+        <div class="widget-content-padded">
+            <div class="alert alert-danger" style="margin-bottom:0;">
                 {$data['error']}
             </div>
-</div>
-EOF;
+        </div>
+        EOF;
         }
 
         if (!empty($data['hidden'])) {
@@ -214,7 +196,7 @@ EOF;
         }
 
         $title = htmlspecialchars($data['title'], ENT_QUOTES, 'UTF-8');
-        $body = sprintf($data['body']); // Resolve %% to %
+        $body = sprintf($data['body']);
         $body = htmlspecialchars($body, ENT_QUOTES, 'UTF-8');
         $ctaText = htmlspecialchars($data['cta_text'], ENT_QUOTES, 'UTF-8');
         $footer = htmlspecialchars($data['footer'], ENT_QUOTES, 'UTF-8');
@@ -222,48 +204,183 @@ EOF;
         $estimatedRevenue = htmlspecialchars($data['estimated_revenue'], ENT_QUOTES, 'UTF-8');
         $ctaUrl = htmlspecialchars($data['cta_url'], ENT_QUOTES, 'UTF-8');
         $dismissUrl = htmlspecialchars($data['dismiss_url'], ENT_QUOTES, 'UTF-8');
+        $product = htmlspecialchars($data['product'], ENT_QUOTES, 'UTF-8');
+
+        if ($product === 'email') {
+            $icon = '<i class="fas fa-envelope"></i>';
+            $badgeLabel = 'Email opportunity';
+        } else {
+            $icon = '<i class="fas fa-globe"></i>';
+            $badgeLabel = 'Premium DNS opportunity';
+        }
 
         return <<<EOF
-<div class="widget-content-padded">
-    <div class="row">
-        <div class="col-sm-12 text-right">
-            <a href="{$dismissUrl}" title="Dismiss" onclick="return confirm('Hide this widget? You can re-enable it in the Openprovider registrar settings.');">
-                Dismiss
-            </a>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="item">
-                <div class="note">{$title}</div>
-                <div>{$body}</div>
+        <div class="widget-content-padded op-crosssell-widget">
+            <style>
+                .op-crosssell-widget .op-crosssell-top {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 6px;
+                }
+
+                .op-crosssell-widget .op-crosssell-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 12px;
+                    color: #666;
+                    background: #f7f7f9;
+                    border: 1px solid #ececec;
+                    border-radius: 4px;
+                    padding: 5px 8px;
+                }
+
+                .op-crosssell-widget .op-crosssell-badge i {
+                    color: #5bc0de;
+                    font-size: 12px;
+                }
+
+                .op-crosssell-widget .op-crosssell-dismiss {
+                    font-size: 12px;
+                    color: #777;
+                    text-decoration: none;
+                }
+
+                .op-crosssell-widget .op-crosssell-dismiss:hover {
+                    color: #333;
+                    text-decoration: underline;
+                }
+
+                .op-crosssell-widget .op-crosssell-highlight {
+                    background: linear-gradient(180deg, #fcfcfd 0%, #f7f8fa 100%);
+                    border: 1px solid #eceef2;
+                    border-left: 3px solid #3c8dbc;
+                    border-radius: 4px;
+                    padding: 10px 12px;
+                    margin-bottom: 6px;
+                }
+
+                .op-crosssell-widget .op-crosssell-title {
+                    font-size: 15px;
+                    font-weight: 600;
+                    color: #2c3e50;
+                    margin-bottom: 6px;
+                    line-height: 1.35;
+                }
+
+                .op-crosssell-widget .op-crosssell-body {
+                    color: #666;
+                    font-size: 13px;
+                    line-height: 1.55;
+                    margin: 0;
+                }
+
+                .op-crosssell-widget .op-crosssell-metrics {
+                    display: flex;
+                    gap: 12px;
+                    margin-bottom: 6px;
+                }
+
+                .op-crosssell-widget .op-crosssell-metric {
+                    flex: 1;
+                    border: 1px solid #ececec;
+                    border-radius: 4px;
+                    padding: 10px;
+                    background: #fff;
+                    text-align: center;
+                }
+
+                .op-crosssell-widget .op-crosssell-metric-value {
+                    font-size: 22px;
+                    font-weight: 600;
+                    line-height: 1.1;
+                    margin-bottom: 4px;
+                }
+
+                .op-crosssell-widget .op-crosssell-metric-value.domains {
+                    color: #f0ad4e;
+                }
+
+                .op-crosssell-widget .op-crosssell-metric-value.revenue {
+                    color: #5cb85c;
+                }
+
+                .op-crosssell-widget .op-crosssell-metric-label {
+                    font-size: 12px;
+                    color: #888;
+                    text-transform: uppercase;
+                    letter-spacing: .3px;
+                }
+
+                .op-crosssell-widget .op-crosssell-cta {
+                    display: inline-block;
+                    background: #3c8dbc;
+                    color: #fff !important;
+                    text-decoration: none;
+                    font-size: 13px;
+                    font-weight: 600;
+                    border-radius: 4px;
+                    padding: 8px 12px;
+                    margin-bottom: 6px;
+                }
+
+                .op-crosssell-widget .op-crosssell-cta:hover {
+                    background: #337ab7;
+                    text-decoration: none;
+                }
+
+                .op-crosssell-widget .op-crosssell-note {
+                    color: #777;
+                    font-size: 12px;
+                    line-height: 1.5;
+                    margin-top: 0px;
+                }
+
+                @media (max-width: 767px) {
+                    .op-crosssell-widget .op-crosssell-metrics {
+                        flex-direction: column;
+                    }
+                }
+            </style>
+
+            <div class="op-crosssell-top">
+                <div class="op-crosssell-badge">
+                    {$icon}
+                    <span>{$badgeLabel}</span>
+                </div>
+                <a
+                    href="{$dismissUrl}"
+                    class="op-crosssell-dismiss"
+                    title="Dismiss"
+                    onclick="return confirm('Hide this widget? You can re-enable it in the Openprovider registrar settings.');"
+                >
+                    Dismiss
+                </a>
+            </div>
+
+            <div class="op-crosssell-highlight">
+                <div class="op-crosssell-title">{$title}</div>
+                <p class="op-crosssell-body">{$body}</p>
+            </div>
+
+            <div class="op-crosssell-metrics">
+                <div class="op-crosssell-metric">
+                    <div class="op-crosssell-metric-value domains">{$domainCount}</div>
+                    <div class="op-crosssell-metric-label">Openprovider Domains</div>
+                </div>
+                <div class="op-crosssell-metric">
+                    <div class="op-crosssell-metric-value revenue">EUR {$estimatedRevenue}/year</div>
+                    <div class="op-crosssell-metric-label">Estimated Revenue</div>
+                </div>
+            </div>
+
+            <div class="op-crosssell-footer">
+                <a href="{$ctaUrl}" target="_blank" class="op-crosssell-cta">{$ctaText}</a>
+                <p class="op-crosssell-note">{$footer}</p>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6 bordered-right">
-            <div class="item">
-                <div class="data color-orange">{$domainCount}</div>
-                <div class="note">Openprovider Domains</div>
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="item">
-                <div class="data color-green">EUR {$estimatedRevenue}/year</div>
-                <div class="note">Estimated Revenue</div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="item">
-                <div><a href="{$ctaUrl}" target="_blank">{$ctaText}</a></div>
-                <div class="note">{$footer}</div>
-            </div>
-        </div>
-    </div>
-</div>
-EOF;
+        EOF;
     }
 
     // =========================================================================
@@ -274,7 +391,7 @@ EOF;
      * Randomly pick which product to show, weighted by EMAIL_WEIGHT.
      * Returns null if both products are dismissed or installed.
      *
-     * @return string|null 'email' or 'dns' or null
+     * @return string|null 'email' or 'pdns' or null
      */
     private function pickProduct()
     {
@@ -296,8 +413,7 @@ EOF;
         }
 
         // Both available — use weighted random
-        $rand = mt_rand(1, 100);
-        return ($rand <= self::EMAIL_WEIGHT) ? 'email' : 'dns';
+        return (mt_rand(1, 100) <= self::EMAIL_WEIGHT) ? 'email' : 'pdns';
     }
 
     /**
@@ -309,7 +425,7 @@ EOF;
      */
     private function getOtherProduct($currentProduct)
     {
-        $other = ($currentProduct === 'email') ? 'dns' : 'email';
+        $other = ($currentProduct === 'email') ? 'pdns' : 'email';
         $config = self::PRODUCTS[$other];
 
         if ($this->isDismissed($config['module_name']) || $this->isModuleInstalled($config['module_name'])) {
@@ -335,7 +451,7 @@ EOF;
                 ->where('registrar', self::REGISTRAR_HANDLE)
                 ->where('status', 'Active')
                 ->count();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return 0;
         }
     }
@@ -355,7 +471,7 @@ EOF;
                 ->count();
 
             return $hasProducts > 0;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }
@@ -368,9 +484,13 @@ EOF;
      */
     private function isDismissed($moduleName)
     {
-        self::ensureDismissTableExists();
-
         try {
+            $schema = Capsule::schema();
+
+            if (!$schema->hasTable(self::DISMISS_TABLE)) {
+                return false;
+            }
+
             $setting = Capsule::table(self::DISMISS_TABLE)
                 ->where('module_name', $moduleName)
                 ->first();
@@ -379,8 +499,8 @@ EOF;
                 return false;
             }
 
-            return isset($setting->dismissed) && (int) $setting->dismissed === 1;
-        } catch (\Exception $e) {
+            return (int) $setting->dismissed === 1;
+        } catch (\Throwable $e) {
             return false;
         }
     }
@@ -408,7 +528,7 @@ EOF;
 
                 $mapping = [
                     'op_crosssell_email_dismissed' => 'email_solution',
-                    'op_crosssell_dns_dismissed' => 'openproviderpremiumdns',
+                    'op_crosssell_pdns_dismissed' => 'openproviderpremiumdns',
                 ];
 
                 foreach ($mapping as $dismissKey => $moduleName) {
@@ -447,7 +567,7 @@ EOF;
      * Build the CTA URL with tracking parameters.
      *
      * @param string $resellerId
-     * @param string $product 'email' or 'dns'
+     * @param string $product 'email' or 'pdns'
      * @param string $fallbackUrl Direct setup guide URL
      * @return string
      */
@@ -456,9 +576,9 @@ EOF;
         $baseUrl = self::USE_TRACKING_URL ? self::TRACKING_URL : $fallbackUrl;
 
         $params = http_build_query([
-            'reseller_id' => $resellerId,
+            'reseller_hash_id' => $resellerId,
             'product'     => $product,
-            'source'      => 'widget',
+            'source'      => 'WHMCSCrossSellWidget',
         ]);
 
         $separator = (strpos($baseUrl, '?') !== false) ? '&' : '?';
