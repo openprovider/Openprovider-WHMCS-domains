@@ -99,7 +99,7 @@ class DnsController extends BaseController
             }
 
             try {
-                $a = $this->apiHelper->updateDnsRecords($domain, $records);
+                $this->apiHelper->updateDnsRecords($domain, $records);
                 return self::RETURN_SUCCESS;
             } catch (\Exception $e) {
                 if ($this->isZoneNotFound($e)) {
