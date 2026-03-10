@@ -104,8 +104,8 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
     protected $description = 'Estimated extra revenue from your domain portfolio.';
     protected $weight = 50;
     protected $columns = 1;
-    protected $cache = true;
-    protected $cacheExpiry = 3600; // 1 hour — reseller sees same product per hour
+    protected $cache = false;
+    protected $cacheExpiry = 0;
     protected $requiredPermission = '';
     protected $wrapper = true;
     protected $draggable = true;
@@ -352,8 +352,9 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
                 <a
                     href="{$dismissUrl}"
                     class="op-crosssell-dismiss"
+                    data-op-dismiss-url="{$dismissUrl}"
                     title="Dismiss"
-                    onclick="return confirm('Hide this widget? You can re-enable it in the Openprovider registrar settings.');"
+                    onclick="return opCrossSellDismiss(this);"
                 >
                     Dismiss
                 </a>
@@ -379,6 +380,44 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
                 <a href="{$ctaUrl}" target="_blank" class="op-crosssell-cta">{$ctaText}</a>
                 <p class="op-crosssell-note">{$footer}</p>
             </div>
+
+            <script>
+                (function () {
+                    if (typeof window.opCrossSellDismiss === 'function') {
+                        return;
+                    }
+
+                    window.opCrossSellDismiss = function (link) {
+                        if (!confirm('Are you sure you want to dismiss this recommendation?')) {
+                            return false;
+                        }
+
+                        var dismissUrl = link.getAttribute('data-op-dismiss-url') || link.getAttribute('href');
+                        var ajaxUrl = dismissUrl + (dismissUrl.indexOf('?') === -1 ? '?' : '&') + 'op_crosssell_ajax=1';
+
+                        var refreshWidget = function () {
+                            window.location.reload();
+                        };
+
+                        if (typeof window.fetch !== 'function') {
+                            window.location.href = dismissUrl;
+                            return false;
+                        }
+
+                        window.fetch(ajaxUrl, {
+                            method: 'GET',
+                            credentials: 'same-origin',
+                            headers: {'X-Requested-With': 'XMLHttpRequest'}
+                        }).then(function () {
+                            refreshWidget();
+                        }).catch(function () {
+                            window.location.href = dismissUrl;
+                        });
+
+                        return false;
+                    };
+                })();
+            </script>
         </div>
         EOF;
     }
