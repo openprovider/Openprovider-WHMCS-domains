@@ -26,6 +26,8 @@ class AdminWidgetController
 
     public function handleCrossSellDismiss($vars)
     {
+        $isAjaxDismiss = isset($_GET['op_crosssell_ajax']) && $_GET['op_crosssell_ajax'] === '1';
+
         if (
             !isset($_GET['op_crosssell_action']) || $_GET['op_crosssell_action'] !== 'dismiss'
             || !isset($_GET['crosssell_product'])
@@ -37,20 +39,28 @@ class AdminWidgetController
             return;
         }
 
-        if (function_exists('\\check_token')) {
+        if (function_exists('\\verify_token')) {
+            if (!\verify_token('link', $_GET['token'])) {
+                return;
+            }
+        } elseif (function_exists('\\check_token')) {
             try {
                 \check_token('WHMCS.admin.default', true);
             } catch (\Throwable $e) {
                 return;
             }
-        } elseif (function_exists('\\verify_token') && !\verify_token('link', $_GET['token'])) {
-            return;
         }
 
         $product = (string) $_GET['crosssell_product'];
         $validProducts = array_keys(CrossSellWidget::PRODUCTS);
 
         if (!in_array($product, $validProducts, true)) {
+            if ($isAjaxDismiss) {
+                header('Content-Type: application/json; charset=utf-8');
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'Invalid product']);
+                exit;
+            }
             header('Location: index.php');
             exit;
         }
@@ -84,6 +94,12 @@ class AdminWidgetController
             }
         } catch (\Exception $e) {
             // Silent fail
+        }
+
+        if ($isAjaxDismiss) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'ok']);
+            exit;
         }
 
         header('Location: index.php');
