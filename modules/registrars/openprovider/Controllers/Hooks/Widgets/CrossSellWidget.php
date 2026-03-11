@@ -75,7 +75,7 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
      * Tracking redirect base URL on your server.
      * Query params appended: ?reseller_hash_id=X&product=email|pdns&source=WHMCSCrossSellWidget
      */
-    const TRACKING_URL = 'https://www.openprovider.com/crosssell/track';
+    const TRACKING_URL = 'https://assets.openprovider.com/crosssell/track.php';
 
     /**
      * Use tracking redirect (true) or direct guide links (false).
