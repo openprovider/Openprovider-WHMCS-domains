@@ -157,7 +157,7 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
                 'cta_url'           => $ctaUrl,
                 'dismiss_url'       => 'index.php?op_crosssell_action=dismiss&crosssell_product=' . $selectedProduct . '&token=' . generate_token('link'),
                 'reseller_hash_id'       => $resellerHashId,
-            ];;
+            ];
 
             return $result;
         } catch (\Throwable $e) {
@@ -194,7 +194,7 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
         }
 
         $title = htmlspecialchars($data['title'], ENT_QUOTES, 'UTF-8');
-        $body = sprintf($data['body']);
+        $body = $data['body'];
         $body = htmlspecialchars($body, ENT_QUOTES, 'UTF-8');
         $ctaText = htmlspecialchars($data['cta_text'], ENT_QUOTES, 'UTF-8');
         $footer = htmlspecialchars($data['footer'], ENT_QUOTES, 'UTF-8');
@@ -453,25 +453,6 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
         return (mt_rand(1, 100) <= self::EMAIL_WEIGHT) ? 'email' : 'pdns';
     }
 
-    /**
-     * Get the other product key (for fallback when one is dismissed/installed).
-     * Returns null if the other product is also dismissed or installed.
-     *
-     * @param string $currentProduct
-     * @return string|null
-     */
-    private function getOtherProduct($currentProduct)
-    {
-        $other = ($currentProduct === 'email') ? 'pdns' : 'email';
-        $config = self::PRODUCTS[$other];
-
-        if ($this->isDismissed($config['module_name']) || $this->isModuleInstalled($config['module_name'])) {
-            return null;
-        }
-
-        return $other;
-    }
-
     // =========================================================================
     // Data Queries
     // =========================================================================
@@ -516,7 +497,7 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
     /**
      * Check if the reseller has dismissed the widget for a specific product.
      *
-     * @param string $dismissKey
+     * @param string $moduleName
      * @return bool
      */
     private function isDismissed($moduleName)
