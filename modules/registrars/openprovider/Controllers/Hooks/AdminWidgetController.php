@@ -96,6 +96,8 @@ class AdminWidgetController
             // Silent fail
         }
 
+        $this->invalidateCrossSellWidgetCache();
+
         if ($isAjaxDismiss) {
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'ok']);
@@ -104,5 +106,25 @@ class AdminWidgetController
 
         header('Location: index.php');
         exit;
+    }
+
+    private function invalidateCrossSellWidgetCache()
+    {
+        try {
+            $schema = Capsule::schema();
+            if (!$schema->hasTable('tbltransientdata')) {
+                return;
+            }
+
+            Capsule::table('tbltransientdata')
+                ->where(function ($query) {
+                    $query->where('name', 'like', '%OPCrossSellWidget%')
+                        ->orWhere('name', 'like', '%CrossSellWidget%')
+                        ->orWhere('name', 'like', '%OpenProvider\\\\WhmcsRegistrar\\\\Controllers\\\\Hooks\\\\Widgets\\\\CrossSellWidget%');
+                })
+                ->delete();
+        } catch (\Throwable $e) {
+            // Silent fail
+        }
     }
 }
