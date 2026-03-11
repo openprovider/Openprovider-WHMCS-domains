@@ -102,8 +102,8 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
     protected $description = 'Estimated extra revenue from your domain portfolio.';
     protected $weight = 50;
     protected $columns = 1;
-    protected $cache = false;
-    protected $cacheExpiry = 0;
+    protected $cache = true;
+    protected $cacheExpiry = 3600; // 1 hour
     protected $requiredPermission = '';
     protected $wrapper = true;
     protected $draggable = true;
