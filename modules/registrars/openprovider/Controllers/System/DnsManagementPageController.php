@@ -131,7 +131,7 @@ class DnsManagementPageController extends BaseController
         }
 
         // save DNS records
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['op_action'] ?? '') === 'saveRecords') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && (empty($_POST['op_action']) || ($_POST['op_action'] ?? '') === 'saveRecords')) {
 
             header('Content-Type: application/json; charset=utf-8');
 
