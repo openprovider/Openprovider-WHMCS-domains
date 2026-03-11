@@ -1,3 +1,18 @@
+const opDnsLabels = window.opDnsLabels || {
+  types: {
+    A: 'A',
+    AAAA: 'AAAA',
+    MXE: 'MXE',
+    MX: 'MX',
+    CNAME: 'CNAME',
+    TXT: 'TXT',
+    URL: 'URL',
+    FRAME: 'FRAME'
+  },
+  notAvailable: 'N/A',
+  delete: 'Delete'
+};
+
 document.addEventListener('click', async function (e) {
   const btn = e.target.closest('.js-delete-dns-row');
   if (!btn) return;
@@ -154,8 +169,8 @@ function renderDnsTable(records) {
     const prioCell =
       type === 'MX'
         ? `<input type="text" name="dnsrecordpriority[]" value="${escapeHtml(priority)}" size="2" class="form-control" />`
-        : `<input type="hidden" name="dnsrecordpriority[]" value="N/A" />N/A`;
-
+        : `<input type="hidden" name="dnsrecordpriority[]" value="N/A" />${escapeHtml(opDnsLabels.notAvailable)}`;
+           
     const rowHtml = `
       <tr>
         <td>
@@ -178,7 +193,7 @@ function renderDnsTable(records) {
                   data-type="${escapeHtml(type)}"
                   data-address="${escapeHtml(address)}"
                   data-priority="${escapeHtml(priority)}">
-            Delete
+            ${escapeHtml(opDnsLabels.delete)}
           </button>
         </td>
       </tr>
@@ -192,8 +207,10 @@ function renderDnsTable(records) {
 }
 
 function renderTypeOptions(selected) {
-  const types = ['A','AAAA','MXE','MX','CNAME','TXT','URL','FRAME'];
-  return types.map(t => `<option value="${t}" ${t===selected?'selected':''}>${t}</option>`).join('');
+  const types = ['A', 'AAAA', 'MXE', 'MX', 'CNAME', 'TXT', 'URL', 'FRAME'];
+  return types
+    .map(t => `<option value="${t}" ${t === selected ? 'selected' : ''}>${escapeHtml(opDnsLabels.types[t] ?? t)}</option>`)
+    .join('');
 }
 
 function renderEmptyRow() {
