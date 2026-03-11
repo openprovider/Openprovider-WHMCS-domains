@@ -46,7 +46,6 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
             'margin_per_unit' => 20,      // €20/mailbox/year
             'module_name'     => 'email_solution',
             'setup_guide_url' => 'https://support.openprovider.eu/hc/en-us/articles/30203886347282-WHMCS-Email-Solution-Module-Installation-and-configuration',
-            'dismiss_key'     => 'op_crosssell_email_dismissed',
         ],
         'pdns' => [
             'title'           => 'Improve reliability and earn more per domain',
@@ -58,7 +57,6 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
             'margin_per_unit' => 20,      // €20/domain/year
             'module_name'     => 'openproviderpremiumdns',
             'setup_guide_url' => 'https://support.openprovider.eu/hc/en-us/articles/32384594691730-WHMCS-Premium-Global-Anycast-DNS-module-Installation-configuration-and-management',
-            'dismiss_key'     => 'op_crosssell_dns_dismissed',
         ],
     ];
 
@@ -559,22 +557,6 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
                     $table->boolean('dismissed')->default(1);
                     $table->timestamps();
                 });
-            } elseif (!$schema->hasColumn(self::DISMISS_TABLE, 'module_name')) {
-                // Lightweight migration from old dismiss_key-based schema to module_name-based schema.
-                $schema->table(self::DISMISS_TABLE, function (Blueprint $table) {
-                    $table->string('module_name', 191)->nullable()->after('id');
-                });
-
-                $mapping = [
-                    'op_crosssell_email_dismissed' => 'email_solution',
-                    'op_crosssell_pdns_dismissed' => 'openproviderpremiumdns',
-                ];
-
-                foreach ($mapping as $dismissKey => $moduleName) {
-                    Capsule::table(self::DISMISS_TABLE)
-                        ->where('dismiss_key', $dismissKey)
-                        ->update(['module_name' => $moduleName]);
-                }
             }
         } catch (\Exception $e) {
             // Silent fail: widget will continue without persistence.
