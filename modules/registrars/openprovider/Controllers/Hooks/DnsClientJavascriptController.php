@@ -52,6 +52,10 @@ class DnsClientJavascriptController
      */
     public function run ($params)
     {
+        if (basename($params['templatefile'] ?? '') !== 'dnsmanagement.tpl') {
+            return;
+        }
+
         $domain = $this->domain->find($_REQUEST['domainid']);
         if($domain->registrar != 'openprovider')
             return;
