@@ -48,8 +48,8 @@ class DnsClientJavascriptController
     /**
      * @param $params
      *
-    * @return string|void
-    */
+     * @return string|void
+     */
     public function run ($params)
     {
         $templateFile = basename($params['templatefile'] ?? '');
