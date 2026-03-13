@@ -48,11 +48,14 @@ class DnsClientJavascriptController
     /**
      * @param $params
      *
-     * @return string|void
-     */
+    * @return string|void
+    */
     public function run ($params)
     {
-        if (basename($params['templatefile'] ?? '') !== 'dnsmanagement.tpl') {
+        $templateFile = basename($params['templatefile'] ?? '');
+        $templateName = preg_replace('/\.tpl$/', '', $templateFile);
+
+        if ($templateName !== 'dnsmanagement') {
             return;
         }
 
