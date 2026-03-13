@@ -6,6 +6,7 @@ use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\helpers\DNS;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsRegistrar\helpers\DnssecManagement;
+use OpenProvider\WhmcsRegistrar\helpers\Language;
 use WHMCS\Database\Capsule;
 
 /**
@@ -142,9 +143,10 @@ jQuery( document ).ready(function() {
             if ($isDomainEnabled->status != 'Active')
                 $dnssecItemClass = 'disabled';
 
+            $ADDONLANG = Language::loadLang();
             $primarySidebar->getChild('Domain Details Management')
                 ->addChild('DNSSEC')
-                ->setLabel(\Lang::trans('dnssectabname'))
+                ->setLabel($ADDONLANG['openprovider']['dnssectabname'])
                 ->setUri("dnssec.php?domainid={$domainId}")
                 ->setClass($dnssecItemClass)
                 ->setOrder(100);

@@ -2,6 +2,7 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
+use OpenProvider\WhmcsRegistrar\helpers\Language;
 use WHMCS\ClientArea;
 use WHMCS\Authentication\CurrentUser;
 use WHMCS\Config\Setting;
@@ -221,9 +222,10 @@ class DnsManagementPageController extends BaseController
                 ->setOrder(50);
         }
         if ($dnssecEnabled && $supportsDnssec) {
+            $ADDONLANG = Language::loadLang();
             $primarySidebar->getChild('Domain Details Management')
                 ->addChild('DNSSEC')
-                ->setLabel(\Lang::trans('dnssectabname'))
+                ->setLabel($ADDONLANG['dnssec']['dnssectabname'])
                 ->setUri("dnssec.php?domainid={$domainId}")
                 ->setOrder(100);
         }
