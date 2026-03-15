@@ -38,7 +38,7 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
     const PRODUCTS = [
         'email' => [
             'title'           => 'Top resellers earn more per domain',
-            'body'            => 'Many agencies attach email to 20-30%% of domains. Typical profit is €15-25 per mailbox/year.',
+            'body'            => 'Many agencies attach email to 20-30% of domains. Typical profit is €15-25 per mailbox/year.',
             'cta_text'        => '👉 Enable Email Module (5-minute setup)',
             'footer'          => 'Basic mailbox hosting. Auto-provisioned in WHMCS. No migration needed.',
             'adoption_rate'   => 0.20,
@@ -49,7 +49,7 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
         ],
         'pdns' => [
             'title'           => 'Improve reliability and earn more per domain',
-            'body'            => 'Many resellers and agencies attach Premium DNS to ~10%% of domains to improve uptime and performance. Typical profit is €15-40 per domain/year.',
+            'body'            => 'Many resellers and agencies attach Premium DNS to ~10% of domains to improve uptime and performance. Typical profit is €15-40 per domain/year.',
             'cta_text'        => '👉 Enable Premium DNS Module (5-minute setup)',
             'footer'          => 'Anycast DNS. Auto-provisioned in WHMCS. No migrations needed.',
             'adoption_rate'   => 0.10,
