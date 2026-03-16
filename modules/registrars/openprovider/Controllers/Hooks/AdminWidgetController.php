@@ -14,6 +14,29 @@ class AdminWidgetController
 {
     public function showBalanceWidget()
     {
+        $this->cleanupLegacyBalanceWidget();
+
         return new BalanceWidget();
+    }
+
+    private function cleanupLegacyBalanceWidget(): void
+    {
+        $legacyWidgetPath =
+            $GLOBALS['whmcsAppConfig']->getRootDir()
+            . '/modules/widgets/'
+            . 'BalanceWidget.php';
+
+        if (file_exists($legacyWidgetPath)) {
+            @unlink($legacyWidgetPath);
+
+            logModuleCall(
+                'OpenProvider NL',
+                'cleanupLegacyBalanceWidget',
+                null,
+                'Removed legacy BalanceWidget file to prevent duplicate widgets.',
+                null,
+                null
+            );
+        }
     }
 }
