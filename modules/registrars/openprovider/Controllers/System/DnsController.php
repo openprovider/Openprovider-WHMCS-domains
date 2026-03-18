@@ -95,25 +95,34 @@ class DnsController extends BaseController
         try {
             if (empty($records)) {
                 $this->apiHelper->deleteDnsRecords($domain);
-
                 return self::RETURN_SUCCESS;
             }
 
-            $dnsZone = $this->apiHelper->getDns($domain);
-            if ($dnsZone) {
+            try {
                 $this->apiHelper->updateDnsRecords($domain, $records);
-
                 return self::RETURN_SUCCESS;
+            } catch (\Exception $e) {
+                if ($this->isZoneNotFound($e)) {
+                    $this->apiHelper->createDnsRecords($domain, $records);
+                    return self::RETURN_SUCCESS;
+                }
+                throw $e;
             }
-
-            $this->apiHelper->createDnsRecords($domain, $records);
-
-            return self::RETURN_SUCCESS;
         } catch (\Exception $e) {
             return [
                 'error' => $e->getMessage(),
             ];
         }
+    }
+
+    private function isZoneNotFound(\Throwable $e): bool
+    {
+        if ((int) $e->getCode() === 872) {
+            return true;
+        }
+
+        $msg = (string) $e->getMessage();
+        return stripos($msg, 'Zone specified is not found') !== false;
     }
 
     /**
