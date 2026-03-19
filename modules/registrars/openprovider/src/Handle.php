@@ -370,7 +370,8 @@ class Handle
             $this->customer->address->country == $opCustomer['Country'] &&
             $this->customer->address->zipcode == $opCustomer['Zip Code'] &&
             $this->customer->phone->countryCode . '.' . $this->customer->phone->areaCode . $this->customer->phone->subscriberNumber == $opCustomer['Phone Number'] &&
-            $this->customer->email == $opCustomer['Email Address']
+            $this->customer->email == $opCustomer['Email Address'] &&
+            $this->customer->locale == $opCustomer['locale']
         )
         {
             return false;

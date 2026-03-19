@@ -629,6 +629,8 @@ class ApiHelper
             }
         }
 
+        $customerInfo['locale'] = $customerOp['locale'] ?? null;
+
         return $customerInfo;
     }
 

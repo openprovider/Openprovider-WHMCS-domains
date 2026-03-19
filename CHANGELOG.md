@@ -1,4 +1,12 @@
 # Changelog
+
+## v5.10.0
+
+###### Features and improvements
+- Added a promotional admin dashboard widget to highlight Openprovider's Email and Premium DNS products.
+- Improved registration flow by displaying the IDN Script field only for actual IDN domains during registration.
+- Set the correct locale when creating and updating handles.
+  
 ## v5.9.4
 
 ###### Features and improvements
