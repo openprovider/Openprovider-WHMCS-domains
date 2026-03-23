@@ -26,7 +26,11 @@ class BulkDomainTransferController extends ViewBaseController {
      */
     public function show($params)
     {
-        return "Bulk Domain Transfer page loaded successfully.";
+        return $this->view('bulk_domain_transfer/index', [
+            'notification' => $notification ?? null,
+            'domains'      => $_POST['domains'] ?? '',
+            'LANG'         => $params['_lang'],
+        ]);
     }
 
 }
