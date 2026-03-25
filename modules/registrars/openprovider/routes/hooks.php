@@ -53,11 +53,6 @@ return [
         'controller' => 'DnsNotificationController@notify'
     ],
     [
-        'hookPoint' => 'ClientAreaFooterOutput',
-        'priority' => 10,
-        'controller' => 'DnsClientJavascriptController@run'
-    ],
-    [
         'hookPoint' => 'ClientAreaPrimarySidebar',
         'priority'  => 1,
         'controller' => 'ClientAreaPrimarySidebarController@show'
