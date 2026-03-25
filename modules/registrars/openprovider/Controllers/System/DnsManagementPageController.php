@@ -131,7 +131,20 @@ class DnsManagementPageController extends BaseController
         }
 
         // save DNS records
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && (empty($_POST['op_action']) || ($_POST['op_action'] ?? '') === 'saveRecords')) {
+        $isAjaxOrJsonRequest = false;
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            $isAjaxOrJsonRequest = true;
+        } elseif (!empty($_SERVER['HTTP_ACCEPT']) && stripos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
+            $isAjaxOrJsonRequest = true;
+        }
+        if (
+            $_SERVER['REQUEST_METHOD'] === 'POST'
+            && (
+                empty($_POST['op_action'])
+                || ($_POST['op_action'] ?? '') === 'saveRecords'
+            )
+            && $isAjaxOrJsonRequest
+        ) {
 
             header('Content-Type: application/json; charset=utf-8');
 
