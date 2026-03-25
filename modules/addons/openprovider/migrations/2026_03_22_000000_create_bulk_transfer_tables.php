@@ -43,6 +43,9 @@ class CreateBulkTransferTables extends Migration
                 $table->integer('domain_id')->unsigned()->nullable()->default(null);
                 $table->string('domain', 255);
                 $table->string('op_owner_handle', 100)->nullable()->default(null);
+                $table->string('op_admin_handle', 100)->nullable()->default(null);
+                $table->string('op_tech_handle', 100)->nullable()->default(null);
+                $table->string('op_billing_handle', 100)->nullable()->default(null);
                 $table->enum('transfer_status', [
                     'queued',
                     'validating',
