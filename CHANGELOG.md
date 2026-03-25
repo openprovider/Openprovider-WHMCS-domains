@@ -3,8 +3,8 @@
 ## v5.11.0
 
 ###### Features and improvements
-- Improved DNS management performance across all key operations, including faster save flows and page loading.
-- Reduced API calls across client area pages, improving overall performance.
+- Improved client area DNS management performance across all key operations, including faster save flows and page loading.
+- Removed multiple redundant API calls across client area pages, improving overall client area performance.
 
 ## v5.10.0
 
