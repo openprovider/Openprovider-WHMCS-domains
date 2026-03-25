@@ -59,8 +59,6 @@ class RenewDomainController extends BaseController
             } catch (\Exception $e) {
                 return ['error' => $e->getMessage()];
             }
-
-            return [];
         }
 
         // If isInRedemptionGracePeriod is true, restore the domain.
@@ -72,8 +70,6 @@ class RenewDomainController extends BaseController
             } catch (\Exception $e) {
                 return ['error' => $e->getMessage()];
             }
-
-            return [];
         }
 
         // We did not have a true isInRedemptionGracePeriod or isInGracePeriod. Fall back on the legacy code
@@ -95,6 +91,6 @@ class RenewDomainController extends BaseController
             return ['error' => $e->getMessage()];
         }
 
-        return [];
+        return ['success' => true];
     }
 }
