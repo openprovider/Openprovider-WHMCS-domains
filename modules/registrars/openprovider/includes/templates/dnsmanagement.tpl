@@ -101,4 +101,21 @@
     </div>
 </div>
 
+<script>
+    window.opDnsLabels = {
+        types: {
+            A: "{lang key='domainDns.a'|escape:'javascript'}",
+            AAAA: "{lang key='domainDns.aaaa'|escape:'javascript'}",
+            MXE: "{lang key='domainDns.mxe'|escape:'javascript'}",
+            MX: "{lang key='domainDns.mx'|escape:'javascript'}",
+            CNAME: "{lang key='domainDns.cname'|escape:'javascript'}",
+            TXT: "{lang key='domainDns.txt'|escape:'javascript'}",
+            URL: "{lang key='domainDns.url'|escape:'javascript'}",
+            FRAME: "{lang key='domainDns.frame'|escape:'javascript'}"
+        },
+        notAvailable: "{lang key='domainregnotavailable'|escape:'javascript'}",
+        delete: "Delete"
+    };
+</script>
+
 <script src="{$jsModuleUrl}"></script>

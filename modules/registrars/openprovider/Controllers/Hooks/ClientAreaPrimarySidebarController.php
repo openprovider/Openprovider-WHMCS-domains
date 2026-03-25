@@ -130,12 +130,6 @@ jQuery( document ).ready(function() {
             } catch (\Exception $e) {
                 return;
             }
-            
-            try {
-                $op_domain = $this->apiHelper->getDomain($domain);
-            } catch (\Exception $e) {
-                return;
-            }
 
             $dnssecItemClass = '';
 
