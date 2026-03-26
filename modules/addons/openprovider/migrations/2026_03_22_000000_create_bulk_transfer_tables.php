@@ -6,6 +6,11 @@ use WHMCS\Database\Capsule;
 
 class CreateBulkTransferTables extends Migration
 {
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
     public function up()
     {
         if (!Capsule::schema()->hasTable('mod_op_bulk_transfer_batches')) {
@@ -27,8 +32,8 @@ class CreateBulkTransferTables extends Migration
                     'failed',
                 ])->default('queued')->index('idx_status');
                 $table->text('notes')->nullable();
-                $table->dateTime('created_at');
-                $table->dateTime('updated_at');
+                $table->dateTime('created_at')->useCurrent();
+                $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
 
                 $table->index('created_at', 'idx_created_at');
             });
@@ -59,8 +64,8 @@ class CreateBulkTransferTables extends Migration
                 $table->tinyInteger('attempt_count')->unsigned()->default(0);
                 $table->dateTime('started_at')->nullable()->default(null);
                 $table->dateTime('finished_at')->nullable()->default(null);
-                $table->dateTime('created_at');
-                $table->dateTime('updated_at');
+                $table->dateTime('created_at')->useCurrent();
+                $table->dateTime('updated_at')->useCurrent()->useCurrentOnUpdate();
 
                 $table->unique(['batch_id', 'domain'], 'uniq_batch_domain');
                 $table->index('batch_id', 'idx_batch_id');
@@ -78,6 +83,11 @@ class CreateBulkTransferTables extends Migration
         }
     }
 
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
     public function down()
     {
         if (Capsule::schema()->hasTable('mod_op_bulk_transfer_items')) {
