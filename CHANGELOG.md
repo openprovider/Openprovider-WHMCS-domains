@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.11.0
+
+###### Features and improvements
+- Improved client area DNS management performance across all key operations, including faster save flows and page loading.
+- Removed multiple redundant API calls across client area pages, improving overall client area performance.
+
 ## v5.10.0
 
 ###### Features and improvements
