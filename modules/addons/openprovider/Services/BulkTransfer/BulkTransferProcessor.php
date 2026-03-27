@@ -7,7 +7,7 @@ class BulkTransferProcessor
     public function __construct() {
     }
 
-    public function processQueuedItems($limit = 25)
+    public function processQueuedItems($limit = 10)
     {
         $processed = 0;
         $claimed = 0;

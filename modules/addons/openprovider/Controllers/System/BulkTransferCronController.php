@@ -22,7 +22,7 @@ class BulkTransferCronController extends BaseController
 
     public function process($params)
     {
-        $limit = isset($params['limit']) ? (int) $params['limit'] : 25; // limit should be based on crone setup time
+        $limit = isset($params['limit']) ? (int) $params['limit'] : 10; // limit should be based on crone setup time
 
         $this->start();
         $result = $this->bulkTransferProcessor->processQueuedItems($limit);
