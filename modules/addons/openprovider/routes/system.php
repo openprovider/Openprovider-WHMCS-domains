@@ -13,4 +13,5 @@ return [
 
     //
     'Synchronise' => 'SynchroniseController@synchronise',
+    'BulkTransfer' => 'BulkTransferCronController@process',
 ];
