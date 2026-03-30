@@ -81,6 +81,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'middle_name_cyrillic' => 'string',
         'middle_name_latin' => 'string',
         'mobile_phone_number' => 'string',
+        'music_nexus_connection_to_music' => 'string',
+        'music_nexus_registry_policies_attestation' => 'string',
         'nexus_category' => 'string',
         'org_type' => 'string',
         'passport_issue_date' => 'string',
@@ -126,6 +128,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'middle_name_cyrillic' => null,
         'middle_name_latin' => null,
         'mobile_phone_number' => null,
+        'music_nexus_connection_to_music' => null,
+        'music_nexus_registry_policies_attestation' => null,
         'nexus_category' => null,
         'org_type' => null,
         'passport_issue_date' => null,
@@ -192,6 +196,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'middle_name_cyrillic' => 'middle_name_cyrillic',
         'middle_name_latin' => 'middle_name_latin',
         'mobile_phone_number' => 'mobile_phone_number',
+        'music_nexus_connection_to_music' => 'music_nexus_connection_to_music',
+        'music_nexus_registry_policies_attestation' => 'music_nexus_registry_policies_attestation',
         'nexus_category' => 'nexus_category',
         'org_type' => 'org_type',
         'passport_issue_date' => 'passport_issue_date',
@@ -237,6 +243,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'middle_name_cyrillic' => 'setMiddleNameCyrillic',
         'middle_name_latin' => 'setMiddleNameLatin',
         'mobile_phone_number' => 'setMobilePhoneNumber',
+        'music_nexus_connection_to_music' => 'setMusicNexusConnectionToMusic',
+        'music_nexus_registry_policies_attestation' => 'setMusicNexusRegistryPoliciesAttestation',
         'nexus_category' => 'setNexusCategory',
         'org_type' => 'setOrgType',
         'passport_issue_date' => 'setPassportIssueDate',
@@ -282,6 +290,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'middle_name_cyrillic' => 'getMiddleNameCyrillic',
         'middle_name_latin' => 'getMiddleNameLatin',
         'mobile_phone_number' => 'getMobilePhoneNumber',
+        'music_nexus_connection_to_music' => 'getMusicNexusConnectionToMusic',
+        'music_nexus_registry_policies_attestation' => 'getMusicNexusRegistryPoliciesAttestation',
         'nexus_category' => 'getNexusCategory',
         'org_type' => 'getOrgType',
         'passport_issue_date' => 'getPassportIssueDate',
@@ -385,6 +395,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         $this->container['middle_name_cyrillic'] = isset($data['middle_name_cyrillic']) ? $data['middle_name_cyrillic'] : null;
         $this->container['middle_name_latin'] = isset($data['middle_name_latin']) ? $data['middle_name_latin'] : null;
         $this->container['mobile_phone_number'] = isset($data['mobile_phone_number']) ? $data['mobile_phone_number'] : null;
+        $this->container['music_nexus_connection_to_music'] = isset($data['music_nexus_connection_to_music']) ? $data['music_nexus_connection_to_music'] : null;
+        $this->container['music_nexus_registry_policies_attestation'] = isset($data['music_nexus_registry_policies_attestation']) ? $data['music_nexus_registry_policies_attestation'] : null;
         $this->container['nexus_category'] = isset($data['nexus_category']) ? $data['nexus_category'] : null;
         $this->container['org_type'] = isset($data['org_type']) ? $data['org_type'] : null;
         $this->container['passport_issue_date'] = isset($data['passport_issue_date']) ? $data['passport_issue_date'] : null;
@@ -1021,6 +1033,58 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
     public function setMobilePhoneNumber($mobile_phone_number)
     {
         $this->container['mobile_phone_number'] = $mobile_phone_number;
+
+        return $this;
+    }
+
+    /**
+     * Gets music_nexus_connection_to_music
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getMusicNexusConnectionToMusic()
+    {
+        return $this->container['music_nexus_connection_to_music'];
+    }
+
+    /**
+     * Sets music_nexus_connection_to_music
+     *
+     * @param string|null $music_nexus_connection_to_music music_nexus_connection_to_music
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setMusicNexusConnectionToMusic($music_nexus_connection_to_music)
+    {
+        $this->container['music_nexus_connection_to_music'] = $music_nexus_connection_to_music;
+
+        return $this;
+    }
+
+    /**
+     * Gets music_nexus_registry_policies_attestation
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getMusicNexusRegistryPoliciesAttestation()
+    {
+        return $this->container['music_nexus_registry_policies_attestation'];
+    }
+
+    /**
+     * Sets music_nexus_registry_policies_attestation
+     *
+     * @param string|null $music_nexus_registry_policies_attestation music_nexus_registry_policies_attestation
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setMusicNexusRegistryPoliciesAttestation($music_nexus_registry_policies_attestation)
+    {
+        $this->container['music_nexus_registry_policies_attestation'] = $music_nexus_registry_policies_attestation;
 
         return $this;
     }
