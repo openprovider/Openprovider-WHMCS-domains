@@ -123,7 +123,7 @@ class DomainController extends BaseController
             if (isset($additionalFields['customer']))
                 $handle->setCustomerData($additionalFields['customer']);
 
-            $tldMetaData = $this->apiHelper->getTldMeta($this->domain->extension);
+            $tldMetaData = $this->getTldMetaData($params, $this->domain->extension);
 
             // domain registration
             $domainRegistration                  = new DomainRegistration();
@@ -136,6 +136,15 @@ class DomainController extends BaseController
 
             $adminHandle = null;
             if (isset($tldMetaData['adminHandleSupported']) && $tldMetaData['adminHandleSupported']) {
+                $useClientDetails = Capsule::table('tblconfiguration')
+                    ->where('setting', 'RegistrarAdminUseClientDetails')
+                    ->value('value');
+
+                // If admin is same as client, use same language as owner
+                if ($useClientDetails === 'on' && !empty($params['language'])) {
+                    $params['adminlanguage'] = $params['language'];
+                }
+
                 $adminHandle = $handle->findOrCreate($params, 'admin');
                 $domainRegistration->adminHandle = $adminHandle;
             }
@@ -248,7 +257,7 @@ class DomainController extends BaseController
             if (isset($additionalFields['customer']))
                 $handle->setCustomerAdditionalData($additionalFields['customer']);
 
-            $tldMetaData = $this->apiHelper->getTldMeta($domain->extension);
+            $tldMetaData = $this->getTldMetaData($params, $domain->extension);
 
             $domainTransfer                  = new DomainTransfer();
             $domainTransfer->domain          = $domain;
@@ -261,6 +270,14 @@ class DomainController extends BaseController
 
             $adminHandle = null;
             if (isset($tldMetaData['adminHandleSupported']) && $tldMetaData['adminHandleSupported']) {
+                $useClientDetails = Capsule::table('tblconfiguration')
+                    ->where('setting', 'RegistrarAdminUseClientDetails')
+                    ->value('value');
+
+                // If admin is same as client, use same language as owner
+                if ($useClientDetails === 'on' && !empty($params['language'])) {
+                    $params['adminlanguage'] = $params['language'];
+                }
                 $adminHandle = $handle->findOrCreate($params, 'admin');
                 $domainTransfer->adminHandle = $adminHandle;
             }
@@ -322,5 +339,21 @@ class DomainController extends BaseController
             $values["error"] = $e->getMessage();
         }
         return $values;
+    }
+
+    private function getTldMetaData(array $params, string $extension): array
+    {
+        // TEST MODE → override metadata support
+        if (isset($params['test_mode']) && $params['test_mode'] === 'on') {
+            return [
+                    'ownerHandleSupported'   => true,
+                    'adminHandleSupported'   => true,
+                    'techHandleSupported'    => true,
+                    'billingHandleSupported' => true,
+                ];
+        }
+
+        // NORMAL MODE → use API metadata
+        return $this->apiHelper->getTldMeta($extension);
     }
 }

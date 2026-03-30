@@ -444,6 +444,44 @@ class ApiHelper
 
     /**
      * @param Domain $domain
+     * @param array $record
+     * @return array
+     * @throws \Exception
+     */
+    public function removeDnsRecord(Domain $domain, array $record): array
+    {
+        $zoneName = $domain->getFullName();
+
+        $required = ['type', 'name', 'value'];
+        foreach ($required as $key) {
+            if (!array_key_exists($key, $record)) {
+                throw new \InvalidArgumentException("Missing required DNS record field: {$key}");
+            }
+        }
+
+        $payload = [
+            'type'  => strtoupper((string)$record['type']),
+            'name'  => (string)$record['name'],
+            'value' => (string)$record['value'],
+        ];
+
+        // Only include prio for MX/SRV (and only if provided)
+        if (in_array($payload['type'], ['MX', 'SRV'], true) && isset($record['prio']) && $record['prio'] !== '' && $record['prio'] !== null) {
+            $payload['prio'] = (int)$record['prio'];
+        }
+
+        $args = [
+            'name'    => $zoneName,
+            'type'    => 'master',
+            'records' => [
+                'remove' => [$payload],
+            ],
+        ];
+        return $this->buildResponse($this->apiClient->call('modifyZoneDnsRequest', $args));
+    }
+
+    /**
+     * @param Domain $domain
      * @param $records
      * @return array
      * @throws \Exception
@@ -559,9 +597,9 @@ class ApiHelper
 
         $addressParts = array_filter(
             [
-                $customerOp['address']['street'] ?? '',
-                $customerOp['address']['number'] ?? '',
-                $customerOp['address']['suffix'] ?? '',
+                trim($customerOp['address']['street'] ?? ''),
+                trim($customerOp['address']['number'] ?? ''),
+                trim($customerOp['address']['suffix'] ?? ''),
             ],
             'strlen'
         );
@@ -590,6 +628,8 @@ class ApiHelper
                 $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['passportNumber'];
             }
         }
+
+        $customerInfo['locale'] = $customerOp['locale'] ?? null;
 
         return $customerInfo;
     }
@@ -657,12 +697,25 @@ class ApiHelper
         if ($tld === '') {
             throw new \InvalidArgumentException('Missing TLD.');
         }
-
+        
         return $this->buildResponse(
             $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
         );
     }
 
+    /**
+     * @param string $tld
+     * @return bool
+     */
+    public function supportsDnssec(string $tld): bool
+    {
+        try {
+            $meta = $this->getTldMeta($tld);
+            return (bool)($meta['dnssec_allowed'] ?? $meta['dnssecAllowed'] ?? false);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 
     /**
      * @param ResponseInterface $response
