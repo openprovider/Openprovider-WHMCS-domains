@@ -43,7 +43,7 @@ class AnnotationLoader implements LoaderInterface
 
     private $reader;
 
-    public function __construct(Reader $reader = null)
+    public function __construct(?Reader $reader = null)
     {
         $this->reader = $reader;
     }
@@ -100,6 +100,10 @@ class AnnotationLoader implements LoaderInterface
                 continue;
             }
 
+            if (0 === stripos($method->name, 'get') && $method->getNumberOfRequiredParameters()) {
+                continue; /*  matches the BC behavior in `Symfony\Component\Serializer\Normalizer\ObjectNormalizer::extractAttributes` */
+            }
+
             $accessorOrMutator = preg_match('/^(get|is|has|set)(.+)$/i', $method->name, $matches);
             if ($accessorOrMutator) {
                 $attributeName = lcfirst($matches[2]);
@@ -134,7 +138,9 @@ class AnnotationLoader implements LoaderInterface
 
                     $attributeMetadata->setSerializedName($annotation->getSerializedName());
                 } elseif ($annotation instanceof Ignore) {
-                    $attributeMetadata->setIgnore(true);
+                    if ($accessorOrMutator) {
+                        $attributeMetadata->setIgnore(true);
+                    }
                 } elseif ($annotation instanceof Context) {
                     if (!$accessorOrMutator) {
                         throw new MappingException(sprintf('Context on "%s::%s()" cannot be added. Context can only be added on methods beginning with "get", "is", "has" or "set".', $className, $method->name));

@@ -1,8 +1,41 @@
 #!/bin/bash
 
+# Openprovider Upgrade Script - Version v1.1
+
 # Variables
 GIT_REPO="https://github.com/openprovider/Openprovider-WHMCS-domains.git"
+LATEST_RELEASE_API="https://api.github.com/repos/openprovider/Openprovider-WHMCS-domains/releases/latest"
+BASE_RELEASE_URL="https://github.com/openprovider/Openprovider-WHMCS-domains/archive/refs/tags"
 TEMP_DIR="/tmp/openprovider_module"
+SCRIPT_REF="${SCRIPT_REF:-master}"
+HELPER_URL="https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domains/${SCRIPT_REF}/scripts/lib/progress_utils.sh"
+HELPER_FILE="/tmp/openprovider_progress_utils_${SCRIPT_REF//\//_}.sh"
+
+# Load shared helpers (supports curl|bash execution)
+if [ ! -f "$HELPER_FILE" ]; then
+    if command -v curl >/dev/null 2>&1; then
+        curl -fsSL "$HELPER_URL" -o "$HELPER_FILE" || {
+            echo "Error: Failed to download helper utilities using curl."
+            exit 1
+        }
+    elif command -v wget >/dev/null 2>&1; then
+        wget -q "$HELPER_URL" -O "$HELPER_FILE" || {
+            echo "Error: Failed to download helper utilities using wget."
+            exit 1
+        }
+    else
+        echo "Error: Neither curl nor wget is available to load helper utilities."
+        exit 1
+    fi
+fi
+
+# shellcheck disable=SC1090
+source "$HELPER_FILE"
+
+command -v download_with_loader >/dev/null 2>&1 || {
+    echo "Error: Failed to load helper utilities (download_with_loader missing)."
+    exit 1
+}
 
 # Check if the current directory is the WHMCS root directory
 if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modules/addons" ]; then
@@ -11,19 +44,16 @@ if [ ! -f "configuration.php" ] || [ ! -d "modules/registrars" ] || [ ! -d "modu
 fi
 
 # Prompt user for confirmation to proceed with the update
-read -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. To avoid losing changes, please ensure you have backed up your customizations. Do you want to proceed with the update? (Y/n): " confirm
-
-# Check user input
-if [[ "$confirm" =~ ^[Yy]$ ]]; then
-    echo "Proceeding with the update..."
+if [ -r /dev/tty ]; then
+    read -u 3 -p "Important: Updating the Openprovider module may overwrite any custom modifications you've made. Do you want to proceed? (Y/n): " confirm 3</dev/tty
+    if [[ -z "$confirm" || "$confirm" =~ ^[Yy]$ ]]; then
+        echo "Proceeding with the update..."
+    else
+        echo "Update canceled. Please backup your customizations before proceeding."
+        exit 0
+    fi
 else
-    echo "Update canceled. Please backup your customizations before proceeding."
-    exit 0
-fi
-
-# Check if git is installed
-if ! command -v git &> /dev/null; then
-    echo "Error: git is not installed. Please install git and try again."
+    echo "No interactive terminal detected. Update canceled."
     exit 1
 fi
 
@@ -34,12 +64,55 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Clone the Openprovider module repository
-echo "Fetching the latest version of Openprovider module..."
-git clone "$GIT_REPO" "$TEMP_DIR"
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to clone repository. Check your network connection or git permissions."
-    exit 1
+# Check if git is installed
+if command -v git &> /dev/null; then
+    echo "Fetching the latest version of Openprovider module using git..."
+    git clone "$GIT_REPO" "$TEMP_DIR"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to clone repository. Falling back to downloading package."
+        FALLBACK=true
+    fi
+else
+    echo "Git is not installed. Falling back to downloading package."
+    FALLBACK=true
+fi
+
+# Fallback to downloading the latest release if git is unavailable or fails
+if [ "$FALLBACK" = true ]; then
+    echo "Fetching the latest release version..."
+    if command -v curl &> /dev/null; then
+        LATEST_TAG=$(curl -s "$LATEST_RELEASE_API" | grep '"tag_name"' | cut -d '"' -f 4)
+    elif command -v wget &> /dev/null; then
+        LATEST_TAG=$(wget -qO- "$LATEST_RELEASE_API" | grep '"tag_name"' | cut -d '"' -f 4)
+    else
+        echo "Error: Neither curl nor wget is available. Cannot fetch latest release."
+        exit 1
+    fi
+    
+    if [ -z "$LATEST_TAG" ]; then
+        echo "Error: Failed to fetch the latest release tag. Check your internet connection or GitHub API rate limits."
+        exit 1
+    fi
+    
+    LATEST_URL="${BASE_RELEASE_URL}/${LATEST_TAG}.tar.gz"
+    
+    echo "Downloading latest release: $LATEST_TAG ..."
+    
+    if ! download_with_loader "$LATEST_URL" "$TEMP_DIR/openprovider_module.tar.gz"; then
+        exit 1
+    fi
+    
+    if [ ! -s "$TEMP_DIR/openprovider_module.tar.gz" ]; then
+        echo "Error: Downloaded file is empty or corrupted."
+        exit 1
+    fi
+    
+    echo "Extracting package..."
+    tar -xzf "$TEMP_DIR/openprovider_module.tar.gz" -C "$TEMP_DIR" --strip-components=1
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to extract package."
+        exit 1
+    fi
 fi
 
 # Copy files to update the Openprovider module in WHMCS

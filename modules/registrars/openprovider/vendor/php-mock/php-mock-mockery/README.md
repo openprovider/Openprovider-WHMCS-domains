@@ -1,9 +1,11 @@
+[![.github/workflows/tests.yml](https://github.com/php-mock/php-mock-mockery/actions/workflows/tests.yml/badge.svg)](https://github.com/php-mock/php-mock-mockery/actions/workflows/tests.yml)
+
 # Mock PHP built-in functions with Mockery
 
 This package integrates the function mock library
 [PHP-Mock](https://github.com/php-mock/php-mock) with Mockery.
 
-# Installation
+## Installation
 
 Use [Composer](https://getcomposer.org/):
 
@@ -11,14 +13,14 @@ Use [Composer](https://getcomposer.org/):
 composer require --dev php-mock/php-mock-mockery
 ```
 
-# Usage
+## Usage
 
 [`PHPMockery::mock()`](http://php-mock.github.io/php-mock-mockery/api/class-phpmock.mockery.PHPMockery.html#_mock)
 let's you build a function mock which can be equiped
 with Mockery's expectations. After your test you'll have to disable all created
 function mocks by calling `Mockery::close()`.
 
-## Example
+### Example
 
 ```php
 namespace foo;
@@ -31,7 +33,7 @@ assert (3 == time());
 \Mockery::close();
 ```
 
-## Restrictions
+### Restrictions
 
 This library comes with the same restrictions as the underlying
 [`php-mock`](https://github.com/php-mock/php-mock#requirements-and-restrictions):
@@ -46,14 +48,12 @@ This library comes with the same restrictions as the underlying
   this issue you can call [`PHPMockery::define()`](http://php-mock.github.io/php-mock-mockery/api/class-phpmock.mockery.PHPMockery.html#_define)
   before that first call. This would define a side effectless namespaced function.
 
-# License and authors
+## License and authors
 
 This project is free and under the WTFPL.
 Responsable for this project is Markus Malkusch markus@malkusch.de.
 
-## Donations
+### Donations
 
 If you like this project and feel generous donate a few Bitcoins here:
 [1335STSwu9hST4vcMRppEPgENMHD2r1REK](bitcoin:1335STSwu9hST4vcMRppEPgENMHD2r1REK)
-
-[![Build Status](https://travis-ci.org/php-mock/php-mock-mockery.svg?branch=master)](https://travis-ci.org/php-mock/php-mock-mockery)

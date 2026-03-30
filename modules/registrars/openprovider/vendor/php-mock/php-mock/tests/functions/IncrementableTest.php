@@ -14,7 +14,6 @@ use PHPUnit\Framework\TestCase;
  */
 class IncrementableTest extends TestCase
 {
-
     /**
      * Tests increment().
      *
@@ -22,10 +21,9 @@ class IncrementableTest extends TestCase
      * @param mixed $increment              The amount of increase.
      * @param Incrementable $incrementable  The tested Incrementable.
      * @param callable $getValue            The lambda for getting the value.
-     *
-     * @test
      * @dataProvider provideTestIncrement
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideTestIncrement')]
     public function testIncrement(
         $expected,
         $increment,
@@ -41,7 +39,7 @@ class IncrementableTest extends TestCase
      *
      * @return array Test cases.
      */
-    public function provideTestIncrement()
+    public static function provideTestIncrement()
     {
         $getFixedValue = function (FixedValueFunction $function) {
             return call_user_func($function->getCallable());

@@ -35,17 +35,22 @@ return [
     [
         'hookPoint' => 'AdminHomeWidgets',
         'priority' =>  1,
-        'controller' => 'AdminWidgetController@showBalance'
+        'controller' => 'AdminWidgetController@showBalanceWidget'
+    ],
+    [
+        'hookPoint' => 'AdminHomeWidgets',
+        'priority' =>  2,
+        'controller' => 'AdminWidgetController@showCrossSellWidget'
+    ],
+    [
+        'hookPoint' => 'AdminAreaPage',
+        'priority' =>  1,
+        'controller' => 'AdminWidgetController@handleCrossSellDismiss'
     ],
     [
         'hookPoint' => 'ClientAreaPageDomainDNSManagement',
         'priority' => 10,
         'controller' => 'DnsNotificationController@notify'
-    ],
-    [
-        'hookPoint' => 'ClientAreaFooterOutput',
-        'priority' => 10,
-        'controller' => 'DnsClientJavascriptController@run'
     ],
     [
         'hookPoint' => 'ClientAreaPrimarySidebar',
@@ -118,8 +123,43 @@ return [
         'controller'=> 'AdminAreaHeaderOutputController@output',
     ],
     [
-        'hookPoint' => 'AdminAreaHeaderOutput',
+        'hookPoint' => 'AdminClientDomainsTabFields',
         'priority'  => 1,
-        'controller'=> 'AdminAreaHeaderOutputController@output',
+        'controller'=> 'DnssecToggleController@output',
+    ],
+    [
+        'hookPoint' => 'AdminClientDomainsTabFieldsSave',
+        'priority'  => 1,
+        'controller'=> 'DnssecToggleController@save',
+    ],
+    [
+        'hookPoint' => 'AdminAreaFooterOutput',
+        'priority' => 1,
+        'controller' => 'DnssecToggleController@footer',
+    ],
+    [
+        'hookPoint' => 'AfterRegistrarRegistration',
+        'priority'  => 1,
+        'controller' => 'DomainController@updateExpiryDateAfterRegistration',
+    ],
+    [
+        'hookPoint' => 'AfterRegistrarTransfer',
+        'priority'  => 1,
+        'controller' => 'DomainController@updateExpiryDateAfterTransfer',
+    ],
+    [
+        'hookPoint' => 'AdminAreaFooterOutput',
+        'priority'  => 1,
+        'controller' => 'AdminAreaFooterController@output',
+    ],
+    [
+        'hookPoint' => 'AdminClientDomainsTabFieldsSave',
+        'priority'  => 1,
+        'controller' => 'AdminClientDomainsTabController@save',
+    ],
+    [
+        'hookPoint' => 'ClientAreaPageCart',
+        'priority'  => 1,
+        'controller'=> 'ShoppingCartController@hideIdnScriptForNonIdnDomains',
     ],
 ];

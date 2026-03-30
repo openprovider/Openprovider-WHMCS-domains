@@ -2,7 +2,7 @@
 
 namespace phpmock\mockery;
 
-use phpmock\AbstractMockTest;
+use phpmock\AbstractMockTestCase;
 use Mockery;
 use Mockery\MockInterface;
 
@@ -14,7 +14,7 @@ use Mockery\MockInterface;
  * @license http://www.wtfpl.net/txt/copying/ WTFPL
  * @see PHPMockery
  */
-class PHPMockeryTest extends AbstractMockTest
+class PHPMockeryTest extends AbstractMockTestCase
 {
 
     protected function disableMocks()
@@ -32,10 +32,8 @@ class PHPMockeryTest extends AbstractMockTest
         PHPMockery::mock($namespace, $functionName)->andReturnUsing($function);
     }
     
-    protected function setUp()
+    protected function setUpCompat()
     {
-        parent::setUp();
-        
         $this->workaroundMockeryIssue268();
     }
     

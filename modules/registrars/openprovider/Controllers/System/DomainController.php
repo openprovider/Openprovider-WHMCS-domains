@@ -123,25 +123,40 @@ class DomainController extends BaseController
             if (isset($additionalFields['customer']))
                 $handle->setCustomerData($additionalFields['customer']);
 
-            $ownerHandle = $handle->findOrCreate($params);
-            $adminHandle = $handle->findOrCreate($params, 'admin');
-
-            $handles                   = array();
-            $handles['domainid']       = $params['domainid'];
-            $handles['ownerHandle']    = $ownerHandle;
-            $handles['adminHandle']    = $adminHandle;
-            $handles['techHandle']     = $adminHandle;
-            $handles['billingHandle']  = $adminHandle;
-            $handles['resellerHandle'] = '';
+            $tldMetaData = $this->getTldMetaData($params, $this->domain->extension);
 
             // domain registration
             $domainRegistration                  = new DomainRegistration();
             $domainRegistration->domain          = $domain;
             $domainRegistration->period          = $params['regperiod'];
-            $domainRegistration->ownerHandle     = $handles['ownerHandle'];
-            $domainRegistration->adminHandle     = $handles['adminHandle'];
-            $domainRegistration->techHandle      = $handles['techHandle'];
-            $domainRegistration->billingHandle   = $handles['billingHandle'];
+
+            if (isset($tldMetaData['ownerHandleSupported']) && $tldMetaData['ownerHandleSupported']) {
+                $domainRegistration->ownerHandle = $handle->findOrCreate($params);
+            }
+
+            $adminHandle = null;
+            if (isset($tldMetaData['adminHandleSupported']) && $tldMetaData['adminHandleSupported']) {
+                $useClientDetails = Capsule::table('tblconfiguration')
+                    ->where('setting', 'RegistrarAdminUseClientDetails')
+                    ->value('value');
+
+                // If admin is same as client, use same language as owner
+                if ($useClientDetails === 'on' && !empty($params['language'])) {
+                    $params['adminlanguage'] = $params['language'];
+                }
+
+                $adminHandle = $handle->findOrCreate($params, 'admin');
+                $domainRegistration->adminHandle = $adminHandle;
+            }
+            if (isset($tldMetaData['techHandleSupported']) && $tldMetaData['techHandleSupported']) {
+                $adminHandle = $adminHandle ?? $handle->findOrCreate($params, 'admin');
+                $domainRegistration->techHandle = $adminHandle;
+            }
+            if (isset($tldMetaData['billingHandleSupported']) && $tldMetaData['billingHandleSupported']) {
+                $adminHandle = $adminHandle ?? $handle->findOrCreate($params, 'admin');
+                $domainRegistration->billingHandle = $adminHandle;
+            }
+
             $domainRegistration->nameServers     = $nameServers;
             $domainRegistration->dnsmanagement   = $params['dnsmanagement'];
             $domainRegistration->isDnssecEnabled = false;
@@ -242,17 +257,39 @@ class DomainController extends BaseController
             if (isset($additionalFields['customer']))
                 $handle->setCustomerAdditionalData($additionalFields['customer']);
 
-            $ownerHandle = $handle->findOrCreate($params);
-            $adminHandle = $handle->findOrCreate($params, 'admin');
+            $tldMetaData = $this->getTldMetaData($params, $domain->extension);
 
             $domainTransfer                  = new DomainTransfer();
             $domainTransfer->domain          = $domain;
             $domainTransfer->period          = $params['regperiod'];
             $domainTransfer->nameServers     = $nameServers;
-            $domainTransfer->ownerHandle     = $ownerHandle;
-            $domainTransfer->adminHandle     = $adminHandle;
-            $domainTransfer->techHandle      = $adminHandle;
-            $domainTransfer->billingHandle   = $adminHandle;
+
+            if (isset($tldMetaData['ownerHandleSupported']) && $tldMetaData['ownerHandleSupported']) {
+                $domainTransfer->ownerHandle = $handle->findOrCreate($params);
+            }
+
+            $adminHandle = null;
+            if (isset($tldMetaData['adminHandleSupported']) && $tldMetaData['adminHandleSupported']) {
+                $useClientDetails = Capsule::table('tblconfiguration')
+                    ->where('setting', 'RegistrarAdminUseClientDetails')
+                    ->value('value');
+
+                // If admin is same as client, use same language as owner
+                if ($useClientDetails === 'on' && !empty($params['language'])) {
+                    $params['adminlanguage'] = $params['language'];
+                }
+                $adminHandle = $handle->findOrCreate($params, 'admin');
+                $domainTransfer->adminHandle = $adminHandle;
+            }
+            if (isset($tldMetaData['techHandleSupported']) && $tldMetaData['techHandleSupported']) {
+                $adminHandle = $adminHandle ?? $handle->findOrCreate($params, 'admin');
+                $domainTransfer->techHandle = $adminHandle;
+            }
+            if (isset($tldMetaData['billingHandleSupported']) && $tldMetaData['billingHandleSupported']) {
+                $adminHandle = $adminHandle ?? $handle->findOrCreate($params, 'admin');
+                $domainTransfer->billingHandle = $adminHandle;
+            }
+
             $domainTransfer->authCode        = $params['transfersecret'];
             $domainTransfer->dnsmanagement   = $params['dnsmanagement'];
             $domainTransfer->isDnssecEnabled = false;
@@ -302,5 +339,21 @@ class DomainController extends BaseController
             $values["error"] = $e->getMessage();
         }
         return $values;
+    }
+
+    private function getTldMetaData(array $params, string $extension): array
+    {
+        // TEST MODE → override metadata support
+        if (isset($params['test_mode']) && $params['test_mode'] === 'on') {
+            return [
+                    'ownerHandleSupported'   => true,
+                    'adminHandleSupported'   => true,
+                    'techHandleSupported'    => true,
+                    'billingHandleSupported' => true,
+                ];
+        }
+
+        // NORMAL MODE → use API metadata
+        return $this->apiHelper->getTldMeta($extension);
     }
 }

@@ -20,13 +20,18 @@ use phpDocumentor\Reflection\DocBlock\StandardTagFactory;
 use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlock\TagFactory;
 use phpDocumentor\Reflection\DocBlock\Tags\Factory\AbstractPHPStanFactory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\ExtendsFactory;
 use phpDocumentor\Reflection\DocBlock\Tags\Factory\Factory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\ImplementsFactory;
 use phpDocumentor\Reflection\DocBlock\Tags\Factory\MethodFactory;
 use phpDocumentor\Reflection\DocBlock\Tags\Factory\ParamFactory;
 use phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyFactory;
 use phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyReadFactory;
 use phpDocumentor\Reflection\DocBlock\Tags\Factory\PropertyWriteFactory;
 use phpDocumentor\Reflection\DocBlock\Tags\Factory\ReturnFactory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateExtendsFactory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateFactory;
+use phpDocumentor\Reflection\DocBlock\Tags\Factory\TemplateImplementsFactory;
 use phpDocumentor\Reflection\DocBlock\Tags\Factory\VarFactory;
 use Webmozart\Assert\Assert;
 
@@ -76,7 +81,12 @@ final class DocBlockFactory implements DocBlockFactoryInterface
             new PropertyFactory($typeResolver, $descriptionFactory),
             new PropertyReadFactory($typeResolver, $descriptionFactory),
             new PropertyWriteFactory($typeResolver, $descriptionFactory),
-            new MethodFactory($typeResolver, $descriptionFactory)
+            new MethodFactory($typeResolver, $descriptionFactory),
+            new ImplementsFactory($typeResolver, $descriptionFactory),
+            new ExtendsFactory($typeResolver, $descriptionFactory),
+            new TemplateFactory($typeResolver, $descriptionFactory),
+            new TemplateImplementsFactory($typeResolver, $descriptionFactory),
+            new TemplateExtendsFactory($typeResolver, $descriptionFactory),
         );
 
         $tagFactory->addService($descriptionFactory);
@@ -88,6 +98,11 @@ final class DocBlockFactory implements DocBlockFactoryInterface
         $tagFactory->registerTagHandler('property-read', $phpstanTagFactory);
         $tagFactory->registerTagHandler('property-write', $phpstanTagFactory);
         $tagFactory->registerTagHandler('method', $phpstanTagFactory);
+        $tagFactory->registerTagHandler('extends', $phpstanTagFactory);
+        $tagFactory->registerTagHandler('implements', $phpstanTagFactory);
+        $tagFactory->registerTagHandler('template', $phpstanTagFactory);
+        $tagFactory->registerTagHandler('template-extends', $phpstanTagFactory);
+        $tagFactory->registerTagHandler('template-implements', $phpstanTagFactory);
 
         $docBlockFactory = new self($descriptionFactory, $tagFactory);
         foreach ($additionalTags as $tagName => $tagHandler) {

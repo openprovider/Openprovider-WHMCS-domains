@@ -4,20 +4,19 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInite02c57d492edc630dde0f045de8e504d
+class ComposerStaticInit9a29979374213b4116ca45940115c24f
 {
     public static $files = array (
-        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
-        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
-        'a1105708a18b76903365ca1c4aa61b02' => __DIR__ . '/..' . '/symfony/translation/Resources/functions.php',
-        '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '9e7a8ca9c2c682ec2704dd873a0e3618' => __DIR__ . '/..' . '/php-mock/php-mock/autoload.php',
+        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
-        '72579e7bd17821bb1321b87411366eae' => __DIR__ . '/..' . '/illuminate/support/helpers.php',
+        'c72349b1fe8d0deeedd3a52e8aa814d8' => __DIR__ . '/..' . '/mockery/mockery/library/helpers.php',
+        'ce9671a430e4846b44e1c68c7611f9f5' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         'b33e3d135e5d9e47d845c576147bda89' => __DIR__ . '/..' . '/php-di/php-di/src/functions.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
@@ -25,7 +24,6 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         '2dcc1fe700145c8f64875eb0ae323e56' => __DIR__ . '/../..' . '/helpers.php',
         'ca20aaae4a3fe829235e329cd2617217' => __DIR__ . '/../..' . '/vendor-static/guzzlehttp/guzzle/src/functions_include.php',
         'bec47d8cabb65f363f596b618b5c88f1' => __DIR__ . '/../..' . '/vendor-static/guzzlehttp/psr7/src/functions_include.php',
-        '78a17a9a31b6b6b1779c3591d4be31bc' => __DIR__ . '/../..' . '/vendor-static/guzzlehttp/promises/src/functions_include.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -52,8 +50,6 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
             'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
             'Symfony\\Polyfill\\Intl\\Grapheme\\' => 31,
             'Symfony\\Polyfill\\Ctype\\' => 23,
-            'Symfony\\Contracts\\Translation\\' => 30,
-            'Symfony\\Component\\Translation\\' => 30,
             'Symfony\\Component\\String\\' => 25,
             'Symfony\\Component\\Serializer\\' => 29,
             'Symfony\\Component\\PropertyInfo\\' => 31,
@@ -61,7 +57,6 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         ),
         'P' => 
         array (
-            'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Http\\Client\\' => 16,
@@ -72,7 +67,6 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         ),
         'O' => 
         array (
-            'Opis\\Closure\\' => 13,
             'Openprovider\\Api\\Rest\\Client\\Tld\\' => 33,
             'Openprovider\\Api\\Rest\\Client\\Template\\' => 38,
             'Openprovider\\Api\\Rest\\Client\\Ssl\\' => 33,
@@ -88,13 +82,17 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
             'OpenProvider\\WhmcsRegistrar\\' => 28,
             'OpenProvider\\' => 13,
         ),
+        'M' => 
+        array (
+            'Mockery\\' => 8,
+        ),
+        'L' => 
+        array (
+            'Laravel\\SerializableClosure\\' => 28,
+        ),
         'I' => 
         array (
             'Invoker\\' => 8,
-            'Illuminate\\Support\\' => 19,
-            'Illuminate\\Database\\' => 20,
-            'Illuminate\\Contracts\\' => 21,
-            'Illuminate\\Container\\' => 21,
         ),
         'G' => 
         array (
@@ -105,14 +103,9 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         'D' => 
         array (
             'Doctrine\\Instantiator\\' => 22,
-            'Doctrine\\Inflector\\' => 19,
             'Doctrine\\Deprecations\\' => 22,
             'DeepCopy\\' => 9,
             'DI\\' => 3,
-        ),
-        'C' => 
-        array (
-            'Carbon\\' => 7,
         ),
     );
 
@@ -168,14 +161,6 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Symfony\\Contracts\\Translation\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/translation-contracts',
-        ),
-        'Symfony\\Component\\Translation\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/symfony/translation',
-        ),
         'Symfony\\Component\\String\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/string',
@@ -191,10 +176,6 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         'Symfony\\Component\\PropertyAccess\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/property-access',
-        ),
-        'Psr\\SimpleCache\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -223,10 +204,6 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         'PHPStan\\PhpDocParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src',
-        ),
-        'Opis\\Closure\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/opis/closure/src',
         ),
         'Openprovider\\Api\\Rest\\Client\\Tld\\' => 
         array (
@@ -284,25 +261,17 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         array (
             0 => __DIR__ . '/../..' . '/OpenProvider',
         ),
+        'Mockery\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mockery/mockery/library/Mockery',
+        ),
+        'Laravel\\SerializableClosure\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/laravel/serializable-closure/src',
+        ),
         'Invoker\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-di/invoker/src',
-        ),
-        'Illuminate\\Support\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/support',
-        ),
-        'Illuminate\\Database\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/database',
-        ),
-        'Illuminate\\Contracts\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/contracts',
-        ),
-        'Illuminate\\Container\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/illuminate/container',
         ),
         'GuzzleHttp6\\Psr7\\' => 
         array (
@@ -320,13 +289,9 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         array (
             0 => __DIR__ . '/..' . '/doctrine/instantiator/src/Doctrine/Instantiator',
         ),
-        'Doctrine\\Inflector\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector',
-        ),
         'Doctrine\\Deprecations\\' => 
         array (
-            0 => __DIR__ . '/..' . '/doctrine/deprecations/lib/Doctrine/Deprecations',
+            0 => __DIR__ . '/..' . '/doctrine/deprecations/src',
         ),
         'DeepCopy\\' => 
         array (
@@ -335,20 +300,6 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         'DI\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-di/php-di/src',
-        ),
-        'Carbon\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
-        ),
-    );
-
-    public static $prefixesPsr0 = array (
-        'M' => 
-        array (
-            'Mockery' => 
-            array (
-                0 => __DIR__ . '/..' . '/mockery/mockery/library',
-            ),
         ),
     );
 
@@ -845,6 +796,7 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
         'PharIo\\Version\\VersionConstraintParser' => __DIR__ . '/..' . '/phar-io/version/src/VersionConstraintParser.php',
         'PharIo\\Version\\VersionConstraintValue' => __DIR__ . '/..' . '/phar-io/version/src/VersionConstraintValue.php',
         'PharIo\\Version\\VersionNumber' => __DIR__ . '/..' . '/phar-io/version/src/VersionNumber.php',
+        'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'SebastianBergmann\\CliParser\\AmbiguousOptionException' => __DIR__ . '/..' . '/sebastian/cli-parser/src/exceptions/AmbiguousOptionException.php',
         'SebastianBergmann\\CliParser\\Exception' => __DIR__ . '/..' . '/sebastian/cli-parser/src/exceptions/Exception.php',
         'SebastianBergmann\\CliParser\\OptionDoesNotAllowArgumentException' => __DIR__ . '/..' . '/sebastian/cli-parser/src/exceptions/OptionDoesNotAllowArgumentException.php',
@@ -1061,10 +1013,9 @@ class ComposerStaticInite02c57d492edc630dde0f045de8e504d
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInite02c57d492edc630dde0f045de8e504d::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInite02c57d492edc630dde0f045de8e504d::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInite02c57d492edc630dde0f045de8e504d::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInite02c57d492edc630dde0f045de8e504d::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit9a29979374213b4116ca45940115c24f::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit9a29979374213b4116ca45940115c24f::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit9a29979374213b4116ca45940115c24f::$classMap;
 
         }, null, ClassLoader::class);
     }

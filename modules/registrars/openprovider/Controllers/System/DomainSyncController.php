@@ -68,10 +68,16 @@ class DomainSyncController extends BaseController
             $status = $this->mapDomainStatus($domainOp['status']);
             // save the status and expiry date
             $this->updateDomainStatusAndExpiry($status, $expiration_date, $params['domainid']);
-            // Refresh the page
+
+            // Refresh the page with a cleaned URL (avoiding regaction & ac params)
             $url = $_SERVER['HTTP_REFERER'];
             $url_decoded = html_entity_decode($url);
-            header('Location: ' . $url_decoded);
+            $parsedUrl = parse_url($url_decoded);
+            parse_str($parsedUrl['query'] ?? '', $query);
+            unset($query['regaction'], $query['ac'], $query['token']); // Remove problematic params
+            $newQuery = http_build_query($query);
+            $cleanUrl = $parsedUrl['path'] . ($newQuery ? '?' . $newQuery : '');
+            header("Location: $cleanUrl");
 
             return [
                 'expirydate' => $expiration_date, // Format: YYYY-MM-DD
@@ -86,18 +92,18 @@ class DomainSyncController extends BaseController
         }
     }
     private function updateDomainStatusAndExpiry($status, $expiry_date, $domainId){
-    $command = 'UpdateClientDomain';
-    try {
-        $postData = array(
-            'domainid' => $domainId,
-            'status' => $status,
-            'expirydate' => $expiry_date,
-        );
-        $results = localAPI($command, $postData);
-        logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':$status, 'expirydate' => $expiry_date}", $results, null, null);
-    } catch (\Exception $e) {
-        logModuleCall('WHMCS internal', $command, null, "Failed to update domain. id: " . $domainId . ", msg: " . $e->getMessage(), null, null);
-    }
+        $command = 'UpdateClientDomain';
+        try {
+            $postData = array(
+                'domainid' => $domainId,
+                'status' => $status,
+                'expirydate' => $expiry_date,
+            );
+            $results = localAPI($command, $postData);
+            logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':$status, 'expirydate' => $expiry_date}", $results, null, null);
+        } catch (\Exception $e) {
+            logModuleCall('WHMCS internal', $command, null, "Failed to update domain. id: " . $domainId . ", msg: " . $e->getMessage(), null, null);
+        }
     }
     /**
      * Map OpenProvider status to WHMCS status.

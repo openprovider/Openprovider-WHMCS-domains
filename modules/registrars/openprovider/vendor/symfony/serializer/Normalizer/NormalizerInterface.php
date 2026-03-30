@@ -24,9 +24,9 @@ interface NormalizerInterface
     /**
      * Normalizes an object into a set of arrays/scalars.
      *
-     * @param mixed  $object  Object to normalize
-     * @param string $format  Format the normalization result will be encoded as
-     * @param array  $context Context options for the normalizer
+     * @param mixed       $object  Object to normalize
+     * @param string|null $format  Format the normalization result will be encoded as
+     * @param array       $context Context options for the normalizer
      *
      * @return array|string|int|float|bool|\ArrayObject|null \ArrayObject is used to make sure an empty object is encoded as an object not an array
      *
@@ -36,15 +36,15 @@ interface NormalizerInterface
      * @throws LogicException             Occurs when the normalizer is not called in an expected context
      * @throws ExceptionInterface         Occurs for all the other cases of errors
      */
-    public function normalize($object, string $format = null, array $context = []);
+    public function normalize($object, ?string $format = null, array $context = []);
 
     /**
      * Checks whether the given class is supported for normalization by this normalizer.
      *
-     * @param mixed  $data   Data to normalize
-     * @param string $format The format being (de-)serialized from or into
+     * @param mixed       $data   Data to normalize
+     * @param string|null $format The format being (de-)serialized from or into
      *
      * @return bool
      */
-    public function supportsNormalization($data, string $format = null);
+    public function supportsNormalization($data, ?string $format = null);
 }

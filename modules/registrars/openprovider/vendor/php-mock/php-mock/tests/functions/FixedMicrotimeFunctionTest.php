@@ -15,11 +15,8 @@ use PHPUnit\Framework\TestCase;
  */
 class FixedMicrotimeFunctionTest extends TestCase
 {
-
     /**
      * Tests setMicrotime().
-     *
-     * @test
      */
     public function testSetMicrotime()
     {
@@ -30,8 +27,6 @@ class FixedMicrotimeFunctionTest extends TestCase
 
     /**
      * Tests setMicrotimeAsFloat().
-     *
-     * @test
      */
     public function testSetMicrotimeAsFloat()
     {
@@ -42,8 +37,6 @@ class FixedMicrotimeFunctionTest extends TestCase
 
     /**
      * Tests getMicrotime().
-     *
-     * @test
      */
     public function testGetMicrotime()
     {
@@ -55,8 +48,6 @@ class FixedMicrotimeFunctionTest extends TestCase
 
     /**
      * Tests getCallable()
-     *
-     * @test
      */
     public function testGetCallable()
     {
@@ -78,8 +69,6 @@ class FixedMicrotimeFunctionTest extends TestCase
 
     /**
      * Tests initializing with the current timestamp
-     *
-     * @test
      */
     public function testConstructCurrentTime()
     {
@@ -91,10 +80,9 @@ class FixedMicrotimeFunctionTest extends TestCase
 
     /**
      * Tests exception for invalid argument in constructor.
-     *
-     * @test
      * @dataProvider provideTestConstructFailsForInvalidArgument
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideTestConstructFailsForInvalidArgument')]
     public function testConstructFailsForInvalidArgument($timestamp)
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -106,7 +94,7 @@ class FixedMicrotimeFunctionTest extends TestCase
      *
      * @return array Test cases.
      */
-    public function provideTestConstructFailsForInvalidArgument()
+    public static function provideTestConstructFailsForInvalidArgument()
     {
         return [
             [true],
@@ -119,10 +107,9 @@ class FixedMicrotimeFunctionTest extends TestCase
      *
      * @param mixed $timestamp The tested timestamp.
      * @param float $expected  The expected timestamp.
-     *
-     * @test
      * @dataProvider provideTestConstruct
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('provideTestConstruct')]
     public function testConstruct($timestamp, $expected)
     {
         $function = new FixedMicrotimeFunction($timestamp);
@@ -135,7 +122,7 @@ class FixedMicrotimeFunctionTest extends TestCase
      *
      * @return array
      */
-    public function provideTestConstruct()
+    public static function provideTestConstruct()
     {
         return [
             ["0.00000001 1", 1.00000001],

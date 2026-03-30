@@ -33,4 +33,6 @@ class DatabaseTable
     const Configuration = 'tblconfiguration';
 
     const Hosting = 'tblhosting';
+
+    const ModOpenProviderCache = 'mod_op_cache';
 }

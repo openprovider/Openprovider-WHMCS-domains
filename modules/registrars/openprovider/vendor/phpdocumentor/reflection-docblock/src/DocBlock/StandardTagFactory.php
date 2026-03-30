@@ -22,6 +22,7 @@ use phpDocumentor\Reflection\DocBlock\Tags\Generic;
 use phpDocumentor\Reflection\DocBlock\Tags\InvalidTag;
 use phpDocumentor\Reflection\DocBlock\Tags\Link as LinkTag;
 use phpDocumentor\Reflection\DocBlock\Tags\Method;
+use phpDocumentor\Reflection\DocBlock\Tags\Mixin;
 use phpDocumentor\Reflection\DocBlock\Tags\Param;
 use phpDocumentor\Reflection\DocBlock\Tags\Property;
 use phpDocumentor\Reflection\DocBlock\Tags\PropertyRead;
@@ -30,6 +31,7 @@ use phpDocumentor\Reflection\DocBlock\Tags\Return_;
 use phpDocumentor\Reflection\DocBlock\Tags\See as SeeTag;
 use phpDocumentor\Reflection\DocBlock\Tags\Since;
 use phpDocumentor\Reflection\DocBlock\Tags\Source;
+use phpDocumentor\Reflection\DocBlock\Tags\TemplateCovariant;
 use phpDocumentor\Reflection\DocBlock\Tags\Throws;
 use phpDocumentor\Reflection\DocBlock\Tags\Uses;
 use phpDocumentor\Reflection\DocBlock\Tags\Var_;
@@ -45,7 +47,6 @@ use function array_key_exists;
 use function array_merge;
 use function array_slice;
 use function call_user_func_array;
-use function count;
 use function get_class;
 use function is_object;
 use function preg_match;
@@ -80,29 +81,31 @@ final class StandardTagFactory implements TagFactory
      *                               FQCN to a class that handles it as an array value.
      */
     private array $tagHandlerMappings = [
-        'author' => Author::class,
-        'covers' => Covers::class,
-        'deprecated' => Deprecated::class,
-        // 'example'        => '\phpDocumentor\Reflection\DocBlock\Tags\Example',
-        'link' => LinkTag::class,
-        'method' => Method::class,
-        'param' => Param::class,
-        'property-read' => PropertyRead::class,
-        'property' => Property::class,
-        'property-write' => PropertyWrite::class,
-        'return' => Return_::class,
-        'see' => SeeTag::class,
-        'since' => Since::class,
-        'source' => Source::class,
-        'throw' => Throws::class,
-        'throws' => Throws::class,
-        'uses' => Uses::class,
-        'var' => Var_::class,
-        'version' => Version::class,
+        'author'             => Author::class,
+        'covers'             => Covers::class,
+        'deprecated'         => Deprecated::class,
+        // 'example'         => '\phpDocumentor\Reflection\DocBlock\Tags\Example',
+        'link'               => LinkTag::class,
+        'mixin'              => Mixin::class,
+        'method'             => Method::class,
+        'param'              => Param::class,
+        'property-read'      => PropertyRead::class,
+        'property'           => Property::class,
+        'property-write'     => PropertyWrite::class,
+        'return'             => Return_::class,
+        'see'                => SeeTag::class,
+        'since'              => Since::class,
+        'source'             => Source::class,
+        'template-covariant' => TemplateCovariant::class,
+        'throw'              => Throws::class,
+        'throws'             => Throws::class,
+        'uses'               => Uses::class,
+        'var'                => Var_::class,
+        'version'            => Version::class,
     ];
 
     /**
-     * @var array<class-string<Tag>> An array with a anotation s a key, and an
+     * @var array<class-string<Tag>> An array with an annotation as a key, and an
      *      FQCN to a class that handles it as an array value.
      */
     private array $annotationMappings = [];
@@ -162,14 +165,14 @@ final class StandardTagFactory implements TagFactory
 
     public function addService(object $service, ?string $alias = null): void
     {
-        $this->serviceLocator[$alias ?: get_class($service)] = $service;
+        $this->serviceLocator[$alias ?? get_class($service)] = $service;
     }
 
     /** {@inheritDoc} */
     public function registerTagHandler(string $tagName, $handler): void
     {
         Assert::stringNotEmpty($tagName);
-        if (strpos($tagName, '\\') && $tagName[0] !== '\\') {
+        if (strpos($tagName, '\\') !== false && $tagName[0] !== '\\') {
             throw new InvalidArgumentException(
                 'A namespaced tag must have a leading backslash as it must be fully qualified'
             );
@@ -199,10 +202,6 @@ final class StandardTagFactory implements TagFactory
             throw new InvalidArgumentException(
                 'The tag "' . $tagLine . '" does not seem to be wellformed, please check it for errors'
             );
-        }
-
-        if (count($matches) < 3) {
-            $matches[] = '';
         }
 
         return array_slice($matches, 1);
@@ -323,7 +322,7 @@ final class StandardTagFactory implements TagFactory
      * Returns a copy of this class' Service Locator with added dynamic parameters,
      * such as the tag's name, body and Context.
      *
-     * @param TypeContext $context The Context (namespace and aliasses) that may be
+     * @param TypeContext $context The Context (namespace and aliases) that may be
      *  passed and is used to resolve FQSENs.
      * @param string      $tagName The name of the tag that may be
      *  passed onto the factory method of the Tag class.

@@ -49,15 +49,24 @@ class EppController extends BaseController
             'extension' => $params['tld']
         ]);
 
+        $eppCode = "";
+
         try {
             $domainOp = $this->apiHelper->getDomain($domain);
+
+            $eppCode = $domainOp['authCode'];
+
+            if ($eppCode == "") {
+                $id = $domainOp['id'];
+                $eppCode = $this->apiHelper->getEppCode($id);
+            }
         } catch (\Exception $e) {
             return [
                 'error' => $e->getMessage()
             ];
         }
 
-        $values["eppcode"] = $domainOp['authCode'] ?? '';
+        $values["eppcode"] = $eppCode;
 
         return $values;
     }

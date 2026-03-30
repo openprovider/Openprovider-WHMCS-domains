@@ -16,7 +16,7 @@ In the case of .pt domains, the end user must supply some form of tax id, whethe
 
 #### Creating a domain with additional domain data
 
-- When the end user tries to create an .es domain they will have the option to choose `Tipo de identificación`which can either be `DNI (Si es un particular)` or `CIF (Si es una empresa)` note that the names of these values cane be changed in the file `modules/registrars/openprovider/configuration/additionalfields.php`
+- When the end user tries to create an .es domain they will have the option to choose `Tipo de identificación`which can either be `DNI (Si es un particular)` or `CIF (Si es una empresa)` note that the names of these values can be changed in the file `modules/registrars/openprovider/configuration/additionalfields.php`
 
 ![registration-view](img/additional-data-advanced-handling-01.png)
 

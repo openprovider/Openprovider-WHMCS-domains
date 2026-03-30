@@ -5,6 +5,7 @@ namespace OpenProvider\API;
 use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
+use GuzzleHttp6\Promise\Utils;
 
 class ApiHelper
 {
@@ -48,6 +49,39 @@ class ApiHelper
             return $domain['results'][0];
         }
         throw new \Exception('Domain does not exist in Openprovider!');
+    }
+
+    /**
+     * @param int $id
+     * @return string
+     * @throws \Exception
+     */
+    public function getEPPCode(int $id): string
+    {
+        $args = [
+            'id'     => $id,
+        ];
+
+        $result = '';
+
+        try {
+            $result = $this->buildResponse($this->apiClient->call('getEPPCodeRequest', $args));
+
+            if (isset($result['authCode'])) {
+                return $result['authCode'];
+            }
+
+            if ($result['success'] == true) {
+                $message = "The authorization code has been successfully sent to the registrant email. Please check registrant inbox.";
+                return $message;
+            }
+
+            if (isset($result['message']) && $result['message'] != "") {
+                throw new \Exception($result['message']);
+            }
+        } catch (\Exception $e) {
+            throw new \Exception($e->getMessage(), $e->getCode());
+        }
     }
 
     /**
@@ -411,6 +445,44 @@ class ApiHelper
 
     /**
      * @param Domain $domain
+     * @param array $record
+     * @return array
+     * @throws \Exception
+     */
+    public function removeDnsRecord(Domain $domain, array $record): array
+    {
+        $zoneName = $domain->getFullName();
+
+        $required = ['type', 'name', 'value'];
+        foreach ($required as $key) {
+            if (!array_key_exists($key, $record)) {
+                throw new \InvalidArgumentException("Missing required DNS record field: {$key}");
+            }
+        }
+
+        $payload = [
+            'type'  => strtoupper((string)$record['type']),
+            'name'  => (string)$record['name'],
+            'value' => (string)$record['value'],
+        ];
+
+        // Only include prio for MX/SRV (and only if provided)
+        if (in_array($payload['type'], ['MX', 'SRV'], true) && isset($record['prio']) && $record['prio'] !== '' && $record['prio'] !== null) {
+            $payload['prio'] = (int)$record['prio'];
+        }
+
+        $args = [
+            'name'    => $zoneName,
+            'type'    => 'master',
+            'records' => [
+                'remove' => [$payload],
+            ],
+        ];
+        return $this->buildResponse($this->apiClient->call('modifyZoneDnsRequest', $args));
+    }
+
+    /**
+     * @param Domain $domain
      * @param $records
      * @return array
      * @throws \Exception
@@ -470,22 +542,79 @@ class ApiHelper
             return $customerOp;
         }
 
+        $customerInfo = $this->formatCustomerForWhmcs($customerOp);
+
+        return $customerInfo;
+    }
+
+    /**
+     * @param array $handles
+     * @param bool $formattedForWhmcs
+     * @return array
+     * @throws \Exception
+     */
+    public function getCustomersAsync(array $handles, bool $formattedForWhmcs = true): array
+    {
+        $promises = [];
+
+        foreach ($handles as $key => $handle) {
+            $promises[$key] = $this->apiClient->callAsync('retrieveCustomerRequestAsync', [
+                'handle' => $handle,
+                'with_additional_data' => 1,
+            ]);
+        }
+
+        $responses = Utils::settle($promises)->wait();
+
+        $customers = [];
+
+        foreach ($responses as $key => $result) {
+            if ($result['state'] !== 'fulfilled') {
+                continue;
+            }
+
+            $customerOp = $this->buildResponse($result['value']);
+
+            if (!$formattedForWhmcs) {
+                $customers[$key] = $customerOp;
+                continue;
+            }
+
+            $customers[$key] = $this->formatCustomerForWhmcs($customerOp);
+        }
+
+        return $customers;
+    }
+
+
+    private function formatCustomerForWhmcs(array $customerOp): array
+    {
         $customerInfo = [];
+
         $customerInfo['First Name'] = $customerOp['name']['firstName'];
         $customerInfo['Last Name'] = $customerOp['name']['lastName'];
         $customerInfo['Company Name'] = $customerOp['companyName'];
         $customerInfo['Email Address'] = $customerOp['email'];
-        $customerInfo['Address'] = $customerOp['address']['street'] . ' ' .
-            $customerOp['address']['number'] . ' ' .
-            $customerOp['address']['suffix'];
+
+        $addressParts = array_filter(
+            [
+                trim($customerOp['address']['street'] ?? ''),
+                trim($customerOp['address']['number'] ?? ''),
+                trim($customerOp['address']['suffix'] ?? ''),
+            ],
+            'strlen'
+        );
+        $customerInfo['Address'] = implode(' ', $addressParts);
+
         $customerInfo['City'] = $customerOp['address']['city'];
         $customerInfo['State'] = $customerOp['address']['state'];
         $customerInfo['Zip Code'] = $customerOp['address']['zipcode'];
         $customerInfo['Country'] = $customerOp['address']['country'];
-        $customerInfo['Phone Number'] = $customerOp['phone']['countryCode'] . '.' .
+
+        $customerInfo['Phone Number'] =
+            $customerOp['phone']['countryCode'] . '.' .
             $customerOp['phone']['areaCode'] .
             $customerOp['phone']['subscriberNumber'];
-
 
         if (!empty($customerOp['companyName'])) {
             if (empty($customerOp['additionalData']['companyRegistrationNumber'])) {
@@ -500,6 +629,8 @@ class ApiHelper
                 $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['passportNumber'];
             }
         }
+
+        $customerInfo['locale'] = $customerOp['locale'] ?? null;
 
         return $customerInfo;
     }
@@ -554,6 +685,37 @@ class ApiHelper
     public function getPromoMessages(): array
     {
         return $this->buildResponse($this->apiClient->call('searchPromoMessageRequest'));
+    }
+
+    /**
+     * @param string $tld
+     * @return array
+     * @throws \Exception 
+     */
+    public function getTldMeta(string $tld): array
+    {
+        $tld = trim($tld);
+        if ($tld === '') {
+            throw new \InvalidArgumentException('Missing TLD.');
+        }
+        
+        return $this->buildResponse(
+            $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
+        );
+    }
+
+    /**
+     * @param string $tld
+     * @return bool
+     */
+    public function supportsDnssec(string $tld): bool
+    {
+        try {
+            $meta = $this->getTldMeta($tld);
+            return (bool)($meta['dnssec_allowed'] ?? $meta['dnssecAllowed'] ?? false);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**

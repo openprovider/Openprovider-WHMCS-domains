@@ -25,14 +25,19 @@ use phpDocumentor\Reflection\PseudoTypes\HtmlEscapedString;
 use phpDocumentor\Reflection\PseudoTypes\IntegerRange;
 use phpDocumentor\Reflection\PseudoTypes\IntegerValue;
 use phpDocumentor\Reflection\PseudoTypes\List_;
+use phpDocumentor\Reflection\PseudoTypes\ListShape;
+use phpDocumentor\Reflection\PseudoTypes\ListShapeItem;
 use phpDocumentor\Reflection\PseudoTypes\LiteralString;
 use phpDocumentor\Reflection\PseudoTypes\LowercaseString;
 use phpDocumentor\Reflection\PseudoTypes\NegativeInteger;
+use phpDocumentor\Reflection\PseudoTypes\NonEmptyArray;
 use phpDocumentor\Reflection\PseudoTypes\NonEmptyList;
 use phpDocumentor\Reflection\PseudoTypes\NonEmptyLowercaseString;
 use phpDocumentor\Reflection\PseudoTypes\NonEmptyString;
 use phpDocumentor\Reflection\PseudoTypes\Numeric_;
 use phpDocumentor\Reflection\PseudoTypes\NumericString;
+use phpDocumentor\Reflection\PseudoTypes\ObjectShape;
+use phpDocumentor\Reflection\PseudoTypes\ObjectShapeItem;
 use phpDocumentor\Reflection\PseudoTypes\PositiveInteger;
 use phpDocumentor\Reflection\PseudoTypes\StringValue;
 use phpDocumentor\Reflection\PseudoTypes\TraitString;
@@ -82,6 +87,8 @@ use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IntersectionTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\NullableTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\ObjectShapeItemNode;
+use PHPStan\PhpDocParser\Ast\Type\ObjectShapeNode;
 use PHPStan\PhpDocParser\Ast\Type\OffsetAccessTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\ThisTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
@@ -91,6 +98,7 @@ use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\ParserException;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
 use PHPStan\PhpDocParser\Parser\TypeParser;
+use PHPStan\PhpDocParser\ParserConfig;
 use RuntimeException;
 
 use function array_filter;
@@ -139,6 +147,7 @@ final class TypeResolver
         'mixed' => Mixed_::class,
         'array' => Array_::class,
         'array-key' => ArrayKey::class,
+        'non-empty-array' => NonEmptyArray::class,
         'resource' => Resource_::class,
         'void' => Void_::class,
         'null' => Null_::class,
@@ -181,8 +190,14 @@ final class TypeResolver
     public function __construct(?FqsenResolver $fqsenResolver = null)
     {
         $this->fqsenResolver = $fqsenResolver ?: new FqsenResolver();
-        $this->typeParser = new TypeParser(new ConstExprParser());
-        $this->lexer = new Lexer();
+
+        if (class_exists(ParserConfig::class)) {
+            $this->typeParser = new TypeParser(new ParserConfig([]), new ConstExprParser(new ParserConfig([])));
+            $this->lexer = new Lexer(new ParserConfig([]));
+        } else {
+            $this->typeParser = new TypeParser(new ConstExprParser());
+            $this->lexer = new Lexer();
+        }
     }
 
     /**
@@ -234,10 +249,43 @@ final class TypeResolver
                 );
 
             case ArrayShapeNode::class:
-                return new ArrayShape(
+                switch ($type->kind) {
+                    case ArrayShapeNode::KIND_ARRAY:
+                        return new ArrayShape(
+                            ...array_map(
+                                function (ArrayShapeItemNode $item) use ($context): ArrayShapeItem {
+                                    return new ArrayShapeItem(
+                                        (string) $item->keyName,
+                                        $this->createType($item->valueType, $context),
+                                        $item->optional
+                                    );
+                                },
+                                $type->items
+                            )
+                        );
+
+                    case ArrayShapeNode::KIND_LIST:
+                        return new ListShape(
+                            ...array_map(
+                                function (ArrayShapeItemNode $item) use ($context): ListShapeItem {
+                                    return new ListShapeItem(
+                                        null,
+                                        $this->createType($item->valueType, $context),
+                                        $item->optional
+                                    );
+                                },
+                                $type->items
+                            )
+                        );
+
+                    default:
+                        throw new RuntimeException('Unsupported array shape kind');
+                }
+            case ObjectShapeNode::class:
+                return new ObjectShape(
                     ...array_map(
-                        function (ArrayShapeItemNode $item) use ($context): ArrayShapeItem {
-                            return new ArrayShapeItem(
+                        function (ObjectShapeItemNode $item) use ($context): ObjectShapeItem {
+                            return new ObjectShapeItem(
                                 (string) $item->keyName,
                                 $this->createType($item->valueType, $context),
                                 $item->optional

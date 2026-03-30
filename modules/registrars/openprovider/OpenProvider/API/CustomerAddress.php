@@ -38,12 +38,12 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
             $housenumber = $splitAddress['houseNumberParts']['base'];
             $convertedAddress = $splitAddress['streetName'] . ' ' . $splitAddress['additionToAddress2'];
 
-            $this->street   =   $convertedAddress;
-            $this->number   =   $housenumber;
+            $this->street   =   trim($convertedAddress);
+            $this->number   =   trim($housenumber);
         } catch (\Exception $e)
         {
             if (strpos($e->getMessage(), ' could not be splitted into street name and house number.') !== false)
-                $this->street = $fullAddress;
+                $this->street = trim($fullAddress);
             else
                 throw $e;
         }
