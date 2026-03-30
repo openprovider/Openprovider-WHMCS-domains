@@ -4,6 +4,7 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\System;
 
 use WHMCS\ClientArea;
 use WHMCS\Authentication\CurrentUser;
+use WHMCS\Config\Setting;
 use OpenProvider\API\APIConfig;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
@@ -135,12 +136,28 @@ class DnssecPageController extends BaseController
             $primarySidebar->getChild('Domain Details Management')
                 ->addChild('DNS Management')
                 ->setLabel(\Lang::trans('domaindnsmanagement'))
-                ->setUri("clientarea.php?action=domaindns&domainid={$domainId}")
+                ->setUri("dnsmanagement.php?domainid={$domainId}")
                 ->setOrder(50);
         }
 
-        $ca->setTemplate('/modules/registrars/openprovider/includes/templates/dnssec.tpl');
+        $activeTheme = Setting::getValue('Template');
+        $activeTheme = preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $activeTheme);
 
+        // Default to module fallback template
+        $template = '/modules/registrars/openprovider/includes/templates/dnssec.tpl';
+
+        $templatesDir = ROOTDIR . '/templates';
+        $templatesDirReal = realpath($templatesDir);
+
+        if ($templatesDirReal !== false && $activeTheme !== '') {
+            $candidate = $templatesDirReal . '/' . $activeTheme . '/dnssec.tpl';
+            $resolved = realpath($candidate);
+            if ($resolved !== false && str_starts_with($resolved, $templatesDirReal . DIRECTORY_SEPARATOR)) {
+                $template = 'dnssec';
+            }
+        }
+
+        $ca->setTemplate($template);
         $ca->output();
     }
 

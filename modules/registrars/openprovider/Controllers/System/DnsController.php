@@ -45,8 +45,10 @@ class DnsController extends BaseController
      */
     public function get($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        if (!isset($params['sld'], $params['tld'])) {
+            $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+            $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        }
 
         $this->domain->load(array(
             'name'      => $params['sld'],
@@ -79,8 +81,10 @@ class DnsController extends BaseController
      */
     public function save($params)
     {
-        $params['sld'] = $params['original']['domainObj']->getSecondLevel();
-        $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        if (!isset($params['sld'], $params['tld'])) {
+            $params['sld'] = $params['original']['domainObj']->getSecondLevel();
+            $params['tld'] = $params['original']['domainObj']->getTopLevel();
+        }
 
         $records = $this->convertToObjects($params['dnsrecords']);
 
@@ -91,25 +95,34 @@ class DnsController extends BaseController
         try {
             if (empty($records)) {
                 $this->apiHelper->deleteDnsRecords($domain);
-
                 return self::RETURN_SUCCESS;
             }
 
-            $dnsZone = $this->apiHelper->getDns($domain);
-            if ($dnsZone) {
+            try {
                 $this->apiHelper->updateDnsRecords($domain, $records);
-
                 return self::RETURN_SUCCESS;
+            } catch (\Exception $e) {
+                if ($this->isZoneNotFound($e)) {
+                    $this->apiHelper->createDnsRecords($domain, $records);
+                    return self::RETURN_SUCCESS;
+                }
+                throw $e;
             }
-
-            $this->apiHelper->createDnsRecords($domain, $records);
-
-            return self::RETURN_SUCCESS;
         } catch (\Exception $e) {
             return [
                 'error' => $e->getMessage(),
             ];
         }
+    }
+
+    private function isZoneNotFound(\Throwable $e): bool
+    {
+        if ((int) $e->getCode() === 872) {
+            return true;
+        }
+
+        $msg = (string) $e->getMessage();
+        return stripos($msg, 'Zone specified is not found') !== false;
     }
 
     /**

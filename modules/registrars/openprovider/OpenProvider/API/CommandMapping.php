@@ -33,6 +33,10 @@ class CommandMapping
             self::COMMAND_MAP_METHOD => 'getCustomer',
             self::COMMAND_MAP_CLASS => CustomerApi::class,
         ],
+        'retrieveCustomerRequestAsync' => [
+            self::COMMAND_MAP_METHOD => 'getCustomerAsync',
+            self::COMMAND_MAP_CLASS => CustomerApi::class,
+        ],
         'createCustomerRequest' => [
             self::COMMAND_MAP_METHOD => 'createCustomer',
             self::COMMAND_MAP_CLASS => CustomerApi::class,

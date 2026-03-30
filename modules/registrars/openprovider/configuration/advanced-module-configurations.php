@@ -30,7 +30,7 @@ return [
     //  Default: '', string - Choose a DNS template
     'dnsTemplate'                       => '',
     'useNewDnsManagerFeature'           => false, //  Default: false, Use the Openprovider DNS panel instead of the WHMCS DNS editing page (https://support.openprovider.eu/hc/en-us/articles/360014539999-Single-Domain-DNS-panel)
-
+    'useNewDnsManagerFeatureInNewWindow' => true, // Default: true, When this is enabled, DnsManager will open in a new window. But to use this "useNewDnsManagerFeature" configuration needs to be enabled.
     //choose which settings will be synched by the openprovider sync task
     'syncAutoRenewSetting'              => true,  //  Default: true,  Synchronize Auto renew setting to Openprovider?
     'syncIdentityProtectionToggle'      => true,  //  Default: true,  Synchronize Identity protection to Openprovider?

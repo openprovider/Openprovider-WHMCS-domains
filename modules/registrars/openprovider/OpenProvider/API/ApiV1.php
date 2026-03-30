@@ -11,6 +11,8 @@ use Symfony\Component\Serializer\Serializer;
 
 use Carbon\Carbon;
 use WHMCS\Database\Capsule;
+use GuzzleHttp6\Promise\PromiseInterface;
+use GuzzleHttp6\Promise\Create;
 
 class ApiV1 implements ApiInterface
 {
@@ -132,6 +134,96 @@ class ApiV1 implements ApiInterface
         $this->log($cmd, $args, $response);
 
         return $response;
+    }
+
+    /**
+     * Asynchronous API call
+     *
+     * @param string $cmd
+     * @param array $args
+     * @return PromiseInterface
+     */
+    public function callAsync(string $cmd, array $args = []): PromiseInterface
+    {
+        $response = new Response();
+
+        try {
+            $apiClass  = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_CLASS);
+            $apiMethod = $this->commandMapping->getCommandMapping($cmd, CommandMapping::COMMAND_MAP_METHOD);
+        } catch (\Exception $e) {
+            $response = $this->failedResponse($response, $e->getMessage(), $e->getCode());
+            $this->log($cmd, $args, $response);
+
+            // Return a fulfilled promise with failure response (no throwing)
+            return Create::promiseFor($response);
+        }
+
+        $service = new $apiClass($this->httpClient, $this->configuration);
+
+        $service->getConfig()->setHost($this->apiConfiguration->getHost());
+        if ($this->apiConfiguration->getToken()) {
+            $service->getConfig()->setAccessToken($this->apiConfiguration->getToken());
+        }
+
+        try {
+            $requestParameters = $this->paramsCreator->createParameters($args, $service, $apiMethod);
+            $promise = $service->$apiMethod(...$requestParameters); // MUST be async method returning PromiseInterface
+        } catch (\Exception $e) {
+            // Parameter creation or immediate failure
+            $responseData = $this->serializer->normalize(
+                json_decode(substr($e->getMessage(), strpos($e->getMessage(), 'response:') + strlen('response:')))
+            ) ?? $e->getMessage();
+
+            $response = $this->failedResponse(
+                $response,
+                $responseData['desc'] ?? $e->getMessage(),
+                $responseData['code'] ?? $e->getCode()
+            );
+            $this->log($cmd, $args, $response);
+
+            return Create::promiseFor($response);
+        }
+
+        // Convert promise result into your ResponseInterface
+        return $promise->then(
+            function ($reply) use ($cmd, $args, $response) {
+                try {
+                    // Note: async method returns the SAME model as sync (CustomerGetCustomerResponse, etc.)
+                    // Some SDK responses might be arrays; keep as-is with your existing warnings check.
+                    if (is_array($reply) && isset($reply['warnings'])) {
+                        $this->addWarning($reply['warnings'], $cmd, $args);
+                    }
+
+                    // If reply is a model object with getData()
+                    if (is_object($reply) && method_exists($reply, 'getData')) {
+                        $data = $this->serializer->normalize($reply->getData());
+                    } else {
+                        // fallback if reply is already data-like (rare, but safe)
+                        $data = $this->serializer->normalize($reply);
+                    }
+
+                    $success = $this->successResponse($response, is_array($data) ? $data : []);
+                    $this->log($cmd, $args, $success);
+
+                    return $success;
+                } catch (\Throwable $e) {
+                    $fail = $this->failedResponse($response, $e->getMessage(), (int)$e->getCode());
+                    $this->log($cmd, $args, $fail);
+                    return $fail;
+                }
+            },
+            function ($reason) use ($cmd, $args, $response) {
+                // Promise rejected - reason might be ApiException or other Throwable
+                $message = $reason instanceof \Throwable ? $reason->getMessage() : 'Async API call failed';
+                $code    = $reason instanceof \Throwable ? (int)$reason->getCode() : 0;
+
+                $fail = $this->failedResponse($response, $message, $code);
+                $this->log($cmd, $args, $fail);
+
+                // Resolve (not throw) so callers can settle() easily
+                return $fail;
+            }
+        );
     }
 
     /**
