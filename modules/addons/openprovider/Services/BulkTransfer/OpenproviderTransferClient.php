@@ -33,28 +33,69 @@ class OpenproviderTransferClient
             'billing_handle' => null,
         ];
 
-        if (!empty($tldMetaData['ownerHandleSupported'])) {
-            $handles['owner_handle'] = $this->createHandle($handleService, $params);
-        }
-
-        $adminHandleRequired = !empty($tldMetaData['adminHandleSupported'])
+        $hasSupportedHandle = !empty($tldMetaData['ownerHandleSupported'])
+            || !empty($tldMetaData['adminHandleSupported'])
             || !empty($tldMetaData['techHandleSupported'])
             || !empty($tldMetaData['billingHandleSupported']);
 
-        if ($adminHandleRequired) {
-            $adminHandle = $this->createHandle($handleService, $params, 'admin');
+        if (!$hasSupportedHandle) {
+            return $handles;
+        }
+
+        $allContactsMatchOwner = $this->allContactsMatchOwner($params);
+
+        if ($allContactsMatchOwner) {
+            $sharedHandle = $this->createHandle($handleService, $params);
+
+            if (!empty($tldMetaData['ownerHandleSupported'])) {
+                $handles['owner_handle'] = $sharedHandle;
+            }
 
             if (!empty($tldMetaData['adminHandleSupported'])) {
-                $handles['admin_handle'] = $adminHandle;
+                $handles['admin_handle'] = $sharedHandle;
             }
 
             if (!empty($tldMetaData['techHandleSupported'])) {
-                $handles['tech_handle'] = $adminHandle;
+                $handles['tech_handle'] = $sharedHandle;
             }
 
             if (!empty($tldMetaData['billingHandleSupported'])) {
-                $handles['billing_handle'] = $adminHandle;
+                $handles['billing_handle'] = $sharedHandle;
             }
+
+            return $handles;
+        }
+
+        $handlesByContactSignature = [];
+
+        if (!empty($tldMetaData['ownerHandleSupported'])) {
+            $ownerContact = $this->getContactDetailsByRole($params, 'Owner');
+            $ownerSignature = $this->getContactSignature($ownerContact);
+            $handles['owner_handle'] = $this->createHandle($handleService, $params, 'registrant');
+            $handlesByContactSignature[$ownerSignature] = $handles['owner_handle'];
+        }
+
+        $roleMap = [
+            'admin_handle' => ['supported' => 'adminHandleSupported', 'contact' => 'Admin', 'type' => 'admin'],
+            'tech_handle' => ['supported' => 'techHandleSupported', 'contact' => 'Tech', 'type' => 'tech'],
+            'billing_handle' => ['supported' => 'billingHandleSupported', 'contact' => 'Billing', 'type' => 'billing'],
+        ];
+
+        foreach ($roleMap as $handleKey => $roleConfig) {
+            if (empty($tldMetaData[$roleConfig['supported']])) {
+                continue;
+            }
+
+            $contactDetails = $this->getContactDetailsByRole($params, $roleConfig['contact']);
+            $contactSignature = $this->getContactSignature($contactDetails);
+
+            if (isset($handlesByContactSignature[$contactSignature])) {
+                $handles[$handleKey] = $handlesByContactSignature[$contactSignature];
+                continue;
+            }
+
+            $handles[$handleKey] = $this->createHandle($handleService, $params, $roleConfig['type']);
+            $handlesByContactSignature[$contactSignature] = $handles[$handleKey];
         }
 
         return $handles;
@@ -95,6 +136,50 @@ class OpenproviderTransferClient
         }
 
         return $handle;
+    }
+
+    protected function allContactsMatchOwner(array $params)
+    {
+        $ownerContact = $this->getContactDetailsByRole($params, 'Owner');
+        $ownerSignature = $this->getContactSignature($ownerContact);
+
+        foreach (['Admin', 'Tech', 'Billing'] as $role) {
+            $contactDetails = $this->getContactDetailsByRole($params, $role);
+            if (empty($contactDetails)) {
+                continue;
+            }
+
+            if ($this->getContactSignature($contactDetails) !== $ownerSignature) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function getContactDetailsByRole(array $params, $role)
+    {
+        if (empty($params['contactdetails'][$role]) || !is_array($params['contactdetails'][$role])) {
+            return [];
+        }
+
+        return $params['contactdetails'][$role];
+    }
+
+    protected function getContactSignature(array $contactDetails)
+    {
+        $normalizedContactDetails = [];
+
+        foreach ($contactDetails as $key => $value) {
+            $normalizedKey = strtolower(trim((string) $key));
+            $normalizedContactDetails[$normalizedKey] = is_string($value)
+                ? trim($value)
+                : $value;
+        }
+
+        ksort($normalizedContactDetails);
+
+        return md5(json_encode($normalizedContactDetails));
     }
 
     protected function getTransferTldMetaData(array $params)
