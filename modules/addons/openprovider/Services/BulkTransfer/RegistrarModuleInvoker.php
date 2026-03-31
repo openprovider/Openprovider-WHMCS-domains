@@ -14,6 +14,8 @@ class RegistrarModuleInvoker
             throw new \RuntimeException('WHMCS LocalAPI returned no registrant WHOIS details.');
         }
 
+        $this->assertOwnerOnlyWhoisContacts($whoisContacts);
+
         $adminContact = !empty($whoisContacts['Admin']) ? $whoisContacts['Admin'] : $ownerContact;
         $techContact = !empty($whoisContacts['Tech']) ? $whoisContacts['Tech'] : $adminContact;
         $billingContact = !empty($whoisContacts['Billing']) ? $whoisContacts['Billing'] : $adminContact;
@@ -121,5 +123,44 @@ class RegistrarModuleInvoker
         return array_filter($details, function ($value) {
             return $value !== null && $value !== '';
         });
+    }
+
+    protected function assertOwnerOnlyWhoisContacts(array $whoisContacts)
+    {
+        $ownerContact = $this->normalizeWhoisContactForComparison($whoisContacts['Owner'] ?? []);
+
+        foreach (['Admin', 'Tech', 'Billing'] as $role) {
+            $roleContact = $this->normalizeWhoisContactForComparison($whoisContacts[$role] ?? []);
+
+            if (empty($roleContact)) {
+                continue;
+            }
+
+            if ($roleContact !== $ownerContact) {
+                throw new \RuntimeException(
+                    'Bulk transfer is currently available only for owner-only WHOIS contact data. This domain has multiple contact types and is not available yet.'
+                );
+            }
+        }
+    }
+
+    protected function normalizeWhoisContactForComparison(array $contact)
+    {
+        $normalized = [];
+
+        foreach ($contact as $key => $value) {
+            $normalizedKey = strtolower(trim((string) $key));
+            $normalizedValue = is_string($value) ? trim($value) : $value;
+
+            if ($normalizedValue === null || $normalizedValue === '') {
+                continue;
+            }
+
+            $normalized[$normalizedKey] = $normalizedValue;
+        }
+
+        ksort($normalized);
+
+        return $normalized;
     }
 }

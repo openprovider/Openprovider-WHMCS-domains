@@ -112,7 +112,12 @@ class BulkTransferProcessor
             'domainid' => (int) $domainRecord->id,
         ]);
 
-        $moduleParams = $this->registrarModuleInvoker->buildModuleParams($domainRecord, $client);
+        try {
+            $moduleParams = $this->registrarModuleInvoker->buildModuleParams($domainRecord, $client);
+        } catch (\Throwable $e) {
+            $this->markValidationFailed($item, $e->getMessage());
+            return;
+        }
 
         $this->updateItemStatus($item, BulkTransferItem::STATUS_READY_FOR_TRANSFER);
 
