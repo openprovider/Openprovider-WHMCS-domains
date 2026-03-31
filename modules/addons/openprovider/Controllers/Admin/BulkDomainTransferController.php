@@ -105,7 +105,7 @@ class BulkDomainTransferController extends ViewBaseController {
         }
 
         return (bool) preg_match(
-            '/^(?!-)([a-zA-Z0-9-]{1,63}\.)+[a-zA-Z]{2,63}$/',
+            '/^(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])$/',
             $domain
         );
     }
