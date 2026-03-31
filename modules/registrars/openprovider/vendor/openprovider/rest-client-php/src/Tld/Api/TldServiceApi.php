@@ -797,14 +797,11 @@ class TldServiceApi
             $queryParams['order_by'] = ObjectSerializer::toQueryValue($order_by);
         }
         // query params
+        if (is_array($extensions)) {
+            $extensions = ObjectSerializer::serializeCollection($extensions, 'multi', true);
+        }
         if ($extensions !== null) {
-            $queryParams['extensions'] = call_user_func(function ($value) {
-                if (is_array($value)) {
-                    return $value;
-                }
-
-                return ObjectSerializer::toQueryValue($value);
-            }, $extensions);
+            $queryParams['extensions'] = ObjectSerializer::toQueryValue($extensions);
         }
         // query params
         if ($name_pattern !== null) {
