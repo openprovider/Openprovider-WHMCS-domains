@@ -64,6 +64,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         'comments' => 'string',
         'company_name' => 'string',
         'contacts' => '\Openprovider\Api\Rest\Client\Person\Model\PersoncontactContact[]',
+        'created_at' => 'string',
         'email' => 'string',
         'fax' => '\Openprovider\Api\Rest\Client\Person\Model\CustomerFax',
         'id' => 'int',
@@ -91,6 +92,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         'comments' => null,
         'company_name' => null,
         'contacts' => null,
+        'created_at' => null,
         'email' => null,
         'fax' => null,
         'id' => 'int32',
@@ -139,6 +141,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         'comments' => 'comments',
         'company_name' => 'company_name',
         'contacts' => 'contacts',
+        'created_at' => 'created_at',
         'email' => 'email',
         'fax' => 'fax',
         'id' => 'id',
@@ -166,6 +169,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         'comments' => 'setComments',
         'company_name' => 'setCompanyName',
         'contacts' => 'setContacts',
+        'created_at' => 'setCreatedAt',
         'email' => 'setEmail',
         'fax' => 'setFax',
         'id' => 'setId',
@@ -193,6 +197,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         'comments' => 'getComments',
         'company_name' => 'getCompanyName',
         'contacts' => 'getContacts',
+        'created_at' => 'getCreatedAt',
         'email' => 'getEmail',
         'fax' => 'getFax',
         'id' => 'getId',
@@ -278,6 +283,7 @@ class ResellerReseller implements ModelInterface, ArrayAccess
         $this->container['comments'] = isset($data['comments']) ? $data['comments'] : null;
         $this->container['company_name'] = isset($data['company_name']) ? $data['company_name'] : null;
         $this->container['contacts'] = isset($data['contacts']) ? $data['contacts'] : null;
+        $this->container['created_at'] = isset($data['created_at']) ? $data['created_at'] : null;
         $this->container['email'] = isset($data['email']) ? $data['email'] : null;
         $this->container['fax'] = isset($data['fax']) ? $data['fax'] : null;
         $this->container['id'] = isset($data['id']) ? $data['id'] : null;
@@ -471,6 +477,32 @@ class ResellerReseller implements ModelInterface, ArrayAccess
     public function setContacts($contacts)
     {
         $this->container['contacts'] = $contacts;
+
+        return $this;
+    }
+
+    /**
+     * Gets created_at
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getCreatedAt()
+    {
+        return $this->container['created_at'];
+    }
+
+    /**
+     * Sets created_at
+     *
+     * @param string|null $created_at created_at
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setCreatedAt($created_at)
+    {
+        $this->container['created_at'] = $created_at;
 
         return $this;
     }
