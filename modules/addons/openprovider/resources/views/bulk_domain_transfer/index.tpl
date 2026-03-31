@@ -49,7 +49,7 @@
                     class="form-control"
                     rows="10"
                     placeholder="example.com&#10;example.net"
-                >{$domains|default:''}</textarea>
+                >{$domains|default:''|escape:'html'}</textarea>
             </div>
 
             <div style="margin-top:10px; color:#666;">
