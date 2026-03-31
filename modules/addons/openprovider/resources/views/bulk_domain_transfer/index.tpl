@@ -19,7 +19,7 @@
                 <div class="alert alert-danger" role="alert" style="margin-bottom: 15px;">
                     <ul style="margin-bottom: 0; padding-left: 20px;">
                         {foreach from=$validationErrors item=validationError}
-                            <li>{$validationError}</li>
+                            <li>{$validationError|escape:'html'}</li>
                         {/foreach}
                     </ul>
                 </div>
