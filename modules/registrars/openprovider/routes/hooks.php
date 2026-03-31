@@ -38,14 +38,19 @@ return [
         'controller' => 'AdminWidgetController@showBalanceWidget'
     ],
     [
+        'hookPoint' => 'AdminHomeWidgets',
+        'priority' =>  2,
+        'controller' => 'AdminWidgetController@showCrossSellWidget'
+    ],
+    [
+        'hookPoint' => 'AdminAreaPage',
+        'priority' =>  1,
+        'controller' => 'AdminWidgetController@handleCrossSellDismiss'
+    ],
+    [
         'hookPoint' => 'ClientAreaPageDomainDNSManagement',
         'priority' => 10,
         'controller' => 'DnsNotificationController@notify'
-    ],
-    [
-        'hookPoint' => 'ClientAreaFooterOutput',
-        'priority' => 10,
-        'controller' => 'DnsClientJavascriptController@run'
     ],
     [
         'hookPoint' => 'ClientAreaPrimarySidebar',

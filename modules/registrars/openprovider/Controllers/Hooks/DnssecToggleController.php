@@ -37,10 +37,19 @@ class DnssecToggleController
         }
 
         $row = Capsule::table('tbldomains')
-            ->select('id','domain')
+            ->select('id','domain', 'registrar')
             ->where('id', $domainId)
             ->first();
 
+        if (!$row) {
+            return [];
+        }
+
+        // avoid non Openprovider domains
+        if ((string) $row->registrar !== 'openprovider') {
+            return [];
+        }
+        
         $tld = $this->extractTldFromFqdn((string)$row->domain);
         
         $tld_enabled = false;
@@ -77,11 +86,16 @@ class DnssecToggleController
         unset($_SESSION['op_dnssec_popup']);
 
         $row = Capsule::table('tbldomains')
-            ->select('id','domain')
+            ->select('id','domain','registrar')
             ->where('id', $domainId)
             ->first();
 
         if (!$row) {
+            return;
+        }
+
+        // avoid non Openprovider domains
+        if ((string) $row->registrar !== 'openprovider') {
             return;
         }
 

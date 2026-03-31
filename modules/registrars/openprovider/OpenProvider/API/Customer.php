@@ -123,6 +123,7 @@ class Customer
                 'phone country code' => 'phone country code',
                 'email' => 'email address',
                 'companyname' => 'company name',
+                'language' => 'language'
             );
 
             if(!isset($params["contactdetails"][$prefix]['fullstate']))
@@ -187,7 +188,7 @@ class Customer
         }
 
         $address            =   new \OpenProvider\API\CustomerAddress(array(
-            'fulladdress'   =>  $fullAddress ?: null,
+            'fulladdress'   =>  trim($fullAddress) ?: null,
             'zipcode'       =>  $params[$indexes['postcode']],
             'city'          =>  $params[$indexes['city']],
             'state'         =>  $params[$indexes['state']],
@@ -229,7 +230,7 @@ class Customer
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
         $this->tags         =   $tags->getTags();
-        $this->locale       =   $this->getLocaleByLanguage($params[$indexes['language']] ?? null);;
+        $this->locale       =   $this->getLocaleByLanguage($params[$indexes['language']] ?? null);
 
         $this->additionalData = new CustomerAdditionalData();
 

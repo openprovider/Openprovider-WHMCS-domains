@@ -1,4 +1,29 @@
 # Changelog
+
+## v5.11.0
+
+###### Features and improvements
+- Improved client area DNS management performance across all key operations, including faster save flows and page loading.
+- Removed multiple redundant API calls across client area pages, improving overall client area performance.
+
+## v5.10.0
+
+###### Features and improvements
+- Added a promotional admin dashboard widget to highlight Openprovider's Email and Premium DNS products.
+- Improved registration flow by displaying the IDN Script field only for actual IDN domains during registration.
+- Set the correct locale when creating and updating handles.
+  
+## v5.9.4
+
+###### Features and improvements
+- Added support for deleting individual DNS records.
+- Introduced a dedicated DNSSEC management implementation and removed the dependency between DNS Management and DNSSEC Management client area buttons.
+
+## v5.9.3
+
+###### Bugfixes
+- Fixed: Duplicate handle creation when modifying contacts in the Admin Area.
+  
 ## v5.9.2
 
 ###### Features and improvements
