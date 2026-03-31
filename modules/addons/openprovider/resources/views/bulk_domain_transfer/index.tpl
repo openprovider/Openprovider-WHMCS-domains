@@ -8,7 +8,7 @@
     <div class="panel-body">
 
         <form method="post" action="{get_route route='bulkDomainTransfers'}">
-
+            {generate_csrf}
             {if isset($bulkReference) && $bulkReference}
                 <div class="alert alert-info" role="alert" style="margin-bottom: 15px;">
                     <strong>Bulk reference:</strong> {$bulkReference|escape:'html'}

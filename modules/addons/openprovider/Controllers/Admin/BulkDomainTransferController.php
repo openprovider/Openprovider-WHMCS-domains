@@ -32,7 +32,7 @@ class BulkDomainTransferController extends ViewBaseController {
         $bulkReference = null;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+            check_token('WHMCS.admin.default');
             $validationResult = $this->validateDomainsFromTextarea($domains);
             $validationErrors = $validationResult['validationErrors'];
 
