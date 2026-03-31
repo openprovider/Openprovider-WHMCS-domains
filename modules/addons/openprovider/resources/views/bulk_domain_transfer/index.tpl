@@ -11,7 +11,7 @@
 
             {if isset($bulkReference) && $bulkReference}
                 <div class="alert alert-info" role="alert" style="margin-bottom: 15px;">
-                    <strong>Bulk reference:</strong> {$bulkReference}
+                    <strong>Bulk reference:</strong> {$bulkReference|escape:'html'}
                 </div>
             {/if}
 
