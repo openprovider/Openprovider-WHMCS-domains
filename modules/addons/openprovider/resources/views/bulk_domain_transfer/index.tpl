@@ -2,63 +2,73 @@
 
 <div class="op-addon panel panel-default">
     <div class="panel-heading">
-        <strong>Bulk Domain Transfers</strong>
+        <strong>Transfer your domain names to Openprovider</strong>
     </div>
 
     <div class="panel-body">
-        {if isset($notification) && is_array($notification)}
-            <div class="alert alert-{$notification.type}" role="alert">
-                {$notification.message}
-            </div>
-        {/if}
 
         <form method="post" action="{get_route route='bulkDomainTransfers'}" enctype="multipart/form-data">
+
+            <!-- Import CSV -->
+            <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:10px;">
+                <div></div>
+
+                <div>
+                    <input type="file" id="domains_csv" accept=".csv" style="display:none;">
+                    <button type="button" id="import-csv-btn" class="btn btn-default">
+                        Import CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- File name display -->
+            <div id="file-name" style="margin-bottom:10px; font-size: 12px; color: #666;"></div>
+
+            <!-- Textarea -->
             <div class="form-group">
-                <label for="domains">Domains (one per line)</label>
                 <textarea
                     name="domains"
                     id="domains"
                     class="form-control"
                     rows="10"
-                    placeholder="example.com&#10;example.net&#10;example.org"
+                    placeholder="example.com authcode1&#10;example.net authcode2"
                 >{$domains|default:''}</textarea>
             </div>
 
-            <div class="form-group" style="margin-top: 15px;">
-                <label for="domains_csv">Upload CSV</label>
-                <input
-                    type="file"
-                    name="domains_csv"
-                    id="domains_csv"
-                    class="form-control"
-                    accept=".csv"
-                >
+            <!-- Info text -->
+            <div style="margin-top:10px; color:#666;">
+                List one domain per line.
             </div>
 
-            <div class="form-group" style="margin-top: 15px;">
-                <button type="button" id="load-csv-btn" class="btn btn-default">
-                    Load CSV
-                </button>
-
+            <!-- Submit -->
+            <div style="margin-top:15px; text-align:right;">
                 <button type="submit" class="btn btn-primary">
-                    Submit
+                    Continue
                 </button>
             </div>
+
         </form>
     </div>
 </div>
 
 <script>
-document.getElementById('load-csv-btn').addEventListener('click', function () {
-    const fileInput = document.getElementById('domains_csv');
-    const textarea = document.getElementById('domains');
+const importBtn = document.getElementById('import-csv-btn');
+const fileInput = document.getElementById('domains_csv');
+const textarea = document.getElementById('domains');
+const fileNameDiv = document.getElementById('file-name');
 
-    if (!fileInput.files.length) {
-        alert('Please select a CSV file first.');
-        return;
-    }
+importBtn.addEventListener('click', () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener('change', function () {
+    if (!fileInput.files.length) return;
 
     const file = fileInput.files[0];
+
+    // Show file name
+    fileNameDiv.textContent = "Selected file: " + file.name;
+
     const reader = new FileReader();
 
     reader.onload = function (e) {
@@ -68,14 +78,10 @@ document.getElementById('load-csv-btn').addEventListener('click', function () {
 
         lines.forEach(function (line, index) {
             const trimmed = line.trim();
+            if (!trimmed) return;
 
-            if (!trimmed) {
-                return;
-            }
-
-            if (index === 0 && trimmed.toLowerCase() === 'domain') {
-                return;
-            }
+            // Skip header
+            if (index === 0 && trimmed.toLowerCase().includes('domain')) return;
 
             const firstColumn = trimmed.split(',')[0].trim();
 
