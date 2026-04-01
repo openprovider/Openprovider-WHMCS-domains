@@ -127,7 +127,6 @@ class RegistrarModuleInvoker
 
     protected function assertOwnerOnlyWhoisContacts(array $whoisContacts)
     {
-        $ownerContact = $this->normalizeWhoisContactForComparison($whoisContacts['Owner'] ?? []);
 
         foreach (['Admin', 'Tech', 'Billing'] as $role) {
             $roleContact = $this->normalizeWhoisContactForComparison($whoisContacts[$role] ?? []);
@@ -135,12 +134,9 @@ class RegistrarModuleInvoker
             if (empty($roleContact)) {
                 continue;
             }
-
-            if ($roleContact !== $ownerContact) {
-                throw new \RuntimeException(
-                    'Bulk transfer is currently available only for owner-only WHOIS contact data. This domain has multiple contact types and is not available yet.'
-                );
-            }
+            throw new \RuntimeException(
+                'Bulk transfer is currently available only for owner-only WHOIS contact data. This domain has multiple contact types and is not available yet.'
+            );
         }
     }
 
