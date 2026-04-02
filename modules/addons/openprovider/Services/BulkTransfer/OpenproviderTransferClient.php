@@ -122,7 +122,11 @@ class OpenproviderTransferClient
         // $domainTransfer->useDomicile = $payload['use_domicile'] ?? false;
         $domainTransfer->importNameserversFromRegistry = $payload['import_nameservers_from_registry'] ?? false;
 
-        $this->getApiHelper()->transferDomain($domainTransfer);
+        $response = $this->getApiHelper()->transferDomain($domainTransfer);
+
+        $this->assertSuccessfulTransferResponse($response);
+
+        return $response;
     }
 
     protected function createHandle(RegistrarHandle $handleService, array $params, $type = 'all')
@@ -194,6 +198,96 @@ class OpenproviderTransferClient
                 return $this->getApiHelper()->getTldMeta($tld);
             }
         );
+    }
+
+    protected function assertSuccessfulTransferResponse($response)
+    {
+        if (!is_array($response)) {
+            throw new \RuntimeException('Openprovider transfer returned an unexpected response.');
+        }
+
+        $error = $this->extractTransferError($response);
+        if ($error !== null) {
+            throw new \RuntimeException($error);
+        }
+    }
+
+    protected function extractTransferError(array $response)
+    {
+        $error = $this->getNestedArrayValue($response, ['error'])
+            ?? $this->getNestedArrayValue($response, ['data', 'error']);
+
+        if (is_string($error) && trim($error) !== '') {
+            return trim($error);
+        }
+
+        $negativeStatuses = ['error', 'failed', 'failure', 'rejected', 'cancelled'];
+
+        $status = $this->getNestedArrayValue($response, ['status']);
+        if (!is_string($status) || trim($status) === '') {
+            $status = $this->getNestedArrayValue($response, ['data', 'status']);
+        }
+
+        if (is_string($status) && in_array(strtolower(trim($status)), $negativeStatuses, true)) {
+            return $this->extractTransferErrorMessage($response, 'Openprovider transfer returned a failed status response.');
+        }
+
+        $result = $this->getNestedArrayValue($response, ['result']);
+        if (!is_string($result) || trim($result) === '') {
+            $result = $this->getNestedArrayValue($response, ['data', 'result']);
+        }
+
+        if (is_string($result) && in_array(strtolower(trim($result)), ['error', 'failed', 'failure'], true)) {
+            return $this->extractTransferErrorMessage($response, 'Openprovider transfer returned a failed result response.');
+        }
+
+        $success = $this->getNestedArrayValue($response, ['success']);
+        if (!is_bool($success)) {
+            $success = $this->getNestedArrayValue($response, ['data', 'success']);
+        }
+
+        if ($success === false) {
+            return $this->extractTransferErrorMessage($response, 'Openprovider transfer returned an unsuccessful response.');
+        }
+
+        return null;
+    }
+
+    protected function extractTransferErrorMessage(array $response, $fallbackMessage)
+    {
+        foreach (
+            [
+                ['message'],
+                ['desc'],
+                ['description'],
+                ['data', 'message'],
+                ['data', 'desc'],
+                ['data', 'description'],
+                ['data', 'error'],
+            ] as $path
+        ) {
+            $value = $this->getNestedArrayValue($response, $path);
+            if (is_string($value) && trim($value) !== '') {
+                return trim($value);
+            }
+        }
+
+        return $fallbackMessage;
+    }
+
+    protected function getNestedArrayValue(array $data, array $path)
+    {
+        $value = $data;
+
+        foreach ($path as $segment) {
+            if (!is_array($value) || !array_key_exists($segment, $value)) {
+                return null;
+            }
+
+            $value = $value[$segment];
+        }
+
+        return $value;
     }
 
     protected function getApiHelper()
