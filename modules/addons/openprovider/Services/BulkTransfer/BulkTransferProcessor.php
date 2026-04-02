@@ -102,6 +102,15 @@ class BulkTransferProcessor
         $item->failure_reason = null;
         $item->save();
 
+        try {
+            $moduleParams = $this->registrarModuleInvoker->buildModuleParams($domainRecord, $client);
+        } catch (\Throwable $e) {
+            $this->markValidationFailed($item, $e->getMessage());
+            return;
+        }
+
+        $this->updateItemStatus($item, BulkTransferItem::STATUS_READY_FOR_TRANSFER);
+
         $this->updateItemStatus($item, BulkTransferItem::STATUS_UNLOCKING);
         $this->registrarModuleInvoker->unlockDomain([
             'domainid' => (int) $domainRecord->id,
@@ -111,15 +120,6 @@ class BulkTransferProcessor
         $eppCode = $this->registrarModuleInvoker->getEppCode([
             'domainid' => (int) $domainRecord->id,
         ]);
-
-        try {
-            $moduleParams = $this->registrarModuleInvoker->buildModuleParams($domainRecord, $client);
-        } catch (\Throwable $e) {
-            $this->markValidationFailed($item, $e->getMessage());
-            return;
-        }
-
-        $this->updateItemStatus($item, BulkTransferItem::STATUS_READY_FOR_TRANSFER);
 
         $this->updateItemStatus($item, BulkTransferItem::STATUS_CREATING_HANDLE);
         $handles = $this->openproviderTransferClient->createOrReuseTransferHandles($moduleParams);
