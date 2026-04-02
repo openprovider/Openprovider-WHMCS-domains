@@ -78,6 +78,11 @@ class RegistrarModuleInvoker
             $message = !empty($response['message']) ? $response['message'] : $fallbackMessage;
             throw new \RuntimeException((string) $message);
         }
+
+        if (is_array($response) && isset($response['status']) && strtolower((string) $response['status']) !== 'success') {
+            $message = !empty($response['message']) ? $response['message'] : $fallbackMessage;
+            throw new \RuntimeException((string) $message);
+        }
     }
 
     protected function getWhoisContacts($domainId)
