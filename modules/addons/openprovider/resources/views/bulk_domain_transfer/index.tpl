@@ -10,8 +10,9 @@
         <form method="post" action="{get_route route='bulkDomainTransfers'}">
             {generate_csrf}
             {if isset($bulkReference) && $bulkReference}
-                <div class="alert alert-info" role="alert" style="margin-bottom: 15px;">
-                    <strong>Bulk reference:</strong> {$bulkReference|escape:'html'}
+                <div class="alert alert-success text-center" role="alert"
+                    style="margin: 0 auto 15px; max-width: 600px;">
+                    <strong>Bulk transfer submitted successfully. Reference:</strong> {$bulkReference|escape:'html'}
                 </div>
             {/if}
 
@@ -49,7 +50,7 @@
                     class="form-control"
                     rows="10"
                     placeholder="example.com&#10;example.net"
-                >{$domains|default:''|escape:'html'}</textarea>
+                >{if !isset($bulkReference) || !$bulkReference}{$domains|default:''|escape:'html'}{/if}</textarea>
             </div>
 
             <div style="margin-top:10px; color:#666;">
@@ -58,7 +59,7 @@
 
             <div style="margin-top:15px; text-align:right;">
                 <button type="submit" class="btn btn-primary">
-                    Continue
+                    Submit
                 </button>
             </div>
 
@@ -114,4 +115,5 @@ fileInput.addEventListener('change', function () {
 
     reader.readAsText(file);
 });
+
 </script>
