@@ -16,11 +16,11 @@ class RegistrarModuleInvoker
 
         $this->assertOwnerOnlyWhoisContacts($whoisContacts);
 
-        $defaultLanguage = !empty($client->language) ? (string) $client->language : null;
-
-
         $contactDetails = [
-            'Owner' => $this->mapWhoisContactToContactDetails($ownerContact, $defaultLanguage),
+            'Owner' => $this->mapWhoisContactToContactDetails(
+                $ownerContact,
+                $this->getContactDefaultLanguage($client, $ownerContact)
+            ),
         ];
 
         foreach (['Admin', 'Tech', 'Billing'] as $role) {
@@ -28,7 +28,10 @@ class RegistrarModuleInvoker
                 continue;
             }
 
-            $mappedContactDetails = $this->mapWhoisContactToContactDetails($whoisContacts[$role], $defaultLanguage);
+            $mappedContactDetails = $this->mapWhoisContactToContactDetails(
+                $whoisContacts[$role],
+                $this->getContactDefaultLanguage($client, $whoisContacts[$role])
+            );
             if (!empty($mappedContactDetails)) {
                 $contactDetails[$role] = $mappedContactDetails;
             }
@@ -50,6 +53,105 @@ class RegistrarModuleInvoker
                 'domainObj' => $domainObject,
             ],
         ];
+    }
+
+    protected function getContactDefaultLanguage($client, array $contact)
+    {
+        if (empty($client->language) || empty($contact)) {
+            return null;
+        }
+
+        $clientContactDetails = $this->buildClientContactDetails($client);
+        if (empty($clientContactDetails)) {
+            return null;
+        }
+
+        $mappedContactDetails = $this->mapWhoisContactToContactDetails($contact);
+        if (!$this->contactDetailsMatch($mappedContactDetails, $clientContactDetails)) {
+            return null;
+        }
+
+        return (string) $client->language;
+    }
+
+    protected function buildClientContactDetails($client)
+    {
+        $addressParts = array_filter([
+            isset($client->address1) ? trim((string) $client->address1) : null,
+            isset($client->address2) ? trim((string) $client->address2) : null,
+        ], function ($value) {
+            return $value !== null && $value !== '';
+        });
+
+        $details = [
+            'First Name' => isset($client->firstname) ? trim((string) $client->firstname) : null,
+            'Last Name' => isset($client->lastname) ? trim((string) $client->lastname) : null,
+            'Company Name' => isset($client->companyname) ? trim((string) $client->companyname) : null,
+            'Email Address' => isset($client->email) ? trim((string) $client->email) : null,
+            'Address' => empty($addressParts) ? null : implode(' ', $addressParts),
+            'City' => isset($client->city) ? trim((string) $client->city) : null,
+            'State' => isset($client->state) ? trim((string) $client->state) : null,
+            'Zip Code' => isset($client->postcode) ? trim((string) $client->postcode) : null,
+            'Country' => isset($client->country) ? trim((string) $client->country) : null,
+            'Phone Number' => isset($client->phonenumber) ? trim((string) $client->phonenumber) : null,
+        ];
+
+        return array_filter($details, function ($value) {
+            return $value !== null && $value !== '';
+        });
+    }
+
+    protected function contactDetailsMatch(array $contactDetails, array $clientContactDetails)
+    {
+        $fields = [
+            'First Name',
+            'Last Name',
+            'Company Name',
+            'Email Address',
+            'Address',
+            'City',
+            'State',
+            'Zip Code',
+            'Country',
+            'Phone Number',
+        ];
+
+        foreach ($fields as $field) {
+            $contactValue = $this->normalizeComparableContactValue($field, $contactDetails[$field] ?? null);
+            $clientValue = $this->normalizeComparableContactValue($field, $clientContactDetails[$field] ?? null);
+
+            if ($contactValue !== $clientValue) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function normalizeComparableContactValue($field, $value)
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+        if ($value === '') {
+            return null;
+        }
+
+        switch ($field) {
+            case 'Email Address':
+                return strtolower($value);
+
+            case 'Country':
+                return strtoupper($value);
+
+            case 'Phone Number':
+                return preg_replace('/\D+/', '', $value);
+
+            default:
+                return strtolower(preg_replace('/\s+/', ' ', $value));
+        }
     }
 
     public function unlockDomain(array $params)
