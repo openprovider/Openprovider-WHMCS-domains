@@ -87,6 +87,10 @@ class OpenproviderTransferClient
             }
 
             $contactDetails = $this->getContactDetailsByRole($params, $roleConfig['contact']);
+            if (empty($contactDetails) && in_array($roleConfig['contact'], ['Tech', 'Billing'], true)) {
+                $contactDetails = $this->getContactDetailsByRole($params, 'Admin');
+            }
+
             $contactSignature = $this->getContactSignature($contactDetails);
 
             if (isset($handlesByContactSignature[$contactSignature])) {
