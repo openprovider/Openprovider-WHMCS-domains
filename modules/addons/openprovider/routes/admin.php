@@ -25,5 +25,6 @@ return [
 
     // Bulk Domain Transfers
     'bulkDomainTransfers' => 'BulkDomainTransferController@show',
+    'bulkDomainTransfersStatusPage' => 'BulkDomainTransferController@showStatusPage'
 
 ];
