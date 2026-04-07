@@ -87,6 +87,17 @@ class OpenproviderTransferClient
             }
 
             $contactDetails = $this->getContactDetailsByRole($params, $roleConfig['contact']);
+            if (empty($contactDetails) && in_array($roleConfig['contact'], ['Tech', 'Billing'], true)) {
+                $contactDetails = $this->getContactDetailsByRole($params, 'Admin');
+            }
+
+            if (empty($contactDetails)) {
+                throw new \RuntimeException(sprintf(
+                    'Missing WHOIS contact details for supported %s handle creation.',
+                    strtolower($roleConfig['contact'])
+                ));
+            }
+
             $contactSignature = $this->getContactSignature($contactDetails);
 
             if (isset($handlesByContactSignature[$contactSignature])) {
