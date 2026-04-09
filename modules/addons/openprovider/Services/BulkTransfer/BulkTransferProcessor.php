@@ -10,6 +10,9 @@ use WHMCS\Database\Capsule;
 
 class BulkTransferProcessor
 {
+
+    private const PENDING_STATUS_RECHECK_MINUTES = 60;
+
     /**
      * @var RegistrarModuleInvoker
      */
@@ -68,7 +71,15 @@ class BulkTransferProcessor
         $processed = 0;
         $claimed = 0;
 
+        $eligibleBefore = Carbon::now()
+            ->subMinutes(self::PENDING_STATUS_RECHECK_MINUTES)
+            ->toDateTimeString();
+
         $itemIds = BulkTransferItem::where('transfer_status', BulkTransferItem::STATUS_TRANSFER_REQUESTED)
+            ->whereRaw(
+                'COALESCE(last_status_check_at, transfer_requested_at, created_at) <= ?',
+                [$eligibleBefore]
+            )
             ->orderByRaw('COALESCE(last_status_check_at, transfer_requested_at, created_at)')
             ->limit(max(1, (int) $limit))
             ->pluck('id')
