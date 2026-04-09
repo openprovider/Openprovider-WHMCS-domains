@@ -13,6 +13,9 @@ use OpenProvider\WhmcsRegistrar\src\Handle as RegistrarHandle;
 class OpenproviderTransferClient
 {
     private const TLD_METADATA_CACHE_TTL = 60 * 60 * 24;
+    private const ACTIVE_TRANSFER_STATUSES = ['ACT'];
+    private const PENDING_TRANSFER_STATUSES = ['REQ', 'PEN', 'SCH', 'RRQ'];
+    private const FAILED_TRANSFER_STATUSES = ['FAI', 'REJ', 'DEL'];
 
     /**
      * @var mixed
@@ -140,6 +143,43 @@ class OpenproviderTransferClient
         return $response;
     }
 
+    public function getDomainDetails($domainName, $extension, array $additionalArgs = [])
+    {
+        $domain = new Domain([
+            'name' => $domainName,
+            'extension' => ltrim((string) $extension, '.'),
+        ]);
+
+        return $this->getApiHelper()->getDomain($domain, $additionalArgs);
+    }
+
+    public function normalizeTransferState(array $response)
+    {
+        return [
+            'status' => !empty($response['status']) ? strtoupper((string) $response['status']) : null,
+            'domain_id' => $response['id'] ?? null,
+            'renewal_date' => $response['renewalDate'] ?? $response['renewal_date'] ?? null,
+            'expiration_date' => $response['expirationDate'] ?? $response['expiration_date'] ?? null,
+            'message' => $this->extractTransferErrorMessage($response, ''),
+            'raw' => $response,
+        ];
+    }
+
+    public function isActiveTransferStatus($status)
+    {
+        return in_array(strtoupper((string) $status), self::ACTIVE_TRANSFER_STATUSES, true);
+    }
+
+    public function isPendingTransferStatus($status)
+    {
+        return in_array(strtoupper((string) $status), self::PENDING_TRANSFER_STATUSES, true);
+    }
+
+    public function isFailedTransferStatus($status)
+    {
+        return in_array(strtoupper((string) $status), self::FAILED_TRANSFER_STATUSES, true);
+    }
+
     protected function createHandle(RegistrarHandle $handleService, array $params, $type = 'all')
     {
         $handle = $type === 'all'
@@ -232,7 +272,10 @@ class OpenproviderTransferClient
             return trim($error);
         }
 
-        $negativeStatuses = ['error', 'failed', 'failure', 'rejected', 'cancelled'];
+        $negativeStatuses = array_merge(
+            ['error', 'failed', 'failure', 'rejected', 'cancelled'],
+            array_map('strtolower', self::FAILED_TRANSFER_STATUSES)
+        );
 
         $status = $this->getNestedArrayValue($response, ['status']);
         if (!is_string($status) || trim($status) === '') {
