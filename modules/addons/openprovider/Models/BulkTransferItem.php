@@ -15,6 +15,8 @@ class BulkTransferItem extends Model
     const STATUS_GETTING_EPP = 'getting_epp';
     const STATUS_CREATING_HANDLE = 'creating_handle';
     const STATUS_TRANSFERRING = 'transferring';
+    const STATUS_TRANSFER_REQUESTED = 'transfer_requested';
+    const STATUS_CHECKING_TRANSFER_STATUS = 'checking_transfer_status';
     const STATUS_SUCCESS = 'success';
     const STATUS_FAILED = 'failed';
 
@@ -35,8 +37,13 @@ class BulkTransferItem extends Model
         'op_admin_handle',
         'op_tech_handle',
         'op_billing_handle',
+        'op_transfer_status',
+        'op_domain_id',
         'transfer_status',
         'failure_reason',
+        'transfer_requested_at',
+        'last_status_check_at',
+        'last_status_message',
         'attempt_count',
         'started_at',
         'finished_at',
@@ -63,6 +70,14 @@ class BulkTransferItem extends Model
             self::STATUS_VALIDATION_FAILED,
             self::STATUS_SUCCESS,
             self::STATUS_FAILED,
+        ], true);
+    }
+
+    public function isPendingTransferStatus()
+    {
+        return in_array($this->transfer_status, [
+            self::STATUS_TRANSFER_REQUESTED,
+            self::STATUS_CHECKING_TRANSFER_STATUS,
         ], true);
     }
 }
