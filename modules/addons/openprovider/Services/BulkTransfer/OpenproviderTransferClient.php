@@ -272,10 +272,7 @@ class OpenproviderTransferClient
             return trim($error);
         }
 
-        $negativeStatuses = array_merge(
-            ['error', 'failed', 'failure', 'rejected', 'cancelled'],
-            array_map('strtolower', self::FAILED_TRANSFER_STATUSES)
-        );
+        $negativeStatuses = ['error', 'failed', 'failure', 'rejected', 'cancelled'];
 
         $status = $this->getNestedArrayValue($response, ['status']);
         if (!is_string($status) || trim($status) === '') {

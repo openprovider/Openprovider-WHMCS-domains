@@ -10,8 +10,8 @@ use WHMCS\Database\Capsule;
 
 class BulkTransferProcessor
 {
-
     private const PENDING_STATUS_RECHECK_MINUTES = 60;
+    private const PENDING_STATUS_CLAIM_TIMEOUT_MINUTES = 15;
 
     /**
      * @var RegistrarModuleInvoker
@@ -70,17 +70,33 @@ class BulkTransferProcessor
     {
         $processed = 0;
         $claimed = 0;
-
-        $eligibleBefore = Carbon::now()
+        $now = Carbon::now();
+        $eligibleBefore = $now
+            ->copy()
             ->subMinutes(self::PENDING_STATUS_RECHECK_MINUTES)
             ->toDateTimeString();
+        $staleCheckingBefore = $now
+            ->copy()
+            ->subMinutes(self::PENDING_STATUS_CLAIM_TIMEOUT_MINUTES)
+            ->toDateTimeString();
 
-        $itemIds = BulkTransferItem::where('transfer_status', BulkTransferItem::STATUS_TRANSFER_REQUESTED)
-            ->whereRaw(
-                'COALESCE(last_status_check_at, transfer_requested_at, created_at) <= ?',
-                [$eligibleBefore]
-            )
+        $itemIds = BulkTransferItem::where(function ($query) use ($eligibleBefore, $staleCheckingBefore) {
+            $query->where(function ($subQuery) use ($eligibleBefore) {
+                $subQuery->where('transfer_status', BulkTransferItem::STATUS_TRANSFER_REQUESTED)
+                    ->whereRaw(
+                        'COALESCE(last_status_check_at, transfer_requested_at, created_at) <= ?',
+                        [$eligibleBefore]
+                    );
+            })->orWhere(function ($subQuery) use ($staleCheckingBefore) {
+                $subQuery->where('transfer_status', BulkTransferItem::STATUS_CHECKING_TRANSFER_STATUS)
+                    ->whereRaw(
+                        'COALESCE(last_status_check_at, updated_at, transfer_requested_at, created_at) <= ?',
+                        [$staleCheckingBefore]
+                    );
+            });
+        })
             ->orderByRaw('COALESCE(last_status_check_at, transfer_requested_at, created_at)')
+            ->orderBy('id')
             ->limit(max(1, (int) $limit))
             ->pluck('id')
             ->all();
@@ -241,10 +257,22 @@ class BulkTransferProcessor
     protected function claimPendingTransferItem($itemId)
     {
         $now = Carbon::now()->toDateTimeString();
+        $staleCheckingBefore = Carbon::now()
+            ->subMinutes(self::PENDING_STATUS_CLAIM_TIMEOUT_MINUTES)
+            ->toDateTimeString();
 
         $updated = Capsule::table('mod_op_bulk_transfer_items')
             ->where('id', (int) $itemId)
-            ->where('transfer_status', BulkTransferItem::STATUS_TRANSFER_REQUESTED)
+            ->where(function ($query) use ($staleCheckingBefore) {
+                $query->where('transfer_status', BulkTransferItem::STATUS_TRANSFER_REQUESTED)
+                    ->orWhere(function ($subQuery) use ($staleCheckingBefore) {
+                        $subQuery->where('transfer_status', BulkTransferItem::STATUS_CHECKING_TRANSFER_STATUS)
+                            ->whereRaw(
+                                'COALESCE(last_status_check_at, updated_at, transfer_requested_at, created_at) <= ?',
+                                [$staleCheckingBefore]
+                            );
+                    });
+            })
             ->update([
                 'transfer_status' => BulkTransferItem::STATUS_CHECKING_TRANSFER_STATUS,
                 'last_status_check_at' => $now,
