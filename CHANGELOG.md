@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.11.1
+
+###### Bugfixes
+- Fixed: TXT record values not displaying in DNS Management after page reload.
+
 ## v5.11.0
 
 ###### Features and improvements
