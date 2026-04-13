@@ -6,6 +6,7 @@ use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
 use GuzzleHttp6\Promise\Utils;
+use OpenProvider\WhmcsRegistrar\helpers\DbCacheHelper;
 
 class ApiHelper
 {
@@ -22,6 +23,9 @@ class ApiHelper
      * ApiManager constructor.
      * @param ApiInterface $apiClient
      */
+
+    private const TLD_METADATA_CACHE_TTL = 60 * 60 * 24; // 24 hours
+
     public function __construct(ApiInterface $apiClient)
     {
         $this->apiClient = $apiClient;
@@ -697,9 +701,15 @@ class ApiHelper
         if ($tld === '') {
             throw new \InvalidArgumentException('Missing TLD.');
         }
-        
-        return $this->buildResponse(
-            $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
+
+        $mode = defined('MODE') ? MODE : 'live'; 
+        return DbCacheHelper::remember(
+            'tld_meta_' . strtolower($tld),
+            $mode,
+            self::TLD_METADATA_CACHE_TTL,
+            fn() => $this->buildResponse(
+                $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
+            )
         );
     }
 
