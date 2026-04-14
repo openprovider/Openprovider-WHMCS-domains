@@ -28,6 +28,55 @@ class BulkTransferProcessor
         $this->openproviderTransferClient = $openproviderTransferClient;
     }
 
+    public function createBatch(array $domains, $resellerId = null, $adminId = null, $description = null, string $bulkReference)
+    {
+        $normalizedDomains = $this->normalizeDomains($domains);
+        if (empty($normalizedDomains)) {
+            throw new \InvalidArgumentException('No valid domains were provided for bulk transfer.');
+        }
+
+        return Capsule::connection()->transaction(function () use ($normalizedDomains, $resellerId, $adminId, $description, $bulkReference) {
+            $batch = new BulkTransferBatch();
+            $batch->bulk_reference = $bulkReference;
+            $batch->reseller_id = $resellerId ?: null;
+            $batch->initiated_by_admin_id = $adminId ?: null;
+            $batch->description = $description ?: 'Bulk transfer request for existing WHMCS reseller domains';
+            $batch->total_domains = count($normalizedDomains);
+            $batch->processed_domains = 0;
+            $batch->success_domains = 0;
+            $batch->failed_domains = 0;
+            $batch->status = BulkTransferBatch::STATUS_QUEUED;
+            $batch->save();
+
+            foreach ($normalizedDomains as $domainName) {
+                $item = new BulkTransferItem();
+                $item->batch_id = $batch->id;
+                $item->domain = $domainName;
+                $item->transfer_status = BulkTransferItem::STATUS_QUEUED;
+                $item->attempt_count = 0;
+                $item->save();
+            }
+
+            return $batch->fresh(['items']);
+        });
+    }
+
+    protected function normalizeDomains(array $domains)
+    {
+        $normalized = [];
+
+        foreach ($domains as $domain) {
+            $candidate = strtolower(trim((string) $domain));
+            if ($candidate === '' || strpos($candidate, '.') === false) {
+                continue;
+            }
+
+            $normalized[] = $candidate;
+        }
+
+        return array_values(array_unique($normalized));
+    }
+
     public function processQueuedItems($limit = 10)
     {
         $processed = 0;
