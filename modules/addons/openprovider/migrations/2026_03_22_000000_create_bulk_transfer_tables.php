@@ -51,6 +51,8 @@ class CreateBulkTransferTables extends Migration
                 $table->string('op_admin_handle', 100)->nullable()->default(null);
                 $table->string('op_tech_handle', 100)->nullable()->default(null);
                 $table->string('op_billing_handle', 100)->nullable()->default(null);
+                $table->string('op_transfer_status', 20)->nullable()->default(null);
+                $table->integer('op_domain_id')->unsigned()->nullable()->default(null);
                 $table->enum('transfer_status', [
                     'queued',
                     'validating',
@@ -60,10 +62,15 @@ class CreateBulkTransferTables extends Migration
                     'getting_epp',
                     'creating_handle',
                     'transferring',
+                    'transfer_requested',
+                    'checking_transfer_status',
                     'success',
                     'failed',
                 ])->default('queued')->index('idx_transfer_status');
                 $table->text('failure_reason')->nullable();
+                $table->dateTime('transfer_requested_at')->nullable()->default(null);
+                $table->dateTime('last_status_check_at')->nullable()->default(null);
+                $table->text('last_status_message')->nullable();
                 $table->tinyInteger('attempt_count')->unsigned()->default(0);
                 $table->dateTime('started_at')->nullable()->default(null);
                 $table->dateTime('finished_at')->nullable()->default(null);
@@ -74,6 +81,8 @@ class CreateBulkTransferTables extends Migration
                 $table->index('batch_id', 'idx_batch_id');
                 $table->index('client_id', 'idx_client_id');
                 $table->index('domain_id', 'idx_domain_id');
+                $table->index('op_transfer_status', 'idx_op_transfer_status');
+                $table->index('last_status_check_at', 'idx_last_status_check_at');
                 $table->index('domain', 'idx_domain');
             });
 
