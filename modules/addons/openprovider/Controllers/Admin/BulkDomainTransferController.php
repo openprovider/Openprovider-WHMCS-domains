@@ -28,7 +28,7 @@ class BulkDomainTransferController extends ViewBaseController
         Validator $validator,
         BulkTransferProcessor $bulkTransferProcessor
     ) {
-        parent::__construct($core, $view, $validator, $bulkTransferProcessor);
+        parent::__construct($core, $view, $validator);
         $this->bulkTransferProcessor = $bulkTransferProcessor;
     }
 
@@ -56,10 +56,11 @@ class BulkDomainTransferController extends ViewBaseController
 
                     $batch = $this->bulkTransferProcessor->createBatch(
                         $validationResult['validDomains'],
+                        $bulkReference,
                         null,
                         isset($_SESSION['adminid']) ? (int) $_SESSION['adminid'] : null,
                         'Bulk transfer request from admin bulk transfer page',
-                        $bulkReference,
+
                     );
 
                     if (!empty($batch->bulk_reference)) {
@@ -102,8 +103,8 @@ class BulkDomainTransferController extends ViewBaseController
             return 'The request could not be saved. Please try again or check the module logs for more details.';
         }
 
-        if ($message !== '') {
-            return rtrim($message, '.') . '.';
+        if ($exception instanceof \InvalidArgumentException) {
+            return 'The bulk transfer request is not valid. Please review the submitted domains and try again.';
         }
 
         return 'Please try again or check the module logs for more details.';
@@ -111,7 +112,6 @@ class BulkDomainTransferController extends ViewBaseController
 
     private function isMissingBulkTransferTableException(\Throwable $exception, string $message): bool
     {
-        return false;
         if (!$exception instanceof QueryException) {
             return false;
         }
