@@ -16,6 +16,13 @@
                 </div>
             {/if}
 
+            {if isset($submissionError) && $submissionError}
+                <div class="alert alert-danger" role="alert" style="margin-bottom: 15px;">
+                    <strong>Bulk transfer submission failed.</strong>
+                    <div style="margin-top: 5px;">{$submissionError|escape:'html'}</div>
+                </div>
+            {/if}
+
             {if isset($validationErrors) && $validationErrors}
                 <div class="alert alert-danger" role="alert" style="margin-bottom: 15px;">
                     <ul style="margin-bottom: 0; padding-left: 20px;">
