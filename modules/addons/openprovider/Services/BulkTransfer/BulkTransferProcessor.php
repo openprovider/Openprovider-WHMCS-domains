@@ -31,7 +31,7 @@ class BulkTransferProcessor
         $this->openproviderTransferClient = $openproviderTransferClient;
     }
 
-    public function createBatch(array $domains, $resellerId = null, $adminId = null, $description = null, string $bulkReference)
+    public function createBatch(array $domains, string $bulkReference, $resellerId = null, $adminId = null, $description = null)
     {
         $normalizedDomains = $this->normalizeDomains($domains);
         if (empty($normalizedDomains)) {
