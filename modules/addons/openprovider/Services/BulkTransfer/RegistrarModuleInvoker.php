@@ -55,7 +55,14 @@ class RegistrarModuleInvoker
 
     protected function getContactDefaultLanguage($client, array $contact)
     {
-        if (empty($client->language) || empty($contact)) {
+        if (!empty($contact)) {
+            $contactLanguage = $this->getWhoisValue($contact, ['language', 'locale']);
+            if (!empty($contactLanguage)) {
+                return (string) $contactLanguage;
+            }
+        }
+
+        if (empty($client->language)) {
             return null;
         }
 
