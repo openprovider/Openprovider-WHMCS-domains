@@ -45,7 +45,7 @@ class OpenproviderTransferClient
             return $handles;
         }
 
-        $allContactsMatchOwner = $this->allContactsMatchOwner($params);
+        $allContactsMatchOwner = $this->allContactsMatchOwner($params); // This returns true either if all contacts match owner or only has owner contact
 
         if ($allContactsMatchOwner) {
             $sharedHandle = $this->createHandle($handleService, $params);
@@ -69,6 +69,7 @@ class OpenproviderTransferClient
             return $handles;
         }
 
+        // Process for at least one supported role has contact data that differs from owner.
         $handlesByContactSignature = [];
 
         if (!empty($tldMetaData['ownerHandleSupported'])) {
@@ -90,10 +91,6 @@ class OpenproviderTransferClient
             }
 
             $contactDetails = $this->getContactDetailsByRole($params, $roleConfig['contact']);
-            if (empty($contactDetails) && in_array($roleConfig['contact'], ['Tech', 'Billing'], true)) {
-                $contactDetails = $this->getContactDetailsByRole($params, 'Admin');
-            }
-
             if (empty($contactDetails)) {
                 throw new \RuntimeException(sprintf(
                     'Missing WHOIS contact details for supported %s handle creation.',
