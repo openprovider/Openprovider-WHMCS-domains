@@ -1,26 +1,7 @@
 {include file='../header.tpl'}
 
 <div class="op-addon bulk-transfer-page">
-    <h2 style="margin-bottom: 6px;">Batch List Page</h2>
-
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;">
-        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-            <input
-                type="text"
-                class="form-control"
-                placeholder="Search by bulk reference"
-                style="width: 260px;"
-                disabled
-            />
-            <select class="form-control" style="width: 140px;" disabled>
-                <option>All statuses</option>
-            </select>
-        </div>
-
-        <button type="button" class="btn btn-default" disabled>
-            Newest first
-        </button>
-    </div>
+    <h2 style="margin-bottom: 12px;">Batch List Page</h2>
 
     <div class="table-responsive">
         <table class="table" style="background: #fff;">
@@ -98,4 +79,45 @@
             </tbody>
         </table>
     </div>
+    {if isset($batchPagination) && $batchPagination.totalPages > 1}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:16px; flex-wrap:wrap;">
+            <div style="color:#667085; font-size:14px;">
+                Showing
+                {($batchPagination.currentPage - 1) * $batchPagination.perPage + 1}
+                -
+                {min($batchPagination.currentPage * $batchPagination.perPage, $batchPagination.totalItems)}
+                of {$batchPagination.totalItems}
+            </div>
+
+            <div style="display:flex; gap:8px; align-items:center;">
+                {if $batchPagination.hasPreviousPage}
+                    <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchList&page={$batchPagination.previousPage}"
+                    class="btn btn-default">
+                        Previous
+                    </a>
+                {/if}
+
+                {section name=page start=1 loop=$batchPagination.totalPages+1}
+                    {assign var=pageNumber value=$smarty.section.page.index}
+                    {if $pageNumber == $batchPagination.currentPage}
+                        <span class="btn btn-default" style="background:#101828; color:#fff; border-color:#101828;">
+                            {$pageNumber}
+                        </span>
+                    {else}
+                        <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchList&page={$pageNumber}"
+                        class="btn btn-default">
+                            {$pageNumber}
+                        </a>
+                    {/if}
+                {/section}
+
+                {if $batchPagination.hasNextPage}
+                    <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchList&page={$batchPagination.nextPage}"
+                    class="btn btn-default">
+                        Next
+                    </a>
+                {/if}
+            </div>
+        </div>
+    {/if}
 </div>
