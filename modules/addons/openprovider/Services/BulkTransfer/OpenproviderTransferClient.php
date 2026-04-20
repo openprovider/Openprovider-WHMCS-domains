@@ -9,6 +9,7 @@ use OpenProvider\API\DomainTransfer;
 use OpenProvider\WhmcsRegistrar\helpers\DbCacheHelper;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\src\Handle as RegistrarHandle;
+use WHMCS\Database\Capsule;
 
 class OpenproviderTransferClient
 {
@@ -44,6 +45,8 @@ class OpenproviderTransferClient
         if (!$hasSupportedHandle) {
             return $handles;
         }
+
+        $this->assertSupportedHandleContactDetailsExist($params, $tldMetaData);
 
         $allContactsMatchOwner = $this->allContactsMatchOwner($params); // This returns true either if all contacts match owner or only has owner contact
 
@@ -188,6 +191,31 @@ class OpenproviderTransferClient
         }
 
         return $handle;
+    }
+
+    protected function assertSupportedHandleContactDetailsExist(array $params, array $tldMetaData)
+    {
+        $roleMap = [
+            'ownerHandleSupported' => 'Owner',
+            'adminHandleSupported' => 'Admin',
+            'techHandleSupported' => 'Tech',
+            'billingHandleSupported' => 'Billing',
+        ];
+
+        foreach ($roleMap as $supportedKey => $contactRole) {
+            if (empty($tldMetaData[$supportedKey])) {
+                continue;
+            }
+
+            if (!empty($this->getContactDetailsByRole($params, $contactRole))) {
+                continue;
+            }
+
+            throw new \RuntimeException(sprintf(
+                'Missing WHOIS contact details for supported %s handle creation.',
+                strtolower($contactRole)
+            ));
+        }
     }
 
     protected function allContactsMatchOwner(array $params)
