@@ -16,6 +16,7 @@
       <ul class="nav navbar-nav">
         <li><a href="{get_route route='scheduledDomainTransfers'}">Scheduled Domain Transfers</a></li>
         <li><a href="{get_route route='bulkDomainTransfers'}">Bulk Domain Transfers</a></li>
+        <li><a href="{get_route route='bulkDomainTransfersStatusPage'}">Bulk Domain Transfers Status</a></li>
         <li><a href="{get_route route='supportIndex'}">Support</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
