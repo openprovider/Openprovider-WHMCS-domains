@@ -82,28 +82,6 @@
         </div>
     {/if}
 
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;">
-        <input
-            type="text"
-            class="form-control"
-            placeholder="Search domain"
-            style="width: 240px;"
-            disabled
-        />
-
-        <button type="button" class="btn btn-default" disabled>
-            Export CSV
-        </button>
-    </div>
-
-    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px;">
-        <button type="button" class="btn btn-default" style="border-radius: 999px; background: #101828; color: #fff; border-color: #101828;" disabled>All</button>
-        <button type="button" class="btn btn-default" style="border-radius: 999px;" disabled>Queued</button>
-        <button type="button" class="btn btn-default" style="border-radius: 999px;" disabled>In progress</button>
-        <button type="button" class="btn btn-default" style="border-radius: 999px;" disabled>Completed</button>
-        <button type="button" class="btn btn-default" style="border-radius: 999px;" disabled>Failed</button>
-    </div>
-
     <div class="table-responsive">
         <table class="table" style="background: #fff;">
             <thead>
@@ -163,4 +141,46 @@
             </tbody>
         </table>
     </div>
+
+    {if isset($domainPagination) && $domainPagination.totalPages > 1}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:16px; flex-wrap:wrap;">
+            <div style="color:#667085; font-size:14px;">
+                Showing
+                {($domainPagination.currentPage - 1) * $domainPagination.perPage + 1}
+                -
+                {min($domainPagination.currentPage * $domainPagination.perPage, $domainPagination.totalItems)}
+                of {$domainPagination.totalItems}
+            </div>
+
+            <div style="display:flex; gap:8px; align-items:center;">
+                {if $domainPagination.hasPreviousPage}
+                    <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchDetails&batchReference={$batch.reference|escape:'url'}&domainPage={$domainPagination.previousPage}"
+                    class="btn btn-default">
+                        Previous
+                    </a>
+                {/if}
+
+                {section name=page start=1 loop=$domainPagination.totalPages+1}
+                    {assign var=pageNumber value=$smarty.section.page.index}
+                    {if $pageNumber == $domainPagination.currentPage}
+                        <span class="btn btn-default" style="background:#101828; color:#fff; border-color:#101828;">
+                            {$pageNumber}
+                        </span>
+                    {else}
+                        <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchDetails&batchReference={$batch.reference|escape:'url'}&domainPage={$pageNumber}"
+                        class="btn btn-default">
+                            {$pageNumber}
+                        </a>
+                    {/if}
+                {/section}
+
+                {if $domainPagination.hasNextPage}
+                    <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchDetails&batchReference={$batch.reference|escape:'url'}&domainPage={$domainPagination.nextPage}"
+                    class="btn btn-default">
+                        Next
+                    </a>
+                {/if}
+            </div>
+        </div>
+    {/if}
 </div>

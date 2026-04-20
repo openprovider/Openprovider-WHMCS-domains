@@ -224,52 +224,37 @@ class BulkDomainTransferController extends ViewBaseController
 
     public function batchList($params)
     {
-        $batches = [
-            [
-                'reference' => 'BT-2026-000184',
-                'submittedAt' => '10 Apr 2026, 10:22',
-                'status' => 'Processing',
-                'processed' => 68,
-                'total' => 100,
-                'success' => 60,
-                'failed' => 8,
-                'lastUpdated' => '10 Apr 2026, 10:41',
-            ],
-            [
-                'reference' => 'BT-2026-000183',
-                'submittedAt' => '09 Apr 2026, 16:08',
-                'status' => 'Completed with errors',
-                'processed' => 100,
-                'total' => 100,
-                'success' => 94,
-                'failed' => 6,
-                'lastUpdated' => '09 Apr 2026, 16:31',
-            ],
-            [
-                'reference' => 'BT-2026-000182',
-                'submittedAt' => '09 Apr 2026, 11:05',
-                'status' => 'Completed',
-                'processed' => 40,
-                'total' => 40,
-                'success' => 40,
-                'failed' => 0,
-                'lastUpdated' => '09 Apr 2026, 11:14',
-            ],
-            [
-                'reference' => 'BT-2026-000181',
-                'submittedAt' => '08 Apr 2026, 18:45',
-                'status' => 'Queued',
-                'processed' => 0,
-                'total' => 55,
-                'success' => 0,
-                'failed' => 0,
-                'lastUpdated' => '08 Apr 2026, 18:45',
-            ],
-        ];
+        $batches = [];
+
+        for ($i = 184; $i >= 170; $i--) {
+            $total = rand(20, 120);
+            $processed = rand(0, $total);
+            $success = rand(0, $processed);
+            $failed = $processed - $success;
+
+            $statuses = ['Processing', 'Completed', 'Completed with errors', 'Queued'];
+            $status = $statuses[array_rand($statuses)];
+
+            $batches[] = [
+                'reference' => 'BT-2026-00' . $i,
+                'submittedAt' => date('d M Y, H:i', strtotime("-{$i} minutes")),
+                'status' => $status,
+                'processed' => $processed,
+                'total' => $total,
+                'success' => $success,
+                'failed' => $failed,
+                'lastUpdated' => date('d M Y, H:i', strtotime("-" . ($i - 2) . " minutes")),
+            ];
+        }
+
+        $currentPage = $this->getCurrentPage('page');
+        $perPage = 10;
+        $pagination = $this->paginateArray($batches, $currentPage, $perPage);
 
         return $this->view('bulk_domain_transfer/batch_list', [
             'LANG' => $params['_lang'],
-            'batches' => $batches,
+            'batches' => $pagination['items'],
+            'batchPagination' => $pagination,
         ]);
     }
 
@@ -286,47 +271,93 @@ class BulkDomainTransferController extends ViewBaseController
             'processed' => 68,
             'successful' => 60,
             'failed' => 8,
-            'progressPercentage' => 68,
         ];
 
+        // calculate progress
+        $progressPercentage = $batch['totalDomains'] > 0
+            ? round(($batch['processed'] / $batch['totalDomains']) * 100)
+            : 0;
+
+        $batch['progressPercentage'] = $progressPercentage;
+        
+
         $domains = [
-            [
-                'domain' => 'example1.com',
-                'status' => 'Completed',
-                'message' => 'Transfer submitted successfully.',
-                'lastUpdated' => '10 Apr 2026, 10:39',
-            ],
-            [
-                'domain' => 'example2.net',
-                'status' => 'Transfer in progress',
-                'message' => 'Transfer request is being processed.',
-                'lastUpdated' => '10 Apr 2026, 10:40',
-            ],
-            [
-                'domain' => 'example3.org',
-                'status' => 'Validation failed',
-                'message' => 'Authorization code is missing or invalid. Update the auth code and retry.',
-                'lastUpdated' => '10 Apr 2026, 10:36',
-            ],
-            [
-                'domain' => 'example4.io',
-                'status' => 'Failed',
-                'message' => 'Domain is locked at the current registrar. Unlock the domain and retry.',
-                'lastUpdated' => '10 Apr 2026, 10:35',
-            ],
-            [
-                'domain' => 'example5.co',
-                'status' => 'Queued',
-                'message' => 'Waiting to be processed.',
-                'lastUpdated' => '10 Apr 2026, 10:22',
-            ],
+            ['domain' => 'example1.com', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 10:39'],
+            ['domain' => 'example2.net', 'status' => 'Transfer in progress', 'message' => 'Transfer request is being processed.', 'lastUpdated' => '10 Apr 2026, 10:40'],
+            ['domain' => 'example3.org', 'status' => 'Validation failed', 'message' => 'Authorization code is missing or invalid.', 'lastUpdated' => '10 Apr 2026, 10:36'],
+            ['domain' => 'example4.io', 'status' => 'Failed', 'message' => 'Domain is locked at the current registrar.', 'lastUpdated' => '10 Apr 2026, 10:35'],
+            ['domain' => 'example5.co', 'status' => 'Queued', 'message' => 'Waiting to be processed.', 'lastUpdated' => '10 Apr 2026, 10:22'],
+            ['domain' => 'example6.xyz', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 10:21'],
+            ['domain' => 'example7.info', 'status' => 'Queued', 'message' => 'Waiting to be processed.', 'lastUpdated' => '10 Apr 2026, 10:20'],
+            ['domain' => 'example8.dev', 'status' => 'Transfer in progress', 'message' => 'Transfer request is being processed.', 'lastUpdated' => '10 Apr 2026, 10:19'],
+            ['domain' => 'example9.app', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 10:18'],
+            ['domain' => 'example10.io', 'status' => 'Failed', 'message' => 'Domain is locked at the current registrar.', 'lastUpdated' => '10 Apr 2026, 10:17'],
+
+            ['domain' => 'example11.com', 'status' => 'Queued', 'message' => 'Waiting to be processed.', 'lastUpdated' => '10 Apr 2026, 10:16'],
+            ['domain' => 'example12.net', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 10:15'],
+            ['domain' => 'example13.org', 'status' => 'Validation failed', 'message' => 'Authorization code is missing or invalid.', 'lastUpdated' => '10 Apr 2026, 10:14'],
+            ['domain' => 'example14.io', 'status' => 'Transfer in progress', 'message' => 'Transfer request is being processed.', 'lastUpdated' => '10 Apr 2026, 10:13'],
+            ['domain' => 'example15.co', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 10:12'],
+            ['domain' => 'example16.xyz', 'status' => 'Queued', 'message' => 'Waiting to be processed.', 'lastUpdated' => '10 Apr 2026, 10:11'],
+            ['domain' => 'example17.info', 'status' => 'Failed', 'message' => 'Domain is locked at the current registrar.', 'lastUpdated' => '10 Apr 2026, 10:10'],
+            ['domain' => 'example18.dev', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 10:09'],
+            ['domain' => 'example19.app', 'status' => 'Transfer in progress', 'message' => 'Transfer request is being processed.', 'lastUpdated' => '10 Apr 2026, 10:08'],
+            ['domain' => 'example20.io', 'status' => 'Queued', 'message' => 'Waiting to be processed.', 'lastUpdated' => '10 Apr 2026, 10:07'],
+
+            ['domain' => 'example21.com', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 10:06'],
+            ['domain' => 'example22.net', 'status' => 'Validation failed', 'message' => 'Authorization code is missing or invalid.', 'lastUpdated' => '10 Apr 2026, 10:05'],
+            ['domain' => 'example23.org', 'status' => 'Failed', 'message' => 'Domain is locked at the current registrar.', 'lastUpdated' => '10 Apr 2026, 10:04'],
+            ['domain' => 'example24.io', 'status' => 'Transfer in progress', 'message' => 'Transfer request is being processed.', 'lastUpdated' => '10 Apr 2026, 10:03'],
+            ['domain' => 'example25.co', 'status' => 'Queued', 'message' => 'Waiting to be processed.', 'lastUpdated' => '10 Apr 2026, 10:02'],
+            ['domain' => 'example26.xyz', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 10:01'],
+            ['domain' => 'example27.info', 'status' => 'Transfer in progress', 'message' => 'Transfer request is being processed.', 'lastUpdated' => '10 Apr 2026, 10:00'],
+            ['domain' => 'example28.dev', 'status' => 'Queued', 'message' => 'Waiting to be processed.', 'lastUpdated' => '10 Apr 2026, 09:59'],
+            ['domain' => 'example29.app', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 09:58'],
+            ['domain' => 'example30.io', 'status' => 'Failed', 'message' => 'Domain is locked at the current registrar.', 'lastUpdated' => '10 Apr 2026, 09:57'],
+
+            ['domain' => 'example31.com', 'status' => 'Queued', 'message' => 'Waiting to be processed.', 'lastUpdated' => '10 Apr 2026, 09:56'],
+            ['domain' => 'example32.net', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 09:55'],
+            ['domain' => 'example33.org', 'status' => 'Validation failed', 'message' => 'Authorization code is missing or invalid.', 'lastUpdated' => '10 Apr 2026, 09:54'],
+            ['domain' => 'example34.io', 'status' => 'Transfer in progress', 'message' => 'Transfer request is being processed.', 'lastUpdated' => '10 Apr 2026, 09:53'],
+            ['domain' => 'example35.co', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 09:52'],
         ];
+
+        $currentPage = $this->getCurrentPage('domainPage');
+        $perPage = 10;
+        $pagination = $this->paginateArray($domains, $currentPage, $perPage);
 
         return $this->view('bulk_domain_transfer/batch_details', [
             'LANG' => $params['_lang'],
             'batch' => $batch,
-            'domains' => $domains,
+            'domains' => $pagination['items'],
+            'domainPagination' => $pagination,
         ]);
+    }
+
+    private function getCurrentPage(string $key = 'page'): int
+    {
+        $page = isset($_GET[$key]) ? (int) $_GET[$key] : 1;
+        return max(1, $page);
+    }
+
+    private function paginateArray(array $items, int $page, int $perPage): array
+    {
+        $totalItems = count($items);
+        $totalPages = max(1, (int) ceil($totalItems / $perPage));
+        $page = min($page, $totalPages);
+        $offset = ($page - 1) * $perPage;
+
+        return [
+            'items' => array_slice($items, $offset, $perPage),
+            'currentPage' => $page,
+            'perPage' => $perPage,
+            'totalItems' => $totalItems,
+            'totalPages' => $totalPages,
+            'hasPreviousPage' => $page > 1,
+            'hasNextPage' => $page < $totalPages,
+            'previousPage' => $page > 1 ? $page - 1 : 1,
+            'nextPage' => $page < $totalPages ? $page + 1 : $totalPages,
+        ];
     }
 
 }
