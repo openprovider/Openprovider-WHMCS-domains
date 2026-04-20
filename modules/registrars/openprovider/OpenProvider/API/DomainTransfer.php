@@ -11,4 +11,6 @@ namespace OpenProvider\API;
 class DomainTransfer extends \OpenProvider\API\DomainRegistration
 {
     public $authCode;
+
+    public $importNameserversFromRegistry = false;
 }
