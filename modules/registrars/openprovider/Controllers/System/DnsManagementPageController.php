@@ -89,10 +89,10 @@ class DnsManagementPageController extends BaseController
             }
 
             try {
-                $hostname = trim((string)($_POST['hostname'] ?? '')); // "www" or ""
-                $type     = strtoupper(trim((string)($_POST['type'] ?? '')));
-                $address  = trim((string)($_POST['address'] ?? ''));
-                $priority = trim((string)($_POST['priority'] ?? ''));
+                $hostname = html_entity_decode(trim((string) ($_POST['hostname'] ?? '')), ENT_QUOTES, 'UTF-8');
+                $type     = strtoupper(trim((string) ($_POST['type'] ?? '')));
+                $address  = html_entity_decode(trim((string) ($_POST['address'] ?? '')), ENT_QUOTES, 'UTF-8');
+                $priority = html_entity_decode(trim((string) ($_POST['priority'] ?? '')), ENT_QUOTES, 'UTF-8');
 
                 if ($type === '' || $address === '') {
                     http_response_code(400);
@@ -300,10 +300,10 @@ class DnsManagementPageController extends BaseController
         $priority  = $_POST['dnsrecordpriority'] ?? [];
 
         foreach ($hosts as $i => $host) {
-            $host    = trim((string)$host);
-            $type    = strtoupper(trim((string)($types[$i] ?? '')));
-            $address = trim((string)($addresses[$i] ?? ''));
-            $prio    = trim((string)($priority[$i] ?? ''));
+            $host    = html_entity_decode(trim((string) $host), ENT_QUOTES, 'UTF-8');
+            $type    = strtoupper(trim((string) ($types[$i] ?? '')));
+            $address = html_entity_decode(trim((string) ($addresses[$i] ?? '')), ENT_QUOTES, 'UTF-8');
+            $prio    = html_entity_decode(trim((string) ($priority[$i] ?? '')), ENT_QUOTES, 'UTF-8');
 
             // Skip completely empty rows
             if ($host === '' && $address === '') {
