@@ -8,9 +8,6 @@ use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Validator\Validator;
 use WeDevelopCoffee\wPower\View\View;
 use OpenProvider\WhmcsDomainAddon\Services\BulkTransfer\BulkTransferProcessor;
-use WHMCS\Database\Capsule;
-use WHMCS\Input\Sanitize;
-
 
 /**
  * Client controller dispatcher.
