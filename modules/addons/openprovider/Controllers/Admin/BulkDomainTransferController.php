@@ -226,6 +226,7 @@ class BulkDomainTransferController extends ViewBaseController
     {
         $batches = [];
 
+        // this is a temporary code to build mock data. remove when DB is integrated.
         for ($i = 184; $i >= 170; $i--) {
             $total = rand(20, 120);
             $processed = rand(0, $total);
@@ -262,6 +263,7 @@ class BulkDomainTransferController extends ViewBaseController
     {
         $batchReference = $params['batchReference'] ?? ($_GET['batchReference'] ?? '');
 
+        // temporary mock data. remove when DB is integrated.
         $batch = [
             'reference' => $batchReference ?: 'BT-2026-000184',
             'submittedAt' => '10 Apr 2026, 10:22',
@@ -280,7 +282,7 @@ class BulkDomainTransferController extends ViewBaseController
 
         $batch['progressPercentage'] = $progressPercentage;
         
-
+        // temporary mock data. remove when DB is integrated.
         $domains = [
             ['domain' => 'example1.com', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 10:39'],
             ['domain' => 'example2.net', 'status' => 'Transfer in progress', 'message' => 'Transfer request is being processed.', 'lastUpdated' => '10 Apr 2026, 10:40'],
