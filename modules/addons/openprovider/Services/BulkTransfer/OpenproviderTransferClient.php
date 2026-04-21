@@ -236,7 +236,9 @@ class OpenproviderTransferClient
             'billing' => $handles['billing_handle'] ?? null,
         ];
 
-        $syncRows = [];
+        $existingHandleIds = $this->getExistingDomainHandleAssignments($domainId);
+        $resolvedHandleIds = [];
+
         foreach ($roleHandles as $roleType => $handle) {
             if (empty($handle)) {
                 continue;
@@ -251,6 +253,24 @@ class OpenproviderTransferClient
                 ));
             }
 
+            $resolvedHandleIds[$roleType] = $handleId;
+        }
+
+        $fallbackHandleId = $resolvedHandleIds['registrant'] ?? reset($resolvedHandleIds);
+        if (empty($fallbackHandleId)) {
+            $fallbackHandleId = reset($existingHandleIds);
+        }
+
+        if (empty($fallbackHandleId)) {
+            return;
+        }
+
+        $syncRows = [];
+        foreach (array_keys($roleHandles) as $roleType) {
+            $handleId = $resolvedHandleIds[$roleType]
+                ?? $existingHandleIds[$roleType]
+                ?? $fallbackHandleId;
+
             $syncRows[] = [
                 'domain_id' => $domainId,
                 'handle_id' => $handleId,
@@ -258,15 +278,31 @@ class OpenproviderTransferClient
             ];
         }
 
-        if (empty($syncRows)) {
-            return;
+        Capsule::connection()->transaction(function () use ($domainId, $syncRows) {
+            Capsule::table('wDomain_handle')
+                ->where('domain_id', $domainId)
+                ->delete();
+
+            Capsule::table('wDomain_handle')->insert($syncRows);
+        });
+    }
+
+    protected function getExistingDomainHandleAssignments($domainId)
+    {
+        $assignments = [];
+        $rows = Capsule::table('wDomain_handle')
+            ->where('domain_id', (int) $domainId)
+            ->get();
+
+        foreach ($rows as $row) {
+            if (empty($row->type) || empty($row->handle_id)) {
+                continue;
+            }
+
+            $assignments[(string) $row->type] = (int) $row->handle_id;
         }
 
-        Capsule::table('wDomain_handle')
-            ->where('domain_id', $domainId)
-            ->delete();
-
-        Capsule::table('wDomain_handle')->insert($syncRows);
+        return $assignments;
     }
 
     protected function findWhmcsHandleId(array $params, $handle, $roleType)
