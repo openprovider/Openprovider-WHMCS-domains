@@ -154,7 +154,7 @@
 
             <div style="display:flex; gap:8px; align-items:center;">
                 {if $domainPagination.hasPreviousPage}
-                    <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchDetails&batchReference={$batch.reference|escape:'url'}&domainPage={$domainPagination.previousPage}"
+                    <a href="{get_route route='bulkDomainTransfersBatchDetails' batchReference=$batch.reference domainPage=$domainPagination.previousPage}"
                     class="btn btn-default">
                         Previous
                     </a>
@@ -167,7 +167,7 @@
                             {$pageNumber}
                         </span>
                     {else}
-                        <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchDetails&batchReference={$batch.reference|escape:'url'}&domainPage={$pageNumber}"
+                        <a href="{get_route route='bulkDomainTransfersBatchDetails' batchReference=$batch.reference domainPage=$pageNumber}"
                         class="btn btn-default">
                             {$pageNumber}
                         </a>
@@ -175,7 +175,7 @@
                 {/section}
 
                 {if $domainPagination.hasNextPage}
-                    <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchDetails&batchReference={$batch.reference|escape:'url'}&domainPage={$domainPagination.nextPage}"
+                    <a href="{get_route route='bulkDomainTransfersBatchDetails' batchReference=$batch.reference domainPage=$domainPagination.nextPage}"
                     class="btn btn-default">
                         Next
                     </a>
