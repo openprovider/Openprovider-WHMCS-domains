@@ -19,7 +19,7 @@
             <tbody>
                 {foreach $batches as $batch}
                     <tr
-                        onclick="window.location.href='addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchDetails&batchReference={$batch.reference|escape:'url'}'"
+                        onclick="window.location.href='{get_route route='bulkDomainTransfersBatchDetails' batchReference=$batch.reference}'"
                         style="cursor: pointer;"
                     >
                         <td style="padding: 18px 16px; vertical-align: middle;">
@@ -91,7 +91,7 @@
 
             <div style="display:flex; gap:8px; align-items:center;">
                 {if $batchPagination.hasPreviousPage}
-                    <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchList&page={$batchPagination.previousPage}"
+                    <a href="{get_route route='bulkDomainTransfersBatchList' page=$batchPagination.previousPage}"
                     class="btn btn-default">
                         Previous
                     </a>
@@ -104,7 +104,7 @@
                             {$pageNumber}
                         </span>
                     {else}
-                        <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchList&page={$pageNumber}"
+                        <a href="{get_route route='bulkDomainTransfersBatchList' page=$pageNumber}"
                         class="btn btn-default">
                             {$pageNumber}
                         </a>
@@ -112,7 +112,7 @@
                 {/section}
 
                 {if $batchPagination.hasNextPage}
-                    <a href="addonmodules.php?module=openprovider&action=bulkDomainTransfersBatchList&page={$batchPagination.nextPage}"
+                    <a href="{get_route route='bulkDomainTransfersBatchList' page=$batchPagination.nextPage}"
                     class="btn btn-default">
                         Next
                     </a>
