@@ -110,32 +110,63 @@
                         </td>
 
                         <td style="padding: 18px 16px; vertical-align: middle;">
-                            {if $domain.status eq 'Completed'}
-                                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #86d4a8; border-radius: 999px; color: #067647; background: #ecfdf3; font-weight: 600;">
-                                    {$domain.status|escape:'html'}
-                                </span>
-                            {elseif $domain.status eq 'Transfer in progress'}
-                                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #b7cdfc; border-radius: 999px; color: #2156d9; background: #eef4ff; font-weight: 600;">
-                                    {$domain.status|escape:'html'}
-                                </span>
-                            {elseif $domain.status eq 'Validation failed'}
-                                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #f7b27a; border-radius: 999px; color: #d96d12; background: #fff7ed; font-weight: 600;">
-                                    {$domain.status|escape:'html'}
-                                </span>
-                            {elseif $domain.status eq 'Failed'}
-                                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #f3b3b3; border-radius: 999px; color: #b42318; background: #fef3f2; font-weight: 600;">
-                                    {$domain.status|escape:'html'}
-                                </span>
-                            {elseif $domain.status eq 'Queued'}
-                                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #d0d5dd; border-radius: 999px; color: #344054; background: #f9fafb; font-weight: 600;">
-                                    {$domain.status|escape:'html'}
-                                </span>
-                            {else}
-                                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #d0d5dd; border-radius: 999px; color: #344054; background: #f9fafb; font-weight: 600;">
-                                    {$domain.status|escape:'html'}
-                                </span>
-                            {/if}
-                        </td>
+                        {if $domain.status eq 'success'}
+                            <span style="display: inline-block; padding: 6px 14px; border: 1px solid #86d4a8; border-radius: 999px; color: #067647; background: #ecfdf3; font-weight: 600;">
+                                Completed
+                            </span>
+
+                        {elseif $domain.status eq 'failed'}
+                            <span style="display: inline-block; padding: 6px 14px; border: 1px solid #f3b3b3; border-radius: 999px; color: #b42318; background: #fef3f2; font-weight: 600;">
+                                Failed
+                            </span>
+
+                        {elseif $domain.status eq 'validation_failed'}
+                            <span style="display: inline-block; padding: 6px 14px; border: 1px solid #f7b27a; border-radius: 999px; color: #d96d12; background: #fff7ed; font-weight: 600;">
+                                Validation failed
+                            </span>
+
+                        {elseif $domain.status eq 'queued' || $domain.status eq 'ready_for_transfer'}
+                            <span style="display: inline-block; padding: 6px 14px; border: 1px solid #d0d5dd; border-radius: 999px; color: #344054; background: #f9fafb; font-weight: 600;">
+                                {if $domain.status eq 'ready_for_transfer'}
+                                    Ready for transfer
+                                {else}
+                                    Queued
+                                {/if}
+                            </span>
+
+                        {elseif
+                            $domain.status eq 'validating' ||
+                            $domain.status eq 'unlocking' ||
+                            $domain.status eq 'getting_epp' ||
+                            $domain.status eq 'creating_handle' ||
+                            $domain.status eq 'transferring' ||
+                            $domain.status eq 'transfer_requested' ||
+                            $domain.status eq 'checking_transfer_status'
+                        }
+                            <span style="display: inline-block; padding: 6px 14px; border: 1px solid #b7cdfc; border-radius: 999px; color: #2156d9; background: #eef4ff; font-weight: 600;">
+                                {if $domain.status eq 'validating'}
+                                    Validating
+                                {elseif $domain.status eq 'unlocking'}
+                                    Unlocking
+                                {elseif $domain.status eq 'getting_epp'}
+                                    Getting EPP
+                                {elseif $domain.status eq 'creating_handle'}
+                                    Creating handle
+                                {elseif $domain.status eq 'transferring'}
+                                    Transferring
+                                {elseif $domain.status eq 'transfer_requested'}
+                                    Transfer requested
+                                {elseif $domain.status eq 'checking_transfer_status'}
+                                    Checking transfer status
+                                {/if}
+                            </span>
+
+                        {else}
+                            <span style="display: inline-block; padding: 6px 14px; border: 1px solid #d0d5dd; border-radius: 999px; color: #344054; background: #f9fafb; font-weight: 600;">
+                                {$domain.status|escape:'html'}
+                            </span>
+                        {/if}
+                    </td>
 
                         <td style="padding: 18px 16px; vertical-align: middle; color: #344054;">
                             {$domain.message|escape:'html'}
