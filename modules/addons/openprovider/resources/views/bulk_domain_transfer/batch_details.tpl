@@ -7,20 +7,28 @@
         </div>
 
         <div>
-            {if $batch.status eq 'Processing'}
-                <span style="display: inline-block; padding: 8px 16px; border: 1px solid #b7cdfc; border-radius: 999px; color: #2156d9; background: #eef4ff; font-weight: 600;">
-                    {$batch.status|escape:'html'}
+            {if $batch.status eq 'processing'}
+                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #b7cdfc; border-radius: 999px; color: #2156d9; background: #eef4ff; font-weight: 600;">
+                    Processing
                 </span>
-            {elseif $batch.status eq 'Completed'}
-                <span style="display: inline-block; padding: 8px 16px; border: 1px solid #86d4a8; border-radius: 999px; color: #067647; background: #ecfdf3; font-weight: 600;">
-                    {$batch.status|escape:'html'}
+            {elseif $batch.status eq 'completed_with_errors'}
+                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #f7b27a; border-radius: 999px; color: #d96d12; background: #fff7ed; font-weight: 600;">
+                    Completed with errors
                 </span>
-            {elseif $batch.status eq 'Completed with errors'}
-                <span style="display: inline-block; padding: 8px 16px; border: 1px solid #f7b27a; border-radius: 999px; color: #d96d12; background: #fff7ed; font-weight: 600;">
-                    {$batch.status|escape:'html'}
+            {elseif $batch.status eq 'completed'}
+                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #86d4a8; border-radius: 999px; color: #067647; background: #ecfdf3; font-weight: 600;">
+                    Completed
+                </span>
+            {elseif $batch.status eq 'queued'}
+                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #d0d5dd; border-radius: 999px; color: #344054; background: #f9fafb; font-weight: 600;">
+                    Queued
+                </span>
+            {elseif $batch.status eq 'failed'}
+                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #f3b3b3; border-radius: 999px; color: #b42318; background: #fef3f2; font-weight: 600;">
+                    Failed
                 </span>
             {else}
-                <span style="display: inline-block; padding: 8px 16px; border: 1px solid #d0d5dd; border-radius: 999px; color: #344054; background: #f9fafb; font-weight: 600;">
+                <span style="display: inline-block; padding: 6px 14px; border: 1px solid #d0d5dd; border-radius: 999px; color: #344054; background: #f9fafb; font-weight: 600;">
                     {$batch.status|escape:'html'}
                 </span>
             {/if}

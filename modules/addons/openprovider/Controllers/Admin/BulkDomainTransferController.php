@@ -230,7 +230,7 @@ class BulkDomainTransferController extends ViewBaseController
             $success = rand(0, $processed);
             $failed = $processed - $success;
 
-            $statuses = ['Processing', 'Completed', 'Completed with errors', 'Queued'];
+            $statuses = ['queued', 'processing', 'completed', 'completed_with_errors', 'failed'];
             $status = $statuses[array_rand($statuses)];
 
             $batches[] = [
@@ -265,7 +265,7 @@ class BulkDomainTransferController extends ViewBaseController
             'reference' => $batchReference ?: 'BT-2026-000184',
             'submittedAt' => '10 Apr 2026, 10:22',
             'lastUpdated' => '10 Apr 2026, 10:41',
-            'status' => 'Processing',
+            'status' => 'completed',
             'totalDomains' => 100,
             'processed' => 68,
             'successful' => 60,
@@ -281,7 +281,7 @@ class BulkDomainTransferController extends ViewBaseController
         
         // temporary mock data. remove when DB is integrated.
         $domains = [
-            ['domain' => 'example1.com', 'status' => 'Completed', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 10:39'],
+            ['domain' => 'example1.com', 'status' => 'ABC', 'message' => 'Transfer submitted successfully.', 'lastUpdated' => '10 Apr 2026, 10:39'],
             ['domain' => 'example2.net', 'status' => 'Transfer in progress', 'message' => 'Transfer request is being processed.', 'lastUpdated' => '10 Apr 2026, 10:40'],
             ['domain' => 'example3.org', 'status' => 'Validation failed', 'message' => 'Authorization code is missing or invalid.', 'lastUpdated' => '10 Apr 2026, 10:36'],
             ['domain' => 'example4.io', 'status' => 'Failed', 'message' => 'Domain is locked at the current registrar.', 'lastUpdated' => '10 Apr 2026, 10:35'],
