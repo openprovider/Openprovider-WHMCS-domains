@@ -702,7 +702,9 @@ class ApiHelper
             throw new \InvalidArgumentException('Missing TLD.');
         }
 
-        $mode = defined('MODE') ? MODE : 'live'; 
+        $host = $this->apiClient->getConfiguration()->getHost();
+        $mode = str_contains($host, 'sandbox') ? 'test' : 'live';
+    
         return DbCacheHelper::remember(
             'tld_meta_' . strtolower($tld),
             $mode,
