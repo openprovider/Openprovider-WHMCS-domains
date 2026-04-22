@@ -697,7 +697,7 @@ class ApiHelper
      */
     public function getTldMeta(string $tld): array
     {
-        $tld = trim($tld);
+        $tld = ltrim(strtolower(trim($tld)), '.');
         if ($tld === '') {
             throw new \InvalidArgumentException('Missing TLD.');
         }
@@ -706,7 +706,7 @@ class ApiHelper
         $mode = str_contains($host, 'sandbox') ? 'test' : 'live';
     
         return DbCacheHelper::remember(
-            'tld_meta_' . strtolower($tld),
+            'tld_meta_' . $tld,
             $mode,
             self::TLD_METADATA_CACHE_TTL,
             fn() => $this->buildResponse(
