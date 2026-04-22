@@ -14,8 +14,6 @@ class RegistrarModuleInvoker
             throw new \RuntimeException('WHMCS LocalAPI returned no registrant WHOIS details.');
         }
 
-        $this->assertOwnerOnlyWhoisContacts($whoisContacts);
-
         $contactDetails = [
             'Owner' => $this->mapWhoisContactToContactDetails(
                 $ownerContact,
@@ -57,7 +55,14 @@ class RegistrarModuleInvoker
 
     protected function getContactDefaultLanguage($client, array $contact)
     {
-        if (empty($client->language) || empty($contact)) {
+        if (!empty($contact)) {
+            $contactLanguage = $this->getWhoisValue($contact, ['language', 'locale']);
+            if (!empty($contactLanguage)) {
+                return (string) $contactLanguage;
+            }
+        }
+
+        if (empty($client->language)) {
             return null;
         }
 
@@ -417,40 +422,5 @@ class RegistrarModuleInvoker
         }
 
         return realpath(__DIR__ . '/../../../../../');
-    }
-
-    protected function assertOwnerOnlyWhoisContacts(array $whoisContacts)
-    {
-
-        foreach (['Admin', 'Tech', 'Billing'] as $role) {
-            $roleContact = $this->normalizeWhoisContactForComparison($whoisContacts[$role] ?? []);
-
-            if (empty($roleContact)) {
-                continue;
-            }
-            throw new \RuntimeException(
-                'Bulk transfer is currently available only for owner-only WHOIS contact data. This domain has multiple contact types and is not available yet.'
-            );
-        }
-    }
-
-    protected function normalizeWhoisContactForComparison(array $contact)
-    {
-        $normalized = [];
-
-        foreach ($contact as $key => $value) {
-            $normalizedKey = strtolower(trim((string) $key));
-            $normalizedValue = is_string($value) ? trim($value) : $value;
-
-            if ($normalizedValue === null || $normalizedValue === '') {
-                continue;
-            }
-
-            $normalized[$normalizedKey] = $normalizedValue;
-        }
-
-        ksort($normalized);
-
-        return $normalized;
     }
 }
