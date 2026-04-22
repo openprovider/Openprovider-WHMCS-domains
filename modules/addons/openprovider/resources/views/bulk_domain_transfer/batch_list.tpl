@@ -86,10 +86,15 @@
     {if isset($batchPagination) && $batchPagination.totalPages > 1}
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:16px; flex-wrap:wrap;">
             <div style="color:#667085; font-size:14px;">
+                {assign var=batchEndIndex value=$batchPagination.currentPage * $batchPagination.perPage}
                 Showing
                 {($batchPagination.currentPage - 1) * $batchPagination.perPage + 1}
                 -
-                {min($batchPagination.currentPage * $batchPagination.perPage, $batchPagination.totalItems)}
+                {if $batchEndIndex > $batchPagination.totalItems}
+                    {$batchPagination.totalItems}
+                {else}
+                    {$batchEndIndex}
+                {/if}
                 of {$batchPagination.totalItems}
             </div>
 

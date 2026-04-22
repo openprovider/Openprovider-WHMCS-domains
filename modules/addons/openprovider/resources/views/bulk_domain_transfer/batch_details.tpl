@@ -184,10 +184,15 @@
     {if isset($domainPagination) && $domainPagination.totalPages > 1}
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:16px; flex-wrap:wrap;">
             <div style="color:#667085; font-size:14px;">
+                {assign var=domainEndIndex value=$domainPagination.currentPage * $domainPagination.perPage}
                 Showing
                 {($domainPagination.currentPage - 1) * $domainPagination.perPage + 1}
                 -
-                {min($domainPagination.currentPage * $domainPagination.perPage, $domainPagination.totalItems)}
+                {if $domainEndIndex > $domainPagination.totalItems}
+                    {$domainPagination.totalItems}
+                {else}
+                    {$domainEndIndex}
+                {/if}
                 of {$domainPagination.totalItems}
             </div>
 
