@@ -9,6 +9,7 @@ use OpenProvider\API\DomainTransfer;
 use OpenProvider\WhmcsRegistrar\helpers\DbCacheHelper;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\src\Handle as RegistrarHandle;
+use WHMCS\Database\Capsule;
 
 class OpenproviderTransferClient
 {
@@ -45,7 +46,9 @@ class OpenproviderTransferClient
             return $handles;
         }
 
-        $allContactsMatchOwner = $this->allContactsMatchOwner($params);
+        $this->assertSupportedHandleContactDetailsExist($params, $tldMetaData);
+
+        $allContactsMatchOwner = $this->allContactsMatchOwner($params); // This returns true either if all contacts match owner or only has owner contact
 
         if ($allContactsMatchOwner) {
             $sharedHandle = $this->createHandle($handleService, $params);
@@ -66,9 +69,12 @@ class OpenproviderTransferClient
                 $handles['billing_handle'] = $sharedHandle;
             }
 
+            $this->syncDomainHandleAssignments($params, $handles);
+
             return $handles;
         }
 
+        // Process for at least one supported role has contact data that differs from owner.
         $handlesByContactSignature = [];
 
         if (!empty($tldMetaData['ownerHandleSupported'])) {
@@ -90,10 +96,6 @@ class OpenproviderTransferClient
             }
 
             $contactDetails = $this->getContactDetailsByRole($params, $roleConfig['contact']);
-            if (empty($contactDetails) && in_array($roleConfig['contact'], ['Tech', 'Billing'], true)) {
-                $contactDetails = $this->getContactDetailsByRole($params, 'Admin');
-            }
-
             if (empty($contactDetails)) {
                 throw new \RuntimeException(sprintf(
                     'Missing WHOIS contact details for supported %s handle creation.',
@@ -111,6 +113,8 @@ class OpenproviderTransferClient
             $handles[$handleKey] = $this->createHandle($handleService, $params, $roleConfig['type']);
             $handlesByContactSignature[$contactSignature] = $handles[$handleKey];
         }
+
+        $this->syncDomainHandleAssignments($params, $handles);
 
         return $handles;
     }
@@ -191,6 +195,141 @@ class OpenproviderTransferClient
         }
 
         return $handle;
+    }
+
+    protected function assertSupportedHandleContactDetailsExist(array $params, array $tldMetaData)
+    {
+        $roleMap = [
+            'ownerHandleSupported' => 'Owner',
+            'adminHandleSupported' => 'Admin',
+            'techHandleSupported' => 'Tech',
+            'billingHandleSupported' => 'Billing',
+        ];
+
+        foreach ($roleMap as $supportedKey => $contactRole) {
+            if (empty($tldMetaData[$supportedKey])) {
+                continue;
+            }
+
+            if (!empty($this->getContactDetailsByRole($params, $contactRole))) {
+                continue;
+            }
+
+            throw new \RuntimeException(sprintf(
+                'Missing WHOIS contact details for supported %s handle creation.',
+                strtolower($contactRole)
+            ));
+        }
+    }
+
+    protected function syncDomainHandleAssignments(array $params, array $handles)
+    {
+        if (empty($params['domainid'])) {
+            return;
+        }
+
+        $domainId = (int) $params['domainid'];
+        $roleHandles = [
+            'registrant' => $handles['owner_handle'] ?? null,
+            'admin' => $handles['admin_handle'] ?? null,
+            'tech' => $handles['tech_handle'] ?? null,
+            'billing' => $handles['billing_handle'] ?? null,
+        ];
+
+        $existingHandleIds = $this->getExistingDomainHandleAssignments($domainId);
+        $resolvedHandleIds = [];
+
+        foreach ($roleHandles as $roleType => $handle) {
+            if (empty($handle)) {
+                continue;
+            }
+
+            $handleId = $this->findWhmcsHandleId($params, $handle, $roleType);
+            if ($handleId === null) {
+                throw new \RuntimeException(sprintf(
+                    'Unable to find WHMCS handle row for %s handle %s.',
+                    $roleType,
+                    $handle
+                ));
+            }
+
+            $resolvedHandleIds[$roleType] = $handleId;
+        }
+
+        $fallbackHandleId = $resolvedHandleIds['registrant'] ?? reset($resolvedHandleIds);
+        if (empty($fallbackHandleId)) {
+            $fallbackHandleId = reset($existingHandleIds);
+        }
+
+        if (empty($fallbackHandleId)) {
+            return;
+        }
+
+        $syncRows = [];
+        foreach (array_keys($roleHandles) as $roleType) {
+            $handleId = $resolvedHandleIds[$roleType]
+                ?? $existingHandleIds[$roleType]
+                ?? $fallbackHandleId;
+
+            $syncRows[] = [
+                'domain_id' => $domainId,
+                'handle_id' => $handleId,
+                'type' => $roleType,
+            ];
+        }
+
+        Capsule::connection()->transaction(function () use ($domainId, $syncRows) {
+            Capsule::table('wDomain_handle')
+                ->where('domain_id', $domainId)
+                ->delete();
+
+            Capsule::table('wDomain_handle')->insert($syncRows);
+        });
+    }
+
+    protected function getExistingDomainHandleAssignments($domainId)
+    {
+        $assignments = [];
+        $rows = Capsule::table('wDomain_handle')
+            ->where('domain_id', (int) $domainId)
+            ->get();
+
+        foreach ($rows as $row) {
+            if (empty($row->type) || empty($row->handle_id)) {
+                continue;
+            }
+
+            $assignments[(string) $row->type] = (int) $row->handle_id;
+        }
+
+        return $assignments;
+    }
+
+    protected function findWhmcsHandleId(array $params, $handle, $roleType)
+    {
+        $query = Capsule::table('wHandles')
+            ->where('registrar', 'openprovider')
+            ->where('handle', (string) $handle);
+
+        if (!empty($params['userid'])) {
+            $query->where('user_id', (int) $params['userid']);
+        }
+
+        $rows = $query->get();
+        if (empty($rows)) {
+            return null;
+        }
+
+        $preferredTypes = array_unique([$roleType, 'all', 'registrant', 'admin', 'tech', 'billing']);
+        foreach ($preferredTypes as $preferredType) {
+            foreach ($rows as $row) {
+                if ((string) ($row->type ?? '') === $preferredType) {
+                    return (int) $row->id;
+                }
+            }
+        }
+
+        return null;
     }
 
     protected function allContactsMatchOwner(array $params)
