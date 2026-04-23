@@ -25,6 +25,7 @@ return [
 
     // Bulk Domain Transfers
     'bulkDomainTransfers' => 'BulkDomainTransferController@show',
-    'bulkDomainTransfersStatusPage' => 'BulkDomainTransferController@showStatusPage'
+    'bulkDomainTransfersBatchList' => 'BulkDomainTransferController@batchList',
+    'bulkDomainTransfersBatchDetails' => 'BulkDomainTransferController@batchDetails',
 
 ];

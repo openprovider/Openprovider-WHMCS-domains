@@ -8,9 +8,6 @@ use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Validator\Validator;
 use WeDevelopCoffee\wPower\View\View;
 use OpenProvider\WhmcsDomainAddon\Services\BulkTransfer\BulkTransferProcessor;
-use WHMCS\Database\Capsule;
-use WHMCS\Input\Sanitize;
-
 
 /**
  * Client controller dispatcher.
@@ -221,126 +218,145 @@ class BulkDomainTransferController extends ViewBaseController
             $domain
         );
     }
-    public function showStatusPage($params)
+
+    public function batchList($params)
     {
-        return "Bulk Domain Transfer Status page loaded successfully.";
+        $batches = [];
+
+        // this is a temporary code to build mock data. remove when DB is integrated.
+        for ($i = 184; $i >= 170; $i--) {
+            $total = rand(20, 120);
+            $processed = rand(0, $total);
+            $success = rand(0, $processed);
+            $failed = $processed - $success;
+
+            $statuses = ['queued', 'processing', 'completed', 'completed_with_errors', 'failed'];
+            $status = $statuses[array_rand($statuses)];
+
+            $batches[] = [
+                'reference' => 'BT-2026-00' . $i,
+                'submittedAt' => date('d M Y, H:i', strtotime("-{$i} minutes")),
+                'status' => $status,
+                'processed' => $processed,
+                'total' => $total,
+                'success' => $success,
+                'failed' => $failed,
+                'lastUpdated' => date('d M Y, H:i', strtotime("-" . ($i - 2) . " minutes")),
+            ];
+        }
+
+        $currentPage = $this->getCurrentPage('page');
+        $perPage = 10;
+        $pagination = $this->paginateArray($batches, $currentPage, $perPage);
+
+        return $this->view('bulk_domain_transfer/batch_list', [
+            'LANG' => $params['_lang'],
+            'batches' => $pagination['items'],
+            'batchPagination' => $pagination,
+        ]);
     }
 
-    // public function showStatusPage()
-    // {
-    //     $selectedReference = isset($_GET['bulk_reference']) ? trim($_GET['bulk_reference']) : '';
-    //     $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-    //     $page = max(1, $page);
+    public function batchDetails($params)
+    {
+        $batchReference = $params['batchReference'] ?? ($_GET['batchReference'] ?? '');
 
-    //     $perPage = 10;
+        // temporary mock data. remove when DB is integrated.
+        $batch = [
+            'reference' => $batchReference ?: 'BT-2026-000184',
+            'submittedAt' => '10 Apr 2026, 10:22',
+            'lastUpdated' => '10 Apr 2026, 10:41',
+            'status' => 'processing',
+            'totalDomains' => 100,
+            'processed' => 68,
+            'successful' => 60,
+            'failed' => 8,
+        ];
 
-    //     /**
-    //      * TODO: Replace with backend response / DB query once bulk transfer backend is implemented.
-    //      * This is temporary mock data for UI development only.
-    //      */
-    //     $mockBulkTransfers = [
-    //         'BT-20260408-001' => [
-    //             ['domain_name' => 'example1.com', 'status' => 'Pending', 'message' => 'Transfer submitted', 'updated_at' => '2026-04-08 10:00:00'],
-    //             ['domain_name' => 'example2.net', 'status' => 'Completed', 'message' => 'Transfer completed successfully', 'updated_at' => '2026-04-08 10:05:00'],
-    //             ['domain_name' => 'example3.org', 'status' => 'Failed', 'message' => 'Auth code invalid', 'updated_at' => '2026-04-08 10:10:00'],
-    //             ['domain_name' => 'example4.eu', 'status' => 'Pending', 'message' => 'Waiting for registry response', 'updated_at' => '2026-04-08 10:15:00'],
-    //             ['domain_name' => 'example5.info', 'status' => 'Completed', 'message' => 'Transfer completed successfully', 'updated_at' => '2026-04-08 10:20:00'],
-    //             ['domain_name' => 'example6.biz', 'status' => 'Pending', 'message' => 'Transfer submitted', 'updated_at' => '2026-04-08 10:25:00'],
-    //             ['domain_name' => 'example7.co', 'status' => 'Failed', 'message' => 'Domain locked', 'updated_at' => '2026-04-08 10:30:00'],
-    //             ['domain_name' => 'example8.io', 'status' => 'Completed', 'message' => 'Transfer completed successfully', 'updated_at' => '2026-04-08 10:35:00'],
-    //             ['domain_name' => 'example9.app', 'status' => 'Pending', 'message' => 'Waiting for losing registrar', 'updated_at' => '2026-04-08 10:40:00'],
-    //             ['domain_name' => 'example10.dev', 'status' => 'Completed', 'message' => 'Transfer completed successfully', 'updated_at' => '2026-04-08 10:45:00'],
-    //             ['domain_name' => 'example11.xyz', 'status' => 'Pending', 'message' => 'Transfer submitted', 'updated_at' => '2026-04-08 10:50:00'],
-    //         ],
-    //         'BT-20260408-002' => [
-    //             ['domain_name' => 'mydomain1.com', 'status' => 'Completed', 'message' => 'Transfer completed successfully', 'updated_at' => '2026-04-08 11:00:00'],
-    //             ['domain_name' => 'mydomain2.net', 'status' => 'Pending', 'message' => 'Waiting for registry response', 'updated_at' => '2026-04-08 11:05:00'],
-    //         ],
-    //     ];
+        // calculate progress
+        $progressPercentage = $batch['totalDomains'] > 0
+            ? round(($batch['processed'] / $batch['totalDomains']) * 100)
+            : 0;
 
-    //     /**
-    //      * TODO: Replace with unique bulk reference numbers returned by backend.
-    //      */
-    //     $bulkReferences = array_keys($mockBulkTransfers);
+        $batch['progressPercentage'] = $progressPercentage;
+        
+        // temporary mock data. remove when DB is integrated.
+        $domains = [
+            ['domain'=>'example11.com','status'=>'success','message'=>'Transfer completed successfully.','lastUpdated'=>'10 Apr 2026, 10:32'],
+            ['domain'=>'example12.com','status'=>'failed','message'=>'Transfer failed due to registrar rejection.','lastUpdated'=>'10 Apr 2026, 10:33'],
+            ['domain'=>'example1.com','status'=>'queued','message'=>'Waiting to be processed.','lastUpdated'=>'10 Apr 2026, 10:22'],
+            ['domain'=>'example2.com','status'=>'validating','message'=>'Validating domain details.','lastUpdated'=>'10 Apr 2026, 10:23'],
+            ['domain'=>'example3.com','status'=>'validation_failed','message'=>'Authorization code is invalid.','lastUpdated'=>'10 Apr 2026, 10:24'],
+            ['domain'=>'example4.com','status'=>'ready_for_transfer','message'=>'Ready to initiate transfer.','lastUpdated'=>'10 Apr 2026, 10:25'],
+            ['domain'=>'example5.com','status'=>'unlocking','message'=>'Unlocking domain at registrar.','lastUpdated'=>'10 Apr 2026, 10:26'],
+            ['domain'=>'example6.com','status'=>'getting_epp','message'=>'Fetching EPP code.','lastUpdated'=>'10 Apr 2026, 10:27'],
+            ['domain'=>'example7.com','status'=>'creating_handle','message'=>'Creating contact handle.','lastUpdated'=>'10 Apr 2026, 10:28'],
+            ['domain'=>'example8.com','status'=>'transferring','message'=>'Transfer in progress.','lastUpdated'=>'10 Apr 2026, 10:29'],
+            ['domain'=>'example9.com','status'=>'transfer_requested','message'=>'Transfer request submitted.','lastUpdated'=>'10 Apr 2026, 10:30'],
+            ['domain'=>'example10.com','status'=>'checking_transfer_status','message'=>'Checking transfer status.','lastUpdated'=>'10 Apr 2026, 10:31'],
+            
 
-    //     if (empty($selectedReference) && !empty($bulkReferences)) {
-    //         $selectedReference = $bulkReferences[0];
-    //     }
+            ['domain'=>'example13.com','status'=>'queued','message'=>'Waiting to be processed.','lastUpdated'=>'10 Apr 2026, 10:34'],
+            ['domain'=>'example14.com','status'=>'validating','message'=>'Validating domain details.','lastUpdated'=>'10 Apr 2026, 10:35'],
+            ['domain'=>'example15.com','status'=>'validation_failed','message'=>'Authorization code is invalid.','lastUpdated'=>'10 Apr 2026, 10:36'],
+            ['domain'=>'example16.com','status'=>'ready_for_transfer','message'=>'Ready to initiate transfer.','lastUpdated'=>'10 Apr 2026, 10:37'],
+            ['domain'=>'example17.com','status'=>'unlocking','message'=>'Unlocking domain at registrar.','lastUpdated'=>'10 Apr 2026, 10:38'],
+            ['domain'=>'example18.com','status'=>'getting_epp','message'=>'Fetching EPP code.','lastUpdated'=>'10 Apr 2026, 10:39'],
+            ['domain'=>'example19.com','status'=>'creating_handle','message'=>'Creating contact handle.','lastUpdated'=>'10 Apr 2026, 10:40'],
+            ['domain'=>'example20.com','status'=>'transferring','message'=>'Transfer in progress.','lastUpdated'=>'10 Apr 2026, 10:41'],
+            ['domain'=>'example21.com','status'=>'transfer_requested','message'=>'Transfer request submitted.','lastUpdated'=>'10 Apr 2026, 10:42'],
+            ['domain'=>'example22.com','status'=>'checking_transfer_status','message'=>'Checking transfer status.','lastUpdated'=>'10 Apr 2026, 10:43'],
+            ['domain'=>'example23.com','status'=>'success','message'=>'Transfer completed successfully.','lastUpdated'=>'10 Apr 2026, 10:44'],
+            ['domain'=>'example24.com','status'=>'failed','message'=>'Transfer failed due to registrar rejection.','lastUpdated'=>'10 Apr 2026, 10:45'],
 
-    //     /**
-    //      * TODO: Replace with paginated backend/domain status response for selected bulk reference.
-    //      */
-    //     $allDomains = isset($mockBulkTransfers[$selectedReference]) ? $mockBulkTransfers[$selectedReference] : [];
+            ['domain'=>'example25.com','status'=>'queued','message'=>'Waiting to be processed.','lastUpdated'=>'10 Apr 2026, 10:46'],
+            ['domain'=>'example26.com','status'=>'validating','message'=>'Validating domain details.','lastUpdated'=>'10 Apr 2026, 10:47'],
+            ['domain'=>'example27.com','status'=>'validation_failed','message'=>'Authorization code is invalid.','lastUpdated'=>'10 Apr 2026, 10:48'],
+            ['domain'=>'example28.com','status'=>'ready_for_transfer','message'=>'Ready to initiate transfer.','lastUpdated'=>'10 Apr 2026, 10:49'],
+            ['domain'=>'example29.com','status'=>'unlocking','message'=>'Unlocking domain at registrar.','lastUpdated'=>'10 Apr 2026, 10:50'],
+            ['domain'=>'example30.com','status'=>'getting_epp','message'=>'Fetching EPP code.','lastUpdated'=>'10 Apr 2026, 10:51'],
+            ['domain'=>'example31.com','status'=>'creating_handle','message'=>'Creating contact handle.','lastUpdated'=>'10 Apr 2026, 10:52'],
+            ['domain'=>'example32.com','status'=>'transferring','message'=>'Transfer in progress.','lastUpdated'=>'10 Apr 2026, 10:53'],
+            ['domain'=>'example33.com','status'=>'transfer_requested','message'=>'Transfer request submitted.','lastUpdated'=>'10 Apr 2026, 10:54'],
+            ['domain'=>'example34.com','status'=>'checking_transfer_status','message'=>'Checking transfer status.','lastUpdated'=>'10 Apr 2026, 10:55'],
+            ['domain'=>'example35.com','status'=>'success','message'=>'Transfer completed successfully.','lastUpdated'=>'10 Apr 2026, 10:56'],
+        ];
 
-    //     $totalDomains = count($allDomains);
-    //     $totalPages = $totalDomains > 0 ? (int) ceil($totalDomains / $perPage) : 0;
-    //     $offset = ($page - 1) * $perPage;
-    //     $domains = array_slice($allDomains, $offset, $perPage);
+        $currentPage = $this->getCurrentPage('domainPage');
+        $perPage = 10;
+        $pagination = $this->paginateArray($domains, $currentPage, $perPage);
 
-    //     return $this->view('bulk_domain_transfer/status', [
-    //         'bulkReferences' => $bulkReferences,
-    //         'selectedReference' => $selectedReference,
-    //         'domains' => $domains,
-    //         'currentPage' => $page,
-    //         'totalPages' => $totalPages,
-    //         'totalDomains' => $totalDomains,
-    //     ]);
-    // }
+        return $this->view('bulk_domain_transfer/batch_details', [
+            'LANG' => $params['_lang'],
+            'batch' => $batch,
+            'domains' => $pagination['items'],
+            'domainPagination' => $pagination,
+        ]);
+    }
 
-    /**
-     * Get unique bulk reference numbers for dropdown.
-     *
-     * @return array
-     */
-    // protected function getBulkReferences()
-    // {
-    //     return Capsule::table('mod_openprovider_bulk_transfers')
-    //         ->select('bulk_reference')
-    //         ->distinct()
-    //         ->orderBy('bulk_reference', 'desc')
-    //         ->pluck('bulk_reference')
-    //         ->toArray();
-    // }
+    private function getCurrentPage(string $key = 'page'): int
+    {
+        $page = isset($_GET[$key]) ? (int) $_GET[$key] : 1;
+        return max(1, $page);
+    }
 
-    /**
-     * Get total domain count for selected bulk reference.
-     *
-     * @param string $bulkReference
-     * @return int
-     */
-    // protected function getDomainCountByReference($bulkReference)
-    // {
-    //     return Capsule::table('mod_openprovider_bulk_transfers')
-    //         ->where('bulk_reference', $bulkReference)
-    //         ->count();
-    // }
+    private function paginateArray(array $items, int $page, int $perPage): array
+    {
+        $totalItems = count($items);
+        $totalPages = max(1, (int) ceil($totalItems / $perPage));
+        $page = min($page, $totalPages);
+        $offset = ($page - 1) * $perPage;
 
-    /**
-     * Get paginated domains and statuses for selected bulk reference.
-     *
-     * @param string $bulkReference
-     * @param int $limit
-     * @param int $offset
-     * @return array
-     */
-    // protected function getDomainsByReference($bulkReference, $limit, $offset)
-    // {
-    //     return Capsule::table('mod_openprovider_bulk_transfers')
-    //         ->select('domain_name', 'status', 'message', 'updated_at')
-    //         ->where('bulk_reference', $bulkReference)
-    //         ->orderBy('domain_name', 'asc')
-    //         ->offset($offset)
-    //         ->limit($limit)
-    //         ->get()
-    //         ->map(function ($item) {
-    //             return [
-    //                 'domain_name' => $item->domain_name,
-    //                 'status'      => $item->status,
-    //                 'message'     => $item->message,
-    //                 'updated_at'  => $item->updated_at,
-    //             ];
-    //         })
-    //         ->toArray();
-    // }
+        return [
+            'items' => array_slice($items, $offset, $perPage),
+            'currentPage' => $page,
+            'perPage' => $perPage,
+            'totalItems' => $totalItems,
+            'totalPages' => $totalPages,
+            'hasPreviousPage' => $page > 1,
+            'hasNextPage' => $page < $totalPages,
+            'previousPage' => $page > 1 ? $page - 1 : 1,
+            'nextPage' => $page < $totalPages ? $page + 1 : $totalPages,
+        ];
+    }
 
 }
