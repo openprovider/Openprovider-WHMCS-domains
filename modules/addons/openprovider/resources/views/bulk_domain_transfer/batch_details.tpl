@@ -1,6 +1,12 @@
 {include file='../header.tpl'}
 
 <div class="op-addon bulk-transfer-page">
+    {if isset($batchNotFound) && $batchNotFound}
+        <h2 style="margin-bottom: 12px;">Batch Not Found</h2>
+        <div style="padding: 16px 18px; border: 1px solid #f3b3b3; border-radius: 14px; background: #fef3f2; color: #b42318;">
+            No batch found with reference <strong>{$batchReference|escape:'html'}</strong>.
+        </div>
+    {else}
     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 8px; flex-wrap: wrap;">
         <div>
             <h2 style="margin-bottom: 6px;">Batch Detail Page</h2>
@@ -226,5 +232,6 @@
                 {/if}
             </div>
         </div>
+    {/if}
     {/if}
 </div>
