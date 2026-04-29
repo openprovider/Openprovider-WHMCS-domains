@@ -223,10 +223,11 @@ class BulkDomainTransferController extends ViewBaseController
 
     public function batchList($params)
     {
-        $currentPage = $this->getCurrentPage('page');
         $perPage = 10;
 
         $totalItems = BulkTransferBatch::count();
+        $currentPage = $this->clampPage($this->getCurrentPage('page'), $perPage, $totalItems);
+
         $rows = BulkTransferBatch::orderBy('created_at', 'desc')
             ->skip(($currentPage - 1) * $perPage)
             ->take($perPage)
@@ -288,10 +289,11 @@ class BulkDomainTransferController extends ViewBaseController
                 : 0,
         ];
 
-        $currentPage = $this->getCurrentPage('domainPage');
         $perPage = 10;
 
         $totalItems = BulkTransferItem::where('batch_id', $batchModel->id)->count();
+        $currentPage = $this->clampPage($this->getCurrentPage('domainPage'), $perPage, $totalItems);
+
         $itemRows = BulkTransferItem::where('batch_id', $batchModel->id)
             ->orderBy('id', 'asc')
             ->skip(($currentPage - 1) * $perPage)
@@ -327,10 +329,15 @@ class BulkDomainTransferController extends ViewBaseController
         return max(1, $page);
     }
 
+    private function clampPage(int $page, int $perPage, int $totalItems): int
+    {
+        $totalPages = max(1, (int) ceil($totalItems / $perPage));
+        return min($page, $totalPages);
+    }
+
     private function buildPaginationMeta(array $items, int $page, int $perPage, int $totalItems): array
     {
         $totalPages = max(1, (int) ceil($totalItems / $perPage));
-        $page = min($page, $totalPages);
 
         return [
             'items'           => $items,
