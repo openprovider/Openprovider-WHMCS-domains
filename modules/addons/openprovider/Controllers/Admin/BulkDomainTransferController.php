@@ -94,7 +94,7 @@ class BulkDomainTransferController extends ViewBaseController
         $message = trim((string) $exception->getMessage());
 
         if ($this->isMissingBulkTransferTableException($exception, $message)) {
-            return 'The bulk transfer tables are not available yet. Run the Openprovider addon migrations and try again.';
+            return 'Database setup incomplete. Please deactivate and reactivate the Openprovider addon to retry.';
         }
 
         if ($this->isDuplicateBulkReferenceException($message)) {
@@ -223,104 +223,129 @@ class BulkDomainTransferController extends ViewBaseController
 
     public function batchList($params)
     {
-        $perPage = 10;
+        try {
+            $perPage = 10;
 
-        $totalItems = BulkTransferBatch::count();
-        $currentPage = $this->clampPage($this->getCurrentPage('page'), $perPage, $totalItems);
+            $totalItems = BulkTransferBatch::count();
+            $currentPage = $this->clampPage($this->getCurrentPage('page'), $perPage, $totalItems);
 
-        $rows = BulkTransferBatch::orderBy('created_at', 'desc')
-            ->skip(($currentPage - 1) * $perPage)
-            ->take($perPage)
-            ->get();
+            $rows = BulkTransferBatch::orderBy('created_at', 'desc')
+                ->skip(($currentPage - 1) * $perPage)
+                ->take($perPage)
+                ->get();
 
-        $batches = $rows->map(function ($batch) {
-            return [
-                'reference'   => $batch->bulk_reference,
-                'submittedAt' => $this->formatTimestamp($batch->created_at),
-                'status'      => $batch->status,
-                'processed'   => (int) $batch->processed_domains,
-                'total'       => (int) $batch->total_domains,
-                'success'     => (int) $batch->success_domains,
-                'failed'      => (int) $batch->failed_domains,
-                'lastUpdated' => $this->formatTimestamp($batch->updated_at),
-            ];
-        })->toArray();
+            $batches = $rows->map(function ($batch) {
+                return [
+                    'reference'   => $batch->bulk_reference,
+                    'submittedAt' => $this->formatTimestamp($batch->created_at),
+                    'status'      => $batch->status,
+                    'processed'   => (int) $batch->processed_domains,
+                    'total'       => (int) $batch->total_domains,
+                    'success'     => (int) $batch->success_domains,
+                    'failed'      => (int) $batch->failed_domains,
+                    'lastUpdated' => $this->formatTimestamp($batch->updated_at),
+                ];
+            })->toArray();
 
-        $pagination = $this->buildPaginationMeta($batches, $currentPage, $perPage, $totalItems);
+            $pagination = $this->buildPaginationMeta($batches, $currentPage, $perPage, $totalItems);
 
-        return $this->view('bulk_domain_transfer/batch_list', [
-            'LANG'            => $params['_lang'],
-            'batches'         => $pagination['items'],
-            'batchPagination' => $pagination,
-        ]);
+            return $this->view('bulk_domain_transfer/batch_list', [
+                'LANG'            => $params['_lang'],
+                'batches'         => $pagination['items'],
+                'batchPagination' => $pagination,
+            ]);
+        } catch (QueryException $e) {
+            if ($this->isMissingBulkTransferTableException($e, $e->getMessage())) {
+                return $this->view('bulk_domain_transfer/batch_list', [
+                    'LANG'             => $params['_lang'],
+                    'batches'          => [],
+                    'batchPagination'  => null,
+                    'tablesUnavailable' => true,
+                ]);
+            }
+            throw $e;
+        }
     }
 
     public function batchDetails($params)
     {
         $batchReference = $params['batchReference'] ?? ($_GET['batchReference'] ?? '');
 
-        $batchModel = BulkTransferBatch::where('bulk_reference', $batchReference)->first();
+        try {
+            $batchModel = BulkTransferBatch::where('bulk_reference', $batchReference)->first();
 
-        if (!$batchModel) {
+            if (!$batchModel) {
+                return $this->view('bulk_domain_transfer/batch_details', [
+                    'LANG'             => $params['_lang'],
+                    'batch'            => null,
+                    'batchNotFound'    => true,
+                    'batchReference'   => $batchReference,
+                    'domains'          => [],
+                    'domainPagination' => null,
+                ]);
+            }
+
+            $totalDomains  = (int) $batchModel->total_domains;
+            $processedDomains = (int) $batchModel->processed_domains;
+
+            $batch = [
+                'reference'          => $batchModel->bulk_reference,
+                'submittedAt'        => $this->formatTimestamp($batchModel->created_at),
+                'lastUpdated'        => $this->formatTimestamp($batchModel->updated_at),
+                'status'             => $batchModel->status,
+                'totalDomains'       => $totalDomains,
+                'processed'          => $processedDomains,
+                'successful'         => (int) $batchModel->success_domains,
+                'failed'             => (int) $batchModel->failed_domains,
+                'progressPercentage' => $totalDomains > 0
+                    ? round(($processedDomains / $totalDomains) * 100)
+                    : 0,
+            ];
+
+            $perPage = 10;
+
+            $totalItems = BulkTransferItem::where('batch_id', $batchModel->id)->count();
+            $currentPage = $this->clampPage($this->getCurrentPage('domainPage'), $perPage, $totalItems);
+
+            $itemRows = BulkTransferItem::where('batch_id', $batchModel->id)
+                ->orderBy('id', 'asc')
+                ->skip(($currentPage - 1) * $perPage)
+                ->take($perPage)
+                ->get();
+
+            $domains = $itemRows->map(function ($item) {
+                $message = $item->last_status_message;
+                if (!$message && $item->failure_reason) {
+                    $message = $item->failure_reason;
+                }
+                return [
+                    'domain'      => $item->domain,
+                    'status'      => $item->transfer_status,
+                    'message'     => (string) ($message ?? ''),
+                    'lastUpdated' => $this->formatTimestamp($item->updated_at),
+                ];
+            })->toArray();
+
+            $domainPagination = $this->buildPaginationMeta($domains, $currentPage, $perPage, $totalItems);
+
             return $this->view('bulk_domain_transfer/batch_details', [
                 'LANG'             => $params['_lang'],
-                'batch'            => null,
-                'batchNotFound'    => true,
-                'batchReference'   => $batchReference,
-                'domains'          => [],
-                'domainPagination' => null,
+                'batch'            => $batch,
+                'domains'          => $domainPagination['items'],
+                'domainPagination' => $domainPagination,
             ]);
-        }
-
-        $totalDomains  = (int) $batchModel->total_domains;
-        $processedDomains = (int) $batchModel->processed_domains;
-
-        $batch = [
-            'reference'          => $batchModel->bulk_reference,
-            'submittedAt'        => $this->formatTimestamp($batchModel->created_at),
-            'lastUpdated'        => $this->formatTimestamp($batchModel->updated_at),
-            'status'             => $batchModel->status,
-            'totalDomains'       => $totalDomains,
-            'processed'          => $processedDomains,
-            'successful'         => (int) $batchModel->success_domains,
-            'failed'             => (int) $batchModel->failed_domains,
-            'progressPercentage' => $totalDomains > 0
-                ? round(($processedDomains / $totalDomains) * 100)
-                : 0,
-        ];
-
-        $perPage = 10;
-
-        $totalItems = BulkTransferItem::where('batch_id', $batchModel->id)->count();
-        $currentPage = $this->clampPage($this->getCurrentPage('domainPage'), $perPage, $totalItems);
-
-        $itemRows = BulkTransferItem::where('batch_id', $batchModel->id)
-            ->orderBy('id', 'asc')
-            ->skip(($currentPage - 1) * $perPage)
-            ->take($perPage)
-            ->get();
-
-        $domains = $itemRows->map(function ($item) {
-            $message = $item->last_status_message;
-            if (!$message && $item->failure_reason) {
-                $message = $item->failure_reason;
+        } catch (QueryException $e) {
+            if ($this->isMissingBulkTransferTableException($e, $e->getMessage())) {
+                return $this->view('bulk_domain_transfer/batch_details', [
+                    'LANG'              => $params['_lang'],
+                    'batch'             => null,
+                    'tablesUnavailable' => true,
+                    'domains'           => [],
+                    'domainPagination'  => null,
+                ]);
             }
-            return [
-                'domain'      => $item->domain,
-                'status'      => $item->transfer_status,
-                'message'     => (string) ($message ?? ''),
-                'lastUpdated' => $this->formatTimestamp($item->updated_at),
-            ];
-        })->toArray();
-
-        $domainPagination = $this->buildPaginationMeta($domains, $currentPage, $perPage, $totalItems);
-
-        return $this->view('bulk_domain_transfer/batch_details', [
-            'LANG'             => $params['_lang'],
-            'batch'            => $batch,
-            'domains'          => $domainPagination['items'],
-            'domainPagination' => $domainPagination,
-        ]);
+            throw $e;
+        }
     }
 
     private function getCurrentPage(string $key = 'page'): int

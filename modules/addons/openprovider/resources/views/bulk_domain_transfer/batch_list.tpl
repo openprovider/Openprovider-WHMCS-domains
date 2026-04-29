@@ -3,6 +3,11 @@
 <div class="op-addon bulk-transfer-page">
     <h2 style="margin-bottom: 12px;">Batch List Page</h2>
 
+    {if isset($tablesUnavailable) && $tablesUnavailable}
+        <div style="padding: 16px 18px; border: 1px solid #f7b27a; border-radius: 14px; background: #fff7ed; color: #c2410c;">
+            Database setup incomplete. Please deactivate and reactivate the Openprovider addon to retry.
+        </div>
+    {else}
     <div class="table-responsive">
         <table class="table" style="background: #fff;">
             <thead>
@@ -128,5 +133,6 @@
                 {/if}
             </div>
         </div>
+    {/if}
     {/if}
 </div>
