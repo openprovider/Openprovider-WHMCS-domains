@@ -7,10 +7,12 @@ use WeDevelopCoffee\wPower\Controllers\ViewBaseController;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Validator\Validator;
 use WeDevelopCoffee\wPower\View\View;
+use OpenProvider\WhmcsDomainAddon\Models\BulkTransferBatch;
+use OpenProvider\WhmcsDomainAddon\Models\BulkTransferItem;
 use OpenProvider\WhmcsDomainAddon\Services\BulkTransfer\BulkTransferProcessor;
 
 /**
- * Client controller dispatcher.
+ * Admin controller for bulk domain transfer pages.
  */
 class BulkDomainTransferController extends ViewBaseController
 {
@@ -92,7 +94,7 @@ class BulkDomainTransferController extends ViewBaseController
         $message = trim((string) $exception->getMessage());
 
         if ($this->isMissingBulkTransferTableException($exception, $message)) {
-            return 'The bulk transfer tables are not available yet. Run the Openprovider addon migrations and try again.';
+            return 'Database setup incomplete. Please deactivate and reactivate the Openprovider addon to retry.';
         }
 
         if ($this->isDuplicateBulkReferenceException($message)) {
@@ -221,116 +223,129 @@ class BulkDomainTransferController extends ViewBaseController
 
     public function batchList($params)
     {
-        $batches = [];
+        try {
+            $perPage = 10;
 
-        // this is a temporary code to build mock data. remove when DB is integrated.
-        for ($i = 184; $i >= 170; $i--) {
-            $total = rand(20, 120);
-            $processed = rand(0, $total);
-            $success = rand(0, $processed);
-            $failed = $processed - $success;
+            $totalItems = BulkTransferBatch::count();
+            $currentPage = $this->clampPage($this->getCurrentPage('page'), $perPage, $totalItems);
 
-            $statuses = ['queued', 'processing', 'completed', 'completed_with_errors', 'failed'];
-            $status = $statuses[array_rand($statuses)];
+            $rows = BulkTransferBatch::orderBy('created_at', 'desc')
+                ->skip(($currentPage - 1) * $perPage)
+                ->take($perPage)
+                ->get();
 
-            $batches[] = [
-                'reference' => 'BT-2026-00' . $i,
-                'submittedAt' => date('d M Y, H:i', strtotime("-{$i} minutes")),
-                'status' => $status,
-                'processed' => $processed,
-                'total' => $total,
-                'success' => $success,
-                'failed' => $failed,
-                'lastUpdated' => date('d M Y, H:i', strtotime("-" . ($i - 2) . " minutes")),
-            ];
+            $batches = $rows->map(function ($batch) {
+                return [
+                    'reference'   => $batch->bulk_reference,
+                    'submittedAt' => $this->formatTimestamp($batch->created_at),
+                    'status'      => $batch->status,
+                    'processed'   => (int) $batch->processed_domains,
+                    'total'       => (int) $batch->total_domains,
+                    'success'     => (int) $batch->success_domains,
+                    'failed'      => (int) $batch->failed_domains,
+                    'lastUpdated' => $this->formatTimestamp($batch->updated_at),
+                ];
+            })->toArray();
+
+            $pagination = $this->buildPaginationMeta($batches, $currentPage, $perPage, $totalItems);
+
+            return $this->view('bulk_domain_transfer/batch_list', [
+                'LANG'            => $params['_lang'],
+                'batches'         => $pagination['items'],
+                'batchPagination' => $pagination,
+            ]);
+        } catch (QueryException $e) {
+            if ($this->isMissingBulkTransferTableException($e, $e->getMessage())) {
+                return $this->view('bulk_domain_transfer/batch_list', [
+                    'LANG'             => $params['_lang'],
+                    'batches'          => [],
+                    'batchPagination'  => null,
+                    'tablesUnavailable' => true,
+                ]);
+            }
+            throw $e;
         }
-
-        $currentPage = $this->getCurrentPage('page');
-        $perPage = 10;
-        $pagination = $this->paginateArray($batches, $currentPage, $perPage);
-
-        return $this->view('bulk_domain_transfer/batch_list', [
-            'LANG' => $params['_lang'],
-            'batches' => $pagination['items'],
-            'batchPagination' => $pagination,
-        ]);
     }
 
     public function batchDetails($params)
     {
         $batchReference = $params['batchReference'] ?? ($_GET['batchReference'] ?? '');
 
-        // temporary mock data. remove when DB is integrated.
-        $batch = [
-            'reference' => $batchReference ?: 'BT-2026-000184',
-            'submittedAt' => '10 Apr 2026, 10:22',
-            'lastUpdated' => '10 Apr 2026, 10:41',
-            'status' => 'processing',
-            'totalDomains' => 100,
-            'processed' => 68,
-            'successful' => 60,
-            'failed' => 8,
-        ];
+        try {
+            $batchModel = BulkTransferBatch::where('bulk_reference', $batchReference)->first();
 
-        // calculate progress
-        $progressPercentage = $batch['totalDomains'] > 0
-            ? round(($batch['processed'] / $batch['totalDomains']) * 100)
-            : 0;
+            if (!$batchModel) {
+                return $this->view('bulk_domain_transfer/batch_details', [
+                    'LANG'             => $params['_lang'],
+                    'batch'            => null,
+                    'batchNotFound'    => true,
+                    'batchReference'   => $batchReference,
+                    'domains'          => [],
+                    'domainPagination' => null,
+                ]);
+            }
 
-        $batch['progressPercentage'] = $progressPercentage;
-        
-        // temporary mock data. remove when DB is integrated.
-        $domains = [
-            ['domain'=>'example11.com','status'=>'success','message'=>'Transfer completed successfully.','lastUpdated'=>'10 Apr 2026, 10:32'],
-            ['domain'=>'example12.com','status'=>'failed','message'=>'Transfer failed due to registrar rejection.','lastUpdated'=>'10 Apr 2026, 10:33'],
-            ['domain'=>'example1.com','status'=>'queued','message'=>'Waiting to be processed.','lastUpdated'=>'10 Apr 2026, 10:22'],
-            ['domain'=>'example2.com','status'=>'validating','message'=>'Validating domain details.','lastUpdated'=>'10 Apr 2026, 10:23'],
-            ['domain'=>'example3.com','status'=>'validation_failed','message'=>'Authorization code is invalid.','lastUpdated'=>'10 Apr 2026, 10:24'],
-            ['domain'=>'example4.com','status'=>'ready_for_transfer','message'=>'Ready to initiate transfer.','lastUpdated'=>'10 Apr 2026, 10:25'],
-            ['domain'=>'example5.com','status'=>'unlocking','message'=>'Unlocking domain at registrar.','lastUpdated'=>'10 Apr 2026, 10:26'],
-            ['domain'=>'example6.com','status'=>'getting_epp','message'=>'Fetching EPP code.','lastUpdated'=>'10 Apr 2026, 10:27'],
-            ['domain'=>'example7.com','status'=>'creating_handle','message'=>'Creating contact handle.','lastUpdated'=>'10 Apr 2026, 10:28'],
-            ['domain'=>'example8.com','status'=>'transferring','message'=>'Transfer in progress.','lastUpdated'=>'10 Apr 2026, 10:29'],
-            ['domain'=>'example9.com','status'=>'transfer_requested','message'=>'Transfer request submitted.','lastUpdated'=>'10 Apr 2026, 10:30'],
-            ['domain'=>'example10.com','status'=>'checking_transfer_status','message'=>'Checking transfer status.','lastUpdated'=>'10 Apr 2026, 10:31'],
-            
+            $totalDomains  = (int) $batchModel->total_domains;
+            $processedDomains = (int) $batchModel->processed_domains;
 
-            ['domain'=>'example13.com','status'=>'queued','message'=>'Waiting to be processed.','lastUpdated'=>'10 Apr 2026, 10:34'],
-            ['domain'=>'example14.com','status'=>'validating','message'=>'Validating domain details.','lastUpdated'=>'10 Apr 2026, 10:35'],
-            ['domain'=>'example15.com','status'=>'validation_failed','message'=>'Authorization code is invalid.','lastUpdated'=>'10 Apr 2026, 10:36'],
-            ['domain'=>'example16.com','status'=>'ready_for_transfer','message'=>'Ready to initiate transfer.','lastUpdated'=>'10 Apr 2026, 10:37'],
-            ['domain'=>'example17.com','status'=>'unlocking','message'=>'Unlocking domain at registrar.','lastUpdated'=>'10 Apr 2026, 10:38'],
-            ['domain'=>'example18.com','status'=>'getting_epp','message'=>'Fetching EPP code.','lastUpdated'=>'10 Apr 2026, 10:39'],
-            ['domain'=>'example19.com','status'=>'creating_handle','message'=>'Creating contact handle.','lastUpdated'=>'10 Apr 2026, 10:40'],
-            ['domain'=>'example20.com','status'=>'transferring','message'=>'Transfer in progress.','lastUpdated'=>'10 Apr 2026, 10:41'],
-            ['domain'=>'example21.com','status'=>'transfer_requested','message'=>'Transfer request submitted.','lastUpdated'=>'10 Apr 2026, 10:42'],
-            ['domain'=>'example22.com','status'=>'checking_transfer_status','message'=>'Checking transfer status.','lastUpdated'=>'10 Apr 2026, 10:43'],
-            ['domain'=>'example23.com','status'=>'success','message'=>'Transfer completed successfully.','lastUpdated'=>'10 Apr 2026, 10:44'],
-            ['domain'=>'example24.com','status'=>'failed','message'=>'Transfer failed due to registrar rejection.','lastUpdated'=>'10 Apr 2026, 10:45'],
+            $batch = [
+                'reference'          => $batchModel->bulk_reference,
+                'submittedAt'        => $this->formatTimestamp($batchModel->created_at),
+                'lastUpdated'        => $this->formatTimestamp($batchModel->updated_at),
+                'status'             => $batchModel->status,
+                'totalDomains'       => $totalDomains,
+                'processed'          => $processedDomains,
+                'successful'         => (int) $batchModel->success_domains,
+                'failed'             => (int) $batchModel->failed_domains,
+                'progressPercentage' => $totalDomains > 0
+                    ? round(($processedDomains / $totalDomains) * 100)
+                    : 0,
+            ];
 
-            ['domain'=>'example25.com','status'=>'queued','message'=>'Waiting to be processed.','lastUpdated'=>'10 Apr 2026, 10:46'],
-            ['domain'=>'example26.com','status'=>'validating','message'=>'Validating domain details.','lastUpdated'=>'10 Apr 2026, 10:47'],
-            ['domain'=>'example27.com','status'=>'validation_failed','message'=>'Authorization code is invalid.','lastUpdated'=>'10 Apr 2026, 10:48'],
-            ['domain'=>'example28.com','status'=>'ready_for_transfer','message'=>'Ready to initiate transfer.','lastUpdated'=>'10 Apr 2026, 10:49'],
-            ['domain'=>'example29.com','status'=>'unlocking','message'=>'Unlocking domain at registrar.','lastUpdated'=>'10 Apr 2026, 10:50'],
-            ['domain'=>'example30.com','status'=>'getting_epp','message'=>'Fetching EPP code.','lastUpdated'=>'10 Apr 2026, 10:51'],
-            ['domain'=>'example31.com','status'=>'creating_handle','message'=>'Creating contact handle.','lastUpdated'=>'10 Apr 2026, 10:52'],
-            ['domain'=>'example32.com','status'=>'transferring','message'=>'Transfer in progress.','lastUpdated'=>'10 Apr 2026, 10:53'],
-            ['domain'=>'example33.com','status'=>'transfer_requested','message'=>'Transfer request submitted.','lastUpdated'=>'10 Apr 2026, 10:54'],
-            ['domain'=>'example34.com','status'=>'checking_transfer_status','message'=>'Checking transfer status.','lastUpdated'=>'10 Apr 2026, 10:55'],
-            ['domain'=>'example35.com','status'=>'success','message'=>'Transfer completed successfully.','lastUpdated'=>'10 Apr 2026, 10:56'],
-        ];
+            $perPage = 10;
 
-        $currentPage = $this->getCurrentPage('domainPage');
-        $perPage = 10;
-        $pagination = $this->paginateArray($domains, $currentPage, $perPage);
+            $totalItems = BulkTransferItem::where('batch_id', $batchModel->id)->count();
+            $currentPage = $this->clampPage($this->getCurrentPage('domainPage'), $perPage, $totalItems);
 
-        return $this->view('bulk_domain_transfer/batch_details', [
-            'LANG' => $params['_lang'],
-            'batch' => $batch,
-            'domains' => $pagination['items'],
-            'domainPagination' => $pagination,
-        ]);
+            $itemRows = BulkTransferItem::where('batch_id', $batchModel->id)
+                ->orderBy('id', 'asc')
+                ->skip(($currentPage - 1) * $perPage)
+                ->take($perPage)
+                ->get();
+
+            $domains = $itemRows->map(function ($item) {
+                $message = $item->last_status_message;
+                if (!$message && $item->failure_reason) {
+                    $message = $item->failure_reason;
+                }
+                return [
+                    'domain'      => $item->domain,
+                    'status'      => $item->transfer_status,
+                    'message'     => (string) ($message ?? ''),
+                    'lastUpdated' => $this->formatTimestamp($item->updated_at),
+                ];
+            })->toArray();
+
+            $domainPagination = $this->buildPaginationMeta($domains, $currentPage, $perPage, $totalItems);
+
+            return $this->view('bulk_domain_transfer/batch_details', [
+                'LANG'             => $params['_lang'],
+                'batch'            => $batch,
+                'domains'          => $domainPagination['items'],
+                'domainPagination' => $domainPagination,
+            ]);
+        } catch (QueryException $e) {
+            if ($this->isMissingBulkTransferTableException($e, $e->getMessage())) {
+                return $this->view('bulk_domain_transfer/batch_details', [
+                    'LANG'              => $params['_lang'],
+                    'batch'             => null,
+                    'tablesUnavailable' => true,
+                    'domains'           => [],
+                    'domainPagination'  => null,
+                ]);
+            }
+            throw $e;
+        }
     }
 
     private function getCurrentPage(string $key = 'page'): int
@@ -339,24 +354,35 @@ class BulkDomainTransferController extends ViewBaseController
         return max(1, $page);
     }
 
-    private function paginateArray(array $items, int $page, int $perPage): array
+    private function clampPage(int $page, int $perPage, int $totalItems): int
     {
-        $totalItems = count($items);
         $totalPages = max(1, (int) ceil($totalItems / $perPage));
-        $page = min($page, $totalPages);
-        $offset = ($page - 1) * $perPage;
+        return min($page, $totalPages);
+    }
+
+    private function buildPaginationMeta(array $items, int $page, int $perPage, int $totalItems): array
+    {
+        $totalPages = max(1, (int) ceil($totalItems / $perPage));
 
         return [
-            'items' => array_slice($items, $offset, $perPage),
-            'currentPage' => $page,
-            'perPage' => $perPage,
-            'totalItems' => $totalItems,
-            'totalPages' => $totalPages,
+            'items'           => $items,
+            'currentPage'     => $page,
+            'perPage'         => $perPage,
+            'totalItems'      => $totalItems,
+            'totalPages'      => $totalPages,
             'hasPreviousPage' => $page > 1,
-            'hasNextPage' => $page < $totalPages,
-            'previousPage' => $page > 1 ? $page - 1 : 1,
-            'nextPage' => $page < $totalPages ? $page + 1 : $totalPages,
+            'hasNextPage'     => $page < $totalPages,
+            'previousPage'    => $page > 1 ? $page - 1 : 1,
+            'nextPage'        => $page < $totalPages ? $page + 1 : $totalPages,
         ];
+    }
+
+    private function formatTimestamp($timestamp): string
+    {
+        if (!$timestamp) {
+            return '';
+        }
+        return date('d M Y, H:i', strtotime((string) $timestamp));
     }
 
 }
