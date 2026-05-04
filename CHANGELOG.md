@@ -3,10 +3,9 @@
 ## v5.11.2
 
 ###### Features and improvements
-- Upgraded openprovider/rest-client-php to v2.1.0-beta.
+- Upgraded openprovider/rest-client-php library to v2.1.0-beta.
 - Updated dependencies (incl. guzzlehttp/promises).
 - Added support for latest Openprovider API updates.
-- Added DNS Domain Token API support.
 
 ## v5.11.1
 
