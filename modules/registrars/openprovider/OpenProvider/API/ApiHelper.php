@@ -415,12 +415,20 @@ class ApiHelper
      */
     public function getDns(Domain $domain): array
     {
+
+        $domainData = $this->getDomain($domain);
+
+        $provider = $this->getDnsProviderFromDomainData($domainData);
+        logModuleCall('OpenProvider', 'getDns', $domain->getFullName(), ['provider' => $provider], null, null);
         $args = [
             'name' => $domain->getFullName(),
+            'provider' => $provider,
             'withHistory' => false,
         ];
 
-        return $this->buildResponse($this->apiClient->call('retrieveZoneDnsRequest', $args));
+        return $this->buildResponse(
+            $this->apiClient->call('retrieveZoneDnsRequest', $args)
+        );
     }
 
     /**
@@ -715,6 +723,26 @@ class ApiHelper
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+
+    /**
+     * @param array $domainData
+     * @return string
+     */
+    private function getDnsProviderFromDomainData(array $domainData): string
+    {
+        $nsGroup = strtolower((string) ($domainData['nsGroup'] ?? ''));
+
+        if (
+            ($domainData['hasActiveSectigoZone'] ?? false) === true ||
+            ($domainData['isSectigoDnsEnabled'] ?? false) === true ||
+            str_contains($nsGroup, 'sectigo')
+        ) {
+            return 'sectigo';
+        }
+
+        return 'openprovider';
     }
 
     /**
