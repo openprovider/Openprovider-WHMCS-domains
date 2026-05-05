@@ -6,7 +6,7 @@ use WHMCS\ClientArea;
 use WHMCS\Authentication\CurrentUser;
 use WHMCS\Config\Setting;
 use OpenProvider\API\APIConfig;
-use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
+use OpenProvider\WhmcsRegistrar\helpers\{DomainFullNameToDomainObject,Language};
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\API\ApiHelper;
 use WeDevelopCoffee\wPower\Core\Core;
@@ -82,6 +82,7 @@ class DnssecPageController extends BaseController
             return;
         }
 
+        $ADDONLANG = Language::loadLang();
         $ca->assign('dnssecKeys', $dnssecKeys);
         $ca->assign('isDnssecEnabled', $isDnssecEnabled);
         $ca->assign('apiUrlUpdateDnssecRecords', Configuration::getApiUrl('dnssec-record-update'));
@@ -89,6 +90,7 @@ class DnssecPageController extends BaseController
         $ca->assign('domainId', $domainId);
         $ca->assign('jsModuleUrl', Configuration::getJsModuleUrl(self::MODULE_NAME));
         $ca->assign('cssModuleUrl', Configuration::getCssModuleUrl(self::MODULE_NAME));
+        $ca->assign('ADDONLANG', $ADDONLANG);
 
         $ca->addToBreadCrumb('index.php', \Lang::trans('globalsystemname'));
         $ca->addToBreadCrumb('clientarea.php', \Lang::trans('clientareatitle'));

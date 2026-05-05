@@ -3,6 +3,7 @@
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
+use OpenProvider\WhmcsRegistrar\helpers\Language;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\helpers\DB;
 use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
@@ -12,12 +13,11 @@ class ClientAreaFooterController
 {
     public function output($vars)
     {
-        GLOBAL $_LANG;
 
         $idnumbermod = Configuration::get('idnumbermod');
 
         if ($idnumbermod) {
-
+            $ADDONLANG = Language::loadLang();
             $template        = $vars['templatefile'];
             $check_tempaltes = array('account-contacts-manage', 'account-contacts-new');
             unset($_SESSION['msg']);
@@ -48,22 +48,21 @@ class ClientAreaFooterController
                 $typeVat = $type == 'vat';
                 $typeSocialSecurityNumber = $type == 'socialSecurityNumber';
 
-                $passport = $typePassport ? '<option selected value="passportNumber">' . $_LANG['esIdentificationPassport'] . '</option>' : '<option value="passportNumber">Individual ID</option>';
-                $company = $typeCompanyRegistrationNumber ? '<option selected value="companyRegistrationNumber">' . $_LANG['esIdentificationCompany'] . '</option>' : '<option value="companyRegistrationNumber">Company Registration ID</option>';
-                $vat = $typeVat ? '<option selected value="vat">' . $_LANG['ptIdentificationVat'] . '</option>' : '<option value="vat">NIPC (empresa)</option>';
-                $socialSecurityNumber = $typeSocialSecurityNumber ? '<option selected value="socialSecurityNumber">' . $_LANG['esIdentificationSocialSecurityNumber'] . '</option>' : '<option value="socialSecurityNumber">NIF (particular)</option>';
-
+                $passport = $typePassport ? '<option selected value="passportNumber">' . $ADDONLANG['openprovider']['esIdentificationPassport'] . '</option>' : '<option value="passportNumber">Individual ID</option>';
+                $company = $typeCompanyRegistrationNumber ? '<option selected value="companyRegistrationNumber">' . $ADDONLANG['openprovider']['esIdentificationCompany'] . '</option>' : '<option value="companyRegistrationNumber">Company Registration ID</option>';
+                $vat = $typeVat ? '<option selected value="vat">' . $ADDONLANG['openprovider']['ptIdentificationVat'] . '</option>' : '<option value="vat">NIPC (empresa)</option>';
+                $socialSecurityNumber = $typeSocialSecurityNumber ? '<option selected value="socialSecurityNumber">' . $ADDONLANG['openprovider']['esIdentificationSocialSecurityNumber'] . '</option>' : '<option value="socialSecurityNumber">NIF (particular)</option>';
 
                 if ($passport || $typeCompanyRegistrationNumber) {
-                    $js = "$('.main-content form .row .col-xs-12').each(function(index , element){ $(this).attr('data-number' , 'contactsRightDiv_'+index); }); $('.main-content form .row .col-sm-6:not(.pull-right)').each(function(index , element){ $(this).attr('data-number' , 'contactsDiv_'+index); }); $('*[data-number=\'contactsRightDiv_0\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $_LANG['esIdentificationNumber'] . "</label><input required type=\'text\' name=\'cord\' id=\'cord\' class=\'form-control\' value=\'" . $number . "\'></div>'); $('*[data-number=\'contactsDiv_1\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $_LANG['esIdentificationType'] . "</label><select id=\'id_type\' required name=\'id_type\' class=\'form-control\'><option value=\'\'>Select ID Type</option>" . $passport . $company . "</select></div>');";
+                    $js = "$('.main-content form .row .col-xs-12').each(function(index , element){ $(this).attr('data-number' , 'contactsRightDiv_'+index); }); $('.main-content form .row .col-sm-6:not(.pull-right)').each(function(index , element){ $(this).attr('data-number' , 'contactsDiv_'+index); }); $('*[data-number=\'contactsRightDiv_0\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $ADDONLANG['openprovider']['esIdentificationNumber'] . "</label><input required type=\'text\' name=\'cord\' id=\'cord\' class=\'form-control\' value=\'" . $number . "\'></div>'); $('*[data-number=\'contactsDiv_1\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $ADDONLANG['openprovider']['esIdentificationType'] . "</label><select id=\'id_type\' required name=\'id_type\' class=\'form-control\'><option value=\'\'>Select ID Type</option>" . $passport . $company . "</select></div>');";
                 } else if ($vat || $socialSecurityNumber) {
-                    $js = "$('.main-content form .row .col-xs-12').each(function(index , element){ $(this).attr('data-number' , 'contactsRightDiv_'+index); }); $('.main-content form .row .col-sm-6:not(.pull-right)').each(function(index , element){ $(this).attr('data-number' , 'contactsDiv_'+index); }); $('*[data-number=\'contactsRightDiv_0\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $_LANG['ptIdentificationNumber'] . "</label><input required type=\'text\' name=\'cord\' id=\'cord\' class=\'form-control\' value=\'" . $number . "\'></div>'); $('*[data-number=\'contactsDiv_1\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $_LANG['ptIdentificationType'] . "</label><select id=\'id_type\' required name=\'id_type\' class=\'form-control\'><option value=\'\'>Select ID Type</option>" . $passport . $company . "</select></div>');";
+                    $js = "$('.main-content form .row .col-xs-12').each(function(index , element){ $(this).attr('data-number' , 'contactsRightDiv_'+index); }); $('.main-content form .row .col-sm-6:not(.pull-right)').each(function(index , element){ $(this).attr('data-number' , 'contactsDiv_'+index); }); $('*[data-number=\'contactsRightDiv_0\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $ADDONLANG['openprovider']['ptIdentificationNumber'] . "</label><input required type=\'text\' name=\'cord\' id=\'cord\' class=\'form-control\' value=\'" . $number . "\'></div>'); $('*[data-number=\'contactsDiv_1\']').append('<div class=\'form-group\'><label for=\'inputTaxId\' class=\'control-label\'>" . $ADDONLANG['openprovider']['ptIdentificationType'] . "</label><select id=\'id_type\' required name=\'id_type\' class=\'form-control\'><option value=\'\'>Select ID Type</option>" . $passport . $company . "</select></div>');";
                 }
             }
 
             if ($template == 'clientareadomaincontactinfo') {
                 $domain = DomainFullNameToDomainObject::convert($vars['domain']);
-                $idNumberName = $_LANG[sprintf('%s%s', $domain->extension ?? 'es', 'IdentificationCORI')];
+                $idNumberName = $ADDONLANG['openprovider'][sprintf('%s%s', $domain->extension ?? 'es', 'IdentificationCORI')];
                 $js = '$("#frmDomainContactModification").submit(function(e){ e.preventDefault(); setSessionContact();  $(this).unbind("submit").submit(); }); $("input[name=\"contactdetails[Owner][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Admin][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Tech][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Billing][Company or Individual Id]\"]").attr("required" , true); $("label:contains(\"Company or Individual Id\")").html("' . $idNumberName . '");';
                 $js .= '$("#frmDomainContactModification").submit(function(e){ e.preventDefault(); setSessionContact();  $(this).unbind("submit").submit(); }); $("input[name=\"contactdetails[Owner][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Admin][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Tech][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Billing][Vat or Tax ID]\"]").attr("required" , true); $("label:contains(\"Vat or Tax ID\")").html("' . $idNumberName . '");';
             }
