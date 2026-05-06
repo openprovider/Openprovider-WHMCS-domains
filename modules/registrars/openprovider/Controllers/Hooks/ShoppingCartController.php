@@ -30,10 +30,19 @@ class ShoppingCartController
             $domainTlds = [];
             $fieldDisplay = '';
 
+            if (empty($vars['cart']['domains']) || !is_array($vars['cart']['domains'])) {
+                return '';
+            }
+
             foreach ($vars['cart']['domains'] as $domain) {
                 $mappedFields = [];
                 $domainName = $domain['domain'];
-                $fields = $domain['fields'];
+                $fields = $domain['fields'] ?? [];
+
+                if (!is_array($fields)) {
+                    continue;
+                }
+                
                 $tld = $this->getFullTld($domainName);
 
                 if (!$tld) {
