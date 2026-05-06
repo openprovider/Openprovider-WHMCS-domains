@@ -214,8 +214,15 @@ class ShoppingCartController
             }
         }
 
-        $tld = explode('.', $domainName)[1];
-        return $tld;
+        $labels = array_values(array_filter(explode('.', $domainName), static function ($label) {
+            return $label !== '';
+        }));
+
+        if (empty($labels)) {
+            return '';
+        }
+
+        return (string) end($labels);
     }
 
     private function mapFieldsByIndex(array $fields, array $map): array
