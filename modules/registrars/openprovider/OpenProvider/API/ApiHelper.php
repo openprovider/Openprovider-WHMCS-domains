@@ -415,14 +415,9 @@ class ApiHelper
      */
     public function getDns(Domain $domain): array
     {
-
-        $domainData = $this->getDomain($domain);
-
-        $provider = $this->getDnsProviderFromDomainData($domainData);
-        logModuleCall('OpenProvider', 'getDns', $domain->getFullName(), ['provider' => $provider], null, null);
         $args = [
             'name' => $domain->getFullName(),
-            'provider' => $provider,
+            'provider' => $this->getActiveDnsProvider($domain),
             'withHistory' => false,
         ];
 
@@ -441,6 +436,7 @@ class ApiHelper
     {
         $args = [
             'name' => $domain->getFullName(),
+            'provider' => $this->getActiveDnsProvider($domain),
             'type' => 'master',
             'records' => [
                 'replace' => $records,
@@ -479,8 +475,9 @@ class ApiHelper
         }
 
         $args = [
-            'name'    => $zoneName,
-            'type'    => 'master',
+            'name' => $zoneName,
+            'provider' => $this->getActiveDnsProvider($domain),
+            'type' => 'master',
             'records' => [
                 'remove' => [$payload],
             ],
@@ -514,6 +511,7 @@ class ApiHelper
     {
         $args = [
             'name' => $domain->getFullName(),
+            'provider' => $this->getActiveDnsProvider($domain),
         ];
 
         try {
@@ -725,24 +723,29 @@ class ApiHelper
         }
     }
 
-
     /**
-     * @param array $domainData
+     * @param Domain $domain
      * @return string
      */
-    private function getDnsProviderFromDomainData(array $domainData): string
+    private function getActiveDnsProvider(Domain $domain): string
     {
-        $nsGroup = strtolower((string) ($domainData['nsGroup'] ?? ''));
+        try {
+            $domainData = $this->getDomain($domain);
 
-        if (
-            ($domainData['hasActiveSectigoZone'] ?? false) === true ||
-            ($domainData['isSectigoDnsEnabled'] ?? false) === true ||
-            str_contains($nsGroup, 'sectigo')
-        ) {
-            return 'sectigo';
+            $nsGroup = strtolower((string) ($domainData['nsGroup'] ?? ''));
+
+            if (
+                filter_var($domainData['hasActiveSectigoZone'] ?? false, FILTER_VALIDATE_BOOLEAN) ||
+                filter_var($domainData['isSectigoDnsEnabled'] ?? false, FILTER_VALIDATE_BOOLEAN) ||
+                str_contains($nsGroup, 'sectigo')
+            ) {
+                return 'sectigo';
+            }
+
+            return 'openprovider';
+        } catch (\Throwable $e) {
+            return 'openprovider'; // fallback
         }
-
-        return 'openprovider';
     }
 
     /**
