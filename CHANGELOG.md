@@ -1,5 +1,12 @@
 # Changelog
 
+## v5.11.2
+
+###### Features and improvements
+- Upgraded openprovider/rest-client-php library to v2.1.0-beta.
+- Updated dependencies (incl. guzzlehttp/promises).
+- Added support for latest Openprovider API updates.
+
 ## v5.11.1
 
 ###### Bugfixes

@@ -255,17 +255,17 @@
         },
         {
             "name": "guzzlehttp/promises",
-            "version": "2.2.0",
-            "version_normalized": "2.2.0.0",
+            "version": "2.3.0",
+            "version_normalized": "2.3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/promises.git",
-                "reference": "7c69f28996b0a6920945dd20b3857e499d9ca96c"
+                "reference": "481557b130ef3790cf82b713667b43030dc9c957"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/promises/zipball/7c69f28996b0a6920945dd20b3857e499d9ca96c",
-                "reference": "7c69f28996b0a6920945dd20b3857e499d9ca96c",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/481557b130ef3790cf82b713667b43030dc9c957",
+                "reference": "481557b130ef3790cf82b713667b43030dc9c957",
                 "shasum": ""
             },
             "require": {
@@ -273,9 +273,9 @@
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
-                "phpunit/phpunit": "^8.5.39 || ^9.6.20"
+                "phpunit/phpunit": "^8.5.44 || ^9.6.25"
             },
-            "time": "2025-03-27T13:27:01+00:00",
+            "time": "2025-08-22T14:34:08+00:00",
             "type": "library",
             "extra": {
                 "bamarni-bin": {
@@ -321,7 +321,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/promises/issues",
-                "source": "https://github.com/guzzle/promises/tree/2.2.0"
+                "source": "https://github.com/guzzle/promises/tree/2.3.0"
             },
             "funding": [
                 {
@@ -777,17 +777,17 @@
         },
         {
             "name": "openprovider/rest-client-php",
-            "version": "v2.0.2-beta",
-            "version_normalized": "2.0.2.0-beta",
+            "version": "v2.1.0-beta",
+            "version_normalized": "2.1.0.0-beta",
             "source": {
                 "type": "git",
                 "url": "https://github.com/openprovider/rest-client-php.git",
-                "reference": "85bb4910c886ca8c8532dcd2770d6f584663b535"
+                "reference": "f98811d2e0463cbfb6bb2d47064f25ed9c7ce109"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/85bb4910c886ca8c8532dcd2770d6f584663b535",
-                "reference": "85bb4910c886ca8c8532dcd2770d6f584663b535",
+                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/f98811d2e0463cbfb6bb2d47064f25ed9c7ce109",
+                "reference": "f98811d2e0463cbfb6bb2d47064f25ed9c7ce109",
                 "shasum": ""
             },
             "require": {
@@ -797,7 +797,7 @@
                 "guzzlehttp/guzzle": "^7.4",
                 "php": ">=7.1"
             },
-            "time": "2024-01-23T09:38:44+00:00",
+            "time": "2026-03-26T10:07:18+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -824,7 +824,7 @@
             ],
             "description": "HTTP client for Openprovider API",
             "support": {
-                "source": "https://github.com/openprovider/rest-client-php/tree/v2.0.2-beta",
+                "source": "https://github.com/openprovider/rest-client-php/tree/v2.1.0-beta",
                 "issues": "https://github.com/openprovider/rest-client-php/issues"
             },
             "install-path": "../openprovider/rest-client-php"

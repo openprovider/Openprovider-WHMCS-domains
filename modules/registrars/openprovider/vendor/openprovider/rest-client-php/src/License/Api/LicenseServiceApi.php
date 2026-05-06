@@ -1597,14 +1597,15 @@ class LicenseServiceApi
      * Get plesk license
      *
      * @param  int $key_id License key ID (required)
+     * @param  int $id License ID. (optional)
      *
      * @throws \Openprovider\Api\Rest\Client\License\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Openprovider\Api\Rest\Client\License\Model\LicenseGetLicenseResponse|\Openprovider\Api\Rest\Client\License\Model\ErrorError
      */
-    public function getPleskLicense($key_id)
+    public function getPleskLicense($key_id, $id = null)
     {
-        list($response) = $this->getPleskLicenseWithHttpInfo($key_id);
+        list($response) = $this->getPleskLicenseWithHttpInfo($key_id, $id);
         return $response;
     }
 
@@ -1614,14 +1615,15 @@ class LicenseServiceApi
      * Get plesk license
      *
      * @param  int $key_id License key ID (required)
+     * @param  int $id License ID. (optional)
      *
      * @throws Openprovider\Api\Rest\Client\Base\ApiException; on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Openprovider\Api\Rest\Client\License\Model\LicenseGetLicenseResponse|\Openprovider\Api\Rest\Client\License\Model\ErrorError, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getPleskLicenseWithHttpInfo($key_id)
+    public function getPleskLicenseWithHttpInfo($key_id, $id = null)
     {
-        $request = $this->getPleskLicenseRequest($key_id);
+        $request = $this->getPleskLicenseRequest($key_id, $id);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1722,13 +1724,14 @@ class LicenseServiceApi
      * Get plesk license
      *
      * @param  int $key_id License key ID (required)
+     * @param  int $id License ID. (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Promise\PromiseInterface
      */
-    public function getPleskLicenseAsync($key_id)
+    public function getPleskLicenseAsync($key_id, $id = null)
     {
-        return $this->getPleskLicenseAsyncWithHttpInfo($key_id)
+        return $this->getPleskLicenseAsyncWithHttpInfo($key_id, $id)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1742,14 +1745,15 @@ class LicenseServiceApi
      * Get plesk license
      *
      * @param  int $key_id License key ID (required)
+     * @param  int $id License ID. (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Promise\PromiseInterface
      */
-    public function getPleskLicenseAsyncWithHttpInfo($key_id)
+    public function getPleskLicenseAsyncWithHttpInfo($key_id, $id = null)
     {
         $returnType = '\Openprovider\Api\Rest\Client\License\Model\LicenseGetLicenseResponse';
-        $request = $this->getPleskLicenseRequest($key_id);
+        $request = $this->getPleskLicenseRequest($key_id, $id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1789,11 +1793,12 @@ class LicenseServiceApi
      * Create request for operation 'getPleskLicense'
      *
      * @param  int $key_id License key ID (required)
+     * @param  int $id License ID. (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Psr7\Request
      */
-    protected function getPleskLicenseRequest($key_id)
+    protected function getPleskLicenseRequest($key_id, $id = null)
     {
         // verify the required parameter 'key_id' is set
         if ($key_id === null || (is_array($key_id) && count($key_id) === 0)) {
@@ -1809,6 +1814,10 @@ class LicenseServiceApi
         $httpBody = '';
         $multipart = false;
 
+        // query params
+        if ($id !== null) {
+            $queryParams['id'] = ObjectSerializer::toQueryValue($id);
+        }
 
         // path params
         if ($key_id !== null) {
@@ -2191,14 +2200,15 @@ class LicenseServiceApi
      * Get virtuozzo license
      *
      * @param  int $key_id License key ID (required)
+     * @param  int $id License ID. (optional)
      *
      * @throws \Openprovider\Api\Rest\Client\License\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Openprovider\Api\Rest\Client\License\Model\LicenseGetLicenseResponse|\Openprovider\Api\Rest\Client\License\Model\ErrorError
      */
-    public function getVirtuozzoLicense($key_id)
+    public function getVirtuozzoLicense($key_id, $id = null)
     {
-        list($response) = $this->getVirtuozzoLicenseWithHttpInfo($key_id);
+        list($response) = $this->getVirtuozzoLicenseWithHttpInfo($key_id, $id);
         return $response;
     }
 
@@ -2208,14 +2218,15 @@ class LicenseServiceApi
      * Get virtuozzo license
      *
      * @param  int $key_id License key ID (required)
+     * @param  int $id License ID. (optional)
      *
      * @throws Openprovider\Api\Rest\Client\Base\ApiException; on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Openprovider\Api\Rest\Client\License\Model\LicenseGetLicenseResponse|\Openprovider\Api\Rest\Client\License\Model\ErrorError, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getVirtuozzoLicenseWithHttpInfo($key_id)
+    public function getVirtuozzoLicenseWithHttpInfo($key_id, $id = null)
     {
-        $request = $this->getVirtuozzoLicenseRequest($key_id);
+        $request = $this->getVirtuozzoLicenseRequest($key_id, $id);
 
         try {
             $options = $this->createHttpClientOption();
@@ -2316,13 +2327,14 @@ class LicenseServiceApi
      * Get virtuozzo license
      *
      * @param  int $key_id License key ID (required)
+     * @param  int $id License ID. (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Promise\PromiseInterface
      */
-    public function getVirtuozzoLicenseAsync($key_id)
+    public function getVirtuozzoLicenseAsync($key_id, $id = null)
     {
-        return $this->getVirtuozzoLicenseAsyncWithHttpInfo($key_id)
+        return $this->getVirtuozzoLicenseAsyncWithHttpInfo($key_id, $id)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -2336,14 +2348,15 @@ class LicenseServiceApi
      * Get virtuozzo license
      *
      * @param  int $key_id License key ID (required)
+     * @param  int $id License ID. (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Promise\PromiseInterface
      */
-    public function getVirtuozzoLicenseAsyncWithHttpInfo($key_id)
+    public function getVirtuozzoLicenseAsyncWithHttpInfo($key_id, $id = null)
     {
         $returnType = '\Openprovider\Api\Rest\Client\License\Model\LicenseGetLicenseResponse';
-        $request = $this->getVirtuozzoLicenseRequest($key_id);
+        $request = $this->getVirtuozzoLicenseRequest($key_id, $id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -2383,11 +2396,12 @@ class LicenseServiceApi
      * Create request for operation 'getVirtuozzoLicense'
      *
      * @param  int $key_id License key ID (required)
+     * @param  int $id License ID. (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Psr7\Request
      */
-    protected function getVirtuozzoLicenseRequest($key_id)
+    protected function getVirtuozzoLicenseRequest($key_id, $id = null)
     {
         // verify the required parameter 'key_id' is set
         if ($key_id === null || (is_array($key_id) && count($key_id) === 0)) {
@@ -2403,6 +2417,10 @@ class LicenseServiceApi
         $httpBody = '';
         $multipart = false;
 
+        // query params
+        if ($id !== null) {
+            $queryParams['id'] = ObjectSerializer::toQueryValue($id);
+        }
 
         // path params
         if ($key_id !== null) {

@@ -63,6 +63,7 @@ class LicenseLicenseWithPriceVersion implements ModelInterface, ArrayAccess
         'comment' => 'string',
         'contract' => 'string',
         'expiration_date' => 'string',
+        'id' => 'int',
         'items' => 'string[]',
         'key_id' => 'int',
         'key_number' => 'string',
@@ -86,6 +87,7 @@ class LicenseLicenseWithPriceVersion implements ModelInterface, ArrayAccess
         'comment' => null,
         'contract' => null,
         'expiration_date' => null,
+        'id' => 'int32',
         'items' => null,
         'key_id' => 'int32',
         'key_number' => null,
@@ -130,6 +132,7 @@ class LicenseLicenseWithPriceVersion implements ModelInterface, ArrayAccess
         'comment' => 'comment',
         'contract' => 'contract',
         'expiration_date' => 'expiration_date',
+        'id' => 'id',
         'items' => 'items',
         'key_id' => 'key_id',
         'key_number' => 'key_number',
@@ -153,6 +156,7 @@ class LicenseLicenseWithPriceVersion implements ModelInterface, ArrayAccess
         'comment' => 'setComment',
         'contract' => 'setContract',
         'expiration_date' => 'setExpirationDate',
+        'id' => 'setId',
         'items' => 'setItems',
         'key_id' => 'setKeyId',
         'key_number' => 'setKeyNumber',
@@ -176,6 +180,7 @@ class LicenseLicenseWithPriceVersion implements ModelInterface, ArrayAccess
         'comment' => 'getComment',
         'contract' => 'getContract',
         'expiration_date' => 'getExpirationDate',
+        'id' => 'getId',
         'items' => 'getItems',
         'key_id' => 'getKeyId',
         'key_number' => 'getKeyNumber',
@@ -257,6 +262,7 @@ class LicenseLicenseWithPriceVersion implements ModelInterface, ArrayAccess
         $this->container['comment'] = isset($data['comment']) ? $data['comment'] : null;
         $this->container['contract'] = isset($data['contract']) ? $data['contract'] : null;
         $this->container['expiration_date'] = isset($data['expiration_date']) ? $data['expiration_date'] : null;
+        $this->container['id'] = isset($data['id']) ? $data['id'] : null;
         $this->container['items'] = isset($data['items']) ? $data['items'] : null;
         $this->container['key_id'] = isset($data['key_id']) ? $data['key_id'] : null;
         $this->container['key_number'] = isset($data['key_number']) ? $data['key_number'] : null;
@@ -421,6 +427,32 @@ class LicenseLicenseWithPriceVersion implements ModelInterface, ArrayAccess
     public function setExpirationDate($expiration_date)
     {
         $this->container['expiration_date'] = $expiration_date;
+
+        return $this;
+    }
+
+    /**
+     * Gets id
+     *
+     * @return int|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getId()
+    {
+        return $this->container['id'];
+    }
+
+    /**
+     * Sets id
+     *
+     * @param int|null $id id
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setId($id)
+    {
+        $this->container['id'] = $id;
 
         return $this;
     }

@@ -35,7 +35,7 @@ use Openprovider\Api\Rest\Client\Base\ModelInterface;
  * AttributesIndustry Class Doc Comment
  *
  * @category Class
- * @description - UNKNOWN_INDUSTRY: Industry is not specified  - DOMAIN_REGISTRAR: Reseller&#39;s industry is domain registar  - CLOUD_SERVICES: Reseller&#39;s industry is cloud services  - MARKETING_AGENCIES: Reseller&#39;s industry is marketing agencies  - NETWORKING_SERVICES: Reseller&#39;s industry is networking services  - WEB_HOSTING: Reseller&#39;s industry is web hosting  - SOFTWARE_DEVELOPMENT: Reseller&#39;s industry is software development  - WEBSITE_BUILDERS: Reseller&#39;s industry is website builders  - SECURITY_SERVICES: Reseller&#39;s industry is security services
+ * @description - UNKNOWN_INDUSTRY: Industry is not specified  - DOMAIN_REGISTRAR: Reseller&#39;s industry is domain registar  - CLOUD_SERVICES: Reseller&#39;s industry is cloud services  - MARKETING_AGENCIES: Reseller&#39;s industry is marketing agencies  - NETWORKING_SERVICES: Reseller&#39;s industry is networking services  - WEB_HOSTING: Reseller&#39;s industry is web hosting  - SOFTWARE_DEVELOPMENT: Reseller&#39;s industry is software development  - WEBSITE_BUILDERS: Reseller&#39;s industry is website builders  - SECURITY_SERVICES: Reseller&#39;s industry is security services  - IT_SERVICES: Reseller&#39;s industry is IT services  - FREELANCER: Reseller&#39;s industry is freelancing services  - CYBERSECURITY: Reseller&#39;s industry is cybersecurity services  - SOFTWARE_WEBSITE_DEVELOPMENT: Reseller&#39;s industry is Software/Website development services  - OTHER: Reseller&#39;s industry is other services
  * @package  Openprovider\Api\Rest\Client\Person
  * @author   OpenAPI Generator team
  * @link     https://openapi-generator.tech
@@ -54,6 +54,11 @@ class AttributesIndustry
     const SOFTWARE_DEVELOPMENT = 'SOFTWARE_DEVELOPMENT';
     const WEBSITE_BUILDERS = 'WEBSITE_BUILDERS';
     const SECURITY_SERVICES = 'SECURITY_SERVICES';
+    const IT_SERVICES = 'IT_SERVICES';
+    const FREELANCER = 'FREELANCER';
+    const CYBERSECURITY = 'CYBERSECURITY';
+    const SOFTWARE_WEBSITE_DEVELOPMENT = 'SOFTWARE_WEBSITE_DEVELOPMENT';
+    const OTHER = 'OTHER';
     
     /**
      * Gets allowable values of the enum
@@ -71,6 +76,11 @@ class AttributesIndustry
             self::SOFTWARE_DEVELOPMENT,
             self::WEBSITE_BUILDERS,
             self::SECURITY_SERVICES,
+            self::IT_SERVICES,
+            self::FREELANCER,
+            self::CYBERSECURITY,
+            self::SOFTWARE_WEBSITE_DEVELOPMENT,
+            self::OTHER,
         ];
     }
 }
