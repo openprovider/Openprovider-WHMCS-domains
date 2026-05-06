@@ -28,8 +28,10 @@ class ShoppingCartController
         if ($idnumbermod) {
             $data = [];
             $domainTlds = [];
+            $fieldDisplay = '';
 
             foreach ($vars['cart']['domains'] as $domain) {
+                $mappedFields = [];
                 $domainName = $domain['domain'];
                 $fields = $domain['fields'];
                 $tld = $this->getFullTld($domainName);
