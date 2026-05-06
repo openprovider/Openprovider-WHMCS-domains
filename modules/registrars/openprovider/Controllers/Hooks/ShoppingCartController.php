@@ -120,8 +120,11 @@ class ShoppingCartController
                                 $name = $_LANG['fiIdentificationBirthDate'];
                                 break;
                         }
+                        $fieldId = htmlspecialchars($domain . "_" . $fields["field"], ENT_QUOTES, 'UTF-8');
+                        $fieldName = htmlspecialchars($fields["field"], ENT_QUOTES, 'UTF-8');
+                        $fieldValue = htmlspecialchars("[$domain] $name: " . $fields["value"], ENT_QUOTES, 'UTF-8');
 
-                        $fieldDisplay .= "<div class='col-sm-12'><div class='form-group prepend-icon'><label class='field-icon' for='" . $domain . "_" . $fields["field"] . "'> <i class='fas id-card'></i></label><input required class='form-control' readonly id='" . $domain . "_" . $fields["field"] . "' type='text' name='" . $fields["field"] . "' value='[$domain] $name:  " . $fields["value"] . "' /> </div></div>";
+                        $fieldDisplay .= "<div class='col-sm-12'><div class='form-group prepend-icon'><label class='field-icon' for='" . $fieldId . "'> <i class='fas id-card'></i></label><input required class='form-control' readonly id='" . $fieldId . "' type='text' name='" . $fieldName . "' value='" . $fieldValue . "' /> </div></div>";
                     }
                 }
             }
