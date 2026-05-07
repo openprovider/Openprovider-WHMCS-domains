@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.11.3
+
+###### Features and improvements
+- Improved checkout contact creation support for TLDs requiring customer additional data.
+- Added support for additional customer data handling for more supported TLD extensions.
+
 ## v5.11.2
 
 ###### Features and improvements
