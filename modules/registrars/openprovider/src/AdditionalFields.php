@@ -222,8 +222,25 @@ class AdditionalFields
             $foundAdditionalFields['customer']   = $this->customerData;
 
         $foundAdditionalFields['domainAdditionalData']              = $this->domainAdditionalData;
-        
+
+        if (
+            strtoupper((string) ($params['country'] ?? '')) === 'IN'
+            && isset($foundAdditionalFields['extensionCustomerAdditionalData'])
+            && $this->hasInNexusFields($additionalFields[$domainExtension] ?? [])
+        ) {
+            unset($foundAdditionalFields['extensionCustomerAdditionalData']);
+        }
+
         return $foundAdditionalFields;
     }
 
-}   
+    private function hasInNexusFields(array $fields): bool
+    {
+        foreach ($fields as $field) {
+            if (strpos($field['op_name'] ?? '', 'inNexus') === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
