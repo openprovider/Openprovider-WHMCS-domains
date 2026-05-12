@@ -10,7 +10,25 @@ use WHMCS\Config\Setting;
 
 class ShoppingCartController
 {
-    private const IN_SLD_EXTENSIONS = ['in', 'co.in', 'net.in', 'org.in', 'gen.in', 'firm.in', 'ind.in'];
+    private const IN_SLD_EXTENSIONS = [
+        'in', 'co.in', 'net.in', 'org.in', 'gen.in', 'firm.in', 'ind.in',
+        '5g.in', '6g.in', 'ahmdabad.in', 'ai.in', 'am.in', 'bihar.in',
+        'biz.in', 'business.in', 'ca.in', 'cn.in', 'com.in', 'coop.in',
+        'cs.in', 'delhi.in', 'dr.in', 'er.in', 'gujarat.in', 'info.in',
+        'int.in', 'internet.in', 'io.in', 'me.in', 'pg.in', 'post.in',
+        'pro.in', 'travel.in', 'tv.in', 'uk.in', 'up.in', 'us.in',
+        // IDN variants
+        'xn--2scrj9c', 'xn--3hcrj9c', 'xn--45br5cyl', 'xn--45brj9c',
+        'xn--d9b2bf3g1k.xn--s9brj9c', 'xn--fhbed7t1n.xn--mgbbh1a71e',
+        'xn--fpcrj9c3d', 'xn--gecrj9c', 'xn--goc1b4ch5i8a.xn--fpcrj9c3d',
+        'xn--h2breg3eve', 'xn--h2brj9c', 'xn--h2brj9c8c',
+        'xn--hdc1b4ch5i.xn--gecrj9c', 'xn--i1b1b4ch5i.xn--h2brj9c',
+        'xn--mgbbh1a', 'xn--mgbbh1a71e', 'xn--mgbgu82a',
+        'xn--p5b2bfp5fh3fra.xn--45brj9c', 'xn--rvc1e0am3e', 'xn--s9brj9c',
+        'xn--vlccpku2dp3h.xn--xkc2dl3a5ee0h', 'xn--xkc2dl3a5ee0h',
+        'xn--11b2bfp5fn6er.xn--h2brj9c8c', 'xn--p5b2bfp5fn6er.xn--45br5cyl',
+        'xn--hhbcm0s3h.xn--mgbgu82a',
+    ];
     private const IN_NEXUS_DECLARATION_INDEX = 0;
 
     public function checkoutOutput($vars)
