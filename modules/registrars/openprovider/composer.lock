@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea53929d6d854848793f6119f39f06d2",
+    "content-hash": "13ca5e915ead63d88ebd1232136a80d8",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -383,16 +383,16 @@
         },
         {
             "name": "openprovider/rest-client-php",
-            "version": "v2.1.0-beta",
+            "version": "v2.2.0-beta",
             "source": {
                 "type": "git",
                 "url": "https://github.com/openprovider/rest-client-php.git",
-                "reference": "f98811d2e0463cbfb6bb2d47064f25ed9c7ce109"
+                "reference": "0cd345b386a56e5a13339ddd64057853b1c4126f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/f98811d2e0463cbfb6bb2d47064f25ed9c7ce109",
-                "reference": "f98811d2e0463cbfb6bb2d47064f25ed9c7ce109",
+                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/0cd345b386a56e5a13339ddd64057853b1c4126f",
+                "reference": "0cd345b386a56e5a13339ddd64057853b1c4126f",
                 "shasum": ""
             },
             "require": {
@@ -427,10 +427,10 @@
             ],
             "description": "HTTP client for Openprovider API",
             "support": {
-                "source": "https://github.com/openprovider/rest-client-php/tree/v2.1.0-beta",
+                "source": "https://github.com/openprovider/rest-client-php/tree/v2.2.0-beta",
                 "issues": "https://github.com/openprovider/rest-client-php/issues"
             },
-            "time": "2026-03-26T10:07:18+00:00"
+            "time": "2026-05-12T04:45:38+00:00"
         },
         {
             "name": "php-di/invoker",
@@ -4188,7 +4188,7 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
-    "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
 }

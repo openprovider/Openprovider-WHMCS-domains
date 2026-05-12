@@ -74,6 +74,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'maintainer' => 'string',
         'membership_id' => 'string',
         'mobile_phone_number_verification' => 'string',
+        'nz_privacy_option' => 'string',
         'passport_number' => 'string',
         'self_service' => 'string',
         'trademark' => 'string',
@@ -103,6 +104,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'maintainer' => null,
         'membership_id' => null,
         'mobile_phone_number_verification' => null,
+        'nz_privacy_option' => null,
         'passport_number' => null,
         'self_service' => null,
         'trademark' => null,
@@ -153,6 +155,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'maintainer' => 'maintainer',
         'membership_id' => 'membership_id',
         'mobile_phone_number_verification' => 'mobile_phone_number_verification',
+        'nz_privacy_option' => 'nz_privacy_option',
         'passport_number' => 'passport_number',
         'self_service' => 'self_service',
         'trademark' => 'trademark',
@@ -182,6 +185,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'maintainer' => 'setMaintainer',
         'membership_id' => 'setMembershipId',
         'mobile_phone_number_verification' => 'setMobilePhoneNumberVerification',
+        'nz_privacy_option' => 'setNzPrivacyOption',
         'passport_number' => 'setPassportNumber',
         'self_service' => 'setSelfService',
         'trademark' => 'setTrademark',
@@ -211,6 +215,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'maintainer' => 'getMaintainer',
         'membership_id' => 'getMembershipId',
         'mobile_phone_number_verification' => 'getMobilePhoneNumberVerification',
+        'nz_privacy_option' => 'getNzPrivacyOption',
         'passport_number' => 'getPassportNumber',
         'self_service' => 'getSelfService',
         'trademark' => 'getTrademark',
@@ -298,6 +303,7 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         $this->container['maintainer'] = isset($data['maintainer']) ? $data['maintainer'] : null;
         $this->container['membership_id'] = isset($data['membership_id']) ? $data['membership_id'] : null;
         $this->container['mobile_phone_number_verification'] = isset($data['mobile_phone_number_verification']) ? $data['mobile_phone_number_verification'] : null;
+        $this->container['nz_privacy_option'] = isset($data['nz_privacy_option']) ? $data['nz_privacy_option'] : 'public';
         $this->container['passport_number'] = isset($data['passport_number']) ? $data['passport_number'] : null;
         $this->container['self_service'] = isset($data['self_service']) ? $data['self_service'] : null;
         $this->container['trademark'] = isset($data['trademark']) ? $data['trademark'] : null;
@@ -743,6 +749,32 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
     public function setMobilePhoneNumberVerification($mobile_phone_number_verification)
     {
         $this->container['mobile_phone_number_verification'] = $mobile_phone_number_verification;
+
+        return $this;
+    }
+
+    /**
+     * Gets nz_privacy_option
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getNzPrivacyOption()
+    {
+        return $this->container['nz_privacy_option'];
+    }
+
+    /**
+     * Sets nz_privacy_option
+     *
+     * @param string|null $nz_privacy_option nz_privacy_option
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setNzPrivacyOption($nz_privacy_option)
+    {
+        $this->container['nz_privacy_option'] = $nz_privacy_option;
 
         return $this;
     }

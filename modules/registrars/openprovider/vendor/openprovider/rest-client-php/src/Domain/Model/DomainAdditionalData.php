@@ -90,6 +90,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'string',
         'ngo_ong_eligibility_acceptance' => 'string',
         'ngo_ong_policy_acceptance' => 'string',
+        'nz_privacy_option' => 'string',
         'passport_number' => 'string',
         'rurf_blocked_domains' => 'string',
         'self_service' => 'string',
@@ -97,6 +98,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'trademark' => 'string',
         'trademark_id' => 'string',
         'travel_acceptance' => 'string',
+        'ua_license' => 'string',
         'vat' => 'string',
         'verification_code' => 'string',
         'vote_acceptance' => 'string',
@@ -141,6 +143,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => null,
         'ngo_ong_eligibility_acceptance' => null,
         'ngo_ong_policy_acceptance' => null,
+        'nz_privacy_option' => null,
         'passport_number' => null,
         'rurf_blocked_domains' => null,
         'self_service' => null,
@@ -148,6 +151,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'trademark' => null,
         'trademark_id' => null,
         'travel_acceptance' => null,
+        'ua_license' => null,
         'vat' => null,
         'verification_code' => null,
         'vote_acceptance' => null,
@@ -213,6 +217,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'mobile_phone_number_verification',
         'ngo_ong_eligibility_acceptance' => 'ngo_ong_eligibility_acceptance',
         'ngo_ong_policy_acceptance' => 'ngo_ong_policy_acceptance',
+        'nz_privacy_option' => 'nz_privacy_option',
         'passport_number' => 'passport_number',
         'rurf_blocked_domains' => 'rurf_blocked_domains',
         'self_service' => 'self_service',
@@ -220,6 +225,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'trademark' => 'trademark',
         'trademark_id' => 'trademark_id',
         'travel_acceptance' => 'travel_acceptance',
+        'ua_license' => 'ua_license',
         'vat' => 'vat',
         'verification_code' => 'verification_code',
         'vote_acceptance' => 'vote_acceptance',
@@ -264,6 +270,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'setMobilePhoneNumberVerification',
         'ngo_ong_eligibility_acceptance' => 'setNgoOngEligibilityAcceptance',
         'ngo_ong_policy_acceptance' => 'setNgoOngPolicyAcceptance',
+        'nz_privacy_option' => 'setNzPrivacyOption',
         'passport_number' => 'setPassportNumber',
         'rurf_blocked_domains' => 'setRurfBlockedDomains',
         'self_service' => 'setSelfService',
@@ -271,6 +278,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'trademark' => 'setTrademark',
         'trademark_id' => 'setTrademarkId',
         'travel_acceptance' => 'setTravelAcceptance',
+        'ua_license' => 'setUaLicense',
         'vat' => 'setVat',
         'verification_code' => 'setVerificationCode',
         'vote_acceptance' => 'setVoteAcceptance',
@@ -315,6 +323,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'getMobilePhoneNumberVerification',
         'ngo_ong_eligibility_acceptance' => 'getNgoOngEligibilityAcceptance',
         'ngo_ong_policy_acceptance' => 'getNgoOngPolicyAcceptance',
+        'nz_privacy_option' => 'getNzPrivacyOption',
         'passport_number' => 'getPassportNumber',
         'rurf_blocked_domains' => 'getRurfBlockedDomains',
         'self_service' => 'getSelfService',
@@ -322,6 +331,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'trademark' => 'getTrademark',
         'trademark_id' => 'getTrademarkId',
         'travel_acceptance' => 'getTravelAcceptance',
+        'ua_license' => 'getUaLicense',
         'vat' => 'getVat',
         'verification_code' => 'getVerificationCode',
         'vote_acceptance' => 'getVoteAcceptance',
@@ -424,6 +434,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         $this->container['mobile_phone_number_verification'] = isset($data['mobile_phone_number_verification']) ? $data['mobile_phone_number_verification'] : null;
         $this->container['ngo_ong_eligibility_acceptance'] = isset($data['ngo_ong_eligibility_acceptance']) ? $data['ngo_ong_eligibility_acceptance'] : null;
         $this->container['ngo_ong_policy_acceptance'] = isset($data['ngo_ong_policy_acceptance']) ? $data['ngo_ong_policy_acceptance'] : null;
+        $this->container['nz_privacy_option'] = isset($data['nz_privacy_option']) ? $data['nz_privacy_option'] : 'public';
         $this->container['passport_number'] = isset($data['passport_number']) ? $data['passport_number'] : null;
         $this->container['rurf_blocked_domains'] = isset($data['rurf_blocked_domains']) ? $data['rurf_blocked_domains'] : null;
         $this->container['self_service'] = isset($data['self_service']) ? $data['self_service'] : null;
@@ -431,6 +442,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         $this->container['trademark'] = isset($data['trademark']) ? $data['trademark'] : null;
         $this->container['trademark_id'] = isset($data['trademark_id']) ? $data['trademark_id'] : null;
         $this->container['travel_acceptance'] = isset($data['travel_acceptance']) ? $data['travel_acceptance'] : null;
+        $this->container['ua_license'] = isset($data['ua_license']) ? $data['ua_license'] : null;
         $this->container['vat'] = isset($data['vat']) ? $data['vat'] : null;
         $this->container['verification_code'] = isset($data['verification_code']) ? $data['verification_code'] : null;
         $this->container['vote_acceptance'] = isset($data['vote_acceptance']) ? $data['vote_acceptance'] : null;
@@ -1296,6 +1308,32 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets nz_privacy_option
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getNzPrivacyOption()
+    {
+        return $this->container['nz_privacy_option'];
+    }
+
+    /**
+     * Sets nz_privacy_option
+     *
+     * @param string|null $nz_privacy_option nz_privacy_option
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setNzPrivacyOption($nz_privacy_option)
+    {
+        $this->container['nz_privacy_option'] = $nz_privacy_option;
+
+        return $this;
+    }
+
+    /**
      * Gets passport_number
      *
      * @return string|null
@@ -1473,6 +1511,32 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
     public function setTravelAcceptance($travel_acceptance)
     {
         $this->container['travel_acceptance'] = $travel_acceptance;
+
+        return $this;
+    }
+
+    /**
+     * Gets ua_license
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getUaLicense()
+    {
+        return $this->container['ua_license'];
+    }
+
+    /**
+     * Sets ua_license
+     *
+     * @param string|null $ua_license ua_license
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setUaLicense($ua_license)
+    {
+        $this->container['ua_license'] = $ua_license;
 
         return $this;
     }
