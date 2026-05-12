@@ -131,6 +131,8 @@ class AdditionalFields
              * op_dropdown_for_op_name  The value provided by the customer is used to define the op_name fieldname.
              */
 
+            $dropdown_op_name_fields = [];
+
             // Loop through all fields to find a decision master.
             foreach($additionalFields[$domainExtension] as $key => $field)
             {
@@ -181,8 +183,11 @@ class AdditionalFields
                         continue;
                         
                 }
-                elseif($field['Type']  == 'tickbox' && $value == 'on')
-                    $value = "1";
+                elseif($field['Type'] == 'tickbox') {
+                    $checkedValue   = $field['op_values'][0] ?? '1';
+                    $uncheckedValue = $field['op_values'][1] ?? '0';
+                    $value = ($value == 'on') ? $checkedValue : $uncheckedValue;
+                }
 
                 if($field['op_location'] == 'customerExtensionAdditionalData' && isset($params['additionalfields'][$field['Name']]))
                 {

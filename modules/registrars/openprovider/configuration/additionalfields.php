@@ -1035,6 +1035,80 @@ $additionaldomainfields[".dk"][] = array(
     "op_name" => "dkAcceptance"
 );
 
+// .IN and all .IN SLDs
+
+$inNexusFields = [
+    [
+        "Name"        => "I agree and confirm",
+        "LangVar"     => "inNexusDeclarationAttestation",
+        "Type"        => "tickbox",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:6px;font-size:12px;line-height:1.45;color:#6b7280;max-width:100%;">'
+            . '<strong>To register .IN domains, entities outside of India (Non-Resident/foreign Registrants), must demonstrate a legitimate business connection or purpose connected to India.</strong><br><br>'
+            . 'I hereby declare that the registrant satisfies the eligibility requirements of a .IN domain name as prescribed by the National Internet Exchange of India (NIXI). '
+            . 'The registrant has a bona fide connection with India, either through presence, business, or other lawful activities.<br><br>'
+            . 'I acknowledge and agree that the Registry reserves the right to verify this declaration at any time and may request supporting documentation. '
+            . 'In the event that the registrant is unable to demonstrate compliance with the applicable policies, the domain name(s) may be suspended or cancelled without notice and without refund.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "inNexusDeclarationAttestation",
+        "op_values"   => ['YES', 'NO'],
+    ],
+    [
+        "Name"        => "Connection to India",
+        "LangVar"     => "inNexusConnectionToIndia",
+        "Type"        => "dropdown",
+        "Options"     => "ENTITY|Indian Business Presence (subsidiary; branch; affiliate; or partnership),COMM|Commercial Activity in India (selling products or services),MKTG|Marketing or Business Development Targeting India,CONTENT|Content or Digital Services Targeting Indian Users,EDU|Educational or Research Activities Involving India,CULTURE|Cultural or Community Activities Connected to India,OTHER|Other Business Purpose Connected to India (triggers audit sooner)",
+        "Required"    => true,
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "inNexusConnectionToIndia",
+    ],
+];
+
+$inSlds = [
+    '.in',
+    '.co.in',
+    '.net.in',
+    '.org.in',
+    '.gen.in',
+    '.firm.in',
+    '.ind.in',
+    '.5g.in',
+    '.6g.in',
+    '.ahmdabad.in',
+    '.ai.in',
+    '.am.in',
+    '.bihar.in',
+    '.biz.in',
+    '.business.in',
+    '.ca.in',
+    '.cn.in',
+    '.com.in',
+    '.coop.in',
+    '.cs.in',
+    '.delhi.in',
+    '.dr.in',
+    '.er.in',
+    '.gujarat.in',
+    '.info.in',
+    '.int.in',
+    '.internet.in',
+    '.io.in',
+    '.me.in',
+    '.pg.in',
+    '.post.in',
+    '.pro.in',
+    '.travel.in',
+    '.tv.in',
+    '.uk.in',
+    '.up.in',
+    '.us.in',
+];
+
+foreach ($inSlds as $inSld) {
+    $additionaldomainfields[$inSld] = $inNexusFields;
+}
+
 $gtldsToAdd = array(
     // A
     '.aaa','.aarp','.abarth','.abb','.abbott','.abbvie','.abc','.able','.abogado','.abudhabi',
