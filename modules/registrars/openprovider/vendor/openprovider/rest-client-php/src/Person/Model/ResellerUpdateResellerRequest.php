@@ -71,6 +71,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'kpp' => 'string',
         'locale' => 'string',
         'name' => '\Openprovider\Api\Rest\Client\Person\Model\ContactName',
+        'notifications_settings' => '\Openprovider\Api\Rest\Client\Person\Model\ResellerNotificationsSettings',
         'phone' => '\Openprovider\Api\Rest\Client\Person\Model\ContactPhone',
         'referral_source' => '\Openprovider\Api\Rest\Client\Person\Model\AttributesReferralSource',
         'vat' => 'string',
@@ -96,6 +97,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'kpp' => null,
         'locale' => null,
         'name' => null,
+        'notifications_settings' => null,
         'phone' => null,
         'referral_source' => null,
         'vat' => null,
@@ -142,6 +144,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'kpp' => 'kpp',
         'locale' => 'locale',
         'name' => 'name',
+        'notifications_settings' => 'notifications_settings',
         'phone' => 'phone',
         'referral_source' => 'referral_source',
         'vat' => 'vat',
@@ -167,6 +170,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'kpp' => 'setKpp',
         'locale' => 'setLocale',
         'name' => 'setName',
+        'notifications_settings' => 'setNotificationsSettings',
         'phone' => 'setPhone',
         'referral_source' => 'setReferralSource',
         'vat' => 'setVat',
@@ -192,6 +196,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'kpp' => 'getKpp',
         'locale' => 'getLocale',
         'name' => 'getName',
+        'notifications_settings' => 'getNotificationsSettings',
         'phone' => 'getPhone',
         'referral_source' => 'getReferralSource',
         'vat' => 'getVat',
@@ -275,6 +280,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         $this->container['kpp'] = isset($data['kpp']) ? $data['kpp'] : null;
         $this->container['locale'] = isset($data['locale']) ? $data['locale'] : null;
         $this->container['name'] = isset($data['name']) ? $data['name'] : null;
+        $this->container['notifications_settings'] = isset($data['notifications_settings']) ? $data['notifications_settings'] : null;
         $this->container['phone'] = isset($data['phone']) ? $data['phone'] : null;
         $this->container['referral_source'] = isset($data['referral_source']) ? $data['referral_source'] : null;
         $this->container['vat'] = isset($data['vat']) ? $data['vat'] : null;
@@ -641,6 +647,32 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
     public function setName($name)
     {
         $this->container['name'] = $name;
+
+        return $this;
+    }
+
+    /**
+     * Gets notifications_settings
+     *
+     * @return \Openprovider\Api\Rest\Client\Person\Model\ResellerNotificationsSettings|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getNotificationsSettings()
+    {
+        return $this->container['notifications_settings'];
+    }
+
+    /**
+     * Sets notifications_settings
+     *
+     * @param \Openprovider\Api\Rest\Client\Person\Model\ResellerNotificationsSettings|null $notifications_settings notifications_settings
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setNotificationsSettings($notifications_settings)
+    {
+        $this->container['notifications_settings'] = $notifications_settings;
 
         return $this;
     }

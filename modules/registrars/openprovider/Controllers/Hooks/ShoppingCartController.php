@@ -5,9 +5,14 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\helpers\DB;
 use idna_convert;
+use WHMCS\Database\Capsule;
+use WHMCS\Config\Setting;
 
 class ShoppingCartController
 {
+    private static ?array $inSldExtensions = null;
+    private const IN_NEXUS_DECLARATION_INDEX = 0;
+    
     private static array $itFieldsMap = [
         7 => 'companyRegistrationNumber',
         9 => 'socialSecurityNumber',
@@ -139,6 +144,11 @@ class ShoppingCartController
     
     public function preCheckout($vars)
     {
+        $inNexusError = $this->validateInNexusAtCheckout($vars);
+        if ($inNexusError !== null) {
+            return $inNexusError;
+        }
+
         $idnumbermod = Configuration::get('idnumbermod');
 
         if ($idnumbermod) {
@@ -172,6 +182,82 @@ class ShoppingCartController
                 }
             }
         }
+    }
+
+    private function validateInNexusAtCheckout(array $vars): ?array
+    {
+        $domains = $vars['domains'] ?? $_SESSION['cart']['domains'] ?? [];
+
+        foreach ($domains as $domain) {
+            $domainName = $domain['domain'] ?? '';
+            if (!$this->isDomainInSld($domainName)) {
+                continue;
+            }
+
+            $country = $this->getRegistrantCountryForCheckout($vars);
+
+            if ($country === 'IN') {
+                continue;
+            }
+
+            $fields = $domain['fields'] ?? [];
+            $attestation = $fields[self::IN_NEXUS_DECLARATION_INDEX] ?? '';
+
+            if ($attestation !== 'on') {
+                $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                return [
+                    'error' => 'To register ' . $domainName . ', non-Indian registrants must confirm the .IN nexus declaration. '
+                        . 'Please <a href="' . $cartUrl . '">go back to the domain configuration step</a> and check "I agree and confirm".',
+                ];
+            }
+        }
+
+        return null;
+    }
+
+    private function isDomainInSld(string $domainName): bool
+    {
+        foreach (self::getInSldExtensions() as $ext) {
+            if (str_ends_with($domainName, '.' . $ext)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static function getInSldExtensions(): array
+    {
+        if (self::$inSldExtensions !== null) {
+            return self::$inSldExtensions;
+        }
+        $inSlds = [];
+        require dirname(__DIR__, 2) . '/configuration/additionalfields.php';
+        self::$inSldExtensions = array_values(array_map(
+            static fn(string $sld): string => ltrim(strtolower($sld), '.'),
+            (array) $inSlds
+        ));
+        return self::$inSldExtensions;
+    }
+
+    private function getRegistrantCountryForCheckout(array $vars): string
+    {
+        $contact = $vars['contact'] ?? '';
+
+        if ($contact === 'addingnew') {
+            return strtoupper((string) ($vars['domaincontactcountry'] ?? ''));
+        }
+
+        $contactId = (int) $contact;
+        if ($contactId > 0) {
+            $country = Capsule::table('tblcontacts')
+                ->where('id', $contactId)
+                ->value('country');
+            if (!empty($country)) {
+                return strtoupper((string) $country);
+            }
+        }
+
+        return strtoupper((string) ($vars['country'] ?? ''));
     }
 
     public function hideIdnScriptForNonIdnDomains($vars)

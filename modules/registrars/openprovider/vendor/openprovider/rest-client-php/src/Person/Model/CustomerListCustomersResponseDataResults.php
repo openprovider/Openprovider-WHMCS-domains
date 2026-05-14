@@ -74,7 +74,8 @@ class CustomerListCustomersResponseDataResults implements ModelInterface, ArrayA
         'name' => '\Openprovider\Api\Rest\Client\Person\Model\ContactName',
         'phone' => '\Openprovider\Api\Rest\Client\Person\Model\ContactPhone',
         'reseller_id' => 'int',
-        'tags' => '\Openprovider\Api\Rest\Client\Person\Model\CustomerTags[]'
+        'tags' => '\Openprovider\Api\Rest\Client\Person\Model\CustomerTags[]',
+        'vat' => 'string'
     ];
 
     /**
@@ -99,7 +100,8 @@ class CustomerListCustomersResponseDataResults implements ModelInterface, ArrayA
         'name' => null,
         'phone' => null,
         'reseller_id' => 'int32',
-        'tags' => null
+        'tags' => null,
+        'vat' => null
     ];
 
     /**
@@ -145,7 +147,8 @@ class CustomerListCustomersResponseDataResults implements ModelInterface, ArrayA
         'name' => 'name',
         'phone' => 'phone',
         'reseller_id' => 'reseller_id',
-        'tags' => 'tags'
+        'tags' => 'tags',
+        'vat' => 'vat'
     ];
 
     /**
@@ -170,7 +173,8 @@ class CustomerListCustomersResponseDataResults implements ModelInterface, ArrayA
         'name' => 'setName',
         'phone' => 'setPhone',
         'reseller_id' => 'setResellerId',
-        'tags' => 'setTags'
+        'tags' => 'setTags',
+        'vat' => 'setVat'
     ];
 
     /**
@@ -195,7 +199,8 @@ class CustomerListCustomersResponseDataResults implements ModelInterface, ArrayA
         'name' => 'getName',
         'phone' => 'getPhone',
         'reseller_id' => 'getResellerId',
-        'tags' => 'getTags'
+        'tags' => 'getTags',
+        'vat' => 'getVat'
     ];
 
     /**
@@ -279,6 +284,7 @@ class CustomerListCustomersResponseDataResults implements ModelInterface, ArrayA
         $this->container['phone'] = isset($data['phone']) ? $data['phone'] : null;
         $this->container['reseller_id'] = isset($data['reseller_id']) ? $data['reseller_id'] : null;
         $this->container['tags'] = isset($data['tags']) ? $data['tags'] : null;
+        $this->container['vat'] = isset($data['vat']) ? $data['vat'] : null;
     }
 
     /**
@@ -745,6 +751,32 @@ class CustomerListCustomersResponseDataResults implements ModelInterface, ArrayA
     public function setTags($tags)
     {
         $this->container['tags'] = $tags;
+
+        return $this;
+    }
+
+    /**
+     * Gets vat
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getVat()
+    {
+        return $this->container['vat'];
+    }
+
+    /**
+     * Sets vat
+     *
+     * @param string|null $vat vat
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setVat($vat)
+    {
+        $this->container['vat'] = $vat;
 
         return $this;
     }

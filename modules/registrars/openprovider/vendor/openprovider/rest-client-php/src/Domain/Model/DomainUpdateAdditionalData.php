@@ -74,6 +74,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'string',
         'ngo_ong_eligibility_acceptance' => 'string',
         'ngo_ong_policy_acceptance' => 'string',
+        'nz_privacy_option' => 'string',
         'passport_number' => 'string',
         'vat' => 'string',
         'verification_code' => 'string'
@@ -101,6 +102,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => null,
         'ngo_ong_eligibility_acceptance' => null,
         'ngo_ong_policy_acceptance' => null,
+        'nz_privacy_option' => null,
         'passport_number' => null,
         'vat' => null,
         'verification_code' => null
@@ -149,6 +151,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'mobile_phone_number_verification',
         'ngo_ong_eligibility_acceptance' => 'ngo_ong_eligibility_acceptance',
         'ngo_ong_policy_acceptance' => 'ngo_ong_policy_acceptance',
+        'nz_privacy_option' => 'nz_privacy_option',
         'passport_number' => 'passport_number',
         'vat' => 'vat',
         'verification_code' => 'verification_code'
@@ -176,6 +179,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'setMobilePhoneNumberVerification',
         'ngo_ong_eligibility_acceptance' => 'setNgoOngEligibilityAcceptance',
         'ngo_ong_policy_acceptance' => 'setNgoOngPolicyAcceptance',
+        'nz_privacy_option' => 'setNzPrivacyOption',
         'passport_number' => 'setPassportNumber',
         'vat' => 'setVat',
         'verification_code' => 'setVerificationCode'
@@ -203,6 +207,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'getMobilePhoneNumberVerification',
         'ngo_ong_eligibility_acceptance' => 'getNgoOngEligibilityAcceptance',
         'ngo_ong_policy_acceptance' => 'getNgoOngPolicyAcceptance',
+        'nz_privacy_option' => 'getNzPrivacyOption',
         'passport_number' => 'getPassportNumber',
         'vat' => 'getVat',
         'verification_code' => 'getVerificationCode'
@@ -288,6 +293,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         $this->container['mobile_phone_number_verification'] = isset($data['mobile_phone_number_verification']) ? $data['mobile_phone_number_verification'] : null;
         $this->container['ngo_ong_eligibility_acceptance'] = isset($data['ngo_ong_eligibility_acceptance']) ? $data['ngo_ong_eligibility_acceptance'] : null;
         $this->container['ngo_ong_policy_acceptance'] = isset($data['ngo_ong_policy_acceptance']) ? $data['ngo_ong_policy_acceptance'] : null;
+        $this->container['nz_privacy_option'] = isset($data['nz_privacy_option']) ? $data['nz_privacy_option'] : 'public';
         $this->container['passport_number'] = isset($data['passport_number']) ? $data['passport_number'] : null;
         $this->container['vat'] = isset($data['vat']) ? $data['vat'] : null;
         $this->container['verification_code'] = isset($data['verification_code']) ? $data['verification_code'] : null;
@@ -731,6 +737,32 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
     public function setNgoOngPolicyAcceptance($ngo_ong_policy_acceptance)
     {
         $this->container['ngo_ong_policy_acceptance'] = $ngo_ong_policy_acceptance;
+
+        return $this;
+    }
+
+    /**
+     * Gets nz_privacy_option
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getNzPrivacyOption()
+    {
+        return $this->container['nz_privacy_option'];
+    }
+
+    /**
+     * Sets nz_privacy_option
+     *
+     * @param string|null $nz_privacy_option nz_privacy_option
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setNzPrivacyOption($nz_privacy_option)
+    {
+        $this->container['nz_privacy_option'] = $nz_privacy_option;
 
         return $this;
     }

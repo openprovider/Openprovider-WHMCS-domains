@@ -72,6 +72,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'first_name_cyrillic' => 'string',
         'first_name_latin' => 'string',
         'hr_member' => 'string',
+        'in_nexus_connection_to_india' => 'string',
+        'in_nexus_declaration_attestation' => 'string',
         'industry_class' => 'string',
         'is_private_enterpreneur' => 'string',
         'last_name_cyrillic' => 'string',
@@ -119,6 +121,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'first_name_cyrillic' => null,
         'first_name_latin' => null,
         'hr_member' => null,
+        'in_nexus_connection_to_india' => null,
+        'in_nexus_declaration_attestation' => null,
         'industry_class' => null,
         'is_private_enterpreneur' => null,
         'last_name_cyrillic' => null,
@@ -187,6 +191,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'first_name_cyrillic' => 'first_name_cyrillic',
         'first_name_latin' => 'first_name_latin',
         'hr_member' => 'hr_member',
+        'in_nexus_connection_to_india' => 'in_nexus_connection_to_india',
+        'in_nexus_declaration_attestation' => 'in_nexus_declaration_attestation',
         'industry_class' => 'industry_class',
         'is_private_enterpreneur' => 'is_private_enterpreneur',
         'last_name_cyrillic' => 'last_name_cyrillic',
@@ -234,6 +240,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'first_name_cyrillic' => 'setFirstNameCyrillic',
         'first_name_latin' => 'setFirstNameLatin',
         'hr_member' => 'setHrMember',
+        'in_nexus_connection_to_india' => 'setInNexusConnectionToIndia',
+        'in_nexus_declaration_attestation' => 'setInNexusDeclarationAttestation',
         'industry_class' => 'setIndustryClass',
         'is_private_enterpreneur' => 'setIsPrivateEnterpreneur',
         'last_name_cyrillic' => 'setLastNameCyrillic',
@@ -281,6 +289,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'first_name_cyrillic' => 'getFirstNameCyrillic',
         'first_name_latin' => 'getFirstNameLatin',
         'hr_member' => 'getHrMember',
+        'in_nexus_connection_to_india' => 'getInNexusConnectionToIndia',
+        'in_nexus_declaration_attestation' => 'getInNexusDeclarationAttestation',
         'industry_class' => 'getIndustryClass',
         'is_private_enterpreneur' => 'getIsPrivateEnterpreneur',
         'last_name_cyrillic' => 'getLastNameCyrillic',
@@ -386,6 +396,8 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         $this->container['first_name_cyrillic'] = isset($data['first_name_cyrillic']) ? $data['first_name_cyrillic'] : null;
         $this->container['first_name_latin'] = isset($data['first_name_latin']) ? $data['first_name_latin'] : null;
         $this->container['hr_member'] = isset($data['hr_member']) ? $data['hr_member'] : null;
+        $this->container['in_nexus_connection_to_india'] = isset($data['in_nexus_connection_to_india']) ? $data['in_nexus_connection_to_india'] : null;
+        $this->container['in_nexus_declaration_attestation'] = isset($data['in_nexus_declaration_attestation']) ? $data['in_nexus_declaration_attestation'] : null;
         $this->container['industry_class'] = isset($data['industry_class']) ? $data['industry_class'] : null;
         $this->container['is_private_enterpreneur'] = isset($data['is_private_enterpreneur']) ? $data['is_private_enterpreneur'] : null;
         $this->container['last_name_cyrillic'] = isset($data['last_name_cyrillic']) ? $data['last_name_cyrillic'] : null;
@@ -799,6 +811,58 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
     public function setHrMember($hr_member)
     {
         $this->container['hr_member'] = $hr_member;
+
+        return $this;
+    }
+
+    /**
+     * Gets in_nexus_connection_to_india
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getInNexusConnectionToIndia()
+    {
+        return $this->container['in_nexus_connection_to_india'];
+    }
+
+    /**
+     * Sets in_nexus_connection_to_india
+     *
+     * @param string|null $in_nexus_connection_to_india in_nexus_connection_to_india
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setInNexusConnectionToIndia($in_nexus_connection_to_india)
+    {
+        $this->container['in_nexus_connection_to_india'] = $in_nexus_connection_to_india;
+
+        return $this;
+    }
+
+    /**
+     * Gets in_nexus_declaration_attestation
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getInNexusDeclarationAttestation()
+    {
+        return $this->container['in_nexus_declaration_attestation'];
+    }
+
+    /**
+     * Sets in_nexus_declaration_attestation
+     *
+     * @param string|null $in_nexus_declaration_attestation in_nexus_declaration_attestation
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setInNexusDeclarationAttestation($in_nexus_declaration_attestation)
+    {
+        $this->container['in_nexus_declaration_attestation'] = $in_nexus_declaration_attestation;
 
         return $this;
     }
