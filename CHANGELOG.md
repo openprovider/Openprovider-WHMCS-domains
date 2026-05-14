@@ -3,7 +3,7 @@
 ## v5.12.0
 
 ###### Features and improvements
-- Added .IN nexus declaration fields for all .IN SLD domains, with checkout validation for non-Indian registrants.
+- Added .IN nexus declaration fields for all .IN TLD and SLD extensions, including IDN variants, with checkout validation for non-Indian registrants.
 - Upgraded openprovider/rest-client-php library to v2.2.0-beta.
 - Improved checkout contact creation support for TLDs requiring customer additional data, including more supported TLD extensions.
 
