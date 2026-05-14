@@ -8,74 +8,130 @@ use idna_convert;
 
 class ShoppingCartController
 {
+    private static array $itFieldsMap = [
+        7 => 'companyRegistrationNumber',
+        9 => 'socialSecurityNumber',
+    ];
+
+    private static array $fiFieldsMap = [
+        1 => 'companyRegistrationNumber',
+        2 => 'passportNumber',
+        3 => 'socialSecurityNumber',
+        4 => 'birthDate',
+    ];
+
     public function checkoutOutput($vars)
     {
         global $_LANG;
+
         $idnumbermod = Configuration::get('idnumbermod');
         if ($idnumbermod) {
-            $domainsToMatch = ['es', 'pt'];
-            $data = []; // Initialize $data array
+            $data = [];
+            $domainTlds = [];
+            $fieldDisplay = '';
 
-            // Check if domains exist
-            if (!empty($vars['cart']['domains'])) {
-                foreach ($vars['cart']['domains'] as $domain) {
-                    $tld = explode('.', $domain['domain']);
-                    $f = 0;
-                    $fieldData = [];
-
-                    // Check if fields exist
-                    if (!empty($domain['fields']) && is_array($domain['fields'])) {
-                        foreach ($domain['fields'] as $field) {
-                            $f++;
-                            if (isset($tld[1]) && in_array($tld[1], $domainsToMatch)) {
-                                switch ($f) {
-                                    case 1:
-                                        $fieldData['field'] = $field;
-                                        break;
-                                    case 2:
-                                        $fieldData['value'] = $field;
-                                        break;
-                                }
-                            }
-                        }
-                    }
-
-                    if (!empty($fieldData)) {
-                        $data[$domain['domain']] = $fieldData;
-                    }
-                }
+            if (empty($vars['cart']['domains']) || !is_array($vars['cart']['domains'])) {
+                return '';
             }
 
-            $fieldDisplay = ''; // Initialize $fieldDisplay
+            foreach ($vars['cart']['domains'] as $domain) {
+                $mappedFields = [];
+                $domainName = $domain['domain'];
+                $fields = $domain['fields'] ?? [];
 
-            foreach ($data as $domain => $fields) {
-                if (empty($fields['field']) || empty($fields['value'])) {
+                if (!is_array($fields)) {
+                    continue;
+                }
+                
+                $tld = $this->getFullTld($domainName);
+
+                if (!$tld) {
                     continue;
                 }
 
-                $name = '';
-                switch ($fields['field']) {
-                    case 'companyRegistrationNumber':
-                        $name = $_LANG['esIdentificationCompany'];
-                        break;
-                    case 'passportNumber':
-                        $name = $_LANG['esIdentificationPassport'];
-                        break;
-                    case 'vat':
-                        $name = $_LANG['ptIdentificationVat'];
-                        break;
-                    case 'socialSecurityNumber':
-                        $name = $_LANG['ptIdentificationSocialSecurityNumber'];
-                        break;
+                $domainTlds[$domainName] = $tld;
+                $fieldData = [];
+
+                if (in_array($tld, ['es', 'pt', 'se', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
+                    $f = 0;
+                    foreach ($fields as $field) {
+                        $f++;
+                        switch ($f) {
+                            case 1:
+                                $fieldData['field'] = $field;
+                                break;
+                            case 2:
+                                $fieldData['value'] = $field;
+                                break;
+                        }
+                    }
+                    if (!empty($fieldData['field']) && !empty($fieldData['value'])) {
+                        $data[$domainName] = [$fieldData];
+                    }
+                } elseif ($tld === 'it') {
+                    $mappedFields = $this->mapFieldsByIndex($fields, self::$itFieldsMap);
+                } elseif ($tld === 'fi') {
+                    $mappedFields = $this->mapFieldsByIndex($fields, self::$fiFieldsMap);
                 }
-
-                $fieldDisplay .= "<div class='col-sm-12'><div class='form-group prepend-icon'><label class='field-icon' for='" . $domain . "_" . $fields["field"] . "'> <i class='fas id-card'></i></label><input required class='form-control' readonly id='" . $domain . "_" . $fields["field"] . "' type='text' name='" . $fields["field"] . "' value='[$domain] $name:  " . $fields["value"] . "' /> </div></div>";
+                if (!empty($mappedFields)) {
+                    $data[$domainName] = $mappedFields;
+                }
             }
 
-            if (!empty($fieldDisplay)) {
-                $output = '<script type="text/javascript">$("#domainRegistrantInputFields").append("' . $fieldDisplay . '")</script>';
-                return $output;
+            foreach ($data as $domain => $fieldsArray) {
+                $tld = $domainTlds[$domain] ?? '';
+                if (isset($fieldsArray[0]) && is_array($fieldsArray[0])) {
+                    foreach ($fieldsArray as $fields) {
+                        $name = '';
+                        switch ($fields['field']) {
+                            case 'companyRegistrationNumber':
+                                if (in_array($tld, ['es', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
+                                    $name = $_LANG['esIdentificationCompany'];
+                                } elseif ($tld === 'se') {
+                                    $name = $_LANG['seIdentificationCompany'];
+                                } elseif ($tld === 'it') {
+                                    $name = $_LANG['itIdentificationCompany'];
+                                } elseif ($tld === 'fi') {
+                                    $name = $_LANG['fiIdentificationCompany'];
+                                }
+                                break;
+                            case 'passportNumber':
+                                if (in_array($tld, ['es', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
+                                    $name = $_LANG['esIdentificationPassport'];
+                                } elseif ($tld === 'fi') {
+                                    $name = $_LANG['fiIdentificationPassport'];
+                                }
+                                break;
+                            case 'vat':
+                                $name = $_LANG['ptIdentificationVat'];
+                                break;
+                            case 'socialSecurityNumber':
+                                if ($tld === 'pt') {
+                                    $name = $_LANG['ptIdentificationSocialSecurityNumber'];
+                                } elseif ($tld === 'se') {
+                                    $name = $_LANG['seIdentificationSocialSecurityNumber'];
+                                } elseif ($tld === 'it') {
+                                    $name = $_LANG['itIdentificationSocialSecurityNumber'];
+                                } elseif ($tld === 'fi') {
+                                    $name = $_LANG['fiIdentificationSocialSecurityNumber'];
+                                }
+                                break;
+                            case 'birthDate':
+                                $name = $_LANG['fiIdentificationBirthDate'];
+                                break;
+                        }
+                        $fieldId = htmlspecialchars($domain . "_" . $fields["field"], ENT_QUOTES, 'UTF-8');
+                        $fieldName = htmlspecialchars($fields["field"], ENT_QUOTES, 'UTF-8');
+                        $fieldValue = htmlspecialchars("[$domain] $name: " . $fields["value"], ENT_QUOTES, 'UTF-8');
+
+                        $fieldDisplay .= "<div class='col-sm-12'><div class='form-group prepend-icon'><label class='field-icon' for='" . $fieldId . "'> <i class='fas id-card'></i></label><input required class='form-control' readonly id='" . $fieldId . "' type='text' name='" . $fieldName . "' value='" . $fieldValue . "' /> </div></div>";
+                    }
+                }
             }
+
+            $output = '<script type="text/javascript">$("#domainRegistrantInputFields").append(' . json_encode($fieldDisplay) . ')</script>';
+
+            return $output;
         }
 
         return ''; // Return empty string if no output
@@ -86,33 +142,33 @@ class ShoppingCartController
         $idnumbermod = Configuration::get('idnumbermod');
 
         if ($idnumbermod) {
-            $domainsToMatch = array('es', 'pt');
+
             $contactid      = $vars['contact'];
 
             foreach ($vars['domains'] as $domain) {
+                $domainName = $domain['domain'];
+                $fields = $domain['fields'];
+                $tld = $this->getFullTld($domainName);
 
-                $tld = explode('.', $domain['domain']);
+                if (!$tld || empty($fields) || empty($contactid)) {
+                    continue;
+                }
+                if (in_array($tld, ['es', 'pt', 'se', 'com.es', 'nom.es', 'edu.es', 'org.es'])) {
+                    $fieldsArray = array_values($fields);
+                    if (isset($fieldsArray[0]) && isset($fieldsArray[1])) {
+                        $fieldData = [
+                            'field' => $fieldsArray[0],
+                            'value' => $fieldsArray[1],
+                        ];
 
-                if (in_array($tld[1], $domainsToMatch)) {
-                    $fieldData = array();
-                    foreach ($domain['fields'] as $field) {
-                        if (
-                            $field == 'passportNumber' ||
-                            $field == 'companyRegistrationNumber' ||
-                            $field == 'vat' ||
-                            $field == 'socialSecurityNumber'
-                        ) {
-                            $fieldData['field'] = $field;
-                        }
-
-                        if (!empty($fieldData['field'])) {
-                            $fieldData['value'] = $field;
+                        if (!empty($fieldData['value']) && !empty($fieldData['field']) && !empty($contactid)) {
+                            DB::updateOrCreateContact($fieldData['value'], $contactid, $fieldData['field']);
                         }
                     }
-
-                    if (!empty($fieldData['value']) && !empty($fieldData['field']) && !empty($contactid)) {
-                        DB::updateOrCreateContact($fieldData['value'], $contactid, $fieldData['field']);
-                    }
+                } elseif ($tld === 'it') {
+                    $this->updateContactFields(self::$itFieldsMap, $fields, $contactid);
+                } elseif ($tld === 'fi') {
+                    $this->updateContactFields(self::$fiFieldsMap, $fields, $contactid);
                 }
             }
         }
@@ -160,5 +216,54 @@ class ShoppingCartController
         }
 
         return ['domains' => $updatedDomains];
+    }
+
+    private function getFullTld(string $domainName): string
+    {
+        $multiTlds = ['com.es', 'nom.es', 'edu.es', 'org.es'];
+
+        foreach ($multiTlds as $multiTld) {
+            if (str_ends_with($domainName, '.' . $multiTld)) {
+                return $multiTld;
+            }
+        }
+
+        $labels = array_values(array_filter(explode('.', $domainName), static function ($label) {
+            return $label !== '';
+        }));
+
+        if (empty($labels)) {
+            return '';
+        }
+
+        return (string) end($labels);
+    }
+
+    private function mapFieldsByIndex(array $fields, array $map): array
+    {
+        $result = [];
+        foreach ($map as $index => $fieldName) {
+            if (!empty($fields[$index])) {
+                $result[] = [
+                    'field' => $fieldName,
+                    'value' => $fields[$index],
+                ];
+            }
+        }
+        return $result;
+    }
+
+    private function updateContactFields(array $map, array $fields, $contactId): void
+    {
+        foreach ($map as $index => $fieldName) {
+            if (!empty($fields[$index])) {
+                $fieldData = [
+                    'field' => $fieldName,
+                    'value' => $fields[$index],
+                ];
+
+                DB::updateOrCreateContact($fieldData['value'], $contactId, $fieldData['field']);
+            }
+        }
     }
 }
