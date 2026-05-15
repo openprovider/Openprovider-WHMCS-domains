@@ -14,8 +14,9 @@ class APITools
     public static function createNameserversArray($params, $apiHelper = null)
     {
         $nameServers = array();
+        $domainFqdn = strtolower($params['sld'] . '.' . $params['tld']);
 
-        //can be used to hard-code a nameserver overwrite when using the DNS management addon 
+        //can be used to hard-code a nameserver overwrite when using the DNS management addon
         // if($params['dnsmanagement'] == true)
         // {
         //     $params['ns1'] = 'ns1.openprovider.nl';
@@ -38,7 +39,6 @@ class APITools
 
                 // Glue records (NS is a child of the domain) require an IP.
                 // External nameservers must be accepted as-is without IP lookup.
-                $domainFqdn = strtolower($params['sld'] . '.' . $params['tld']);
                 $isGlue = str_ends_with(strtolower($nsName), '.' . $domainFqdn);
 
                 if (!$isGlue) {
@@ -64,7 +64,7 @@ class APITools
                         $nsIp = "";
                         throw new \Exception(
                             "Could not resolve IP for glue record nameserver '{$nsName}'. "
-                                . "Please register it in OpenProvider before initiating the transfer."
+                                . "Please register it in OpenProvider before continuing."
                         );
                     }
                 }
@@ -97,7 +97,6 @@ class APITools
 
             // Glue records (NS is a child of the domain) require an IP.
             // External nameservers must be accepted as-is without IP lookup.
-            $domainFqdn = strtolower($params['sld'] . '.' . $params['tld']);
             $isGlue = str_ends_with(strtolower($nsName), '.' . $domainFqdn);
 
             if (!$isGlue) {
@@ -140,7 +139,7 @@ class APITools
                 $names = implode(', ', $invalidGlueNameServers);
                 throw new \Exception(
                     "Could not resolve IP for glue record nameserver(s): {$names}. "
-                        . "Please register them in OpenProvider before initiating the transfer."
+                        . "Please register them in OpenProvider before continuing."
                 );
             }
             throw new \Exception('You must provide at least 2 nameservers.');
