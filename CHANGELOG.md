@@ -6,7 +6,7 @@
 - Added German language support for registrar module.
 
 ###### Bugfixes
-- Fixed: TypeError on DomainTransferSync cron due to phpstan namespace collision with WHMCS's bundled vendor.
+- Fixed: TypeError on DomainTransferSync cron due to PHPStan namespace collision with WHMCS's bundled vendor.
 
 ## v5.12.0
 
