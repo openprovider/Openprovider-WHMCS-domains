@@ -136,7 +136,7 @@ else
             exit 1
         fi
 
-        printf '\nif (function_exists('\''openprovider_additional_fields'\''))\n    $additionaldomainfields = openprovider_additional_fields();\n' >> "$ADDITIONAL_FIELDS"
+        printf '\nif (function_exists('\''openprovider_additional_fields'\''))\n    $additionaldomainfields = openprovider_additional_fields() ?? [];\n' >> "$ADDITIONAL_FIELDS"
         if [ $? -ne 0 ]; then
             echo "Error: Failed to update additionalfields.php. Check permissions."
             exit 1
