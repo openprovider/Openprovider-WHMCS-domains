@@ -127,11 +127,28 @@ if [ ! -f "$ADDITIONAL_FIELDS" ]; then
         exit 1
     fi
 else
-    echo "Updating existing additionalfields.php..."
-    grep -q 'openprovider_additional_fields' "$ADDITIONAL_FIELDS" || echo -e "<?php\nif (function_exists('openprovider_additional_fields'))\n    \$additionaldomainfields = openprovider_additional_fields();" >> "$ADDITIONAL_FIELDS"
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to update additionalfields.php. Check permissions."
-        exit 1
+    if ! grep -q 'openprovider_additional_fields' "$ADDITIONAL_FIELDS"; then
+        echo "Updating existing additionalfields.php..."
+        BACKUP_FILE="${ADDITIONAL_FIELDS}.$(date +%Y%m%d_%H%M%S).bak"
+        cp "$ADDITIONAL_FIELDS" "$BACKUP_FILE"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to create backup of additionalfields.php. Check permissions."
+            exit 1
+        fi
+
+        printf '\nif (function_exists('\''openprovider_additional_fields'\''))\n    $additionaldomainfields = openprovider_additional_fields();\n' >> "$ADDITIONAL_FIELDS"
+        if [ $? -ne 0 ]; then
+            echo "Error: Failed to update additionalfields.php. Check permissions."
+            exit 1
+        fi
+
+        if ! php -l "$ADDITIONAL_FIELDS" > /dev/null 2>&1; then
+            echo "Error: additionalfields.php failed PHP syntax check after update. Restoring backup..."
+            cp "$BACKUP_FILE" "$ADDITIONAL_FIELDS"
+            exit 1
+        fi
+    else
+        echo "additionalfields.php already contains Openprovider configuration, skipping."
     fi
 fi
 
