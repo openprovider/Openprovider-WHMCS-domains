@@ -122,31 +122,58 @@ class DnsController extends BaseController
 
     public function redirectDnsManagementPage ($params)
     {
-        if($url = $this->dnsHelper->getDnsUrlOrFail($params['domainid'], true))
-        {
-            $urlOne = $_SERVER['HTTP_REFERER'];
-            $url_decoded = html_entity_decode($urlOne);
+        $url = $this->dnsHelper->getDnsUrlOrFail($params['domainid'], true);
 
-            // JavaScript confirm dialog
-            echo '<script type="text/javascript">
-                    document.addEventListener("DOMContentLoaded", function() {
-                        var userConfirmed = confirm("Do you want to open in New Tab?");
-                        if (userConfirmed) {
-                            var newWindow = window.open("' . $url . '", "_blank"); // Open OP DNS management page in a new tab
-                            if (newWindow) {
-                                window.location.href = "' . $url_decoded . '"; // Redirect to previous page
-                                newWindow.focus(); // Focus on the new tab
-                            } else {
-                                alert("New tab opening blocked! Please allow it for this site.");
-                                window.location.href = "' . $url . '"; // Redirect to OP DNS management page
-                            }
-                        } else {
-                            window.location.href = "' . $url . '"; // Redirect to OP DNS management page
-                        }
-                    });
-                  </script>';
-            exit;
+        if (!$url) {
+            return [
+                'error' => 'Unable to generate DNS Management URL.',
+            ];
         }
+
+        $previousUrl = isset($_SERVER['REQUEST_URI']) && $_SERVER['REQUEST_URI'] !== ''
+            ? $_SERVER['REQUEST_URI']
+            : '/';
+
+        if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] !== '') {
+            $referer = $_SERVER['HTTP_REFERER'];
+            $refererParts = parse_url($referer);
+
+            if (
+                is_array($refererParts) &&
+                isset($refererParts['host'], $_SERVER['HTTP_HOST']) &&
+                strtolower($refererParts['host']) === strtolower($_SERVER['HTTP_HOST'])
+            ) {
+                $previousUrl = $referer;
+            }
+        }
+
+        $encodedUrl = json_encode($url, JSON_UNESCAPED_SLASHES);
+        $encodedPreviousUrl = json_encode($previousUrl, JSON_UNESCAPED_SLASHES);
+
+        echo '<script type="text/javascript">
+                document.addEventListener("DOMContentLoaded", function() {
+                    var targetUrl = ' . $encodedUrl . ';
+                    var previousUrl = ' . $encodedPreviousUrl . ';
+
+                    var userConfirmed = confirm("Do you want to open in New Tab?");
+
+                    if (userConfirmed) {
+                        var newWindow = window.open(targetUrl, "_blank");
+
+                        if (newWindow) {
+                            window.location.href = previousUrl;
+                            newWindow.focus();
+                        } else {
+                            alert("New tab opening blocked! Please allow it for this site.");
+                            window.location.href = targetUrl;
+                        }
+                    } else {
+                        window.location.href = targetUrl;
+                    }
+                });
+            </script>';
+
+        exit;
     }
     
     private function isZoneNotFound(\Throwable $e): bool
