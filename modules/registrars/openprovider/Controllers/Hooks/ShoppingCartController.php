@@ -12,7 +12,21 @@ class ShoppingCartController
 {
     private static ?array $inSldExtensions = null;
     private const IN_NEXUS_DECLARATION_INDEX = 0;
-    
+
+    // .RU / .xn--p1ai field indices
+    private const RU_CONTACT_TYPE_INDEX                    = 8;  // Contact Type (display only)
+    private const RU_REGISTRANT_RESIDENCY_INDEX            = 9;  // Registrant Residency (display only)
+    private const RU_MOBILE_PHONE_COUNTRY_CODE_INDEX       = 10;  // all
+    private const RU_MOBILE_PHONE_NUMBER_INDEX             = 11;  // all
+    private const RU_POSTAL_ADDRESS_CITY_INDEX        = 12; // all
+    private const RU_FIRST_NAME_CYRILLIC_INDEX        = 18; // individual + ru
+    private const RU_LAST_NAME_CYRILLIC_INDEX         = 20; // individual + ru
+    private const RU_COMPANY_NAME_CYRILLIC_INDEX      = 32; // company + ru
+    private const RU_COMPANY_NAME_LATIN_INDEX         = 33; // company
+    private const RU_LEGAL_ADDRESS_COUNTRY_CODE_INDEX = 34; // company
+    private const RU_LEGAL_ADDRESS_POSTAL_CODE_INDEX  = 35; // company
+    private const RU_LEGAL_ADDRESS_CITY_INDEX         = 36; // company
+
     private static array $itFieldsMap = [
         7 => 'companyRegistrationNumber',
         9 => 'socialSecurityNumber',
@@ -149,6 +163,11 @@ class ShoppingCartController
             return $inNexusError;
         }
 
+        $ruError = $this->validateRuContactTypeAtCheckout($vars);
+        if ($ruError !== null) {
+            return $ruError;
+        }
+
         $idnumbermod = Configuration::get('idnumbermod');
 
         if ($idnumbermod) {
@@ -182,6 +201,85 @@ class ShoppingCartController
                 }
             }
         }
+    }
+
+    private function validateRuContactTypeAtCheckout(array $vars): ?array
+    {
+        $domains = $vars['domains'] ?? $_SESSION['cart']['domains'] ?? [];
+
+        foreach ($domains as $domain) {
+            $domainName = $domain['domain'] ?? '';
+            if (!$this->isDomainRuTld($domainName)) {
+                continue;
+            }
+
+            $fields      = $domain['fields'] ?? [];
+            $contactType = $fields[self::RU_CONTACT_TYPE_INDEX]         ?? '';
+            $residency   = $fields[self::RU_REGISTRANT_RESIDENCY_INDEX] ?? '';
+
+            // Validate shared mandatory fields (all contact types, all residencies)
+            $mobileCountryCode = trim((string) ($fields[self::RU_MOBILE_PHONE_COUNTRY_CODE_INDEX] ?? ''));
+            $mobilePhoneNumber = trim((string) ($fields[self::RU_MOBILE_PHONE_NUMBER_INDEX] ?? ''));
+            $postalCity        = trim((string) ($fields[self::RU_POSTAL_ADDRESS_CITY_INDEX] ?? ''));
+
+            if ($mobileCountryCode === '' || $mobilePhoneNumber === '' || $postalCity === '') {
+                $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                return [
+                    'error' => 'To register ' . $domainName . ', Mobile Phone Country Code, Mobile Phone Number, and Postal Address City are required. '
+                        . 'Please <a href="' . $cartUrl . '">go back to the domain configuration step</a> and fill in the required fields.',
+                ];
+            }
+
+            // Individual + Russian resident: First and Last Name in Cyrillic are required
+            if ($contactType === 'individual' && $residency === 'ru') {
+                $firstNameCyrillic = trim((string) ($fields[self::RU_FIRST_NAME_CYRILLIC_INDEX] ?? ''));
+                $lastNameCyrillic  = trim((string) ($fields[self::RU_LAST_NAME_CYRILLIC_INDEX]  ?? ''));
+
+                if ($firstNameCyrillic === '' || $lastNameCyrillic === '') {
+                    $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                    return [
+                        'error' => 'To register ' . $domainName . ' as a Russian resident individual, First Name and Last Name in Cyrillic are required. '
+                            . 'Please <a href="' . $cartUrl . '">go back to the domain configuration step</a> and fill in the required fields.',
+                    ];
+                }
+            }
+
+            // Company contacts: Latin name and legal address are required (all residencies)
+            if ($contactType === 'company') {
+                $companyNameLatin = trim((string) ($fields[self::RU_COMPANY_NAME_LATIN_INDEX]         ?? ''));
+                $legalCountryCode = trim((string) ($fields[self::RU_LEGAL_ADDRESS_COUNTRY_CODE_INDEX] ?? ''));
+                $legalPostalCode  = trim((string) ($fields[self::RU_LEGAL_ADDRESS_POSTAL_CODE_INDEX]  ?? ''));
+                $legalCity        = trim((string) ($fields[self::RU_LEGAL_ADDRESS_CITY_INDEX]         ?? ''));
+
+                if ($companyNameLatin === '' || $legalCountryCode === '' || $legalPostalCode === '' || $legalCity === '') {
+                    $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                    return [
+                        'error' => 'To register ' . $domainName . ' as a Company, Company Name (Latin), Legal Address Country Code, Postal Code, and City are required. '
+                            . 'Please <a href="' . $cartUrl . '">go back to the domain configuration step</a> and complete the required Company fields.',
+                    ];
+                }
+
+                // Company + Russian resident: Company Name in Cyrillic is additionally required
+                if ($residency === 'ru') {
+                    $companyNameCyrillic = trim((string) ($fields[self::RU_COMPANY_NAME_CYRILLIC_INDEX] ?? ''));
+
+                    if ($companyNameCyrillic === '') {
+                        $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                        return [
+                            'error' => 'To register ' . $domainName . ' as a Russian resident company, Company Name in Cyrillic is also required. '
+                                . 'Please <a href="' . $cartUrl . '">go back to the domain configuration step</a> and fill in the required fields.',
+                        ];
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function isDomainRuTld(string $domainName): bool
+    {
+        return str_ends_with($domainName, '.ru') || str_ends_with($domainName, '.xn--p1ai');
     }
 
     private function validateInNexusAtCheckout(array $vars): ?array
@@ -258,6 +356,80 @@ class ShoppingCartController
         }
 
         return strtoupper((string) ($vars['country'] ?? ''));
+    }
+
+    public function injectDomainConfigFieldFilters($vars): string
+    {
+        $filename = $vars['filename'] ?? '';
+        $action   = $_GET['a'] ?? '';
+
+        if ($filename !== 'cart' || !in_array($action, ['confdomains'], true)) {
+            return '';
+        }
+
+        $js = <<<'JS'
+                (function ($) {
+                    function initRuFieldVisibility() {
+                        // Contact Type select: identified by individual/company option values.
+                        var $contactTypeSelect = $('select').filter(function () {
+                            var vals = $(this).find('option').map(function () { return $(this).val(); }).get();
+                            return vals.indexOf('individual') !== -1 && vals.indexOf('company') !== -1;
+                        }).first();
+
+                        // Residency select: identified by ru/non-ru option values.
+                        var $residencySelect = $('select').filter(function () {
+                            var vals = $(this).find('option').map(function () { return $(this).val(); }).get();
+                            return vals.indexOf('ru') !== -1 && vals.indexOf('non-ru') !== -1;
+                        }).first();
+
+                        if (!$contactTypeSelect.length || !$residencySelect.length) {
+                            return;
+                        }
+
+                        // All additional domain fields live inside form#frmConfigureDomains.
+                        // Each field row is a div.form-group.row; the field label is in the
+                        // first div.col-sm-4 child (Bootstrap grid label column).
+                        var $form = $contactTypeSelect.closest('form#frmConfigureDomains, form');
+
+                        function applyVisibility() {
+                            var contactType = $contactTypeSelect.val(); // 'individual' | 'company'
+                            var residency   = $residencySelect.val();   // 'ru' | 'non-ru'
+
+                            $form.find('.form-group.row').each(function () {
+                                var $row      = $(this);
+                                var labelText = $row.find('.col-sm-4').first().text().trim();
+
+                                var hasIndividual = labelText.indexOf('(Individual') !== -1;
+                                var hasCompany    = labelText.indexOf('(Company')    !== -1;
+
+                                // Common fields (no type qualifier) — always visible.
+                                if (!hasIndividual && !hasCompany) {
+                                    $row.show();
+                                    return;
+                                }
+
+                                // Contact type gate.
+                                if (hasIndividual && contactType !== 'individual') { $row.hide(); return; }
+                                if (hasCompany    && contactType !== 'company')    { $row.hide(); return; }
+
+                                // Residency gate — only for fields explicitly marked "– Russian)".
+                                var isRussianOnly = labelText.indexOf('– Russian)') !== -1;
+                                if (isRussianOnly && residency !== 'ru') { $row.hide(); return; }
+
+                                $row.show();
+                            });
+                        }
+
+                        $contactTypeSelect.on('change', applyVisibility);
+                        $residencySelect.on('change', applyVisibility);
+                        applyVisibility(); // apply immediately on page load
+                    }
+
+                    $(document).ready(initRuFieldVisibility);
+                })(jQuery);
+            JS;
+
+        return '<script type="text/javascript">' . $js . '</script>';
     }
 
     public function hideIdnScriptForNonIdnDomains($vars)
