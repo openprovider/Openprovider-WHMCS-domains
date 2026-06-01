@@ -368,66 +368,74 @@ class ShoppingCartController
         }
 
         $js = <<<'JS'
-                (function ($) {
-                    function initRuFieldVisibility() {
-                        // Contact Type select: identified by individual/company option values.
-                        var $contactTypeSelect = $('select').filter(function () {
-                            var vals = $(this).find('option').map(function () { return $(this).val(); }).get();
-                            return vals.indexOf('individual') !== -1 && vals.indexOf('company') !== -1;
-                        }).first();
+(function ($) {
+    function initRuFieldVisibility() {
 
-                        // Residency select: identified by ru/non-ru option values.
-                        var $residencySelect = $('select').filter(function () {
-                            var vals = $(this).find('option').map(function () { return $(this).val(); }).get();
-                            return vals.indexOf('ru') !== -1 && vals.indexOf('non-ru') !== -1;
-                        }).first();
+        // One Contact Type select exists per .ru domain in the cart.
+        $('select').filter(function () {
+            var vals = $(this).find('option').map(function () { return $(this).val(); }).get();
+            return vals.indexOf('individual') !== -1 && vals.indexOf('company') !== -1;
+        }).each(function () {
+            var $ct  = $(this);
+            var $form = $ct.closest('form');
 
-                        if (!$contactTypeSelect.length || !$residencySelect.length) {
-                            return;
-                        }
+            // Domain index N from name="domainfield[N][...]"
+            var m = ($ct.attr('name') || '').match(/^domainfield\[(\d+)\]/);
+            if (!m) { return; }
+            var n = m[1];
 
-                        // All additional domain fields live inside form#frmConfigureDomains.
-                        // Each field row is a div.form-group.row; the field label is in the
-                        // first div.col-sm-4 child (Bootstrap grid label column).
-                        var $form = $contactTypeSelect.closest('form#frmConfigureDomains, form');
+            // Residency select for the same domain N
+            var $res = $form.find('select').filter(function () {
+                var nm = $(this).attr('name') || '';
+                if (nm.indexOf('domainfield[' + n + '][') !== 0) { return false; }
+                var vals = $(this).find('option').map(function () { return $(this).val(); }).get();
+                return vals.indexOf('ru') !== -1 && vals.indexOf('non-ru') !== -1;
+            }).first();
 
-                        function applyVisibility() {
-                            var contactType = $contactTypeSelect.val(); // 'individual' | 'company'
-                            var residency   = $residencySelect.val();   // 'ru' | 'non-ru'
+            if (!$res.length) { return; }
 
-                            $form.find('.form-group.row').each(function () {
-                                var $row      = $(this);
-                                var labelText = $row.find('.col-sm-4').first().text().trim();
+            // Pre-select only the .form-group.row elements that belong to domain N.
+            // jQuery's [name^=value] (starts-with) attribute selector scopes this correctly.
+            var $rows = $form.find('.form-group.row').filter(function () {
+                return $(this).find('[name^="domainfield[' + n + ']["]').length > 0;
+            });
 
-                                var hasIndividual = labelText.indexOf('(Individual') !== -1;
-                                var hasCompany    = labelText.indexOf('(Company')    !== -1;
+            function apply() {
+                var ct  = $ct.val();   // 'individual' | 'company'
+                var res = $res.val();  // 'ru' | 'non-ru'
 
-                                // Common fields (no type qualifier) — always visible.
-                                if (!hasIndividual && !hasCompany) {
-                                    $row.show();
-                                    return;
-                                }
+                $rows.each(function () {
+                    var $row  = $(this);
+                    var label = $row.find('.col-sm-4').first().text().trim();
 
-                                // Contact type gate.
-                                if (hasIndividual && contactType !== 'individual') { $row.hide(); return; }
-                                if (hasCompany    && contactType !== 'company')    { $row.hide(); return; }
+                    var isInd = label.indexOf('(Individual') !== -1;
+                    var isCo  = label.indexOf('(Company')    !== -1;
 
-                                // Residency gate — only for fields explicitly marked "– Russian)".
-                                var isRussianOnly = labelText.indexOf('– Russian)') !== -1;
-                                if (isRussianOnly && residency !== 'ru') { $row.hide(); return; }
+                    // Common fields — always visible
+                    if (!isInd && !isCo) { $row.show(); return; }
 
-                                $row.show();
-                            });
-                        }
+                    // Contact type gate
+                    if (isInd && ct !== 'individual') { $row.hide(); return; }
+                    if (isCo  && ct !== 'company')    { $row.hide(); return; }
 
-                        $contactTypeSelect.on('change', applyVisibility);
-                        $residencySelect.on('change', applyVisibility);
-                        applyVisibility(); // apply immediately on page load
+                    // Residency gate (fields marked "– Russian)")
+                    if (label.indexOf('– Russian)') !== -1 && res !== 'ru') {
+                        $row.hide(); return;
                     }
 
-                    $(document).ready(initRuFieldVisibility);
-                })(jQuery);
-            JS;
+                    $row.show();
+                });
+            }
+
+            $ct.on('change', apply);
+            $res.on('change', apply);
+            apply();
+        });
+    }
+
+    $(document).ready(initRuFieldVisibility);
+})(jQuery);
+JS;
 
         return '<script type="text/javascript">' . $js . '</script>';
     }
