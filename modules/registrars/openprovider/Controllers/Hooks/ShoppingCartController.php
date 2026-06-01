@@ -217,6 +217,52 @@ class ShoppingCartController
             $contactType = $fields[self::RU_CONTACT_TYPE_INDEX]         ?? '';
             $residency   = $fields[self::RU_REGISTRANT_RESIDENCY_INDEX] ?? '';
 
+            // Resolve effective residency and contact type from the contact chosen on
+            // the previous page — mirrors validateInNexusAtCheckout.
+            $registrantCountry = $this->getRegistrantCountryForCheckout($vars);
+            $registrantCompany = $this->getRegistrantCompanyForCheckout($vars);
+
+            $effectiveResidency   = $registrantCountry !== ''
+                ? ($registrantCountry === 'RU' ? 'ru' : 'non-ru')
+                : null;
+            // Derive effective contact type:
+            // - contact HAS a company name  → 'company'
+            // - contact has NO company name → 'individual' (no company on record)
+            // Only enforce cross-check when the registrant country is known (so we have
+            // a resolved contact) — avoids false positives when contact data is unavailable.
+            $effectiveContactType = $registrantCompany !== '' ? 'company' : 'individual';
+
+            // Cross-check residency: only when country is resolvable
+            if ($effectiveResidency !== null && $residency !== $effectiveResidency) {
+                $cartUrl       = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                $expectedLabel = $effectiveResidency === 'ru' ? 'Russian Resident' : 'Non-Russian Resident';
+                return [
+                    'error' => 'The Registrant Residency for ' . $domainName . ' does not match the contact\'s country ('
+                        . $registrantCountry . '). Please set Registrant Residency to <strong>' . $expectedLabel . '</strong>. '
+                        . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> to correct your selection.',
+                ];
+            }
+
+            // Cross-check contact type: only when country is resolvable (contact data available)
+            if ($registrantCountry !== '' && $contactType !== $effectiveContactType) {
+                $cartUrl       = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                $expectedLabel = $effectiveContactType === 'company' ? 'Company' : 'Individual (Private Person)';
+                return [
+                    'error' => 'The Contact Type for ' . $domainName . ' does not match the selected contact'
+                        . ($registrantCompany !== '' ? ' (company: ' . $registrantCompany . ')' : ' (no company name on record)') . '. '
+                        . 'Please set Contact Type to <strong>' . $expectedLabel . '</strong>. '
+                        . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> to correct your selection.',
+                ];
+            }
+
+            // Apply effective values for field-level validation
+            if ($effectiveResidency !== null) {
+                $residency = $effectiveResidency;
+            }
+            if ($registrantCountry !== '') {
+                $contactType = $effectiveContactType;
+            }
+
             // Validate shared mandatory fields (all contact types, all residencies)
             $mobileCountryCode = trim((string) ($fields[self::RU_MOBILE_PHONE_COUNTRY_CODE_INDEX] ?? ''));
             $mobilePhoneNumber = trim((string) ($fields[self::RU_MOBILE_PHONE_NUMBER_INDEX] ?? ''));
@@ -356,6 +402,27 @@ class ShoppingCartController
         }
 
         return strtoupper((string) ($vars['country'] ?? ''));
+    }
+
+    private function getRegistrantCompanyForCheckout(array $vars): string
+    {
+        $contact = $vars['contact'] ?? '';
+
+        if ($contact === 'addingnew') {
+            return trim((string) ($vars['domaincontactcompanyname'] ?? ''));
+        }
+
+        $contactId = (int) $contact;
+        if ($contactId > 0) {
+            $companyName = Capsule::table('tblcontacts')
+                ->where('id', $contactId)
+                ->value('companyname');
+            if (!empty($companyName)) {
+                return trim((string) $companyName);
+            }
+        }
+
+        return trim((string) ($vars['companyname'] ?? ''));
     }
 
     public function injectDomainConfigFieldFilters($vars): string
