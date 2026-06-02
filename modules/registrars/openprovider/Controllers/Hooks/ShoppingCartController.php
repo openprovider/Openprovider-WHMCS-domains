@@ -14,18 +14,22 @@ class ShoppingCartController
     private const IN_NEXUS_DECLARATION_INDEX = 0;
 
     // .RU / .xn--p1ai field indices
-    private const RU_CONTACT_TYPE_INDEX                    = 8;  // Contact Type (display only)
-    private const RU_REGISTRANT_RESIDENCY_INDEX            = 9;  // Registrant Residency (display only)
-    private const RU_MOBILE_PHONE_COUNTRY_CODE_INDEX       = 10;  // all
-    private const RU_MOBILE_PHONE_NUMBER_INDEX             = 11;  // all
-    private const RU_POSTAL_ADDRESS_CITY_INDEX        = 12; // all
-    private const RU_FIRST_NAME_CYRILLIC_INDEX        = 18; // individual + ru
-    private const RU_LAST_NAME_CYRILLIC_INDEX         = 20; // individual + ru
-    private const RU_COMPANY_NAME_CYRILLIC_INDEX      = 32; // company + ru
-    private const RU_COMPANY_NAME_LATIN_INDEX         = 33; // company
-    private const RU_LEGAL_ADDRESS_COUNTRY_CODE_INDEX = 34; // company
-    private const RU_LEGAL_ADDRESS_POSTAL_CODE_INDEX  = 35; // company
-    private const RU_LEGAL_ADDRESS_CITY_INDEX         = 36; // company
+    private const RU_CONTACT_TYPE_INDEX                    =  8;  // Contact Type            (display only)
+    private const RU_REGISTRANT_RESIDENCY_INDEX            =  9;  // Registrant Residency    (display only)
+    private const RU_MOBILE_PHONE_COUNTRY_CODE_INDEX       = 10;  // Mobile Phone CC         all
+    private const RU_MOBILE_PHONE_NUMBER_INDEX             = 11;  // Mobile Phone Number     all
+    private const RU_POSTAL_ADDRESS_CITY_INDEX             = 12;  // Postal Address City     all
+    private const RU_PASSPORT_SERIES_INDEX                 = 24;  // Passport Series         individual
+    private const RU_PASSPORT_NUMBER_INDEX                 = 25;  // Passport Number         individual
+    private const RU_PASSPORT_ISSUER_INDEX                 = 26;  // Passport Issuer         individual
+    private const RU_PASSPORT_ISSUE_DATE_INDEX             = 27;  // Passport Issue Date     individual
+    private const RU_BIRTH_DATE_INDEX                      = 30;  // Birth Date              individual
+    private const RU_COMPANY_NAME_CYRILLIC_INDEX           = 32;  // Company Name Cyrillic   company + ru
+    private const RU_COMPANY_NAME_LATIN_INDEX              = 33;  // Company Name Latin      company
+    private const RU_LEGAL_ADDRESS_COUNTRY_CODE_INDEX      = 34;  // Legal Address CC        company
+    private const RU_LEGAL_ADDRESS_POSTAL_CODE_INDEX       = 35;  // Legal Address PostCode  company
+    private const RU_LEGAL_ADDRESS_CITY_INDEX              = 36;  // Legal Address City      company
+    private const RU_TAX_PAYER_NUMBER_COMPANY_INDEX        = 42;  // Tax Payer Number INN    company
 
     private static array $itFieldsMap = [
         7 => 'companyRegistrationNumber',
@@ -263,10 +267,10 @@ class ShoppingCartController
                 $contactType = $effectiveContactType;
             }
 
-            // Validate shared mandatory fields (all contact types, all residencies)
+            // [10–12] Starred fields: all contact types, all residencies
             $mobileCountryCode = trim((string) ($fields[self::RU_MOBILE_PHONE_COUNTRY_CODE_INDEX] ?? ''));
-            $mobilePhoneNumber = trim((string) ($fields[self::RU_MOBILE_PHONE_NUMBER_INDEX] ?? ''));
-            $postalCity        = trim((string) ($fields[self::RU_POSTAL_ADDRESS_CITY_INDEX] ?? ''));
+            $mobilePhoneNumber = trim((string) ($fields[self::RU_MOBILE_PHONE_NUMBER_INDEX]       ?? ''));
+            $postalCity        = trim((string) ($fields[self::RU_POSTAL_ADDRESS_CITY_INDEX]       ?? ''));
 
             if ($mobileCountryCode === '' || $mobilePhoneNumber === '' || $postalCity === '') {
                 $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
@@ -276,36 +280,48 @@ class ShoppingCartController
                 ];
             }
 
-            // Individual + Russian resident: First and Last Name in Cyrillic are required
-            if ($contactType === 'individual' && $residency === 'ru') {
-                $firstNameCyrillic = trim((string) ($fields[self::RU_FIRST_NAME_CYRILLIC_INDEX] ?? ''));
-                $lastNameCyrillic  = trim((string) ($fields[self::RU_LAST_NAME_CYRILLIC_INDEX]  ?? ''));
+            // [24–28, 30] Starred fields: individual contacts (any residency)
+            if ($contactType === 'individual') {
+                $passportSeries    = trim((string) ($fields[self::RU_PASSPORT_SERIES_INDEX]      ?? ''));
+                $passportNumber    = trim((string) ($fields[self::RU_PASSPORT_NUMBER_INDEX]      ?? ''));
+                $passportIssuer    = trim((string) ($fields[self::RU_PASSPORT_ISSUER_INDEX]      ?? ''));
+                $passportIssueDate = trim((string) ($fields[self::RU_PASSPORT_ISSUE_DATE_INDEX]  ?? ''));
+                $birthDate         = trim((string) ($fields[self::RU_BIRTH_DATE_INDEX]           ?? ''));
 
-                if ($firstNameCyrillic === '' || $lastNameCyrillic === '') {
+                if (
+                    $passportSeries === '' || $passportNumber === '' || $passportIssuer === ''
+                    || $passportIssueDate === '' || $birthDate === ''
+                ) {
                     $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
                     return [
-                        'error' => 'To register ' . $domainName . ' as a Russian resident individual, First Name and Last Name in Cyrillic are required. '
+                        'error' => 'To register ' . $domainName . ' as an Individual, Passport Series, Passport Number, Passport Issuer, '
+                            . 'Passport Issue Date, and Birth Date are required. '
                             . 'Please <a href="' . $cartUrl . '">go back to the domain configuration step</a> and fill in the required fields.',
                     ];
                 }
             }
 
-            // Company contacts: Latin name and legal address are required (all residencies)
+            // [33–36, 42] Starred fields: company contacts (any residency)
             if ($contactType === 'company') {
                 $companyNameLatin = trim((string) ($fields[self::RU_COMPANY_NAME_LATIN_INDEX]         ?? ''));
                 $legalCountryCode = trim((string) ($fields[self::RU_LEGAL_ADDRESS_COUNTRY_CODE_INDEX] ?? ''));
                 $legalPostalCode  = trim((string) ($fields[self::RU_LEGAL_ADDRESS_POSTAL_CODE_INDEX]  ?? ''));
                 $legalCity        = trim((string) ($fields[self::RU_LEGAL_ADDRESS_CITY_INDEX]         ?? ''));
+                $taxPayerNumber   = trim((string) ($fields[self::RU_TAX_PAYER_NUMBER_COMPANY_INDEX]   ?? ''));
 
-                if ($companyNameLatin === '' || $legalCountryCode === '' || $legalPostalCode === '' || $legalCity === '') {
+                if (
+                    $companyNameLatin === '' || $legalCountryCode === '' || $legalPostalCode === ''
+                    || $legalCity === '' || $taxPayerNumber === ''
+                ) {
                     $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
                     return [
-                        'error' => 'To register ' . $domainName . ' as a Company, Company Name (Latin), Legal Address Country Code, Postal Code, and City are required. '
+                        'error' => 'To register ' . $domainName . ' as a Company, Company Name (Latin), Legal Address Country Code, '
+                            . 'Postal Code, City, and Tax Payer Number (INN) are required. '
                             . 'Please <a href="' . $cartUrl . '">go back to the domain configuration step</a> and complete the required Company fields.',
                     ];
                 }
 
-                // Company + Russian resident: Company Name in Cyrillic is additionally required
+                // [32] Company Name in Cyrillic additionally required for Russian residents
                 if ($residency === 'ru') {
                     $companyNameCyrillic = trim((string) ($fields[self::RU_COMPANY_NAME_CYRILLIC_INDEX] ?? ''));
 
