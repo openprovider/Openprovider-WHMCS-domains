@@ -309,7 +309,7 @@ $ruExtensionFields = [
 
     // --- Individual-only fields ---
     [
-        "Name"        => "First Name in Cyrillic (Individual – Russian) *",
+        "Name"        => "First Name in Cyrillic (Individual – Russian)",
         "LangVar"     => "ruFirstNameCyrillic",
         "Type"        => "text",
         "Required"    => false,
@@ -331,7 +331,7 @@ $ruExtensionFields = [
         "op_name"     => "middleNameCyrillic",
     ],
     [
-        "Name"        => "Last Name in Cyrillic (Individual – Russian) *",
+        "Name"        => "Last Name in Cyrillic (Individual – Russian)",
         "LangVar"     => "ruLastNameCyrillic",
         "Type"        => "text",
         "Required"    => false,
@@ -375,7 +375,7 @@ $ruExtensionFields = [
         "op_name"     => "lastNameLatin",
     ],
     [
-        "Name"        => "Passport Series (Individual)",
+        "Name"        => "Passport Series (Individual) *",
         "LangVar"     => "ruPassportSeries",
         "Type"        => "text",
         "Required"    => false,
@@ -386,7 +386,7 @@ $ruExtensionFields = [
         "op_name"     => "passportSeries",
     ],
     [
-        "Name"        => "Passport Number (Individual)",
+        "Name"        => "Passport Number (Individual) *",
         "LangVar"     => "ruPassportNumber",
         "Type"        => "text",
         "Required"    => false,
@@ -397,7 +397,7 @@ $ruExtensionFields = [
         "op_name"     => "passportNumber",
     ],
     [
-        "Name"        => "Passport Issuer (Individual)",
+        "Name"        => "Passport Issuer (Individual) *",
         "LangVar"     => "ruPassportIssuer",
         "Type"        => "text",
         "Required"    => false,
@@ -408,7 +408,7 @@ $ruExtensionFields = [
         "op_name"     => "passportIssuer",
     ],
     [
-        "Name"        => "Passport Issue Date (Individual)",
+        "Name"        => "Passport Issue Date (Individual) *",
         "LangVar"     => "ruPassportIssueDate",
         "Type"        => "text",
         "Required"    => false,
@@ -441,7 +441,7 @@ $ruExtensionFields = [
         "op_name"     => "passportExpiryDate",
     ],
     [
-        "Name"        => "Birth Date (Individual)",
+        "Name"        => "Birth Date (Individual) *",
         "LangVar"     => "ruBirthDate",
         "Type"        => "text",
         "Required"    => false,
