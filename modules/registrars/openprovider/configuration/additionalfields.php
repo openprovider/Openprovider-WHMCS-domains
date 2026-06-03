@@ -178,157 +178,417 @@ $additionaldomainfields['.it'][] = array(
 );
 
 
-// .ru & .рф (xn--p1ai)
-// $additionaldomainfields[".ru"][] = array(
-//     "Name" => "Company Name Cyrillic",
-//     "LangVar" => "ruCompanyNameCyrillic",
-//     "Type" => "text",
-//     "op_location" => "customerExtensionAdditionalData",
-//     "op_name" => "сompanyNameCyrillic"
-// );
+// .RU & .РФ (xn--p1ai)
+// WHMCS cannot determine contact type (Individual vs Company) from the additional fields page.
+// A "Contact Type" selector is shown first to guide customers; it is display-only and not sent to the API.
+// Fields labelled (Individual) apply only to private persons.
+// Fields labelled (Company) apply only to legal entities; those marked "Required for Company" are
+// mandatory when registering as a company but are left optional here since they are not needed for individuals.
 
-// $additionaldomainfields[".ru"][] = array(
-//     "Name" => "Company Name Latin",
-//     "LangVar" => "ruCompanyNameLatin",
-//     "Type" => "text",
-//     "op_location" => "customerExtensionAdditionalData",
-//     "op_name" => "сompanyNameLatin"
-// );
+$ruExtensionFields = [
 
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Mobile Phone Number",
-    "LangVar" => "ruMobilePhoneNumber",
-    "Type" => "text",
-    "Required" => true,
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "mobilePhoneNumber"
-);
+    // --- Display-only selectors (index 0 & 1) — not mapped to any API field ---
+    [
+        "Name"        => "Contact Type",
+        "LangVar"     => "ruContactType",
+        "Type"        => "dropdown",
+        "Options"     => "individual|Individual (Private Person),company|Company (Legal Entity)",
+        "Required"    => true,
+        "Description" => '<span style="display:block;margin-top:6px;font-size:12px;line-height:1.45;color:#6b7280;max-width:100%;">'
+            . 'Select your contact type. '
+            . 'Fields marked <strong>(Individual)</strong> apply to private persons only. '
+            . 'Fields marked <strong>(Company)</strong> apply to legal entities only. '
+            . 'All other fields apply to both Individual and Company contacts.'
+            . '</span>',
+        "op_decision_master" => true,
+        // Skipped entirely by processAdditionalFields — displayed for guidance only, never sent to the API.
+    ],
+    [
+        "Name"        => "Registrant Residency",
+        "LangVar"     => "ruRegistrantResidency",
+        "Type"        => "dropdown",
+        "Options"     => "ru|Russian Resident,non-ru|Non-Russian Resident",
+        "Required"    => true,
+        "Description" => '<span style="display:block;margin-top:6px;font-size:12px;line-height:1.45;color:#6b7280;max-width:100%;">'
+            . 'Select whether the domain owner is a resident of the Russian Federation. '
+            . 'Fields marked <strong>– Russian</strong> are shown or hidden based on this selection.'
+            . '</span>',
+        "op_decision_master" => true,
+        // Skipped entirely by processAdditionalFields — displayed for guidance only, never sent to the API.
+    ],
 
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Legal Address Cyrillic",
-    "LangVar" => "ruLegalAddressCyrillic",
-    "Type" => "text",
-    "Required" => true,
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "legalAddressCyrillic"
-);
+    // --- Common fields: required for both Individual and Company ---
+    [
+        "Name"        => "Mobile Phone Country Code *",
+        "LangVar"     => "ruMobilePhoneNumberCountryCode",
+        "Type"        => "text",
+        "Required"    => true,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . 'Mobile number country code including the \'<strong>+</strong>\' sign (e.g. <strong>+7</strong>). Required.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "mobilePhoneNumberCountryCode",
+    ],
+    [
+        "Name"        => "Mobile Phone Number *",
+        "LangVar"     => "ruMobilePhoneNumber",
+        "Type"        => "text",
+        "Required"    => true,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . 'Full mobile number with SMS function including country code. Required.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "mobilePhoneNumber",
+    ],
+    [
+        "Name"        => "Postal Address City *",
+        "LangVar"     => "ruPostalAddressCity",
+        "Type"        => "text",
+        "Required"    => true,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . 'City. Russian residents: use Cyrillic. Non-Russian residents: Latin or Cyrillic accepted. Required.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "postalAddressCity",
+    ],
+    [
+        "Name"        => "Postal Address Street",
+        "LangVar"     => "ruPostalAddressStreet",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . 'Street. Russian residents: use Cyrillic. Non-Russian residents: Latin or Cyrillic accepted. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "postalAddressStreet",
+    ],
+    [
+        "Name"        => "Postal Address Region",
+        "LangVar"     => "ruPostalAddressRegion",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . 'Region. Russian residents: use Cyrillic. Non-Russian residents: Latin or Cyrillic accepted. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "postalAddressRegion",
+    ],
+    [
+        "Name"        => "Postal Address Area",
+        "LangVar"     => "ruPostalAddressArea",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . 'Area. Russian residents: use Cyrillic. Non-Russian residents: Latin or Cyrillic accepted. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "postalAddressArea",
+    ],
+    [
+        "Name"        => "Postal Address House",
+        "LangVar"     => "ruPostalAddressHouse",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . 'House number. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "postalAddressHouse",
+    ],
+    [
+        "Name"        => "Postal Address Building",
+        "LangVar"     => "ruPostalAddressBuilding",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . 'Building number or name. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "postalAddressBuilding",
+    ],
 
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Postal Address Cyrillic",
-    "LangVar" => "ruPostalAddressCyrillic",
-    "Type" => "text",
-    "Required" => true,
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "postalAddressCyrillic"
-);
+    // --- Individual-only fields ---
+    [
+        "Name"        => "First Name in Cyrillic (Individual – Russian) *",
+        "LangVar"     => "ruFirstNameCyrillic",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian residents only)</strong> First name in Cyrillic as per passport or registration documents. Required for Russian residents.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "firstNameCyrillic",
+    ],
+    [
+        "Name"        => "Middle Name in Cyrillic (Individual – Russian)",
+        "LangVar"     => "ruMiddleNameCyrillic",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian residents only)</strong> Middle name in Cyrillic as per passport or registration documents. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "middleNameCyrillic",
+    ],
+    [
+        "Name"        => "Last Name in Cyrillic (Individual – Russian) *",
+        "LangVar"     => "ruLastNameCyrillic",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian residents only)</strong> Last name in Cyrillic as per passport or registration documents. Required for Russian residents.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "lastNameCyrillic",
+    ],
+    [
+        "Name"        => "First Name in Latin (Individual)",
+        "LangVar"     => "ruFirstNameLatin",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian and non-Russian residents)</strong> First name in Latin characters. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "firstNameLatin",
+    ],
+    [
+        "Name"        => "Middle Name in Latin (Individual – Russian)",
+        "LangVar"     => "ruMiddleNameLatin",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian residents only)</strong> Middle name in Latin characters. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "middleNameLatin",
+    ],
+    [
+        "Name"        => "Last Name in Latin (Individual)",
+        "LangVar"     => "ruLastNameLatin",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian and non-Russian residents)</strong> Last name in Latin characters. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "lastNameLatin",
+    ],
+    [
+        "Name"        => "Passport Series (Individual)",
+        "LangVar"     => "ruPassportSeries",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian and non-Russian residents)</strong> Passport series. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "passportSeries",
+    ],
+    [
+        "Name"        => "Passport Number (Individual)",
+        "LangVar"     => "ruPassportNumber",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian and non-Russian residents)</strong> Passport number. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "passportNumber",
+    ],
+    [
+        "Name"        => "Passport Issuer (Individual)",
+        "LangVar"     => "ruPassportIssuer",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian and non-Russian residents)</strong> Passport issuing authority. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "passportIssuer",
+    ],
+    [
+        "Name"        => "Passport Issue Date (Individual)",
+        "LangVar"     => "ruPassportIssueDate",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian and non-Russian residents)</strong> Passport issue date in <strong>YYYY-MM-DD</strong> format. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "passportIssueDate",
+    ],
+    [
+        "Name"        => "Passport Issue ID (Individual)",
+        "LangVar"     => "ruPassportIssueId",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian and non-Russian residents)</strong> Passport issue ID (digits only). Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "passportIssueId",
+    ],
+    [
+        "Name"        => "Passport Expiry Date (Individual)",
+        "LangVar"     => "ruPassportExpiryDate",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian and non-Russian residents)</strong> Passport expiry date in <strong>YYYY-MM-DD</strong> format. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "passportExpiryDate",
+    ],
+    [
+        "Name"        => "Birth Date (Individual)",
+        "LangVar"     => "ruBirthDate",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian and non-Russian residents)</strong> Date of birth in <strong>YYYY-MM-DD</strong> format. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "birthDate",
+    ],
+    [
+        "Name"        => "Tax Payer Number / INN (Individual – Russian)",
+        "LangVar"     => "ruTaxPayerNumberIndividual",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Individual – Russian residents only)</strong> Tax payer number (INN). Required only if the domain owner is an individual entrepreneur.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "taxPayerNumber",
+    ],
 
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Tax Payer Number",
-    "LangVar" => "ruTaxPayerNumber",
-    "Type" => "text",
-    "Required" => true,
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "taxPayerNumber"
-);
+    // --- Company-only fields ---
+    [
+        "Name"        => "Company Name in Cyrillic (Company – Russian) *",
+        "LangVar"     => "ruCompanyNameCyrillic",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Company – Russian residents only)</strong> Company name in Cyrillic as per company registration documents. Required for Russian resident companies.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "companyNameCyrillic",
+    ],
+    [
+        "Name"        => "Company Name in Latin (Company) *",
+        "LangVar"     => "ruCompanyNameLatin",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Company – Russian and non-Russian residents)</strong> Company name in Latin characters. Required for Company contacts.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "companyNameLatin",
+    ],
+    [
+        "Name"        => "Legal Address Country Code (Company) *",
+        "LangVar"     => "ruLegalAddressCountryCode",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Company – Russian and non-Russian residents)</strong> Country code in ISO 3166-1 alpha-2 format (e.g. <strong>RU</strong>). Required for Company contacts.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "legalAddressCountryCode",
+    ],
+    [
+        "Name"        => "Legal Address Postal Code (Company) *",
+        "LangVar"     => "ruLegalAddressPostalCode",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Company – Russian and non-Russian residents)</strong> Postal / ZIP code. Required for Company contacts.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "legalAddressPostalCode",
+    ],
+    [
+        "Name"        => "Legal Address City (Company) *",
+        "LangVar"     => "ruLegalAddressCity",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Company – Russian and non-Russian residents)</strong> City. Russian residents: use Cyrillic. Non-Russian residents: Latin or Cyrillic accepted. Required for Company contacts.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "legalAddressCity",
+    ],
+    [
+        "Name"        => "Legal Address Region (Company)",
+        "LangVar"     => "ruLegalAddressRegion",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Company – Russian and non-Russian residents)</strong> Region. Russian residents: use Cyrillic. Non-Russian residents: Latin or Cyrillic accepted. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "legalAddressRegion",
+    ],
+    [
+        "Name"        => "Legal Address Area (Company)",
+        "LangVar"     => "ruLegalAddressArea",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Company – Russian and non-Russian residents)</strong> Area. Russian residents: use Cyrillic. Non-Russian residents: Latin or Cyrillic accepted. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "legalAddressArea",
+    ],
+    [
+        "Name"        => "Legal Address Street (Company)",
+        "LangVar"     => "ruLegalAddressStreet",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Company – Russian and non-Russian residents)</strong> Street. Russian residents: use Cyrillic. Non-Russian residents: Latin or Cyrillic accepted. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "legalAddressStreet",
+    ],
+    [
+        "Name"        => "Legal Address House (Company)",
+        "LangVar"     => "ruLegalAddressHouse",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Company – Russian and non-Russian residents)</strong> House number. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "legalAddressHouse",
+    ],
+    [
+        "Name"        => "Legal Address Building (Company)",
+        "LangVar"     => "ruLegalAddressBuilding",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Company – Russian and non-Russian residents)</strong> Building number or name. Optional.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "legalAddressBuilding",
+    ],
+    [
+        "Name"        => "Tax Payer Number / INN (Company) *",
+        "LangVar"     => "ruTaxPayerNumberCompany",
+        "Type"        => "text",
+        "Required"    => false,
+        "Description" => '<span style="display:block;margin-top:4px;font-size:12px;color:#6b7280;">'
+            . '<strong>(Company – Russian and non-Russian residents)</strong> Tax payer number (INN). Required for Company contacts.'
+            . '</span>',
+        "op_location" => "customerExtensionAdditionalData",
+        "op_name"     => "taxPayerNumber",
+    ],
+];
 
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "First Name Cyrillic",
-    "LangVar" => "ruFirstNameCyrillic",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "firstNameCyrillic"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Middle Name Cyrillic",
-    "LangVar" => "ruMiddleNameCyrillic",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "middleNameCyrillic"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Last Name Cyrillic",
-    "LangVar" => "ruLastNameCyrillic",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "lastNameCyrillic"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "First Name Latin",
-    "LangVar" => "ruFirstNameLatin",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "firstNameLatin"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Middle Name Latin",
-    "LangVar" => "ruMiddleNameLatin",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "middleNameLatin"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Last Name Latin",
-    "LangVar" => "ruLastNameLatin",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "lastNameLatin"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Passport Series",
-    "LangVar" => "ruPassportSeries",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "passportSeries"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Passport Number",
-    "LangVar" => "ruPassportNumber",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "passportNumber"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Passport Issuer",
-    "LangVar" => "ruPassportIssuer",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "passportIssuer"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Passport Issue Date",
-    "LangVar" => "ruPassportIssueDate",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "passportIssueDate"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Birth Date",
-    "LangVar" => "ruBirthDate",
-    "Type" => "text",
-    "Required" => true,
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "birthDate"
-);
-
-$additionaldomainfields[".ru"][] = array(
-    "Name" => "Company Name Latin",
-    "LangVar" => "ruCompanyNameLatin",
-    "Type" => "text",
-    "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "companyNameLatin"
-);
-
-$additionaldomainfields['.xn--p1ai'] = $additionaldomainfields['.ru'];
+$additionaldomainfields['.ru']       = $ruExtensionFields;
+$additionaldomainfields['.xn--p1ai'] = $ruExtensionFields;
 
 // .RO
 $additionaldomainfields[".ro"][] = array(

@@ -12,7 +12,25 @@ class ShoppingCartController
 {
     private static ?array $inSldExtensions = null;
     private const IN_NEXUS_DECLARATION_INDEX = 0;
-    
+
+    // .RU / .xn--p1ai field indices
+    private const RU_CONTACT_TYPE_INDEX                    =  8;  // Contact Type            (display only)
+    private const RU_REGISTRANT_RESIDENCY_INDEX            =  9;  // Registrant Residency    (display only)
+    private const RU_MOBILE_PHONE_COUNTRY_CODE_INDEX       = 10;  // Mobile Phone CC         all
+    private const RU_MOBILE_PHONE_NUMBER_INDEX             = 11;  // Mobile Phone Number     all
+    private const RU_POSTAL_ADDRESS_CITY_INDEX             = 12;  // Postal Address City     all
+    private const RU_PASSPORT_SERIES_INDEX                 = 24;  // Passport Series         individual
+    private const RU_PASSPORT_NUMBER_INDEX                 = 25;  // Passport Number         individual
+    private const RU_PASSPORT_ISSUER_INDEX                 = 26;  // Passport Issuer         individual
+    private const RU_PASSPORT_ISSUE_DATE_INDEX             = 27;  // Passport Issue Date     individual
+    private const RU_BIRTH_DATE_INDEX                      = 30;  // Birth Date              individual
+    private const RU_COMPANY_NAME_CYRILLIC_INDEX           = 32;  // Company Name Cyrillic   company + ru
+    private const RU_COMPANY_NAME_LATIN_INDEX              = 33;  // Company Name Latin      company
+    private const RU_LEGAL_ADDRESS_COUNTRY_CODE_INDEX      = 34;  // Legal Address CC        company
+    private const RU_LEGAL_ADDRESS_POSTAL_CODE_INDEX       = 35;  // Legal Address PostCode  company
+    private const RU_LEGAL_ADDRESS_CITY_INDEX              = 36;  // Legal Address City      company
+    private const RU_TAX_PAYER_NUMBER_COMPANY_INDEX        = 42;  // Tax Payer Number INN    company
+
     private static array $itFieldsMap = [
         7 => 'companyRegistrationNumber',
         9 => 'socialSecurityNumber',
@@ -149,6 +167,11 @@ class ShoppingCartController
             return $inNexusError;
         }
 
+        $ruError = $this->validateRuContactTypeAtCheckout($vars);
+        if ($ruError !== null) {
+            return $ruError;
+        }
+
         $idnumbermod = Configuration::get('idnumbermod');
 
         if ($idnumbermod) {
@@ -182,6 +205,143 @@ class ShoppingCartController
                 }
             }
         }
+    }
+
+    private function validateRuContactTypeAtCheckout(array $vars): ?array
+    {
+        $domains = $vars['domains'] ?? $_SESSION['cart']['domains'] ?? [];
+
+        foreach ($domains as $domain) {
+            $domainName = $domain['domain'] ?? '';
+            if (!$this->isDomainRuTld($domainName)) {
+                continue;
+            }
+
+            $fields      = $domain['fields'] ?? [];
+            $contactType = $fields[self::RU_CONTACT_TYPE_INDEX]         ?? '';
+            $residency   = $fields[self::RU_REGISTRANT_RESIDENCY_INDEX] ?? '';
+
+            // Resolve effective residency and contact type from the contact chosen on
+            // the previous page — mirrors validateInNexusAtCheckout.
+            $registrantCountry = $this->getRegistrantCountryForCheckout($vars);
+            $registrantCompany = $this->getRegistrantCompanyForCheckout($vars);
+
+            $effectiveResidency   = $registrantCountry !== ''
+                ? ($registrantCountry === 'RU' ? 'ru' : 'non-ru')
+                : null;
+            // Derive effective contact type:
+            // - contact HAS a company name  → 'company'
+            // - contact has NO company name → 'individual' (no company on record)
+            // Only enforce cross-check when the registrant country is known (so we have
+            // a resolved contact) — avoids false positives when contact data is unavailable.
+            $effectiveContactType = $registrantCompany !== '' ? 'company' : 'individual';
+
+            // Cross-check residency: only when country is resolvable
+            if ($effectiveResidency !== null && $residency !== $effectiveResidency) {
+                $cartUrl       = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                $expectedLabel = $effectiveResidency === 'ru' ? 'Russian Resident' : 'Non-Russian Resident';
+                return [
+                    'error' => 'The Registrant Residency for ' . $domainName . ' does not match the contact\'s country ('
+                        . $registrantCountry . '). Please set Registrant Residency to <strong>' . $expectedLabel . '</strong>. '
+                        . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> to correct your selection.',
+                ];
+            }
+
+            // Cross-check contact type: only when country is resolvable (contact data available)
+            if ($registrantCountry !== '' && $contactType !== $effectiveContactType) {
+                $cartUrl       = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                $expectedLabel = $effectiveContactType === 'company' ? 'Company' : 'Individual (Private Person)';
+                return [
+                    'error' => 'The Contact Type for ' . $domainName . ' does not match the selected contact'
+                        . ($registrantCompany !== '' ? ' (company: ' . $registrantCompany . ')' : ' (no company name on record)') . '. '
+                        . 'Please set Contact Type to <strong>' . $expectedLabel . '</strong>. '
+                        . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> to correct your selection.',
+                ];
+            }
+
+            // Apply effective values for field-level validation
+            if ($effectiveResidency !== null) {
+                $residency = $effectiveResidency;
+            }
+            if ($registrantCountry !== '') {
+                $contactType = $effectiveContactType;
+            }
+
+            // [10–12] Starred fields: all contact types, all residencies
+            $mobileCountryCode = trim((string) ($fields[self::RU_MOBILE_PHONE_COUNTRY_CODE_INDEX] ?? ''));
+            $mobilePhoneNumber = trim((string) ($fields[self::RU_MOBILE_PHONE_NUMBER_INDEX]       ?? ''));
+            $postalCity        = trim((string) ($fields[self::RU_POSTAL_ADDRESS_CITY_INDEX]       ?? ''));
+
+            if ($mobileCountryCode === '' || $mobilePhoneNumber === '' || $postalCity === '') {
+                $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                return [
+                    'error' => 'To register ' . $domainName . ', Mobile Phone Country Code, Mobile Phone Number, and Postal Address City are required. '
+                        . 'Please <a href="' . $cartUrl . '">go back to the domain configuration step</a> and fill in the required fields.',
+                ];
+            }
+
+            // [24–28, 30] Starred fields: individual contacts (any residency)
+            if ($contactType === 'individual') {
+                $passportSeries    = trim((string) ($fields[self::RU_PASSPORT_SERIES_INDEX]      ?? ''));
+                $passportNumber    = trim((string) ($fields[self::RU_PASSPORT_NUMBER_INDEX]      ?? ''));
+                $passportIssuer    = trim((string) ($fields[self::RU_PASSPORT_ISSUER_INDEX]      ?? ''));
+                $passportIssueDate = trim((string) ($fields[self::RU_PASSPORT_ISSUE_DATE_INDEX]  ?? ''));
+                $birthDate         = trim((string) ($fields[self::RU_BIRTH_DATE_INDEX]           ?? ''));
+
+                if (
+                    $passportSeries === '' || $passportNumber === '' || $passportIssuer === ''
+                    || $passportIssueDate === '' || $birthDate === ''
+                ) {
+                    $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                    return [
+                        'error' => 'To register ' . $domainName . ' as an Individual, Passport Series, Passport Number, Passport Issuer, '
+                            . 'Passport Issue Date, and Birth Date are required. '
+                            . 'Please <a href="' . $cartUrl . '">go back to the domain configuration step</a> and fill in the required fields.',
+                    ];
+                }
+            }
+
+            // [33–36, 42] Starred fields: company contacts (any residency)
+            if ($contactType === 'company') {
+                $companyNameLatin = trim((string) ($fields[self::RU_COMPANY_NAME_LATIN_INDEX]         ?? ''));
+                $legalCountryCode = trim((string) ($fields[self::RU_LEGAL_ADDRESS_COUNTRY_CODE_INDEX] ?? ''));
+                $legalPostalCode  = trim((string) ($fields[self::RU_LEGAL_ADDRESS_POSTAL_CODE_INDEX]  ?? ''));
+                $legalCity        = trim((string) ($fields[self::RU_LEGAL_ADDRESS_CITY_INDEX]         ?? ''));
+                $taxPayerNumber   = trim((string) ($fields[self::RU_TAX_PAYER_NUMBER_COMPANY_INDEX]   ?? ''));
+
+                if (
+                    $companyNameLatin === '' || $legalCountryCode === '' || $legalPostalCode === ''
+                    || $legalCity === '' || $taxPayerNumber === ''
+                ) {
+                    $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                    return [
+                        'error' => 'To register ' . $domainName . ' as a Company, Company Name (Latin), Legal Address Country Code, '
+                            . 'Postal Code, City, and Tax Payer Number (INN) are required. '
+                            . 'Please <a href="' . $cartUrl . '">go back to the domain configuration step</a> and complete the required Company fields.',
+                    ];
+                }
+
+                // [32] Company Name in Cyrillic additionally required for Russian residents
+                if ($residency === 'ru') {
+                    $companyNameCyrillic = trim((string) ($fields[self::RU_COMPANY_NAME_CYRILLIC_INDEX] ?? ''));
+
+                    if ($companyNameCyrillic === '') {
+                        $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+                        return [
+                            'error' => 'To register ' . $domainName . ' as a Russian resident company, Company Name in Cyrillic is also required. '
+                                . 'Please <a href="' . $cartUrl . '">go back to the domain configuration step</a> and fill in the required fields.',
+                        ];
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function isDomainRuTld(string $domainName): bool
+    {
+        return str_ends_with($domainName, '.ru') || str_ends_with($domainName, '.xn--p1ai');
     }
 
     private function validateInNexusAtCheckout(array $vars): ?array
@@ -258,6 +418,109 @@ class ShoppingCartController
         }
 
         return strtoupper((string) ($vars['country'] ?? ''));
+    }
+
+    private function getRegistrantCompanyForCheckout(array $vars): string
+    {
+        $contact = $vars['contact'] ?? '';
+
+        if ($contact === 'addingnew') {
+            return trim((string) ($vars['domaincontactcompanyname'] ?? ''));
+        }
+
+        $contactId = (int) $contact;
+        if ($contactId > 0) {
+            $companyName = Capsule::table('tblcontacts')
+                ->where('id', $contactId)
+                ->value('companyname');
+            if (!empty($companyName)) {
+                return trim((string) $companyName);
+            }
+        }
+
+        return trim((string) ($vars['companyname'] ?? ''));
+    }
+
+    public function injectDomainConfigFieldFilters($vars): string
+    {
+        $filename = $vars['filename'] ?? '';
+        $action   = $_GET['a'] ?? '';
+
+        if ($filename !== 'cart' || !in_array($action, ['confdomains'], true)) {
+            return '';
+        }
+
+        $js = <<<'JS'
+(function ($) {
+    function initRuFieldVisibility() {
+
+        // One Contact Type select exists per .ru domain in the cart.
+        $('select').filter(function () {
+            var vals = $(this).find('option').map(function () { return $(this).val(); }).get();
+            return vals.indexOf('individual') !== -1 && vals.indexOf('company') !== -1;
+        }).each(function () {
+            var $ct  = $(this);
+            var $form = $ct.closest('form');
+
+            // Domain index N from name="domainfield[N][...]"
+            var m = ($ct.attr('name') || '').match(/^domainfield\[(\d+)\]/);
+            if (!m) { return; }
+            var n = m[1];
+
+            // Residency select for the same domain N
+            var $res = $form.find('select').filter(function () {
+                var nm = $(this).attr('name') || '';
+                if (nm.indexOf('domainfield[' + n + '][') !== 0) { return false; }
+                var vals = $(this).find('option').map(function () { return $(this).val(); }).get();
+                return vals.indexOf('ru') !== -1 && vals.indexOf('non-ru') !== -1;
+            }).first();
+
+            if (!$res.length) { return; }
+
+            // Pre-select only the .form-group.row elements that belong to domain N.
+            // jQuery's [name^=value] (starts-with) attribute selector scopes this correctly.
+            var $rows = $form.find('.form-group.row').filter(function () {
+                return $(this).find('[name^="domainfield[' + n + ']["]').length > 0;
+            });
+
+            function apply() {
+                var ct  = $ct.val();   // 'individual' | 'company'
+                var res = $res.val();  // 'ru' | 'non-ru'
+
+                $rows.each(function () {
+                    var $row  = $(this);
+                    var label = $row.find('.col-sm-4').first().text().trim();
+
+                    var isInd = label.indexOf('(Individual') !== -1;
+                    var isCo  = label.indexOf('(Company')    !== -1;
+
+                    // Common fields — always visible
+                    if (!isInd && !isCo) { $row.show(); return; }
+
+                    // Contact type gate
+                    if (isInd && ct !== 'individual') { $row.hide(); return; }
+                    if (isCo  && ct !== 'company')    { $row.hide(); return; }
+
+                    // Residency gate (fields marked "– Russian)")
+                    if (label.indexOf('– Russian)') !== -1 && res !== 'ru') {
+                        $row.hide(); return;
+                    }
+
+                    $row.show();
+                });
+            }
+
+            $ct.on('change', apply);
+            $res.on('change', apply);
+            apply();
+        });
+    }
+
+    $(document).ready(initRuFieldVisibility);
+})(jQuery);
+JS;
+
+        return '<script type="text/javascript">' . $js . '</script>';
     }
 
     public function hideIdnScriptForNonIdnDomains($vars)

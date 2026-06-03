@@ -162,4 +162,9 @@ return [
         'priority'  => 1,
         'controller'=> 'ShoppingCartController@hideIdnScriptForNonIdnDomains',
     ],
+    [
+        'hookPoint' => 'ClientAreaFooterOutput',
+        'priority'  => 2,
+        'controller' => 'ShoppingCartController@injectDomainConfigFieldFilters',
+    ],
 ];
