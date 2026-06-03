@@ -78,20 +78,37 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'is_private_enterpreneur' => 'string',
         'last_name_cyrillic' => 'string',
         'last_name_latin' => 'string',
+        'legal_address_area' => 'string',
+        'legal_address_building' => 'string',
+        'legal_address_city' => 'string',
+        'legal_address_country_code' => 'string',
         'legal_address_cyrillic' => 'string',
+        'legal_address_house' => 'string',
+        'legal_address_postal_code' => 'string',
+        'legal_address_region' => 'string',
+        'legal_address_street' => 'string',
         'legal_type' => 'string',
         'middle_name_cyrillic' => 'string',
         'middle_name_latin' => 'string',
         'mobile_phone_number' => 'string',
+        'mobile_phone_number_country_code' => 'string',
         'music_nexus_connection_to_music' => 'string',
         'music_nexus_registry_policies_attestation' => 'string',
         'nexus_category' => 'string',
         'org_type' => 'string',
+        'passport_expiry_date' => 'string',
         'passport_issue_date' => 'string',
+        'passport_issue_id' => 'string',
         'passport_issuer' => 'string',
         'passport_number' => 'string',
         'passport_series' => 'string',
+        'postal_address_area' => 'string',
+        'postal_address_building' => 'string',
+        'postal_address_city' => 'string',
         'postal_address_cyrillic' => 'string',
+        'postal_address_house' => 'string',
+        'postal_address_region' => 'string',
+        'postal_address_street' => 'string',
         'social_security_number' => 'string',
         'tax_payer_number' => 'string',
         'uin' => 'string',
@@ -127,20 +144,37 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'is_private_enterpreneur' => null,
         'last_name_cyrillic' => null,
         'last_name_latin' => null,
+        'legal_address_area' => null,
+        'legal_address_building' => null,
+        'legal_address_city' => null,
+        'legal_address_country_code' => null,
         'legal_address_cyrillic' => null,
+        'legal_address_house' => null,
+        'legal_address_postal_code' => null,
+        'legal_address_region' => null,
+        'legal_address_street' => null,
         'legal_type' => null,
         'middle_name_cyrillic' => null,
         'middle_name_latin' => null,
         'mobile_phone_number' => null,
+        'mobile_phone_number_country_code' => null,
         'music_nexus_connection_to_music' => null,
         'music_nexus_registry_policies_attestation' => null,
         'nexus_category' => null,
         'org_type' => null,
+        'passport_expiry_date' => null,
         'passport_issue_date' => null,
+        'passport_issue_id' => null,
         'passport_issuer' => null,
         'passport_number' => null,
         'passport_series' => null,
+        'postal_address_area' => null,
+        'postal_address_building' => null,
+        'postal_address_city' => null,
         'postal_address_cyrillic' => null,
+        'postal_address_house' => null,
+        'postal_address_region' => null,
+        'postal_address_street' => null,
         'social_security_number' => null,
         'tax_payer_number' => null,
         'uin' => null,
@@ -197,20 +231,37 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'is_private_enterpreneur' => 'is_private_enterpreneur',
         'last_name_cyrillic' => 'last_name_cyrillic',
         'last_name_latin' => 'last_name_latin',
+        'legal_address_area' => 'legal_address_area',
+        'legal_address_building' => 'legal_address_building',
+        'legal_address_city' => 'legal_address_city',
+        'legal_address_country_code' => 'legal_address_country_code',
         'legal_address_cyrillic' => 'legal_address_cyrillic',
+        'legal_address_house' => 'legal_address_house',
+        'legal_address_postal_code' => 'legal_address_postal_code',
+        'legal_address_region' => 'legal_address_region',
+        'legal_address_street' => 'legal_address_street',
         'legal_type' => 'legal_type',
         'middle_name_cyrillic' => 'middle_name_cyrillic',
         'middle_name_latin' => 'middle_name_latin',
         'mobile_phone_number' => 'mobile_phone_number',
+        'mobile_phone_number_country_code' => 'mobile_phone_number_country_code',
         'music_nexus_connection_to_music' => 'music_nexus_connection_to_music',
         'music_nexus_registry_policies_attestation' => 'music_nexus_registry_policies_attestation',
         'nexus_category' => 'nexus_category',
         'org_type' => 'org_type',
+        'passport_expiry_date' => 'passport_expiry_date',
         'passport_issue_date' => 'passport_issue_date',
+        'passport_issue_id' => 'passport_issue_id',
         'passport_issuer' => 'passport_issuer',
         'passport_number' => 'passport_number',
         'passport_series' => 'passport_series',
+        'postal_address_area' => 'postal_address_area',
+        'postal_address_building' => 'postal_address_building',
+        'postal_address_city' => 'postal_address_city',
         'postal_address_cyrillic' => 'postal_address_cyrillic',
+        'postal_address_house' => 'postal_address_house',
+        'postal_address_region' => 'postal_address_region',
+        'postal_address_street' => 'postal_address_street',
         'social_security_number' => 'social_security_number',
         'tax_payer_number' => 'tax_payer_number',
         'uin' => 'uin',
@@ -246,20 +297,37 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'is_private_enterpreneur' => 'setIsPrivateEnterpreneur',
         'last_name_cyrillic' => 'setLastNameCyrillic',
         'last_name_latin' => 'setLastNameLatin',
+        'legal_address_area' => 'setLegalAddressArea',
+        'legal_address_building' => 'setLegalAddressBuilding',
+        'legal_address_city' => 'setLegalAddressCity',
+        'legal_address_country_code' => 'setLegalAddressCountryCode',
         'legal_address_cyrillic' => 'setLegalAddressCyrillic',
+        'legal_address_house' => 'setLegalAddressHouse',
+        'legal_address_postal_code' => 'setLegalAddressPostalCode',
+        'legal_address_region' => 'setLegalAddressRegion',
+        'legal_address_street' => 'setLegalAddressStreet',
         'legal_type' => 'setLegalType',
         'middle_name_cyrillic' => 'setMiddleNameCyrillic',
         'middle_name_latin' => 'setMiddleNameLatin',
         'mobile_phone_number' => 'setMobilePhoneNumber',
+        'mobile_phone_number_country_code' => 'setMobilePhoneNumberCountryCode',
         'music_nexus_connection_to_music' => 'setMusicNexusConnectionToMusic',
         'music_nexus_registry_policies_attestation' => 'setMusicNexusRegistryPoliciesAttestation',
         'nexus_category' => 'setNexusCategory',
         'org_type' => 'setOrgType',
+        'passport_expiry_date' => 'setPassportExpiryDate',
         'passport_issue_date' => 'setPassportIssueDate',
+        'passport_issue_id' => 'setPassportIssueId',
         'passport_issuer' => 'setPassportIssuer',
         'passport_number' => 'setPassportNumber',
         'passport_series' => 'setPassportSeries',
+        'postal_address_area' => 'setPostalAddressArea',
+        'postal_address_building' => 'setPostalAddressBuilding',
+        'postal_address_city' => 'setPostalAddressCity',
         'postal_address_cyrillic' => 'setPostalAddressCyrillic',
+        'postal_address_house' => 'setPostalAddressHouse',
+        'postal_address_region' => 'setPostalAddressRegion',
+        'postal_address_street' => 'setPostalAddressStreet',
         'social_security_number' => 'setSocialSecurityNumber',
         'tax_payer_number' => 'setTaxPayerNumber',
         'uin' => 'setUin',
@@ -295,20 +363,37 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'is_private_enterpreneur' => 'getIsPrivateEnterpreneur',
         'last_name_cyrillic' => 'getLastNameCyrillic',
         'last_name_latin' => 'getLastNameLatin',
+        'legal_address_area' => 'getLegalAddressArea',
+        'legal_address_building' => 'getLegalAddressBuilding',
+        'legal_address_city' => 'getLegalAddressCity',
+        'legal_address_country_code' => 'getLegalAddressCountryCode',
         'legal_address_cyrillic' => 'getLegalAddressCyrillic',
+        'legal_address_house' => 'getLegalAddressHouse',
+        'legal_address_postal_code' => 'getLegalAddressPostalCode',
+        'legal_address_region' => 'getLegalAddressRegion',
+        'legal_address_street' => 'getLegalAddressStreet',
         'legal_type' => 'getLegalType',
         'middle_name_cyrillic' => 'getMiddleNameCyrillic',
         'middle_name_latin' => 'getMiddleNameLatin',
         'mobile_phone_number' => 'getMobilePhoneNumber',
+        'mobile_phone_number_country_code' => 'getMobilePhoneNumberCountryCode',
         'music_nexus_connection_to_music' => 'getMusicNexusConnectionToMusic',
         'music_nexus_registry_policies_attestation' => 'getMusicNexusRegistryPoliciesAttestation',
         'nexus_category' => 'getNexusCategory',
         'org_type' => 'getOrgType',
+        'passport_expiry_date' => 'getPassportExpiryDate',
         'passport_issue_date' => 'getPassportIssueDate',
+        'passport_issue_id' => 'getPassportIssueId',
         'passport_issuer' => 'getPassportIssuer',
         'passport_number' => 'getPassportNumber',
         'passport_series' => 'getPassportSeries',
+        'postal_address_area' => 'getPostalAddressArea',
+        'postal_address_building' => 'getPostalAddressBuilding',
+        'postal_address_city' => 'getPostalAddressCity',
         'postal_address_cyrillic' => 'getPostalAddressCyrillic',
+        'postal_address_house' => 'getPostalAddressHouse',
+        'postal_address_region' => 'getPostalAddressRegion',
+        'postal_address_street' => 'getPostalAddressStreet',
         'social_security_number' => 'getSocialSecurityNumber',
         'tax_payer_number' => 'getTaxPayerNumber',
         'uin' => 'getUin',
@@ -402,20 +487,37 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         $this->container['is_private_enterpreneur'] = isset($data['is_private_enterpreneur']) ? $data['is_private_enterpreneur'] : null;
         $this->container['last_name_cyrillic'] = isset($data['last_name_cyrillic']) ? $data['last_name_cyrillic'] : null;
         $this->container['last_name_latin'] = isset($data['last_name_latin']) ? $data['last_name_latin'] : null;
+        $this->container['legal_address_area'] = isset($data['legal_address_area']) ? $data['legal_address_area'] : null;
+        $this->container['legal_address_building'] = isset($data['legal_address_building']) ? $data['legal_address_building'] : null;
+        $this->container['legal_address_city'] = isset($data['legal_address_city']) ? $data['legal_address_city'] : null;
+        $this->container['legal_address_country_code'] = isset($data['legal_address_country_code']) ? $data['legal_address_country_code'] : null;
         $this->container['legal_address_cyrillic'] = isset($data['legal_address_cyrillic']) ? $data['legal_address_cyrillic'] : null;
+        $this->container['legal_address_house'] = isset($data['legal_address_house']) ? $data['legal_address_house'] : null;
+        $this->container['legal_address_postal_code'] = isset($data['legal_address_postal_code']) ? $data['legal_address_postal_code'] : null;
+        $this->container['legal_address_region'] = isset($data['legal_address_region']) ? $data['legal_address_region'] : null;
+        $this->container['legal_address_street'] = isset($data['legal_address_street']) ? $data['legal_address_street'] : null;
         $this->container['legal_type'] = isset($data['legal_type']) ? $data['legal_type'] : null;
         $this->container['middle_name_cyrillic'] = isset($data['middle_name_cyrillic']) ? $data['middle_name_cyrillic'] : null;
         $this->container['middle_name_latin'] = isset($data['middle_name_latin']) ? $data['middle_name_latin'] : null;
         $this->container['mobile_phone_number'] = isset($data['mobile_phone_number']) ? $data['mobile_phone_number'] : null;
+        $this->container['mobile_phone_number_country_code'] = isset($data['mobile_phone_number_country_code']) ? $data['mobile_phone_number_country_code'] : null;
         $this->container['music_nexus_connection_to_music'] = isset($data['music_nexus_connection_to_music']) ? $data['music_nexus_connection_to_music'] : null;
         $this->container['music_nexus_registry_policies_attestation'] = isset($data['music_nexus_registry_policies_attestation']) ? $data['music_nexus_registry_policies_attestation'] : null;
         $this->container['nexus_category'] = isset($data['nexus_category']) ? $data['nexus_category'] : null;
         $this->container['org_type'] = isset($data['org_type']) ? $data['org_type'] : null;
+        $this->container['passport_expiry_date'] = isset($data['passport_expiry_date']) ? $data['passport_expiry_date'] : null;
         $this->container['passport_issue_date'] = isset($data['passport_issue_date']) ? $data['passport_issue_date'] : null;
+        $this->container['passport_issue_id'] = isset($data['passport_issue_id']) ? $data['passport_issue_id'] : null;
         $this->container['passport_issuer'] = isset($data['passport_issuer']) ? $data['passport_issuer'] : null;
         $this->container['passport_number'] = isset($data['passport_number']) ? $data['passport_number'] : null;
         $this->container['passport_series'] = isset($data['passport_series']) ? $data['passport_series'] : null;
+        $this->container['postal_address_area'] = isset($data['postal_address_area']) ? $data['postal_address_area'] : null;
+        $this->container['postal_address_building'] = isset($data['postal_address_building']) ? $data['postal_address_building'] : null;
+        $this->container['postal_address_city'] = isset($data['postal_address_city']) ? $data['postal_address_city'] : null;
         $this->container['postal_address_cyrillic'] = isset($data['postal_address_cyrillic']) ? $data['postal_address_cyrillic'] : null;
+        $this->container['postal_address_house'] = isset($data['postal_address_house']) ? $data['postal_address_house'] : null;
+        $this->container['postal_address_region'] = isset($data['postal_address_region']) ? $data['postal_address_region'] : null;
+        $this->container['postal_address_street'] = isset($data['postal_address_street']) ? $data['postal_address_street'] : null;
         $this->container['social_security_number'] = isset($data['social_security_number']) ? $data['social_security_number'] : null;
         $this->container['tax_payer_number'] = isset($data['tax_payer_number']) ? $data['tax_payer_number'] : null;
         $this->container['uin'] = isset($data['uin']) ? $data['uin'] : null;
@@ -972,6 +1074,110 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets legal_address_area
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getLegalAddressArea()
+    {
+        return $this->container['legal_address_area'];
+    }
+
+    /**
+     * Sets legal_address_area
+     *
+     * @param string|null $legal_address_area legal_address_area
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setLegalAddressArea($legal_address_area)
+    {
+        $this->container['legal_address_area'] = $legal_address_area;
+
+        return $this;
+    }
+
+    /**
+     * Gets legal_address_building
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getLegalAddressBuilding()
+    {
+        return $this->container['legal_address_building'];
+    }
+
+    /**
+     * Sets legal_address_building
+     *
+     * @param string|null $legal_address_building legal_address_building
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setLegalAddressBuilding($legal_address_building)
+    {
+        $this->container['legal_address_building'] = $legal_address_building;
+
+        return $this;
+    }
+
+    /**
+     * Gets legal_address_city
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getLegalAddressCity()
+    {
+        return $this->container['legal_address_city'];
+    }
+
+    /**
+     * Sets legal_address_city
+     *
+     * @param string|null $legal_address_city legal_address_city
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setLegalAddressCity($legal_address_city)
+    {
+        $this->container['legal_address_city'] = $legal_address_city;
+
+        return $this;
+    }
+
+    /**
+     * Gets legal_address_country_code
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getLegalAddressCountryCode()
+    {
+        return $this->container['legal_address_country_code'];
+    }
+
+    /**
+     * Sets legal_address_country_code
+     *
+     * @param string|null $legal_address_country_code legal_address_country_code
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setLegalAddressCountryCode($legal_address_country_code)
+    {
+        $this->container['legal_address_country_code'] = $legal_address_country_code;
+
+        return $this;
+    }
+
+    /**
      * Gets legal_address_cyrillic
      *
      * @return string|null
@@ -993,6 +1199,110 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
     public function setLegalAddressCyrillic($legal_address_cyrillic)
     {
         $this->container['legal_address_cyrillic'] = $legal_address_cyrillic;
+
+        return $this;
+    }
+
+    /**
+     * Gets legal_address_house
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getLegalAddressHouse()
+    {
+        return $this->container['legal_address_house'];
+    }
+
+    /**
+     * Sets legal_address_house
+     *
+     * @param string|null $legal_address_house legal_address_house
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setLegalAddressHouse($legal_address_house)
+    {
+        $this->container['legal_address_house'] = $legal_address_house;
+
+        return $this;
+    }
+
+    /**
+     * Gets legal_address_postal_code
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getLegalAddressPostalCode()
+    {
+        return $this->container['legal_address_postal_code'];
+    }
+
+    /**
+     * Sets legal_address_postal_code
+     *
+     * @param string|null $legal_address_postal_code legal_address_postal_code
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setLegalAddressPostalCode($legal_address_postal_code)
+    {
+        $this->container['legal_address_postal_code'] = $legal_address_postal_code;
+
+        return $this;
+    }
+
+    /**
+     * Gets legal_address_region
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getLegalAddressRegion()
+    {
+        return $this->container['legal_address_region'];
+    }
+
+    /**
+     * Sets legal_address_region
+     *
+     * @param string|null $legal_address_region legal_address_region
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setLegalAddressRegion($legal_address_region)
+    {
+        $this->container['legal_address_region'] = $legal_address_region;
+
+        return $this;
+    }
+
+    /**
+     * Gets legal_address_street
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getLegalAddressStreet()
+    {
+        return $this->container['legal_address_street'];
+    }
+
+    /**
+     * Sets legal_address_street
+     *
+     * @param string|null $legal_address_street legal_address_street
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setLegalAddressStreet($legal_address_street)
+    {
+        $this->container['legal_address_street'] = $legal_address_street;
 
         return $this;
     }
@@ -1102,6 +1412,32 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets mobile_phone_number_country_code
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getMobilePhoneNumberCountryCode()
+    {
+        return $this->container['mobile_phone_number_country_code'];
+    }
+
+    /**
+     * Sets mobile_phone_number_country_code
+     *
+     * @param string|null $mobile_phone_number_country_code mobile_phone_number_country_code
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setMobilePhoneNumberCountryCode($mobile_phone_number_country_code)
+    {
+        $this->container['mobile_phone_number_country_code'] = $mobile_phone_number_country_code;
+
+        return $this;
+    }
+
+    /**
      * Gets music_nexus_connection_to_music
      *
      * @return string|null
@@ -1206,6 +1542,32 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets passport_expiry_date
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getPassportExpiryDate()
+    {
+        return $this->container['passport_expiry_date'];
+    }
+
+    /**
+     * Sets passport_expiry_date
+     *
+     * @param string|null $passport_expiry_date passport_expiry_date
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setPassportExpiryDate($passport_expiry_date)
+    {
+        $this->container['passport_expiry_date'] = $passport_expiry_date;
+
+        return $this;
+    }
+
+    /**
      * Gets passport_issue_date
      *
      * @return string|null
@@ -1227,6 +1589,32 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
     public function setPassportIssueDate($passport_issue_date)
     {
         $this->container['passport_issue_date'] = $passport_issue_date;
+
+        return $this;
+    }
+
+    /**
+     * Gets passport_issue_id
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getPassportIssueId()
+    {
+        return $this->container['passport_issue_id'];
+    }
+
+    /**
+     * Sets passport_issue_id
+     *
+     * @param string|null $passport_issue_id passport_issue_id
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setPassportIssueId($passport_issue_id)
+    {
+        $this->container['passport_issue_id'] = $passport_issue_id;
 
         return $this;
     }
@@ -1310,6 +1698,84 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets postal_address_area
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getPostalAddressArea()
+    {
+        return $this->container['postal_address_area'];
+    }
+
+    /**
+     * Sets postal_address_area
+     *
+     * @param string|null $postal_address_area postal_address_area
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setPostalAddressArea($postal_address_area)
+    {
+        $this->container['postal_address_area'] = $postal_address_area;
+
+        return $this;
+    }
+
+    /**
+     * Gets postal_address_building
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getPostalAddressBuilding()
+    {
+        return $this->container['postal_address_building'];
+    }
+
+    /**
+     * Sets postal_address_building
+     *
+     * @param string|null $postal_address_building postal_address_building
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setPostalAddressBuilding($postal_address_building)
+    {
+        $this->container['postal_address_building'] = $postal_address_building;
+
+        return $this;
+    }
+
+    /**
+     * Gets postal_address_city
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getPostalAddressCity()
+    {
+        return $this->container['postal_address_city'];
+    }
+
+    /**
+     * Sets postal_address_city
+     *
+     * @param string|null $postal_address_city postal_address_city
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setPostalAddressCity($postal_address_city)
+    {
+        $this->container['postal_address_city'] = $postal_address_city;
+
+        return $this;
+    }
+
+    /**
      * Gets postal_address_cyrillic
      *
      * @return string|null
@@ -1331,6 +1797,84 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
     public function setPostalAddressCyrillic($postal_address_cyrillic)
     {
         $this->container['postal_address_cyrillic'] = $postal_address_cyrillic;
+
+        return $this;
+    }
+
+    /**
+     * Gets postal_address_house
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getPostalAddressHouse()
+    {
+        return $this->container['postal_address_house'];
+    }
+
+    /**
+     * Sets postal_address_house
+     *
+     * @param string|null $postal_address_house postal_address_house
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setPostalAddressHouse($postal_address_house)
+    {
+        $this->container['postal_address_house'] = $postal_address_house;
+
+        return $this;
+    }
+
+    /**
+     * Gets postal_address_region
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getPostalAddressRegion()
+    {
+        return $this->container['postal_address_region'];
+    }
+
+    /**
+     * Sets postal_address_region
+     *
+     * @param string|null $postal_address_region postal_address_region
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setPostalAddressRegion($postal_address_region)
+    {
+        $this->container['postal_address_region'] = $postal_address_region;
+
+        return $this;
+    }
+
+    /**
+     * Gets postal_address_street
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getPostalAddressStreet()
+    {
+        return $this->container['postal_address_street'];
+    }
+
+    /**
+     * Sets postal_address_street
+     *
+     * @param string|null $postal_address_street postal_address_street
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setPostalAddressStreet($postal_address_street)
+    {
+        $this->container['postal_address_street'] = $postal_address_street;
 
         return $this;
     }
