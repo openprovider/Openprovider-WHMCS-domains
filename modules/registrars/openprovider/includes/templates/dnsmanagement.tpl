@@ -32,7 +32,7 @@
                     <tbody>
                         {foreach $dnsrecords as $dnsrecord}
                             <tr>
-                                <td><input type="hidden" name="dnsrecid[]" value="{$dnsrecord.recid}" /><input type="text" name="dnsrecordhost[]" value="{$dnsrecord.hostname}" size="10" class="form-control" /></td>
+                                <td><input type="hidden" name="dnsrecid[]" value="{$dnsrecord.recid|escape:'html'}" /><input type="text" name="dnsrecordhost[]" value="{$dnsrecord.hostname|escape:'html'}" size="10" class="form-control" /></td>
                                 <td>
                                     <select name="dnsrecordtype[]" class="form-control">
                                         <option value="A"{if $dnsrecord.type eq "A"} selected="selected"{/if}>{lang key="domainDns.a"}</option>
@@ -45,9 +45,9 @@
                                         <option value="FRAME"{if $dnsrecord.type eq "FRAME"} selected="selected"{/if}>{lang key="domainDns.frame"}</option>
                                     </select>
                                 </td>
-                                <td><input type="text" name="dnsrecordaddress[]" value="{$dnsrecord.address}" size="40" class="form-control" /></td>
+                                <td><input type="text" name="dnsrecordaddress[]" value="{$dnsrecord.address|escape:'html'}" size="40" class="form-control" /></td>
                                 <td>
-                                    {if $dnsrecord.type eq "MX"}<input type="text" name="dnsrecordpriority[]" value="{$dnsrecord.priority}" size="2" class="form-control" />{else}<input type="hidden" name="dnsrecordpriority[]" value="N/A" />{lang key='domainregnotavailable'}{/if}
+                                    {if $dnsrecord.type eq "MX"}<input type="text" name="dnsrecordpriority[]" value="{$dnsrecord.priority|escape:'html'}" size="2" class="form-control" />{else}<input type="hidden" name="dnsrecordpriority[]" value="N/A" />{lang key='domainregnotavailable'}{/if}
                                 </td>
                                 <td class="text-center">
                                     <button type="button"

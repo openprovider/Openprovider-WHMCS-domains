@@ -78,7 +78,7 @@ return [
         'controller' => 'ShoppingCartController@checkoutOutput',
     ],
     [
-        'hookPoint' => 'PreShoppingCartCheckout',
+        'hookPoint' => 'ShoppingCartValidateCheckout',
         'priority'  => 1,
         'controller' => 'ShoppingCartController@preCheckout',
     ],
@@ -161,5 +161,10 @@ return [
         'hookPoint' => 'ClientAreaPageCart',
         'priority'  => 1,
         'controller'=> 'ShoppingCartController@hideIdnScriptForNonIdnDomains',
+    ],
+    [
+        'hookPoint' => 'ClientAreaFooterOutput',
+        'priority'  => 2,
+        'controller' => 'ShoppingCartController@injectDomainConfigFieldFilters',
     ],
 ];

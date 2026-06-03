@@ -67,6 +67,7 @@ class StatisticsSpamExpertsStatistics implements ModelInterface, ArrayAccess
         'outgoing_count' => 'int',
         'outgoing_limit' => 'int',
         'status' => 'string',
+        'total_count' => 'int',
         'with_outgoing_filter' => 'bool'
     ];
 
@@ -85,6 +86,7 @@ class StatisticsSpamExpertsStatistics implements ModelInterface, ArrayAccess
         'outgoing_count' => 'int32',
         'outgoing_limit' => 'int32',
         'status' => null,
+        'total_count' => 'int32',
         'with_outgoing_filter' => 'boolean'
     ];
 
@@ -124,6 +126,7 @@ class StatisticsSpamExpertsStatistics implements ModelInterface, ArrayAccess
         'outgoing_count' => 'outgoing_count',
         'outgoing_limit' => 'outgoing_limit',
         'status' => 'status',
+        'total_count' => 'total_count',
         'with_outgoing_filter' => 'with_outgoing_filter'
     ];
 
@@ -142,6 +145,7 @@ class StatisticsSpamExpertsStatistics implements ModelInterface, ArrayAccess
         'outgoing_count' => 'setOutgoingCount',
         'outgoing_limit' => 'setOutgoingLimit',
         'status' => 'setStatus',
+        'total_count' => 'setTotalCount',
         'with_outgoing_filter' => 'setWithOutgoingFilter'
     ];
 
@@ -160,6 +164,7 @@ class StatisticsSpamExpertsStatistics implements ModelInterface, ArrayAccess
         'outgoing_count' => 'getOutgoingCount',
         'outgoing_limit' => 'getOutgoingLimit',
         'status' => 'getStatus',
+        'total_count' => 'getTotalCount',
         'with_outgoing_filter' => 'getWithOutgoingFilter'
     ];
 
@@ -236,6 +241,7 @@ class StatisticsSpamExpertsStatistics implements ModelInterface, ArrayAccess
         $this->container['outgoing_count'] = isset($data['outgoing_count']) ? $data['outgoing_count'] : null;
         $this->container['outgoing_limit'] = isset($data['outgoing_limit']) ? $data['outgoing_limit'] : null;
         $this->container['status'] = isset($data['status']) ? $data['status'] : null;
+        $this->container['total_count'] = isset($data['total_count']) ? $data['total_count'] : null;
         $this->container['with_outgoing_filter'] = isset($data['with_outgoing_filter']) ? $data['with_outgoing_filter'] : null;
     }
 
@@ -495,6 +501,32 @@ class StatisticsSpamExpertsStatistics implements ModelInterface, ArrayAccess
     public function setStatus($status)
     {
         $this->container['status'] = $status;
+
+        return $this;
+    }
+
+    /**
+     * Gets total_count
+     *
+     * @return int|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getTotalCount()
+    {
+        return $this->container['total_count'];
+    }
+
+    /**
+     * Sets total_count
+     *
+     * @param int|null $total_count total_count
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setTotalCount($total_count)
+    {
+        $this->container['total_count'] = $total_count;
 
         return $this;
     }

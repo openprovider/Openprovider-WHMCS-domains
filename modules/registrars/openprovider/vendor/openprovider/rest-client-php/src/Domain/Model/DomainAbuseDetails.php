@@ -58,9 +58,14 @@ class DomainAbuseDetails implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPITypes = [
+        'abuse_action' => 'string',
         'abuse_id' => 'int',
+        'abuse_status' => 'string',
+        'created_at' => 'string',
+        'expired_at' => 'string',
         'is_domain_held' => 'bool',
-        'message' => 'string'
+        'message' => 'string',
+        'suspended_at' => 'string'
     ];
 
     /**
@@ -69,9 +74,14 @@ class DomainAbuseDetails implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $openAPIFormats = [
+        'abuse_action' => null,
         'abuse_id' => 'int32',
+        'abuse_status' => null,
+        'created_at' => null,
+        'expired_at' => null,
         'is_domain_held' => 'boolean',
-        'message' => null
+        'message' => null,
+        'suspended_at' => null
     ];
 
     /**
@@ -101,9 +111,14 @@ class DomainAbuseDetails implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $attributeMap = [
+        'abuse_action' => 'abuse_action',
         'abuse_id' => 'abuse_id',
+        'abuse_status' => 'abuse_status',
+        'created_at' => 'created_at',
+        'expired_at' => 'expired_at',
         'is_domain_held' => 'is_domain_held',
-        'message' => 'message'
+        'message' => 'message',
+        'suspended_at' => 'suspended_at'
     ];
 
     /**
@@ -112,9 +127,14 @@ class DomainAbuseDetails implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $setters = [
+        'abuse_action' => 'setAbuseAction',
         'abuse_id' => 'setAbuseId',
+        'abuse_status' => 'setAbuseStatus',
+        'created_at' => 'setCreatedAt',
+        'expired_at' => 'setExpiredAt',
         'is_domain_held' => 'setIsDomainHeld',
-        'message' => 'setMessage'
+        'message' => 'setMessage',
+        'suspended_at' => 'setSuspendedAt'
     ];
 
     /**
@@ -123,9 +143,14 @@ class DomainAbuseDetails implements ModelInterface, ArrayAccess
      * @var string[]
      */
     protected static $getters = [
+        'abuse_action' => 'getAbuseAction',
         'abuse_id' => 'getAbuseId',
+        'abuse_status' => 'getAbuseStatus',
+        'created_at' => 'getCreatedAt',
+        'expired_at' => 'getExpiredAt',
         'is_domain_held' => 'getIsDomainHeld',
-        'message' => 'getMessage'
+        'message' => 'getMessage',
+        'suspended_at' => 'getSuspendedAt'
     ];
 
     /**
@@ -192,9 +217,14 @@ class DomainAbuseDetails implements ModelInterface, ArrayAccess
      */
     public function __construct(array $data = null)
     {
+        $this->container['abuse_action'] = isset($data['abuse_action']) ? $data['abuse_action'] : null;
         $this->container['abuse_id'] = isset($data['abuse_id']) ? $data['abuse_id'] : null;
+        $this->container['abuse_status'] = isset($data['abuse_status']) ? $data['abuse_status'] : null;
+        $this->container['created_at'] = isset($data['created_at']) ? $data['created_at'] : null;
+        $this->container['expired_at'] = isset($data['expired_at']) ? $data['expired_at'] : null;
         $this->container['is_domain_held'] = isset($data['is_domain_held']) ? $data['is_domain_held'] : null;
         $this->container['message'] = isset($data['message']) ? $data['message'] : null;
+        $this->container['suspended_at'] = isset($data['suspended_at']) ? $data['suspended_at'] : null;
     }
 
     /**
@@ -224,6 +254,32 @@ class DomainAbuseDetails implements ModelInterface, ArrayAccess
 
 
     /**
+     * Gets abuse_action
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getAbuseAction()
+    {
+        return $this->container['abuse_action'];
+    }
+
+    /**
+     * Sets abuse_action
+     *
+     * @param string|null $abuse_action abuse_action
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setAbuseAction($abuse_action)
+    {
+        $this->container['abuse_action'] = $abuse_action;
+
+        return $this;
+    }
+
+    /**
      * Gets abuse_id
      *
      * @return int|null
@@ -245,6 +301,84 @@ class DomainAbuseDetails implements ModelInterface, ArrayAccess
     public function setAbuseId($abuse_id)
     {
         $this->container['abuse_id'] = $abuse_id;
+
+        return $this;
+    }
+
+    /**
+     * Gets abuse_status
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getAbuseStatus()
+    {
+        return $this->container['abuse_status'];
+    }
+
+    /**
+     * Sets abuse_status
+     *
+     * @param string|null $abuse_status abuse_status
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setAbuseStatus($abuse_status)
+    {
+        $this->container['abuse_status'] = $abuse_status;
+
+        return $this;
+    }
+
+    /**
+     * Gets created_at
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getCreatedAt()
+    {
+        return $this->container['created_at'];
+    }
+
+    /**
+     * Sets created_at
+     *
+     * @param string|null $created_at The date and time by which a domain is marked as abusive (abuse case reported date and time).
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setCreatedAt($created_at)
+    {
+        $this->container['created_at'] = $created_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets expired_at
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getExpiredAt()
+    {
+        return $this->container['expired_at'];
+    }
+
+    /**
+     * Sets expired_at
+     *
+     * @param string|null $expired_at The date and time by which expired given abusive action. A temporary hold domain may suspended after exipired_at if action not take.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setExpiredAt($expired_at)
+    {
+        $this->container['expired_at'] = $expired_at;
 
         return $this;
     }
@@ -297,6 +431,32 @@ class DomainAbuseDetails implements ModelInterface, ArrayAccess
     public function setMessage($message)
     {
         $this->container['message'] = $message;
+
+        return $this;
+    }
+
+    /**
+     * Gets suspended_at
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getSuspendedAt()
+    {
+        return $this->container['suspended_at'];
+    }
+
+    /**
+     * Sets suspended_at
+     *
+     * @param string|null $suspended_at The date and time by which is given suspended status for abusive domain.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setSuspendedAt($suspended_at)
+    {
+        $this->container['suspended_at'] = $suspended_at;
 
         return $this;
     }

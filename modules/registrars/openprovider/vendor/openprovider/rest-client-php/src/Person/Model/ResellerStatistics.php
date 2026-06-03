@@ -62,6 +62,7 @@ class ResellerStatistics implements ModelInterface, ArrayAccess
         'customer' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsCustomerStatistics',
         'dns' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsDnsStatistics',
         'domain' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsDomainStatistics',
+        'email_service' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsEmailServiceStatistics',
         'level' => 'int',
         'license' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsLicenseStatistics',
         'spam_experts' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsSpamExpertsStatistics',
@@ -78,6 +79,7 @@ class ResellerStatistics implements ModelInterface, ArrayAccess
         'customer' => null,
         'dns' => null,
         'domain' => null,
+        'email_service' => null,
         'level' => 'int32',
         'license' => null,
         'spam_experts' => null,
@@ -115,6 +117,7 @@ class ResellerStatistics implements ModelInterface, ArrayAccess
         'customer' => 'customer',
         'dns' => 'dns',
         'domain' => 'domain',
+        'email_service' => 'email_service',
         'level' => 'level',
         'license' => 'license',
         'spam_experts' => 'spam_experts',
@@ -131,6 +134,7 @@ class ResellerStatistics implements ModelInterface, ArrayAccess
         'customer' => 'setCustomer',
         'dns' => 'setDns',
         'domain' => 'setDomain',
+        'email_service' => 'setEmailService',
         'level' => 'setLevel',
         'license' => 'setLicense',
         'spam_experts' => 'setSpamExperts',
@@ -147,6 +151,7 @@ class ResellerStatistics implements ModelInterface, ArrayAccess
         'customer' => 'getCustomer',
         'dns' => 'getDns',
         'domain' => 'getDomain',
+        'email_service' => 'getEmailService',
         'level' => 'getLevel',
         'license' => 'getLicense',
         'spam_experts' => 'getSpamExperts',
@@ -221,6 +226,7 @@ class ResellerStatistics implements ModelInterface, ArrayAccess
         $this->container['customer'] = isset($data['customer']) ? $data['customer'] : null;
         $this->container['dns'] = isset($data['dns']) ? $data['dns'] : null;
         $this->container['domain'] = isset($data['domain']) ? $data['domain'] : null;
+        $this->container['email_service'] = isset($data['email_service']) ? $data['email_service'] : null;
         $this->container['level'] = isset($data['level']) ? $data['level'] : null;
         $this->container['license'] = isset($data['license']) ? $data['license'] : null;
         $this->container['spam_experts'] = isset($data['spam_experts']) ? $data['spam_experts'] : null;
@@ -353,6 +359,32 @@ class ResellerStatistics implements ModelInterface, ArrayAccess
     public function setDomain($domain)
     {
         $this->container['domain'] = $domain;
+
+        return $this;
+    }
+
+    /**
+     * Gets email_service
+     *
+     * @return \Openprovider\Api\Rest\Client\Person\Model\StatisticsEmailServiceStatistics|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getEmailService()
+    {
+        return $this->container['email_service'];
+    }
+
+    /**
+     * Sets email_service
+     *
+     * @param \Openprovider\Api\Rest\Client\Person\Model\StatisticsEmailServiceStatistics|null $email_service email_service
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setEmailService($email_service)
+    {
+        $this->container['email_service'] = $email_service;
 
         return $this;
     }

@@ -1,5 +1,39 @@
 # Changelog
 
+## v5.13.0
+
+###### Features and improvements
+- Added new contact additional data fields for `.ru` and `.рф` (xn--p1ai) for domain registration and transfer.
+- Upgraded `openprovider/rest-client-php` library to v2.2.1-beta.
+- Updated dependencies (incl. `guzzlehttp/guzzle`, `guzzlehttp/promises`, `guzzlehttp/psr7`, `phpunit/phpunit`, `webmozart/assert`, and Symfony polyfills).
+
+## v5.12.1
+
+###### Features and improvements
+- Added German language support for registrar module.
+
+###### Bugfixes
+- Fixed: TypeError on DomainTransferSync cron due to PHPStan namespace collision with WHMCS's bundled vendor.
+
+## v5.12.0
+
+###### Features and improvements
+- Added .IN nexus declaration fields for all .IN TLD and SLD extensions, including IDN variants, with checkout validation for non-Indian registrants.
+- Upgraded openprovider/rest-client-php library to v2.2.0-beta.
+- Improved checkout contact creation support for TLDs requiring customer additional data, including more supported TLD extensions.
+
+## v5.11.2
+
+###### Features and improvements
+- Upgraded openprovider/rest-client-php library to v2.1.0-beta.
+- Updated dependencies (incl. guzzlehttp/promises).
+- Added support for latest Openprovider API updates.
+
+## v5.11.1
+
+###### Bugfixes
+- Fixed: TXT record values not displaying in DNS Management after page reload.
+
 ## v5.11.0
 
 ###### Features and improvements
