@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.13.1
+
+###### Features and improvements
+- Improved performance by adding global caching for TLD metadata to reduce repeated API calls.
+
 ## v5.13.0
 
 ###### Features and improvements
