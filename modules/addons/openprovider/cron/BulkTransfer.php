@@ -25,6 +25,10 @@ if (isset($argv) && is_array($argv)) {
         if ($argument === '--debug' && !defined('OP_ADDON_DEBUG')) {
             define('OP_ADDON_DEBUG', true);
         }
+
+        if ($argument === '--test-mode') {
+            $params['test_mode'] = true;
+        }
     }
 }
 

@@ -23,12 +23,22 @@ class BulkTransferProcessor
      */
     protected $openproviderTransferClient;
 
+    /**
+     * @var BulkTransferTestHarness|null
+     */
+    protected $testHarness = null;
+
     public function __construct(
         RegistrarModuleInvoker $registrarModuleInvoker,
         OpenproviderTransferClient $openproviderTransferClient
     ) {
         $this->registrarModuleInvoker = $registrarModuleInvoker;
         $this->openproviderTransferClient = $openproviderTransferClient;
+    }
+
+    public function setTestHarness(BulkTransferTestHarness $harness): void
+    {
+        $this->testHarness = $harness;
     }
 
     public function createBatch(array $domains, string $bulkReference, $resellerId = null, $adminId = null, $description = null)
@@ -84,6 +94,8 @@ class BulkTransferProcessor
     {
         $processed = 0;
         $claimed = 0;
+        $laneStart = microtime(true);
+        $itemDurations = [];
 
         $itemIds = BulkTransferItem::where('transfer_status', BulkTransferItem::STATUS_QUEUED)
             ->where('attempt_count', 0)
@@ -99,6 +111,7 @@ class BulkTransferProcessor
             }
 
             $claimed++;
+            $itemStart = microtime(true);
 
             try {
                 $this->processItem($item);
@@ -106,12 +119,15 @@ class BulkTransferProcessor
                 $this->markFailed($item, $e->getMessage());
             }
 
+            $itemDurations[] = round((microtime(true) - $itemStart) * 1000);
             $processed++;
         }
 
         return [
             'claimed' => $claimed,
             'processed' => $processed,
+            'lane_ms' => round((microtime(true) - $laneStart) * 1000),
+            'item_ms' => $this->summariseDurations($itemDurations),
         ];
     }
 
@@ -119,6 +135,9 @@ class BulkTransferProcessor
     {
         $processed = 0;
         $claimed = 0;
+        $laneStart = microtime(true);
+        $itemDurations = [];
+
         $now = Carbon::now();
         $eligibleBefore = $now
             ->copy()
@@ -157,6 +176,7 @@ class BulkTransferProcessor
             }
 
             $claimed++;
+            $itemStart = microtime(true);
 
             try {
                 $this->processPendingTransferItem($item);
@@ -164,17 +184,24 @@ class BulkTransferProcessor
                 $this->releasePendingTransferItem($item, $e->getMessage());
             }
 
+            $itemDurations[] = round((microtime(true) - $itemStart) * 1000);
             $processed++;
         }
 
         return [
             'claimed' => $claimed,
             'processed' => $processed,
+            'lane_ms' => round((microtime(true) - $laneStart) * 1000),
+            'item_ms' => $this->summariseDurations($itemDurations),
         ];
     }
 
     protected function processItem(BulkTransferItem $item)
     {
+        $isTestMode = $this->testHarness !== null;
+        $isRealDomain = $isTestMode && $this->testHarness->isRealDomain($item->domain);
+        $proxyId = BulkTransferTestHarness::REAL_DOMAIN_ID;
+
         $domainRecord = Domain::where('domain', $item->domain)->first();
         if (!$domainRecord) {
             $this->markValidationFailed($item, 'Domain was not found in WHMCS.');
@@ -212,8 +239,22 @@ class BulkTransferProcessor
         $item->failure_reason = null;
         $item->save();
 
+        $tWhois = microtime(true);
         try {
-            $moduleParams = $this->registrarModuleInvoker->buildModuleParams($domainRecord, $client);
+            if ($isTestMode && !$isRealDomain) {
+                // Run the real registrar WHOIS call on the actual domain to capture
+                // API latency. Fall back to client record data if the registrar API
+                // is not reachable from this environment (e.g. IP not whitelisted).
+                try {
+                    $moduleParams = $this->registrarModuleInvoker->buildModuleParams($domainRecord, $client);
+                } catch (\Throwable $ignored) {
+                    $moduleParams = $this->buildFallbackModuleParams($domainRecord, $client);
+                }
+                $this->logStep($item, 'whois', microtime(true) - $tWhois, 'mock_fallback');
+            } else {
+                $moduleParams = $this->registrarModuleInvoker->buildModuleParams($domainRecord, $client);
+                $this->logStep($item, 'whois', microtime(true) - $tWhois, 'ok');
+            }
         } catch (\Throwable $e) {
             $this->markValidationFailed($item, $e->getMessage());
             return;
@@ -221,18 +262,61 @@ class BulkTransferProcessor
 
         $this->updateItemStatus($item, BulkTransferItem::STATUS_READY_FOR_TRANSFER);
 
-        $this->updateItemStatus($item, BulkTransferItem::STATUS_UNLOCKING);
-        $this->registrarModuleInvoker->unlockDomain([
-            'domainid' => (int) $domainRecord->id,
-        ]);
+        $authCodeRequired = $this->openproviderTransferClient->isAuthCodeRequired($moduleParams);
 
-        $this->updateItemStatus($item, BulkTransferItem::STATUS_GETTING_EPP);
-        $eppCode = $this->registrarModuleInvoker->getEppCode([
-            'domainid' => (int) $domainRecord->id,
-        ]);
+        $this->updateItemStatus($item, BulkTransferItem::STATUS_UNLOCKING);
+        $tUnlock = microtime(true);
+
+        if ($isTestMode && !$isRealDomain) {
+            try {
+                $this->registrarModuleInvoker->unlockDomain(['domainid' => $proxyId]);
+            } catch (\Throwable $ignored) {}
+
+            $unlockError = $this->testHarness->randomUnlockOutcome();
+            $this->logStep($item, 'unlock', microtime(true) - $tUnlock, $unlockError ? 'error' : 'ok');
+
+            if ($unlockError !== null) {
+                $this->markFailed($item, $unlockError);
+                return;
+            }
+        } else {
+            $this->registrarModuleInvoker->unlockDomain(['domainid' => (int) $domainRecord->id]);
+            $this->logStep($item, 'unlock', microtime(true) - $tUnlock, 'ok');
+        }
+
+        $eppCode = null;
+        if ($authCodeRequired) {
+            $this->updateItemStatus($item, BulkTransferItem::STATUS_GETTING_EPP);
+            $tEpp = microtime(true);
+
+            if ($isTestMode && !$isRealDomain) {
+                try {
+                    $realEpp = $this->registrarModuleInvoker->getEppCode(['domainid' => $proxyId]);
+                    $this->testHarness->storeEppCode($realEpp);
+                } catch (\Throwable $ignored) {}
+
+                $eppError = $this->testHarness->randomEppOutcome();
+                $this->logStep($item, 'epp', microtime(true) - $tEpp, $eppError ? 'error' : 'ok');
+
+                if ($eppError !== null) {
+                    $this->markFailed($item, $eppError);
+                    return;
+                }
+
+                $eppCode = $this->testHarness->mockEppCode();
+            } else {
+                $eppCode = $this->registrarModuleInvoker->getEppCode(['domainid' => (int) $domainRecord->id]);
+                $this->logStep($item, 'epp', microtime(true) - $tEpp, 'ok');
+                if ($isTestMode) {
+                    $this->testHarness->storeEppCode($eppCode);
+                }
+            }
+        }
 
         $this->updateItemStatus($item, BulkTransferItem::STATUS_CREATING_HANDLE);
+        $tHandle = microtime(true);
         $handles = $this->openproviderTransferClient->createOrReuseTransferHandles($moduleParams);
+        $this->logStep($item, 'handle_create', microtime(true) - $tHandle, 'ok');
 
         $item->op_owner_handle = $handles['owner_handle'];
         $item->op_admin_handle = $handles['admin_handle'];
@@ -241,12 +325,10 @@ class BulkTransferProcessor
         $item->save();
 
         $this->updateItemStatus($item, BulkTransferItem::STATUS_TRANSFERRING);
-        $transferResponse = $this->openproviderTransferClient->transferDomain([
-            'domain' => [
-                'name' => $moduleParams['sld'],
-                'extension' => $moduleParams['tld'],
-            ],
-            'auth_code' => $eppCode,
+        $tTransfer = microtime(true);
+
+        $transferPayload = [
+            'domain' => ['name' => $moduleParams['sld'], 'extension' => $moduleParams['tld']],
             'owner_handle' => $handles['owner_handle'],
             'admin_handle' => $handles['admin_handle'],
             'tech_handle' => $handles['tech_handle'],
@@ -255,9 +337,26 @@ class BulkTransferProcessor
             'is_private_whois_enabled' => !empty($domainRecord->idprotection),
             'is_dnssec_enabled' => false,
             'import_nameservers_from_registry' => true,
-        ]);
+        ];
 
-        $transferState = $this->openproviderTransferClient->normalizeTransferState($transferResponse);
+        if ($isTestMode && !$isRealDomain) {
+            $proxyEpp = $this->testHarness->getStoredEppCode() ?? '';
+            try {
+                $this->openproviderTransferClient->transferDomain(
+                    array_merge($transferPayload, ['auth_code' => $proxyEpp])
+                );
+            } catch (\Throwable $ignored) {}
+
+            $transferState = $this->testHarness->randomTransferState();
+            $this->logStep($item, 'transfer', microtime(true) - $tTransfer, 'mock_' . $transferState['status']);
+        } else {
+            $transferResponse = $this->openproviderTransferClient->transferDomain(
+                array_merge($transferPayload, ['auth_code' => $eppCode])
+            );
+            $transferState = $this->openproviderTransferClient->normalizeTransferState($transferResponse);
+            $this->logStep($item, 'transfer', microtime(true) - $tTransfer, $transferState['status'] ?? 'ok');
+        }
+
         $this->storeTransferState($item, $transferState, true);
 
         if ($this->openproviderTransferClient->isActiveTransferStatus($transferState['status'])) {
@@ -269,6 +368,68 @@ class BulkTransferProcessor
             $this->markFailed(
                 $item,
                 $this->buildTransferFailureMessage($transferState, 'Openprovider transfer returned a failed status.')
+            );
+            return;
+        }
+
+        $this->markTransferRequested($item, $transferState);
+    }
+
+    protected function processPendingTransferItem(BulkTransferItem $item)
+    {
+        $isTestMode = $this->testHarness !== null;
+        $isRealDomain = $isTestMode && $this->testHarness->isRealDomain($item->domain);
+
+        $tDetails = microtime(true);
+
+        if ($isTestMode) {
+            $proxyLookup = DomainLookupObject::fromDomain(BulkTransferTestHarness::REAL_DOMAIN);
+            try {
+                $this->openproviderTransferClient->getDomainDetails(
+                    $proxyLookup->getSecondLevel(),
+                    $proxyLookup->getTopLevel()
+                );
+            } catch (\Throwable $ignored) {}
+
+            if ($isRealDomain) {
+                $domainLookupObject = DomainLookupObject::fromDomain($item->domain);
+                $domainDetails = $this->openproviderTransferClient->getDomainDetails(
+                    $domainLookupObject->getSecondLevel(),
+                    $domainLookupObject->getTopLevel()
+                );
+                $transferState = $this->openproviderTransferClient->normalizeTransferState($domainDetails);
+            } else {
+                $transferState = $this->testHarness->randomDomainDetailsState();
+            }
+
+            $this->logStep($item, 'domain_details', microtime(true) - $tDetails, 'mock_' . ($transferState['status'] ?? 'unknown'));
+        } else {
+            $domainLookupObject = DomainLookupObject::fromDomain($item->domain);
+            $domainDetails = $this->openproviderTransferClient->getDomainDetails(
+                $domainLookupObject->getSecondLevel(),
+                $domainLookupObject->getTopLevel()
+            );
+            $transferState = $this->openproviderTransferClient->normalizeTransferState($domainDetails);
+            $this->logStep($item, 'domain_details', microtime(true) - $tDetails, $transferState['status'] ?? 'ok');
+        }
+
+        $this->storeTransferState($item, $transferState);
+
+        if ($this->openproviderTransferClient->isActiveTransferStatus($transferState['status'])) {
+            $domainRecord = $this->getExistingDomainRecord($item);
+            if (!$domainRecord) {
+                $this->markFailed($item, 'Domain could not be found in WHMCS during transfer finalization.');
+                return;
+            }
+
+            $this->finalizeCompletedTransfer($item, $domainRecord, [], $transferState, false);
+            return;
+        }
+
+        if ($this->openproviderTransferClient->isFailedTransferStatus($transferState['status'])) {
+            $this->markFailed(
+                $item,
+                $this->buildTransferFailureMessage($transferState, 'Openprovider transfer reached a failed status.')
             );
             return;
         }
@@ -338,39 +499,6 @@ class BulkTransferProcessor
         }
 
         return $item;
-    }
-
-    protected function processPendingTransferItem(BulkTransferItem $item)
-    {
-        $domainLookupObject = DomainLookupObject::fromDomain($item->domain);
-        $domainDetails = $this->openproviderTransferClient->getDomainDetails(
-            $domainLookupObject->getSecondLevel(),
-            $domainLookupObject->getTopLevel()
-        );
-
-        $transferState = $this->openproviderTransferClient->normalizeTransferState($domainDetails);
-        $this->storeTransferState($item, $transferState);
-
-        if ($this->openproviderTransferClient->isActiveTransferStatus($transferState['status'])) {
-            $domainRecord = $this->getExistingDomainRecord($item);
-            if (!$domainRecord) {
-                $this->markFailed($item, 'Domain could not be found in WHMCS during transfer finalization.');
-                return;
-            }
-
-            $this->finalizeCompletedTransfer($item, $domainRecord, [], $transferState, false);
-            return;
-        }
-
-        if ($this->openproviderTransferClient->isFailedTransferStatus($transferState['status'])) {
-            $this->markFailed(
-                $item,
-                $this->buildTransferFailureMessage($transferState, 'Openprovider transfer reached a failed status.')
-            );
-            return;
-        }
-
-        $this->markTransferRequested($item, $transferState);
     }
 
     protected function updateItemStatus(BulkTransferItem $item, $status)
@@ -581,5 +709,84 @@ class BulkTransferProcessor
         } catch (\Throwable $e) {
             return Carbon::parse((string) $dateTime)->toDateString();
         }
+    }
+
+    protected function buildFallbackModuleParams(Domain $domainRecord, $client): array
+    {
+        $domainLookupObject = DomainLookupObject::fromDomain($domainRecord->domain);
+
+        $ownerContact = array_filter([
+            'First Name' => trim((string) ($client->firstname ?? '')),
+            'Last Name' => trim((string) ($client->lastname ?? '')),
+            'Company Name' => trim((string) ($client->companyname ?? '')),
+            'Email Address' => trim((string) ($client->email ?? '')),
+            'Address' => trim((string) ($client->address1 ?? '')),
+            'City' => trim((string) ($client->city ?? '')),
+            'State' => trim((string) ($client->state ?? '')),
+            'Zip Code' => trim((string) ($client->postcode ?? '')),
+            'Country' => trim((string) ($client->country ?? '')),
+            'Phone Number' => trim((string) ($client->phonenumber ?? '')),
+        ], function ($v) { return $v !== ''; });
+
+        return [
+            'userid' => (int) $domainRecord->userid,
+            'domainid' => (int) $domainRecord->id,
+            'domain' => $domainRecord->domain,
+            'sld' => $domainLookupObject->getSecondLevel(),
+            'tld' => $domainLookupObject->getTopLevel(),
+            'regperiod' => max(1, (int) ($domainRecord->registrationperiod ?: 1)),
+            'dnsmanagement' => !empty($domainRecord->dnsmanagement) ? 1 : 0,
+            'emailforwarding' => !empty($domainRecord->emailforwarding) ? 1 : 0,
+            'idprotection' => !empty($domainRecord->idprotection) ? 1 : 0,
+            'contactdetails' => [
+                'Owner'   => $ownerContact,
+                'Admin'   => $ownerContact,
+                'Tech'    => $ownerContact,
+                'Billing' => $ownerContact,
+            ],
+            'domainObj' => $domainLookupObject,
+            'original' => ['domainObj' => $domainLookupObject],
+        ];
+    }
+
+    protected function logStep(BulkTransferItem $item, string $step, float $seconds, string $outcome): void
+    {
+        $ms = round($seconds * 1000);
+
+        if (defined('OP_ADDON_DEBUG') && OP_ADDON_DEBUG) {
+            echo sprintf(
+                "[PERF] domain=%-30s  step=%-16s  ms=%-6d  outcome=%s\n",
+                $item->domain,
+                $step,
+                $ms,
+                $outcome
+            );
+        }
+
+        if (\function_exists('logModuleCall')) {
+            \logModuleCall(
+                'openprovider',
+                'bulk_transfer_step_perf',
+                ['domain' => $item->domain, 'step' => $step],
+                ['ms' => $ms, 'outcome' => $outcome]
+            );
+        }
+    }
+
+    protected function summariseDurations(array $durations): array
+    {
+        if (empty($durations)) {
+            return ['count' => 0, 'total_ms' => 0, 'avg_ms' => 0, 'min_ms' => 0, 'max_ms' => 0];
+        }
+
+        $total = array_sum($durations);
+
+        return [
+            'count' => count($durations),
+            'total_ms' => $total,
+            'avg_ms' => (int) round($total / count($durations)),
+            'min_ms' => min($durations),
+            'max_ms' => max($durations),
+        ];
     }
 }
