@@ -123,7 +123,8 @@ class Customer
                 'phone country code' => 'phone country code',
                 'email' => 'email address',
                 'companyname' => 'company name',
-                'language' => 'language'
+                'language' => 'language',
+                'locale' => 'locale'
             );
 
             if(!isset($params["contactdetails"][$prefix]['fullstate']))
@@ -230,7 +231,14 @@ class Customer
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
         $this->tags         =   $tags->getTags();
-        $this->locale       =   $this->getLocaleByLanguage($params[$indexes['language']] ?? null);
+        $language = $params[$indexes['language']] ?? null;
+        if ($language) {
+            $this->locale = $this->getLocaleByLanguage($language);
+        } elseif (isset($indexes['locale']) && !empty($params[$indexes['locale']])) {
+            $this->locale = $params[$indexes['locale']];
+        } else {
+            $this->locale = $this->getLocaleByLanguage(null);
+        }
 
         $this->additionalData = new CustomerAdditionalData();
 
