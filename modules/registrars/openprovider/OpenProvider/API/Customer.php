@@ -101,6 +101,7 @@ class Customer
             $prefix = 'owner';
 
         $getFromContactDetails = false;
+        $topLevelLanguage = $params['language'] ?? null;
         if (isset($params['contactdetails']))
         {
             $getFromContactDetails = true;
@@ -232,10 +233,16 @@ class Customer
         $this->companyName  =   $params[$indexes['companyname']];
         $this->tags         =   $tags->getTags();
         $language = $params[$indexes['language']] ?? null;
-        if ($language) {
+        $locale   = !empty($params[$indexes['locale']] ?? null)
+            ? trim(str_replace('-', '_', (string) $params[$indexes['locale']]))
+            : null;
+
+        if ($locale) {
+            $this->locale = $locale;
+        } elseif ($language) {
             $this->locale = $this->getLocaleByLanguage($language);
-        } elseif (isset($indexes['locale']) && !empty($params[$indexes['locale']])) {
-            $this->locale = $params[$indexes['locale']];
+        } elseif ($topLevelLanguage) {
+            $this->locale = $this->getLocaleByLanguage($topLevelLanguage);
         } else {
             $this->locale = $this->getLocaleByLanguage(null);
         }
