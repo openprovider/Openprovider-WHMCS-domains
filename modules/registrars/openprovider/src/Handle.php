@@ -171,6 +171,9 @@ class Handle
             $this->model    = $domain->handles()->wherePivot('type', $type)->firstOrFail();
             $currentHandleType = $this->model->type;
 
+            // Serialize the currently stored Customer before prepareHandle replaces it.
+            $storedData = serialize($this->model->data);
+
             // No domain found with this handle, let's continue
             $this->prepareHandle($params, $type);
 
@@ -178,6 +181,14 @@ class Handle
 
             if($action == false)
             {
+                // OP data matches the form, but wHandles.data may still be stale (e.g. written
+                // by syncHandlesWithWhmcs or an older flow). Update it so findExisting stays accurate.
+                $newData = serialize($this->customer);
+                if ($newData !== $storedData) {
+                    Capsule::table('wHandles')
+                        ->where('id', $this->model->id)
+                        ->update(['data' => $newData]);
+                }
                 return $this->model->handle;
             }
 

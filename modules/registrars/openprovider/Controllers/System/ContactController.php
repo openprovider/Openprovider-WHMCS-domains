@@ -257,6 +257,95 @@ class ContactController extends BaseController
         unset($contacts['Reseller']);
         unset($contacts['reseller']);
 
+        $this->syncHandlesWithWhmcs($params, $handlesToFetch, $contacts);
+
         return $contacts;
+    }
+
+    /**
+     * Sync wHandles and wDomain_handle for the fetched OP contact handles.
+     * Creates missing rows and updates the data field when it has changed.
+     */
+    private function syncHandlesWithWhmcs(array $params, array $handlesToFetch, array $contacts): void
+    {
+        try {
+            $domainName  = ($params['sld'] ?? '') . '.' . ($params['tld'] ?? '');
+            $whmcsDomain = Capsule::table('tbldomains')
+                ->where('domain', $domainName)
+                ->first(['id', 'userid']);
+
+            if (!$whmcsDomain) {
+                return;
+            }
+
+            $domainId = (int) $whmcsDomain->id;
+            $userId   = (int) $whmcsDomain->userid;
+
+            $roleToType = [
+                'Owner'   => 'registrant',
+                'Admin'   => 'admin',
+                'Tech'    => 'tech',
+                'Billing' => 'billing',
+            ];
+
+            foreach ($handlesToFetch as $roleName => $handleId) {
+                if (empty($handleId)) {
+                    continue;
+                }
+
+                $type = $roleToType[$roleName] ?? strtolower($roleName);
+
+                if (empty($contacts[$roleName])) {
+                    continue;
+                }
+
+                // Build a Customer object the same way prepareHandle does, using the contactdetails path
+                $customerParams = [
+                    'contactdetails' => [ucfirst($roleName) => $contacts[$roleName]],
+                ];
+                $row = Capsule::table('wHandles')
+                    ->where('handle', $handleId)
+                    ->where('user_id', $userId)
+                    ->where('registrar', 'openprovider')
+                    ->first();
+
+                if (!$row) {
+                    $customerObj = new \OpenProvider\API\Customer($customerParams, strtolower($roleName));
+                    $handleDbId  = Capsule::table('wHandles')->insertGetId([
+                        'handle'    => $handleId,
+                        'user_id'   => $userId,
+                        'registrar' => 'openprovider',
+                        'type'      => $type,
+                        'data'      => serialize($customerObj),
+                    ]);
+                } else {
+                    // Not overwriting data on an existing row — it may have been written by
+                    // prepareHandle with extensionAdditionalData set. Overwriting with our
+                    // partial Customer (extensionAdditionalData = null) would break findExisting's
+                    // exact-match lookup and cause duplicate handles on OP during register/transfer.
+                    $handleDbId = $row->id;
+                }
+
+                $existingLink = Capsule::table('wDomain_handle')
+                    ->where('domain_id', $domainId)
+                    ->where('type', $type)
+                    ->first();
+
+                if (!$existingLink) {
+                    Capsule::table('wDomain_handle')->insert([
+                        'domain_id' => $domainId,
+                        'handle_id' => $handleDbId,
+                        'type'      => $type,
+                    ]);
+                } elseif ((int) $existingLink->handle_id !== $handleDbId) {
+                    Capsule::table('wDomain_handle')
+                        ->where('domain_id', $domainId)
+                        ->where('type', $type)
+                        ->update(['handle_id' => $handleDbId]);
+                }
+            }
+        } catch (\Exception $e) {
+            logModuleCall('openprovider', 'syncHandlesWithWhmcs', $params, $e->getMessage());
+        }
     }
 }
