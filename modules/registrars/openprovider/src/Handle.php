@@ -187,7 +187,7 @@ class Handle
                 if ($newData !== $storedData) {
                     Capsule::table('wHandles')
                         ->where('id', $this->model->id)
-                        ->update(['data' => $newData]);
+                        ->update(['data' => $newData, 'updated_at' => date('Y-m-d H:i:s')]);
                 }
                 return $this->model->handle;
             }

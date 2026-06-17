@@ -264,7 +264,8 @@ class ContactController extends BaseController
 
     /**
      * Sync wHandles and wDomain_handle for the fetched OP contact handles.
-     * Creates missing rows and updates the data field when it has changed.
+     * Creates missing rows and ensures wDomain_handle links exist.
+     * Note: does not overwrite wHandles.data for existing rows.
      */
     private function syncHandlesWithWhmcs(array $params, array $handlesToFetch, array $contacts): void
     {
@@ -312,11 +313,13 @@ class ContactController extends BaseController
                 if (!$row) {
                     $customerObj = new \OpenProvider\API\Customer($customerParams, strtolower($roleName));
                     $handleDbId  = Capsule::table('wHandles')->insertGetId([
-                        'handle'    => $handleId,
-                        'user_id'   => $userId,
-                        'registrar' => 'openprovider',
-                        'type'      => $type,
-                        'data'      => serialize($customerObj),
+                        'handle'     => $handleId,
+                        'user_id'    => $userId,
+                        'registrar'  => 'openprovider',
+                        'type'       => $type,
+                        'data'       => serialize($customerObj),
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
                     ]);
                 } else {
                     // Not overwriting data on an existing row — it may have been written by
@@ -333,15 +336,17 @@ class ContactController extends BaseController
 
                 if (!$existingLink) {
                     Capsule::table('wDomain_handle')->insert([
-                        'domain_id' => $domainId,
-                        'handle_id' => $handleDbId,
-                        'type'      => $type,
+                        'domain_id'  => $domainId,
+                        'handle_id'  => $handleDbId,
+                        'type'       => $type,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
                     ]);
                 } elseif ((int) $existingLink->handle_id !== $handleDbId) {
                     Capsule::table('wDomain_handle')
                         ->where('domain_id', $domainId)
                         ->where('type', $type)
-                        ->update(['handle_id' => $handleDbId]);
+                        ->update(['handle_id' => $handleDbId, 'updated_at' => date('Y-m-d H:i:s')]);
                 }
             }
         } catch (\Exception $e) {
