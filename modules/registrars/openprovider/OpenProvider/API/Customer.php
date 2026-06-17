@@ -1,9 +1,10 @@
 <?php
 namespace OpenProvider\API;
-use OpenProvider\WhmcsHelpers\CustomField;
+
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
-use WeDevelopCoffee\wPower\Domain\AdditionalFields;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use WHMCS\Config\Setting;
+use WHMCS\Language\ClientLanguage;
 
 /**
  * Customer
@@ -63,6 +64,12 @@ class Customer
     public $handle          =   null;
 
     /**
+     * The customer's locale code (e.g., en_GB, ar_SA).
+     * @var string
+     */
+    public $locale          =   'en_GB';
+
+    /**
      *
      * @var \OpenProvider\API\CustomerAdditionalData
      */
@@ -116,6 +123,7 @@ class Customer
                 'phone country code' => 'phone country code',
                 'email' => 'email address',
                 'companyname' => 'company name',
+                'language' => 'language'
             );
 
             if(!isset($params["contactdetails"][$prefix]['fullstate']))
@@ -140,6 +148,7 @@ class Customer
                 'phone country code' => 'Phone Country Code',
                 'email' => 'email',
                 'companyname' => 'companyname',
+                'language' => 'language'
             );
 
             foreach ($indexes as &$value)
@@ -179,7 +188,7 @@ class Customer
         }
 
         $address            =   new \OpenProvider\API\CustomerAddress(array(
-            'fulladdress'   =>  $fullAddress ?: null,
+            'fulladdress'   =>  trim($fullAddress) ?: null,
             'zipcode'       =>  $params[$indexes['postcode']],
             'city'          =>  $params[$indexes['city']],
             'state'         =>  $params[$indexes['state']],
@@ -221,6 +230,7 @@ class Customer
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
         $this->tags         =   $tags->getTags();
+        $this->locale       =   $this->getLocaleByLanguage($params[$indexes['language']] ?? null);
 
         $this->additionalData = new CustomerAdditionalData();
 
@@ -278,6 +288,7 @@ class Customer
                 $this->additionalData->set($idn_id_type, $idn_id);
             }
         }
+
     }
 
     public function setAddressStateShort()
@@ -298,5 +309,28 @@ class Customer
     public function setTags($tags)
     {
         $this->tags = (new CustomerTags($tags))->getTags();
+    }
+
+    private function getLocaleByLanguage(?string $language)
+    {
+        // en_GB = "English (United Kingdom)" in the openprovider control panel. Templates should match this. (or be the default)
+        $defaultLanguageCode = 'en_GB';
+
+        if (!$language) {
+            return $defaultLanguageCode;
+        }
+
+        // Map invalid WHMCS language codes to OpenProvider locale codes 
+        $whmcsCorrectedMappingForOP = [
+            'arabic' => 'ar_SA',
+            'azerbaijani' => 'az_Latn_AZ',
+            'norwegian' => 'nb_NO',
+        ];
+
+        if (isset($whmcsCorrectedMappingForOP[$language])) {
+            return $whmcsCorrectedMappingForOP[$language];
+        }
+
+        return ClientLanguage::factory(Setting::getValue('Language'), $language)->toArray()['locale'] ?? $defaultLanguageCode;
     }
 }

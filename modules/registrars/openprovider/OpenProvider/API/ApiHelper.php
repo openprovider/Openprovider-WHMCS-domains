@@ -6,6 +6,7 @@ use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
 use GuzzleHttp6\Promise\Utils;
+use OpenProvider\WhmcsRegistrar\helpers\DbCacheHelper;
 
 class ApiHelper
 {
@@ -22,6 +23,9 @@ class ApiHelper
      * ApiManager constructor.
      * @param ApiInterface $apiClient
      */
+
+    private const TLD_METADATA_CACHE_TTL = 60 * 60 * 24; // 24 hours
+
     public function __construct(ApiInterface $apiClient)
     {
         $this->apiClient = $apiClient;
@@ -444,6 +448,44 @@ class ApiHelper
 
     /**
      * @param Domain $domain
+     * @param array $record
+     * @return array
+     * @throws \Exception
+     */
+    public function removeDnsRecord(Domain $domain, array $record): array
+    {
+        $zoneName = $domain->getFullName();
+
+        $required = ['type', 'name', 'value'];
+        foreach ($required as $key) {
+            if (!array_key_exists($key, $record)) {
+                throw new \InvalidArgumentException("Missing required DNS record field: {$key}");
+            }
+        }
+
+        $payload = [
+            'type'  => strtoupper((string)$record['type']),
+            'name'  => (string)$record['name'],
+            'value' => (string)$record['value'],
+        ];
+
+        // Only include prio for MX/SRV (and only if provided)
+        if (in_array($payload['type'], ['MX', 'SRV'], true) && isset($record['prio']) && $record['prio'] !== '' && $record['prio'] !== null) {
+            $payload['prio'] = (int)$record['prio'];
+        }
+
+        $args = [
+            'name'    => $zoneName,
+            'type'    => 'master',
+            'records' => [
+                'remove' => [$payload],
+            ],
+        ];
+        return $this->buildResponse($this->apiClient->call('modifyZoneDnsRequest', $args));
+    }
+
+    /**
+     * @param Domain $domain
      * @param $records
      * @return array
      * @throws \Exception
@@ -559,9 +601,9 @@ class ApiHelper
 
         $addressParts = array_filter(
             [
-                $customerOp['address']['street'] ?? '',
-                $customerOp['address']['number'] ?? '',
-                $customerOp['address']['suffix'] ?? '',
+                trim($customerOp['address']['street'] ?? ''),
+                trim($customerOp['address']['number'] ?? ''),
+                trim($customerOp['address']['suffix'] ?? ''),
             ],
             'strlen'
         );
@@ -590,6 +632,8 @@ class ApiHelper
                 $customerInfo['Company or Individual Id'] = $customerOp['additionalData']['passportNumber'];
             }
         }
+
+        $customerInfo['locale'] = $customerOp['locale'] ?? null;
 
         return $customerInfo;
     }
@@ -653,16 +697,37 @@ class ApiHelper
      */
     public function getTldMeta(string $tld): array
     {
-        $tld = trim($tld);
+        $tld = ltrim(strtolower(trim($tld)), '.');
         if ($tld === '') {
             throw new \InvalidArgumentException('Missing TLD.');
         }
 
-        return $this->buildResponse(
-            $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
+        $host = $this->apiClient->getConfiguration()->getHost();
+        $mode = str_contains($host, 'sandbox') ? 'test' : 'live';
+    
+        return DbCacheHelper::remember(
+            'tld_meta_' . $tld,
+            $mode,
+            self::TLD_METADATA_CACHE_TTL,
+            fn() => $this->buildResponse(
+                $this->apiClient->call('retrieveExtensionRequest', ['name' => $tld])
+            )
         );
     }
 
+    /**
+     * @param string $tld
+     * @return bool
+     */
+    public function supportsDnssec(string $tld): bool
+    {
+        try {
+            $meta = $this->getTldMeta($tld);
+            return (bool)($meta['dnssec_allowed'] ?? $meta['dnssecAllowed'] ?? false);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 
     /**
      * @param ResponseInterface $response

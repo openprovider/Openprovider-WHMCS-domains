@@ -35,3 +35,14 @@ $_LANG['ptIdentificationNumber'] = 'Tipo de Contribuinte (VAT/TAX ID)';
 $_LANG['ptIdentificationVat'] = "NIPC (empresa)";
 $_LANG['ptIdentificationSocialSecurityNumber'] = "NIF (particular)";
 $_LANG['ptIdentificationCORI'] = 'Tipo de Contribuinte (VAT/TAX ID)';
+
+$_LANG['itIdentificationCompany'] = 'Company Registration Number';
+$_LANG['itIdentificationSocialSecurityNumber'] = 'Individual Codice Fiscale';
+
+$_LANG['seIdentificationCompany'] = 'Legal Entity';
+$_LANG['seIdentificationSocialSecurityNumber'] = 'Private individual';
+
+$_LANG['fiIdentificationCompany'] = 'Company Registration Number';
+$_LANG['fiIdentificationPassport'] = 'Passport/ID number for Individuals';
+$_LANG['fiIdentificationSocialSecurityNumber'] = 'Social Security Number for Individuals';
+$_LANG['fiIdentificationBirthDate'] = 'Birthday for Foreign Private Individuals (YYYY-MM-DD)';

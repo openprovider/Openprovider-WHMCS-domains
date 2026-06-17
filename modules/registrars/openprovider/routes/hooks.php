@@ -38,14 +38,19 @@ return [
         'controller' => 'AdminWidgetController@showBalanceWidget'
     ],
     [
+        'hookPoint' => 'AdminHomeWidgets',
+        'priority' =>  2,
+        'controller' => 'AdminWidgetController@showCrossSellWidget'
+    ],
+    [
+        'hookPoint' => 'AdminAreaPage',
+        'priority' =>  1,
+        'controller' => 'AdminWidgetController@handleCrossSellDismiss'
+    ],
+    [
         'hookPoint' => 'ClientAreaPageDomainDNSManagement',
         'priority' => 10,
         'controller' => 'DnsNotificationController@notify'
-    ],
-    [
-        'hookPoint' => 'ClientAreaFooterOutput',
-        'priority' => 10,
-        'controller' => 'DnsClientJavascriptController@run'
     ],
     [
         'hookPoint' => 'ClientAreaPrimarySidebar',
@@ -73,7 +78,7 @@ return [
         'controller' => 'ShoppingCartController@checkoutOutput',
     ],
     [
-        'hookPoint' => 'PreShoppingCartCheckout',
+        'hookPoint' => 'ShoppingCartValidateCheckout',
         'priority'  => 1,
         'controller' => 'ShoppingCartController@preCheckout',
     ],
@@ -118,9 +123,19 @@ return [
         'controller'=> 'AdminAreaHeaderOutputController@output',
     ],
     [
-        'hookPoint' => 'AdminAreaHeaderOutput',
+        'hookPoint' => 'AdminClientDomainsTabFields',
         'priority'  => 1,
-        'controller'=> 'AdminAreaHeaderOutputController@output',
+        'controller'=> 'DnssecToggleController@output',
+    ],
+    [
+        'hookPoint' => 'AdminClientDomainsTabFieldsSave',
+        'priority'  => 1,
+        'controller'=> 'DnssecToggleController@save',
+    ],
+    [
+        'hookPoint' => 'AdminAreaFooterOutput',
+        'priority' => 1,
+        'controller' => 'DnssecToggleController@footer',
     ],
     [
         'hookPoint' => 'AfterRegistrarRegistration',
@@ -141,5 +156,15 @@ return [
         'hookPoint' => 'AdminClientDomainsTabFieldsSave',
         'priority'  => 1,
         'controller' => 'AdminClientDomainsTabController@save',
+    ],
+    [
+        'hookPoint' => 'ClientAreaPageCart',
+        'priority'  => 1,
+        'controller'=> 'ShoppingCartController@hideIdnScriptForNonIdnDomains',
+    ],
+    [
+        'hookPoint' => 'ClientAreaFooterOutput',
+        'priority'  => 2,
+        'controller' => 'ShoppingCartController@injectDomainConfigFieldFilters',
     ],
 ];

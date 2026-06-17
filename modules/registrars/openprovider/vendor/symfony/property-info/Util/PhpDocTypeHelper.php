@@ -19,8 +19,10 @@ use phpDocumentor\Reflection\Types\Array_;
 use phpDocumentor\Reflection\Types\Collection;
 use phpDocumentor\Reflection\Types\Compound;
 use phpDocumentor\Reflection\Types\Integer;
+use phpDocumentor\Reflection\Types\Mixed_;
 use phpDocumentor\Reflection\Types\Null_;
 use phpDocumentor\Reflection\Types\Nullable;
+use phpDocumentor\Reflection\Types\Scalar;
 use phpDocumentor\Reflection\Types\String_;
 use Symfony\Component\PropertyInfo\Type;
 
@@ -56,6 +58,15 @@ final class PhpDocTypeHelper
             $varType = $varType->getActualType();
         }
 
+        if ($varType instanceof Scalar) {
+            return [
+                new Type(Type::BUILTIN_TYPE_BOOL),
+                new Type(Type::BUILTIN_TYPE_FLOAT),
+                new Type(Type::BUILTIN_TYPE_INT),
+                new Type(Type::BUILTIN_TYPE_STRING),
+            ];
+        }
+
         if (!$varType instanceof Compound) {
             if ($varType instanceof Null_) {
                 $nullable = true;
@@ -72,6 +83,10 @@ final class PhpDocTypeHelper
         $varTypes = [];
         for ($typeIndex = 0; $varType->has($typeIndex); ++$typeIndex) {
             $type = $varType->get($typeIndex);
+
+            if ($type instanceof Mixed_) {
+                return [];
+            }
 
             if ($type instanceof ConstExpression) {
                 // It's safer to fall back to other extractors here, as resolving const types correctly is not easy at the moment
@@ -109,6 +124,10 @@ final class PhpDocTypeHelper
     {
         $docType = (string) $type;
 
+        if ('mixed[]' === $docType) {
+            $docType = 'array';
+        }
+
         if ($type instanceof Collection) {
             $fqsen = $type->getFqsen();
             if ($fqsen && 'list' === $fqsen->getName() && !class_exists(List_::class, false) && !class_exists((string) $fqsen)) {
@@ -118,7 +137,7 @@ final class PhpDocTypeHelper
 
             [$phpType, $class] = $this->getPhpTypeAndClass((string) $fqsen);
 
-            $collection = \is_a($class, \Traversable::class, true) || \is_a($class, \ArrayAccess::class, true);
+            $collection = is_a($class, \Traversable::class, true) || is_a($class, \ArrayAccess::class, true);
 
             // it's safer to fall back to other extractors if the generic type is too abstract
             if (!$collection && !class_exists($class)) {
@@ -152,19 +171,26 @@ final class PhpDocTypeHelper
             return new Type(Type::BUILTIN_TYPE_ARRAY, $nullable, null, true, $collectionKeyTypes, $collectionValueTypes);
         }
 
-        if ($type instanceof PseudoType) {
-            if ($type->underlyingType() instanceof Integer) {
-                return new Type(Type::BUILTIN_TYPE_INT, $nullable, null);
-            } elseif ($type->underlyingType() instanceof String_) {
-                return new Type(Type::BUILTIN_TYPE_STRING, $nullable, null);
-            }
-        }
-
         $docType = $this->normalizeType($docType);
         [$phpType, $class] = $this->getPhpTypeAndClass($docType);
 
         if ('array' === $docType) {
             return new Type(Type::BUILTIN_TYPE_ARRAY, $nullable, null, true, null, null);
+        }
+
+        if (null === $class) {
+            return new Type($phpType, $nullable, $class);
+        }
+
+        if ($type instanceof PseudoType) {
+            if ($type->underlyingType() instanceof Integer) {
+                return new Type(Type::BUILTIN_TYPE_INT, $nullable, null);
+            } elseif ($type->underlyingType() instanceof String_) {
+                return new Type(Type::BUILTIN_TYPE_STRING, $nullable, null);
+            } else {
+                // It's safer to fall back to other extractors here, as resolving pseudo types correctly is not easy at the moment
+                return null;
+            }
         }
 
         return new Type($phpType, $nullable, $class);

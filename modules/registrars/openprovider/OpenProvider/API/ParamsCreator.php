@@ -2,9 +2,7 @@
 
 namespace OpenProvider\API;
 
-use phpDocumentor\Reflection\DocBlockFactory;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
-use function GuzzleHttp\Psr7\_caseless_remove;
 
 class ParamsCreator
 {
@@ -188,14 +186,17 @@ class ParamsCreator
      * @param \ReflectionMethod $method
      * @return array
      */
-    private function getMethodParamsTypes(\ReflectionMethod $method)
+    private function getMethodParamsTypes(\ReflectionMethod $method): array
     {
-        $factory  = DocBlockFactory::createInstance();
-        $docblock = $factory->create($method->getDocComment());
+        $doc = $method->getDocComment();
+        if ($doc === false) {
+            return [];
+        }
+
         $paramTags = [];
-        foreach ($docblock->getTagsByName('param') as $tag) {
-            /** @var $tag \phpDocumentor\Reflection\DocBlock\Tags\Param */
-            $paramTags[$tag->getVariableName()] = (string)$tag->getType();
+        preg_match_all('/@param\s+(\S+)\s+\$(\w+)/', $doc, $matches, PREG_SET_ORDER);
+        foreach ($matches as $match) {
+            $paramTags[$match[2]] = explode('|', $match[1])[0];
         }
 
         return $paramTags;

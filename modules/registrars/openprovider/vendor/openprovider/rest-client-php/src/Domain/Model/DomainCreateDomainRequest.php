@@ -73,6 +73,7 @@ class DomainCreateDomainRequest implements ModelInterface, ArrayAccess
         'domain' => '\Openprovider\Api\Rest\Client\Domain\Model\DomainDomain',
         'is_dnssec_enabled' => 'bool',
         'is_easy_dmarc_enabled' => 'bool',
+        'is_hosted_accreditation' => 'bool',
         'is_private_whois_enabled' => 'bool',
         'is_sectigo_dns_enabled' => 'bool',
         'is_spamexperts_enabled' => 'bool',
@@ -111,6 +112,7 @@ class DomainCreateDomainRequest implements ModelInterface, ArrayAccess
         'domain' => null,
         'is_dnssec_enabled' => 'boolean',
         'is_easy_dmarc_enabled' => 'boolean',
+        'is_hosted_accreditation' => 'boolean',
         'is_private_whois_enabled' => 'boolean',
         'is_sectigo_dns_enabled' => 'boolean',
         'is_spamexperts_enabled' => 'boolean',
@@ -170,6 +172,7 @@ class DomainCreateDomainRequest implements ModelInterface, ArrayAccess
         'domain' => 'domain',
         'is_dnssec_enabled' => 'is_dnssec_enabled',
         'is_easy_dmarc_enabled' => 'is_easy_dmarc_enabled',
+        'is_hosted_accreditation' => 'is_hosted_accreditation',
         'is_private_whois_enabled' => 'is_private_whois_enabled',
         'is_sectigo_dns_enabled' => 'is_sectigo_dns_enabled',
         'is_spamexperts_enabled' => 'is_spamexperts_enabled',
@@ -208,6 +211,7 @@ class DomainCreateDomainRequest implements ModelInterface, ArrayAccess
         'domain' => 'setDomain',
         'is_dnssec_enabled' => 'setIsDnssecEnabled',
         'is_easy_dmarc_enabled' => 'setIsEasyDmarcEnabled',
+        'is_hosted_accreditation' => 'setIsHostedAccreditation',
         'is_private_whois_enabled' => 'setIsPrivateWhoisEnabled',
         'is_sectigo_dns_enabled' => 'setIsSectigoDnsEnabled',
         'is_spamexperts_enabled' => 'setIsSpamexpertsEnabled',
@@ -246,6 +250,7 @@ class DomainCreateDomainRequest implements ModelInterface, ArrayAccess
         'domain' => 'getDomain',
         'is_dnssec_enabled' => 'getIsDnssecEnabled',
         'is_easy_dmarc_enabled' => 'getIsEasyDmarcEnabled',
+        'is_hosted_accreditation' => 'getIsHostedAccreditation',
         'is_private_whois_enabled' => 'getIsPrivateWhoisEnabled',
         'is_sectigo_dns_enabled' => 'getIsSectigoDnsEnabled',
         'is_spamexperts_enabled' => 'getIsSpamexpertsEnabled',
@@ -342,6 +347,7 @@ class DomainCreateDomainRequest implements ModelInterface, ArrayAccess
         $this->container['domain'] = isset($data['domain']) ? $data['domain'] : null;
         $this->container['is_dnssec_enabled'] = isset($data['is_dnssec_enabled']) ? $data['is_dnssec_enabled'] : null;
         $this->container['is_easy_dmarc_enabled'] = isset($data['is_easy_dmarc_enabled']) ? $data['is_easy_dmarc_enabled'] : false;
+        $this->container['is_hosted_accreditation'] = isset($data['is_hosted_accreditation']) ? $data['is_hosted_accreditation'] : false;
         $this->container['is_private_whois_enabled'] = isset($data['is_private_whois_enabled']) ? $data['is_private_whois_enabled'] : null;
         $this->container['is_sectigo_dns_enabled'] = isset($data['is_sectigo_dns_enabled']) ? $data['is_sectigo_dns_enabled'] : null;
         $this->container['is_spamexperts_enabled'] = isset($data['is_spamexperts_enabled']) ? $data['is_spamexperts_enabled'] : null;
@@ -771,6 +777,32 @@ class DomainCreateDomainRequest implements ModelInterface, ArrayAccess
     public function setIsEasyDmarcEnabled($is_easy_dmarc_enabled)
     {
         $this->container['is_easy_dmarc_enabled'] = $is_easy_dmarc_enabled;
+
+        return $this;
+    }
+
+    /**
+     * Gets is_hosted_accreditation
+     *
+     * @return bool|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getIsHostedAccreditation()
+    {
+        return $this->container['is_hosted_accreditation'];
+    }
+
+    /**
+     * Sets is_hosted_accreditation
+     *
+     * @param bool|null $is_hosted_accreditation Optional. Enables or disables hosted accreditation route. Using this field requires prior activation by the Openprovider team. Please contact sales team for more information.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setIsHostedAccreditation($is_hosted_accreditation)
+    {
+        $this->container['is_hosted_accreditation'] = $is_hosted_accreditation;
 
         return $this;
     }

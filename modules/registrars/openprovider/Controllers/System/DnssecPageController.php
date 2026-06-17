@@ -136,7 +136,7 @@ class DnssecPageController extends BaseController
             $primarySidebar->getChild('Domain Details Management')
                 ->addChild('DNS Management')
                 ->setLabel(\Lang::trans('domaindnsmanagement'))
-                ->setUri("clientarea.php?action=domaindns&domainid={$domainId}")
+                ->setUri("dnsmanagement.php?domainid={$domainId}")
                 ->setOrder(50);
         }
 

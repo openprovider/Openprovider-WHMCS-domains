@@ -14,7 +14,6 @@ use WeDevelopCoffee\wPower\Core\Core;
 use WHMCS\Database\Capsule;
 
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
-use OpenProvider\WhmcsRegistrar\helpers\DbCacheHelper;
 
 /**
  * Class ContactControllerView
@@ -34,8 +33,6 @@ class ContactController extends BaseController
      * @var ApiHelper
      */
     private $apiHelper;
-
-    private const TLD_METADATA_CACHE_TTL = 60 * 60 * 24; // 24 hours (in seconds)
 
     /**
      * ConfigController constructor.
@@ -133,6 +130,8 @@ class ContactController extends BaseController
             $handle = $this->handle;
             $handle->setApiHelper($this->apiHelper);
 
+            $params = $this->addLanguageToContactDetails($params);
+
             if (isset($params['contactdetails']['Owner']))
                 $customers['ownerHandle']   = $handle->updateOrCreate($params, 'registrant');
             if (isset($params['contactdetails']['Admin']))
@@ -168,6 +167,58 @@ class ContactController extends BaseController
     }
 
     /**
+     * Add language to contactdetails for roles using existing contacts (uXX format).
+     *
+     * @param array $params
+     * @return array
+     */
+    private function addLanguageToContactDetails(array $params): array
+    {
+        // Safely fetch expected POST arrays.
+        $wc  = filter_input(INPUT_POST, 'wc', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        $sel = filter_input(INPUT_POST, 'sel', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+
+        if (
+            empty($params['language']) ||
+            empty($params['contactdetails']) ||
+            !is_array($params['contactdetails']) ||
+            empty($wc) ||
+            empty($sel) ||
+            !is_array($wc) ||
+            !is_array($sel)
+        ) {
+            return $params;
+        }
+        foreach ($wc as $role => $mode) {
+            // Validate role name format to avoid unexpected keys from user input.
+            if (!is_string($role) || !preg_match('/^[a-zA-Z0-9_]+$/', $role)) {
+                continue;
+            }
+            // Normalize mode to string and only allow expected value.
+            if (!is_string($mode)) {
+                $mode = (string) $mode;
+            }
+            // Only roles using existing contact
+            if ($mode !== 'contact') {
+                continue;
+            }
+            $selected = $sel[$role] ?? '';
+
+            // Only when selected value is like "uXX"
+            if (!is_string($selected) || !preg_match('/^u\d+$/', $selected)) {
+                continue;
+            }
+
+            // Inject language into contactdetails
+            if (!empty($params['language']) && isset($params['contactdetails'][$role]) && is_array($params['contactdetails'][$role])) {
+                $params['contactdetails'][$role]['language'] = $params['language'];
+            }
+        }
+
+        return $params;
+    }
+
+    /**
      * @param $params
      * @return array
      *
@@ -181,14 +232,7 @@ class ContactController extends BaseController
             return [];
         }
 
-        $mode = ($params['test_mode'] ?? false) === 'on' ? 'test' : 'live';
-
-        $tldMetaData = DbCacheHelper::remember(
-            'tld_meta_' . $this->domain->extension,
-            $mode,
-            self::TLD_METADATA_CACHE_TTL,
-            fn() => $this->apiHelper->getTldMeta($this->domain->extension)
-        );
+        $tldMetaData = $this->apiHelper->getTldMeta($this->domain->extension);
 
         $handlesToFetch = [];
         foreach (APIConfig::$handlesNames as $key => $name) {
