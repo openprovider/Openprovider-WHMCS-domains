@@ -5,11 +5,29 @@ namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\helpers\DB;
-use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use WHMCS\Database\Capsule;
 
 class ClientAreaFooterController
 {
+    private const ID_NUMBER_REQUIRED_TLDS = [
+        'es',
+        'pt',
+        'se',
+        'com.es',
+        'nom.es',
+        'edu.es',
+        'org.es',
+        'it',
+        'fi',
+    ];
+
+    private const ES_SECOND_LEVEL_TLDS = [
+        'com.es',
+        'nom.es',
+        'edu.es',
+        'org.es',
+    ];
+
     public function output($vars)
     {
         GLOBAL $_LANG;
@@ -18,10 +36,11 @@ class ClientAreaFooterController
 
         if ($idnumbermod) {
 
-            $template        = $vars['templatefile'];
+            $template = $vars['templatefile'] ?? '';
+            $js = '';
             $check_tempaltes = array('account-contacts-manage', 'account-contacts-new');
             unset($_SESSION['msg']);
-            if (in_array($template, $check_tempaltes)) {
+            if (in_array($template, $check_tempaltes, true)) {
                 $contactid = $vars['contactid'];
 
                 if ($_SESSION['Contact_Pending_Update']) {
@@ -61,11 +80,31 @@ class ClientAreaFooterController
                 }
             }
 
-            if ($template == 'clientareadomaincontactinfo') {
-                $domain = DomainFullNameToDomainObject::convert($vars['domain']);
-                $idNumberName = $_LANG[sprintf('%s%s', $domain->extension ?? 'es', 'IdentificationCORI')];
-                $js = '$("#frmDomainContactModification").submit(function(e){ e.preventDefault(); setSessionContact();  $(this).unbind("submit").submit(); }); $("input[name=\"contactdetails[Owner][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Admin][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Tech][Company or Individual Id]\"]").attr("required" , true); $("input[name=\"contactdetails[Billing][Company or Individual Id]\"]").attr("required" , true); $("label:contains(\"Company or Individual Id\")").html("' . $idNumberName . '");';
-                $js .= '$("#frmDomainContactModification").submit(function(e){ e.preventDefault(); setSessionContact();  $(this).unbind("submit").submit(); }); $("input[name=\"contactdetails[Owner][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Admin][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Tech][Vat or Tax ID]\"]").attr("required" , true); $("input[name=\"contactdetails[Billing][Vat or Tax ID]\"]").attr("required" , true); $("label:contains(\"Vat or Tax ID\")").html("' . $idNumberName . '");';
+            if ($template === 'clientareadomaincontactinfo') {
+                $domainName = $vars['domain'] ?? '';
+                $tld = $this->getFullTld($domainName);
+
+                if (!$this->isIdNumberRequiredTld($tld)) {
+                    $js = '$("input[name^=\"contactdetails\"][name$=\"[Company or Individual Id]\"]").closest(".form-group").remove();';
+                    $js .= '$("input[name^=\"contactdetails\"][name$=\"[Vat or Tax ID]\"]").closest(".form-group").remove();';
+                } else {
+                    $langKey = $this->getIdNumberLangKey($tld);
+
+                    $idNumberName = $_LANG[$langKey] ?? 'Company or Individual ID';
+                    $idNumberNameJs = json_encode($idNumberName);
+
+                    $js = '$("#frmDomainContactModification").submit(function(e){
+                        e.preventDefault();
+                        setSessionContact();
+                        $(this).unbind("submit").submit();
+                    });';
+
+                    $js .= '$("input[name^=\"contactdetails\"][name$=\"[Company or Individual Id]\"]").attr("required", true);';
+                    $js .= '$("input[name^=\"contactdetails\"][name$=\"[Vat or Tax ID]\"]").attr("required", true);';
+
+                    $js .= '$("label:contains(\"Company or Individual Id\")").html(' . $idNumberNameJs . ');';
+                    $js .= '$("label:contains(\"Vat or Tax ID\")").html(' . $idNumberNameJs . ');';
+                }
             }
 
             $systemurl = $vars['systemurl'];
@@ -122,5 +161,35 @@ request.fail(function( jqXHR, textStatus ) {
 </script>
 HTML;
         }
+    }
+
+
+    private function isIdNumberRequiredTld(string $tld): bool
+    {
+        return in_array(strtolower($tld), self::ID_NUMBER_REQUIRED_TLDS, true);
+    }
+
+    private function getFullTld(string $domainName): string
+    {
+        $domainName = strtolower($domainName);
+
+        foreach (self::ES_SECOND_LEVEL_TLDS as $multiTld) {
+            if (str_ends_with($domainName, '.' . $multiTld)) {
+                return $multiTld;
+            }
+        }
+
+        $labels = array_values(array_filter(explode('.', $domainName)));
+
+        return !empty($labels) ? end($labels) : '';
+    }
+
+    private function getIdNumberLangKey(string $tld): string
+    {
+        if (in_array($tld, self::ES_SECOND_LEVEL_TLDS, true)) {
+            return 'esIdentificationCORI';
+        }
+
+        return $tld . 'IdentificationCORI';
     }
 }
