@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.13.2
+
+###### Features and improvements
+- Added additional fields improvements for .sg.
+
 ## v5.13.1
 
 ###### Features and improvements
