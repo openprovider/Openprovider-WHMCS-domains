@@ -1,5 +1,79 @@
 # Changelog
 
+## v5.12.1
+
+###### Features and improvements
+- Added German language support for registrar module.
+
+###### Bugfixes
+- Fixed: TypeError on DomainTransferSync cron due to PHPStan namespace collision with WHMCS's bundled vendor.
+
+## v5.12.0
+
+###### Features and improvements
+- Added .IN nexus declaration fields for all .IN TLD and SLD extensions, including IDN variants, with checkout validation for non-Indian registrants.
+- Upgraded openprovider/rest-client-php library to v2.2.0-beta.
+- Improved checkout contact creation support for TLDs requiring customer additional data, including more supported TLD extensions.
+
+## v5.11.2
+
+###### Features and improvements
+- Upgraded openprovider/rest-client-php library to v2.1.0-beta.
+- Updated dependencies (incl. guzzlehttp/promises).
+- Added support for latest Openprovider API updates.
+
+## v5.11.1
+
+###### Bugfixes
+- Fixed: TXT record values not displaying in DNS Management after page reload.
+
+## v5.11.0
+
+###### Features and improvements
+- Improved client area DNS management performance across all key operations, including faster save flows and page loading.
+- Removed multiple redundant API calls across client area pages, improving overall client area performance.
+
+## v5.10.0
+
+###### Features and improvements
+- Added a promotional admin dashboard widget to highlight Openprovider's Email and Premium DNS products.
+- Improved registration flow by displaying the IDN Script field only for actual IDN domains during registration.
+- Set the correct locale when creating and updating handles.
+  
+## v5.9.4
+
+###### Features and improvements
+- Added support for deleting individual DNS records.
+- Introduced a dedicated DNSSEC management implementation and removed the dependency between DNS Management and DNSSEC Management client area buttons.
+
+## v5.9.3
+
+###### Bugfixes
+- Fixed: Duplicate handle creation when modifying contacts in the Admin Area.
+  
+## v5.9.2
+
+###### Features and improvements
+- Optimized Admin Domain Contacts page by fetching contact details using parallel API calls.
+- Added database caching for TLD metadata to reduce repeated API requests.
+  
+## v5.9.1
+
+###### Features and improvements
+- Added support for WHMCS 9.0.0.
+- Added a progress bar to the Openprovider install and update scripts.
+- Added a configuration option to open the new DNS Manager in a new browser tab (useNewDnsManagerFeatureInNewWindow in advanced-module-configurations.php).
+- Removed the unnecessary Company Registration Number additional field for .it domains.
+- Added support for overriding dnssec.tpl in custom WHMCS themes.
+
+###### Bugfixes
+- Fixed: DomainLockingEnabledController being triggered on non-domain pages.
+- Fixed: Sync cron failures due to outdated library.
+- Fixed: Update script confirmation not displaying when executed via curl or bash.
+- Fixed: Registrar lock status not displaying correctly for non-English languages.
+- Fixed: Domain creation issues in sandbox environments.
+- Fixed: Balance widget warning styling for specific balance ranges (e.g. 1,000–2,000 and 10,000–10,200).
+
 ## v5.9.0
 
 ###### Features and improvements

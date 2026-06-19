@@ -131,6 +131,8 @@ class AdditionalFields
              * op_dropdown_for_op_name  The value provided by the customer is used to define the op_name fieldname.
              */
 
+            $dropdown_op_name_fields = [];
+
             // Loop through all fields to find a decision master.
             foreach($additionalFields[$domainExtension] as $key => $field)
             {
@@ -181,8 +183,11 @@ class AdditionalFields
                         continue;
                         
                 }
-                elseif($field['Type']  == 'tickbox' && $value == 'on')
-                    $value = "1";
+                elseif($field['Type'] == 'tickbox') {
+                    $checkedValue   = $field['op_values'][0] ?? '1';
+                    $uncheckedValue = $field['op_values'][1] ?? '0';
+                    $value = ($value == 'on') ? $checkedValue : $uncheckedValue;
+                }
 
                 if($field['op_location'] == 'customerExtensionAdditionalData' && isset($params['additionalfields'][$field['Name']]))
                 {
@@ -217,8 +222,25 @@ class AdditionalFields
             $foundAdditionalFields['customer']   = $this->customerData;
 
         $foundAdditionalFields['domainAdditionalData']              = $this->domainAdditionalData;
-        
+
+        if (
+            strtoupper((string) ($params['country'] ?? '')) === 'IN'
+            && isset($foundAdditionalFields['extensionCustomerAdditionalData'])
+            && $this->hasInNexusFields($additionalFields[$domainExtension] ?? [])
+        ) {
+            unset($foundAdditionalFields['extensionCustomerAdditionalData']);
+        }
+
         return $foundAdditionalFields;
     }
 
-}   
+    private function hasInNexusFields(array $fields): bool
+    {
+        foreach ($fields as $field) {
+            if (strpos($field['op_name'] ?? '', 'inNexus') === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

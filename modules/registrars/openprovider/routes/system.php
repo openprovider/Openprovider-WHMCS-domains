@@ -62,4 +62,5 @@ return [
 
     // customPages
     'showDnssecPage' => 'DnssecPageController@show',
+    'showDnsManagementPage' => 'DnsManagementPageController@show',
 ];

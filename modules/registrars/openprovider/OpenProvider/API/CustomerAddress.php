@@ -43,7 +43,7 @@ class CustomerAddress extends \OpenProvider\API\AutoloadConstructor
         } catch (\Exception $e)
         {
             if (strpos($e->getMessage(), ' could not be splitted into street name and house number.') !== false)
-                $this->street = $fullAddress;
+                $this->street = trim($fullAddress);
             else
                 throw $e;
         }

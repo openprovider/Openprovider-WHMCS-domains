@@ -1750,15 +1750,15 @@ class DomainServiceApi
      * @param  string $order_by_domain_extension Domain extension. (optional)
      * @param  string $order_by_order_date The order date. (optional)
      * @param  string $order_by_active_date The active date. (optional)
-     * @param  string $order_by_expiration_date Domain expiration date. (optional)
-     * @param  string $order_by_renewal_date Date on which domain will be renewed. (optional)
+     * @param  string $order_by_expiration_date This value might align with the registry_expiration_date. It is not the primary reference for domain expiration in Openprovider. (optional)
+     * @param  string $order_by_renewal_date The date and time by which a domain must be renewed to avoid expiration, please always refer to the renewal_date to process domain renewals. (optional)
      * @param  string $order_by_status Domain status. (optional)
      * @param  string $order_by_transfer_date The transfer date. (optional)
      * @param  int $limit The limit. (optional)
      * @param  int $offset The offset. (optional)
      * @param  int $id Domain id number. (optional)
      * @param  string $extension Domain extension. (optional)
-     * @param  string $renewal_date Date on which domain will be renewed. (optional)
+     * @param  string $renewal_date The date and time by which a domain must be renewed to avoid expiration, please always refer to the renewal_date to process domain renewals. (optional)
      * @param  string $full_name Full name of the domain. (optional)
      * @param  string $domain_name_pattern The domain name pattern. (optional)
      * @param  string $ns_group_pattern Nameserver group name pattern. (optional)
@@ -1776,14 +1776,17 @@ class DomainServiceApi
      * @param  string $response_type The type. (optional)
      * @param  string $response_to The to. (optional)
      * @param  bool $is_deleted Indicates whether object is deleted. (optional)
+     * @param  bool $with_abuse_details Returns domain abuse details. (optional)
+     * @param  bool $is_abusive Returns only abusive domains. (optional)
+     * @param  string[] $domain_names Array of full domain names. Maximum of 100 names is used per request. (optional)
      *
      * @throws \Openprovider\Api\Rest\Client\Domain\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
      * @return \Openprovider\Api\Rest\Client\Domain\Model\DomainListDomainsResponse|\Openprovider\Api\Rest\Client\Domain\Model\ErrorError
      */
-    public function listDomains($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null)
+    public function listDomains($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null, $with_abuse_details = null, $is_abusive = null, $domain_names = null)
     {
-        list($response) = $this->listDomainsWithHttpInfo($order_by_id, $order_by_domain_name, $order_by_domain_extension, $order_by_order_date, $order_by_active_date, $order_by_expiration_date, $order_by_renewal_date, $order_by_status, $order_by_transfer_date, $limit, $offset, $id, $extension, $renewal_date, $full_name, $domain_name_pattern, $ns_group_pattern, $status, $status_not_equal, $queue_status, $contact_handle, $comment_pattern, $with_history, $with_api_history, $with_additional_data, $application_mode, $with_verification_email, $with_registry_statuses, $response_type, $response_to, $is_deleted);
+        list($response) = $this->listDomainsWithHttpInfo($order_by_id, $order_by_domain_name, $order_by_domain_extension, $order_by_order_date, $order_by_active_date, $order_by_expiration_date, $order_by_renewal_date, $order_by_status, $order_by_transfer_date, $limit, $offset, $id, $extension, $renewal_date, $full_name, $domain_name_pattern, $ns_group_pattern, $status, $status_not_equal, $queue_status, $contact_handle, $comment_pattern, $with_history, $with_api_history, $with_additional_data, $application_mode, $with_verification_email, $with_registry_statuses, $response_type, $response_to, $is_deleted, $with_abuse_details, $is_abusive, $domain_names);
         return $response;
     }
 
@@ -1797,15 +1800,15 @@ class DomainServiceApi
      * @param  string $order_by_domain_extension Domain extension. (optional)
      * @param  string $order_by_order_date The order date. (optional)
      * @param  string $order_by_active_date The active date. (optional)
-     * @param  string $order_by_expiration_date Domain expiration date. (optional)
-     * @param  string $order_by_renewal_date Date on which domain will be renewed. (optional)
+     * @param  string $order_by_expiration_date This value might align with the registry_expiration_date. It is not the primary reference for domain expiration in Openprovider. (optional)
+     * @param  string $order_by_renewal_date The date and time by which a domain must be renewed to avoid expiration, please always refer to the renewal_date to process domain renewals. (optional)
      * @param  string $order_by_status Domain status. (optional)
      * @param  string $order_by_transfer_date The transfer date. (optional)
      * @param  int $limit The limit. (optional)
      * @param  int $offset The offset. (optional)
      * @param  int $id Domain id number. (optional)
      * @param  string $extension Domain extension. (optional)
-     * @param  string $renewal_date Date on which domain will be renewed. (optional)
+     * @param  string $renewal_date The date and time by which a domain must be renewed to avoid expiration, please always refer to the renewal_date to process domain renewals. (optional)
      * @param  string $full_name Full name of the domain. (optional)
      * @param  string $domain_name_pattern The domain name pattern. (optional)
      * @param  string $ns_group_pattern Nameserver group name pattern. (optional)
@@ -1823,14 +1826,17 @@ class DomainServiceApi
      * @param  string $response_type The type. (optional)
      * @param  string $response_to The to. (optional)
      * @param  bool $is_deleted Indicates whether object is deleted. (optional)
+     * @param  bool $with_abuse_details Returns domain abuse details. (optional)
+     * @param  bool $is_abusive Returns only abusive domains. (optional)
+     * @param  string[] $domain_names Array of full domain names. Maximum of 100 names is used per request. (optional)
      *
      * @throws Openprovider\Api\Rest\Client\Base\ApiException; on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Openprovider\Api\Rest\Client\Domain\Model\DomainListDomainsResponse|\Openprovider\Api\Rest\Client\Domain\Model\ErrorError, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listDomainsWithHttpInfo($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null)
+    public function listDomainsWithHttpInfo($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null, $with_abuse_details = null, $is_abusive = null, $domain_names = null)
     {
-        $request = $this->listDomainsRequest($order_by_id, $order_by_domain_name, $order_by_domain_extension, $order_by_order_date, $order_by_active_date, $order_by_expiration_date, $order_by_renewal_date, $order_by_status, $order_by_transfer_date, $limit, $offset, $id, $extension, $renewal_date, $full_name, $domain_name_pattern, $ns_group_pattern, $status, $status_not_equal, $queue_status, $contact_handle, $comment_pattern, $with_history, $with_api_history, $with_additional_data, $application_mode, $with_verification_email, $with_registry_statuses, $response_type, $response_to, $is_deleted);
+        $request = $this->listDomainsRequest($order_by_id, $order_by_domain_name, $order_by_domain_extension, $order_by_order_date, $order_by_active_date, $order_by_expiration_date, $order_by_renewal_date, $order_by_status, $order_by_transfer_date, $limit, $offset, $id, $extension, $renewal_date, $full_name, $domain_name_pattern, $ns_group_pattern, $status, $status_not_equal, $queue_status, $contact_handle, $comment_pattern, $with_history, $with_api_history, $with_additional_data, $application_mode, $with_verification_email, $with_registry_statuses, $response_type, $response_to, $is_deleted, $with_abuse_details, $is_abusive, $domain_names);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1935,15 +1941,15 @@ class DomainServiceApi
      * @param  string $order_by_domain_extension Domain extension. (optional)
      * @param  string $order_by_order_date The order date. (optional)
      * @param  string $order_by_active_date The active date. (optional)
-     * @param  string $order_by_expiration_date Domain expiration date. (optional)
-     * @param  string $order_by_renewal_date Date on which domain will be renewed. (optional)
+     * @param  string $order_by_expiration_date This value might align with the registry_expiration_date. It is not the primary reference for domain expiration in Openprovider. (optional)
+     * @param  string $order_by_renewal_date The date and time by which a domain must be renewed to avoid expiration, please always refer to the renewal_date to process domain renewals. (optional)
      * @param  string $order_by_status Domain status. (optional)
      * @param  string $order_by_transfer_date The transfer date. (optional)
      * @param  int $limit The limit. (optional)
      * @param  int $offset The offset. (optional)
      * @param  int $id Domain id number. (optional)
      * @param  string $extension Domain extension. (optional)
-     * @param  string $renewal_date Date on which domain will be renewed. (optional)
+     * @param  string $renewal_date The date and time by which a domain must be renewed to avoid expiration, please always refer to the renewal_date to process domain renewals. (optional)
      * @param  string $full_name Full name of the domain. (optional)
      * @param  string $domain_name_pattern The domain name pattern. (optional)
      * @param  string $ns_group_pattern Nameserver group name pattern. (optional)
@@ -1961,13 +1967,16 @@ class DomainServiceApi
      * @param  string $response_type The type. (optional)
      * @param  string $response_to The to. (optional)
      * @param  bool $is_deleted Indicates whether object is deleted. (optional)
+     * @param  bool $with_abuse_details Returns domain abuse details. (optional)
+     * @param  bool $is_abusive Returns only abusive domains. (optional)
+     * @param  string[] $domain_names Array of full domain names. Maximum of 100 names is used per request. (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Promise\PromiseInterface
      */
-    public function listDomainsAsync($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null)
+    public function listDomainsAsync($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null, $with_abuse_details = null, $is_abusive = null, $domain_names = null)
     {
-        return $this->listDomainsAsyncWithHttpInfo($order_by_id, $order_by_domain_name, $order_by_domain_extension, $order_by_order_date, $order_by_active_date, $order_by_expiration_date, $order_by_renewal_date, $order_by_status, $order_by_transfer_date, $limit, $offset, $id, $extension, $renewal_date, $full_name, $domain_name_pattern, $ns_group_pattern, $status, $status_not_equal, $queue_status, $contact_handle, $comment_pattern, $with_history, $with_api_history, $with_additional_data, $application_mode, $with_verification_email, $with_registry_statuses, $response_type, $response_to, $is_deleted)
+        return $this->listDomainsAsyncWithHttpInfo($order_by_id, $order_by_domain_name, $order_by_domain_extension, $order_by_order_date, $order_by_active_date, $order_by_expiration_date, $order_by_renewal_date, $order_by_status, $order_by_transfer_date, $limit, $offset, $id, $extension, $renewal_date, $full_name, $domain_name_pattern, $ns_group_pattern, $status, $status_not_equal, $queue_status, $contact_handle, $comment_pattern, $with_history, $with_api_history, $with_additional_data, $application_mode, $with_verification_email, $with_registry_statuses, $response_type, $response_to, $is_deleted, $with_abuse_details, $is_abusive, $domain_names)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1985,15 +1994,15 @@ class DomainServiceApi
      * @param  string $order_by_domain_extension Domain extension. (optional)
      * @param  string $order_by_order_date The order date. (optional)
      * @param  string $order_by_active_date The active date. (optional)
-     * @param  string $order_by_expiration_date Domain expiration date. (optional)
-     * @param  string $order_by_renewal_date Date on which domain will be renewed. (optional)
+     * @param  string $order_by_expiration_date This value might align with the registry_expiration_date. It is not the primary reference for domain expiration in Openprovider. (optional)
+     * @param  string $order_by_renewal_date The date and time by which a domain must be renewed to avoid expiration, please always refer to the renewal_date to process domain renewals. (optional)
      * @param  string $order_by_status Domain status. (optional)
      * @param  string $order_by_transfer_date The transfer date. (optional)
      * @param  int $limit The limit. (optional)
      * @param  int $offset The offset. (optional)
      * @param  int $id Domain id number. (optional)
      * @param  string $extension Domain extension. (optional)
-     * @param  string $renewal_date Date on which domain will be renewed. (optional)
+     * @param  string $renewal_date The date and time by which a domain must be renewed to avoid expiration, please always refer to the renewal_date to process domain renewals. (optional)
      * @param  string $full_name Full name of the domain. (optional)
      * @param  string $domain_name_pattern The domain name pattern. (optional)
      * @param  string $ns_group_pattern Nameserver group name pattern. (optional)
@@ -2011,14 +2020,17 @@ class DomainServiceApi
      * @param  string $response_type The type. (optional)
      * @param  string $response_to The to. (optional)
      * @param  bool $is_deleted Indicates whether object is deleted. (optional)
+     * @param  bool $with_abuse_details Returns domain abuse details. (optional)
+     * @param  bool $is_abusive Returns only abusive domains. (optional)
+     * @param  string[] $domain_names Array of full domain names. Maximum of 100 names is used per request. (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Promise\PromiseInterface
      */
-    public function listDomainsAsyncWithHttpInfo($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null)
+    public function listDomainsAsyncWithHttpInfo($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null, $with_abuse_details = null, $is_abusive = null, $domain_names = null)
     {
         $returnType = '\Openprovider\Api\Rest\Client\Domain\Model\DomainListDomainsResponse';
-        $request = $this->listDomainsRequest($order_by_id, $order_by_domain_name, $order_by_domain_extension, $order_by_order_date, $order_by_active_date, $order_by_expiration_date, $order_by_renewal_date, $order_by_status, $order_by_transfer_date, $limit, $offset, $id, $extension, $renewal_date, $full_name, $domain_name_pattern, $ns_group_pattern, $status, $status_not_equal, $queue_status, $contact_handle, $comment_pattern, $with_history, $with_api_history, $with_additional_data, $application_mode, $with_verification_email, $with_registry_statuses, $response_type, $response_to, $is_deleted);
+        $request = $this->listDomainsRequest($order_by_id, $order_by_domain_name, $order_by_domain_extension, $order_by_order_date, $order_by_active_date, $order_by_expiration_date, $order_by_renewal_date, $order_by_status, $order_by_transfer_date, $limit, $offset, $id, $extension, $renewal_date, $full_name, $domain_name_pattern, $ns_group_pattern, $status, $status_not_equal, $queue_status, $contact_handle, $comment_pattern, $with_history, $with_api_history, $with_additional_data, $application_mode, $with_verification_email, $with_registry_statuses, $response_type, $response_to, $is_deleted, $with_abuse_details, $is_abusive, $domain_names);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -2062,15 +2074,15 @@ class DomainServiceApi
      * @param  string $order_by_domain_extension Domain extension. (optional)
      * @param  string $order_by_order_date The order date. (optional)
      * @param  string $order_by_active_date The active date. (optional)
-     * @param  string $order_by_expiration_date Domain expiration date. (optional)
-     * @param  string $order_by_renewal_date Date on which domain will be renewed. (optional)
+     * @param  string $order_by_expiration_date This value might align with the registry_expiration_date. It is not the primary reference for domain expiration in Openprovider. (optional)
+     * @param  string $order_by_renewal_date The date and time by which a domain must be renewed to avoid expiration, please always refer to the renewal_date to process domain renewals. (optional)
      * @param  string $order_by_status Domain status. (optional)
      * @param  string $order_by_transfer_date The transfer date. (optional)
      * @param  int $limit The limit. (optional)
      * @param  int $offset The offset. (optional)
      * @param  int $id Domain id number. (optional)
      * @param  string $extension Domain extension. (optional)
-     * @param  string $renewal_date Date on which domain will be renewed. (optional)
+     * @param  string $renewal_date The date and time by which a domain must be renewed to avoid expiration, please always refer to the renewal_date to process domain renewals. (optional)
      * @param  string $full_name Full name of the domain. (optional)
      * @param  string $domain_name_pattern The domain name pattern. (optional)
      * @param  string $ns_group_pattern Nameserver group name pattern. (optional)
@@ -2088,11 +2100,14 @@ class DomainServiceApi
      * @param  string $response_type The type. (optional)
      * @param  string $response_to The to. (optional)
      * @param  bool $is_deleted Indicates whether object is deleted. (optional)
+     * @param  bool $with_abuse_details Returns domain abuse details. (optional)
+     * @param  bool $is_abusive Returns only abusive domains. (optional)
+     * @param  string[] $domain_names Array of full domain names. Maximum of 100 names is used per request. (optional)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp6\Psr7\Request
      */
-    protected function listDomainsRequest($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null)
+    protected function listDomainsRequest($order_by_id = null, $order_by_domain_name = null, $order_by_domain_extension = null, $order_by_order_date = null, $order_by_active_date = null, $order_by_expiration_date = null, $order_by_renewal_date = null, $order_by_status = null, $order_by_transfer_date = null, $limit = null, $offset = null, $id = null, $extension = null, $renewal_date = null, $full_name = null, $domain_name_pattern = null, $ns_group_pattern = null, $status = null, $status_not_equal = null, $queue_status = null, $contact_handle = null, $comment_pattern = null, $with_history = null, $with_api_history = null, $with_additional_data = null, $application_mode = null, $with_verification_email = null, $with_registry_statuses = null, $response_type = null, $response_to = null, $is_deleted = null, $with_abuse_details = null, $is_abusive = null, $domain_names = null)
     {
 
         $resourcePath = '/v1beta/domains';
@@ -2228,6 +2243,21 @@ class DomainServiceApi
         // query params
         if ($is_deleted !== null) {
             $queryParams['is_deleted'] = ObjectSerializer::toQueryValue($is_deleted);
+        }
+        // query params
+        if ($with_abuse_details !== null) {
+            $queryParams['with_abuse_details'] = ObjectSerializer::toQueryValue($with_abuse_details);
+        }
+        // query params
+        if ($is_abusive !== null) {
+            $queryParams['is_abusive'] = ObjectSerializer::toQueryValue($is_abusive);
+        }
+        // query params
+        if (is_array($domain_names)) {
+            $domain_names = ObjectSerializer::serializeCollection($domain_names, 'multi', true);
+        }
+        if ($domain_names !== null) {
+            $queryParams['domain_names'] = ObjectSerializer::toQueryValue($domain_names);
         }
 
 

@@ -63,6 +63,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'comments' => 'string',
         'company_name' => 'string',
         'company_size' => '\Openprovider\Api\Rest\Client\Person\Model\AttributesCompanySize',
+        'designation' => '\Openprovider\Api\Rest\Client\Person\Model\AttributesDesignation',
         'fax' => '\Openprovider\Api\Rest\Client\Person\Model\CustomerFax',
         'id' => 'int',
         'industry' => '\Openprovider\Api\Rest\Client\Person\Model\AttributesIndustry',
@@ -70,8 +71,11 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'kpp' => 'string',
         'locale' => 'string',
         'name' => '\Openprovider\Api\Rest\Client\Person\Model\ContactName',
+        'notifications_settings' => '\Openprovider\Api\Rest\Client\Person\Model\ResellerNotificationsSettings',
         'phone' => '\Openprovider\Api\Rest\Client\Person\Model\ContactPhone',
-        'vat' => 'string'
+        'referral_source' => '\Openprovider\Api\Rest\Client\Person\Model\AttributesReferralSource',
+        'vat' => 'string',
+        'website_url' => 'string'
     ];
 
     /**
@@ -85,6 +89,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'comments' => null,
         'company_name' => null,
         'company_size' => null,
+        'designation' => null,
         'fax' => null,
         'id' => 'int32',
         'industry' => null,
@@ -92,8 +97,11 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'kpp' => null,
         'locale' => null,
         'name' => null,
+        'notifications_settings' => null,
         'phone' => null,
-        'vat' => null
+        'referral_source' => null,
+        'vat' => null,
+        'website_url' => null
     ];
 
     /**
@@ -128,6 +136,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'comments' => 'comments',
         'company_name' => 'company_name',
         'company_size' => 'company_size',
+        'designation' => 'designation',
         'fax' => 'fax',
         'id' => 'id',
         'industry' => 'industry',
@@ -135,8 +144,11 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'kpp' => 'kpp',
         'locale' => 'locale',
         'name' => 'name',
+        'notifications_settings' => 'notifications_settings',
         'phone' => 'phone',
-        'vat' => 'vat'
+        'referral_source' => 'referral_source',
+        'vat' => 'vat',
+        'website_url' => 'website_url'
     ];
 
     /**
@@ -150,6 +162,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'comments' => 'setComments',
         'company_name' => 'setCompanyName',
         'company_size' => 'setCompanySize',
+        'designation' => 'setDesignation',
         'fax' => 'setFax',
         'id' => 'setId',
         'industry' => 'setIndustry',
@@ -157,8 +170,11 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'kpp' => 'setKpp',
         'locale' => 'setLocale',
         'name' => 'setName',
+        'notifications_settings' => 'setNotificationsSettings',
         'phone' => 'setPhone',
-        'vat' => 'setVat'
+        'referral_source' => 'setReferralSource',
+        'vat' => 'setVat',
+        'website_url' => 'setWebsiteUrl'
     ];
 
     /**
@@ -172,6 +188,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'comments' => 'getComments',
         'company_name' => 'getCompanyName',
         'company_size' => 'getCompanySize',
+        'designation' => 'getDesignation',
         'fax' => 'getFax',
         'id' => 'getId',
         'industry' => 'getIndustry',
@@ -179,8 +196,11 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'kpp' => 'getKpp',
         'locale' => 'getLocale',
         'name' => 'getName',
+        'notifications_settings' => 'getNotificationsSettings',
         'phone' => 'getPhone',
-        'vat' => 'getVat'
+        'referral_source' => 'getReferralSource',
+        'vat' => 'getVat',
+        'website_url' => 'getWebsiteUrl'
     ];
 
     /**
@@ -252,6 +272,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         $this->container['comments'] = isset($data['comments']) ? $data['comments'] : null;
         $this->container['company_name'] = isset($data['company_name']) ? $data['company_name'] : null;
         $this->container['company_size'] = isset($data['company_size']) ? $data['company_size'] : null;
+        $this->container['designation'] = isset($data['designation']) ? $data['designation'] : null;
         $this->container['fax'] = isset($data['fax']) ? $data['fax'] : null;
         $this->container['id'] = isset($data['id']) ? $data['id'] : null;
         $this->container['industry'] = isset($data['industry']) ? $data['industry'] : null;
@@ -259,8 +280,11 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         $this->container['kpp'] = isset($data['kpp']) ? $data['kpp'] : null;
         $this->container['locale'] = isset($data['locale']) ? $data['locale'] : null;
         $this->container['name'] = isset($data['name']) ? $data['name'] : null;
+        $this->container['notifications_settings'] = isset($data['notifications_settings']) ? $data['notifications_settings'] : null;
         $this->container['phone'] = isset($data['phone']) ? $data['phone'] : null;
+        $this->container['referral_source'] = isset($data['referral_source']) ? $data['referral_source'] : null;
         $this->container['vat'] = isset($data['vat']) ? $data['vat'] : null;
+        $this->container['website_url'] = isset($data['website_url']) ? $data['website_url'] : null;
     }
 
     /**
@@ -415,6 +439,32 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
     public function setCompanySize($company_size)
     {
         $this->container['company_size'] = $company_size;
+
+        return $this;
+    }
+
+    /**
+     * Gets designation
+     *
+     * @return \Openprovider\Api\Rest\Client\Person\Model\AttributesDesignation|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getDesignation()
+    {
+        return $this->container['designation'];
+    }
+
+    /**
+     * Sets designation
+     *
+     * @param \Openprovider\Api\Rest\Client\Person\Model\AttributesDesignation|null $designation designation
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setDesignation($designation)
+    {
+        $this->container['designation'] = $designation;
 
         return $this;
     }
@@ -602,6 +652,32 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets notifications_settings
+     *
+     * @return \Openprovider\Api\Rest\Client\Person\Model\ResellerNotificationsSettings|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getNotificationsSettings()
+    {
+        return $this->container['notifications_settings'];
+    }
+
+    /**
+     * Sets notifications_settings
+     *
+     * @param \Openprovider\Api\Rest\Client\Person\Model\ResellerNotificationsSettings|null $notifications_settings notifications_settings
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setNotificationsSettings($notifications_settings)
+    {
+        $this->container['notifications_settings'] = $notifications_settings;
+
+        return $this;
+    }
+
+    /**
      * Gets phone
      *
      * @return \Openprovider\Api\Rest\Client\Person\Model\ContactPhone|null
@@ -628,6 +704,32 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets referral_source
+     *
+     * @return \Openprovider\Api\Rest\Client\Person\Model\AttributesReferralSource|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getReferralSource()
+    {
+        return $this->container['referral_source'];
+    }
+
+    /**
+     * Sets referral_source
+     *
+     * @param \Openprovider\Api\Rest\Client\Person\Model\AttributesReferralSource|null $referral_source referral_source
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setReferralSource($referral_source)
+    {
+        $this->container['referral_source'] = $referral_source;
+
+        return $this;
+    }
+
+    /**
      * Gets vat
      *
      * @return string|null
@@ -649,6 +751,32 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
     public function setVat($vat)
     {
         $this->container['vat'] = $vat;
+
+        return $this;
+    }
+
+    /**
+     * Gets website_url
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getWebsiteUrl()
+    {
+        return $this->container['website_url'];
+    }
+
+    /**
+     * Sets website_url
+     *
+     * @param string|null $website_url website_url
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setWebsiteUrl($website_url)
+    {
+        $this->container['website_url'] = $website_url;
 
         return $this;
     }

@@ -30,7 +30,7 @@ return [
     //  Default: '', string - Choose a DNS template
     'dnsTemplate'                       => '',
     'useNewDnsManagerFeature'           => false, //  Default: false, Use the Openprovider DNS panel instead of the WHMCS DNS editing page (https://support.openprovider.eu/hc/en-us/articles/360014539999-Single-Domain-DNS-panel)
-
+    'useNewDnsManagerFeatureInNewWindow' => true, // Default: true, When this is enabled, DnsManager will open in a new window. But to use this "useNewDnsManagerFeature" configuration needs to be enabled.
     //choose which settings will be synched by the openprovider sync task
     'syncAutoRenewSetting'              => true,  //  Default: true,  Synchronize Auto renew setting to Openprovider?
     'syncIdentityProtectionToggle'      => true,  //  Default: true,  Synchronize Identity protection to Openprovider?
@@ -57,8 +57,8 @@ return [
     // maxRegistrationPeriod
     'maxRegistrationPeriod' => 1,
 
-    // enable advanced additional data management for .es and .pt domain registrations    
-    'idnumbermod' => false,
+    // enable advanced customer additional data management for .es, .pt, .se, .com.es, .nom.es, .edu.es, .org.es, .it and .fi domain registrations    
+    'idnumbermod' => true,
 
     'renewalDateSync' =>true, //  Default: true, If true, Set 'OP renewal date' to WHMCS as expiration date. Else Set 'OP expiration date' to WHMCS as expiration date.
 
