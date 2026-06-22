@@ -136,6 +136,12 @@ else
             exit 1
         fi
 
+        if ! grep -q '<?php' "$ADDITIONAL_FIELDS"; then
+            TMP_FILE=$(mktemp)
+            printf '<?php\n' | cat - "$ADDITIONAL_FIELDS" > "$TMP_FILE" && cp "$TMP_FILE" "$ADDITIONAL_FIELDS"
+            rm -f "$TMP_FILE"
+        fi
+
         if tail -c 100 "$ADDITIONAL_FIELDS" | grep -q '?>'; then
             perl -i -0pe 's/\?>\s*$//' "$ADDITIONAL_FIELDS"
         fi
