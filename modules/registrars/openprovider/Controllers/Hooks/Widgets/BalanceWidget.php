@@ -110,7 +110,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
                 $curlError = curl_error($ch);
                 curl_close($ch);
                 logModuleCall(
-                    'Openprovider',
+                    'OpenProvider NL',
                     'module version retrieval',
                     'cURL error while retrieving Openprovider version',
                     $curlError,

@@ -39,6 +39,9 @@ class AdminWidgetController
                 null,
                 null
             );
+        }
+    }
+
     public function showCrossSellWidget()
     {
         return new CrossSellWidget();
