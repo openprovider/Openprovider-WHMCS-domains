@@ -1295,6 +1295,16 @@ $additionaldomainfields[".dk"][] = array(
     "op_name" => "dkAcceptance"
 );
 
+$additionaldomainfields[".dk"][] = array(
+    "Name" => "This registrant is a sole proprietorship (foreign company equivalent to a private individual under NIS2)",
+    "LangVar" => "dkSoleProprietorship",
+    "Type" => "tickbox",
+    "Required" => false,
+    "op_location" => "customerExtensionAdditionalData",
+    "op_name" => "soleProprietorship",
+    "op_values" => [true, false]
+);
+
 // .IN and all .IN SLDs
 
 $inNexusFields = [
