@@ -175,6 +175,9 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
         $availableBalance = $data['balance'] - $data['reservedBalance'];
         $balance = number_format((float) $data['balance'], 2);
 
+        $balance_css = '';
+        $reservedBalance_css = '';
+
         if ($data['balance'] <= 100)
             $balance_css = 'text-danger';
 
