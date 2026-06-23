@@ -5,6 +5,10 @@
 ###### Features and improvements
 - Added additional fields improvements for .sg.
 
+###### Bugfixes
+- Fix: WHMCS Admin Home failing when Openprovider registrar module is deactivated.
+- Fix: Duplicate `<?php` tag appended to `additionalfields.php` during install and update.
+
 ## v5.13.1
 
 ###### Features and improvements
