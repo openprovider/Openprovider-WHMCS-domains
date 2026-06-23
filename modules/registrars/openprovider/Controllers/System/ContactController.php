@@ -328,7 +328,7 @@ class ContactController extends BaseController
                 $this->syncDomainHandleLink($domainId, $handleDbIds[$handleId], $pivotType);
             }
         } catch (\Exception $e) {
-            logModuleCall('openprovider', 'syncHandlesWithWhmcs', $params, $e->getMessage());
+            logModuleCall('Openprovider NL', 'syncHandlesWithWhmcs', $params, $e->getMessage());
         }
     }
 
