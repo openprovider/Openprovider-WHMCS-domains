@@ -171,18 +171,19 @@ class Handle
             $this->model    = $domain->handles()->wherePivot('type', $type)->firstOrFail();
             $currentHandleType = $this->model->type;
 
-            // Serialize the currently stored Customer before prepareHandle replaces it.
-            $storedData = serialize($this->model->data);
+            $storedData = Capsule::table('wHandles')
+                ->where('id', $this->model->id)
+                ->value('data') ?? '';
+
+            // Restore extensionAdditionalData / customerAdditionalData from the stored row
+            $this->restoreSpecialDataToHandle($storedData);
 
             // No domain found with this handle, let's continue
             $this->prepareHandle($params, $type);
 
             $action = $this->findChanges($params);
 
-            if($action == false)
-            {
-                // OP data matches the form, but wHandles.data may still be stale (e.g. written
-                // by syncHandlesWithWhmcs or an older flow). Update it so findExisting stays accurate.
+            if ($action == false) {
                 $newData = serialize($this->customer);
                 if ($newData !== $storedData) {
                     Capsule::table('wHandles')
@@ -440,5 +441,50 @@ class Handle
     {
         $this->apiHelper = $apiHelper;
         return $this;
+    }
+
+    /**
+     * Restore extensionAdditionalData / customerAdditionalData from the stored row
+     * onto the Handle object before prepareHandle is called. Only restores fields
+     * not already set by the caller (e.g. DomainController during registration).
+     */
+    private function restoreSpecialDataToHandle(string $storedData): void
+    {
+        $storedCustomer = @unserialize($storedData);
+
+        if (!is_object($storedCustomer)) {
+            return;
+        }
+
+        $extCount = is_array($storedCustomer->extensionAdditionalData)
+            ? count($storedCustomer->extensionAdditionalData)
+            : 0;
+
+        if (empty($this->extensionAdditionalData) && $extCount > 0) {
+            // Reconstruct fresh objects to avoid PHP 8.2 duplicate protected-property
+            // entries when re-serializing unserialized CustomerExtensionAdditionalData.
+            $rebuilt = [];
+            foreach ($storedCustomer->extensionAdditionalData as $storedExt) {
+                $ext     = new \OpenProvider\API\CustomerExtensionAdditionalData();
+                $payload = $storedExt->jsonSerialize();
+                if (!empty($payload['name'])) {
+                    $ext->setTld($payload['name']);
+                }
+                if (!empty($payload['data']) && is_array($payload['data'])) {
+                    foreach ($payload['data'] as $k => $v) {
+                        $ext->$k = $v;
+                    }
+                }
+                $rebuilt[] = $ext;
+            }
+            $this->setExtensionAdditionalData($rebuilt);
+        }
+
+        if (empty($this->customerAdditionalData) && is_object($storedCustomer->additionalData)) {
+            $storedFields = array_filter((array) $storedCustomer->additionalData);
+            if (!empty($storedFields)) {
+                $this->setCustomerAdditionalData($storedFields);
+            }
+        }
     }
 }
