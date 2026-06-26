@@ -251,8 +251,8 @@ class BulkTransferProcessor
             'admin_handle' => $handles['admin_handle'],
             'tech_handle' => $handles['tech_handle'],
             'billing_handle' => $handles['billing_handle'],
-            'autorenew' => !empty($domainRecord->donotrenew) ? 'off' : 'default',
-            'is_private_whois_enabled' => !empty($domainRecord->idprotection),
+            'autorenew' => 'on',
+            'is_private_whois_enabled' => false,
             'is_dnssec_enabled' => false,
             'import_nameservers_from_registry' => true,
         ]);
