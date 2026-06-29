@@ -91,7 +91,7 @@ class ClientAreaFooterController
                     $langKey = $this->getIdNumberLangKey($tld);
 
                     $idNumberName = $_LANG[$langKey] ?? 'Company or Individual ID';
-                    $idNumberNameJs = json_encode($idNumberName);
+                    $idNumberNameJs = json_encode($idNumberName, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
                     $js = '$("#frmDomainContactModification").submit(function(e){
                         e.preventDefault();
