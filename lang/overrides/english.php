@@ -46,3 +46,5 @@ $_LANG['fiIdentificationCompany'] = 'Company Registration Number';
 $_LANG['fiIdentificationPassport'] = 'Passport/ID number for Individuals';
 $_LANG['fiIdentificationSocialSecurityNumber'] = 'Social Security Number for Individuals';
 $_LANG['fiIdentificationBirthDate'] = 'Birthday for Foreign Private Individuals (YYYY-MM-DD)';
+
+$_LANG['dkSoleProprietorship'] = 'Sole Proprietorship';
