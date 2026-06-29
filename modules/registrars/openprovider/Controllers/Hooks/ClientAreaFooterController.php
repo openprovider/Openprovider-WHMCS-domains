@@ -180,9 +180,20 @@ HTML;
             }
         }
 
-        $labels = array_values(array_filter(explode('.', $domainName)));
+        $labels = array_values(
+            array_filter(
+                explode('.', $domainName),
+                static function ($label) {
+                    return $label !== '';
+                }
+            )
+        );
 
-        return !empty($labels) ? end($labels) : '';
+        if (empty($labels)) {
+            return '';
+        }
+
+        return (string) end($labels);
     }
 
     private function getIdNumberLangKey(string $tld): string
