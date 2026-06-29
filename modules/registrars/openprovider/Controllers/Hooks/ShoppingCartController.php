@@ -12,6 +12,7 @@ class ShoppingCartController
 {
     private static ?array $inSldExtensions = null;
     private const IN_NEXUS_DECLARATION_INDEX = 0;
+    private const DK_SOLE_PROPRIETORSHIP_INDEX = 1;
 
     // .RU / .xn--p1ai field indices
     private const RU_CONTACT_TYPE_INDEX                    =  8;  // Contact Type            (display only)
@@ -162,6 +163,11 @@ class ShoppingCartController
     
     public function preCheckout($vars)
     {
+        $dkError = $this->validateDkSoleProprietorshipAtCheckout($vars);
+        if ($dkError !== null) {
+            return $dkError;
+        }
+
         $inNexusError = $this->validateInNexusAtCheckout($vars);
         if ($inNexusError !== null) {
             return $inNexusError;
@@ -206,6 +212,42 @@ class ShoppingCartController
             }
         }
     }
+
+    private function validateDkSoleProprietorshipAtCheckout(array $vars): ?array
+    {
+        $domains = $vars['domains'] ?? $_SESSION['cart']['domains'] ?? [];
+
+        foreach ($domains as $domain) {
+            $domainName = $domain['domain'] ?? '';
+
+            if ($this->getFullTld($domainName) !== 'dk') {
+                continue;
+            }
+
+            $fields = array_values($domain['fields'] ?? []);
+            $soleProprietorshipChecked = ($fields[self::DK_SOLE_PROPRIETORSHIP_INDEX] ?? '') === 'on';
+
+            if (!$soleProprietorshipChecked) {
+                continue;
+            }
+
+            $country = $this->getRegistrantCountryForCheckout($vars);
+            $company = $this->getRegistrantCompanyForCheckout($vars);
+
+            if ($country !== 'DK' && $company !== '') {
+                continue;
+            }
+
+            $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+
+            return [
+                'error' => 'You should not tick sole proprietorship unless the registrant is a non-DK foreign company. '
+                    . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> to correct your selection.',
+            ];
+        }
+
+        return null;
+}
 
     private function validateRuContactTypeAtCheckout(array $vars): ?array
     {
