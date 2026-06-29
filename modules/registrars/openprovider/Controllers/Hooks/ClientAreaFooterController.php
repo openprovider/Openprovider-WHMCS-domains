@@ -102,8 +102,8 @@ class ClientAreaFooterController
                     $js .= '$("input[name^=\"contactdetails\"][name$=\"[Company or Individual Id]\"]").attr("required", true);';
                     $js .= '$("input[name^=\"contactdetails\"][name$=\"[Vat or Tax ID]\"]").attr("required", true);';
 
-                    $js .= '$("label:contains(\"Company or Individual Id\")").html(' . $idNumberNameJs . ');';
-                    $js .= '$("label:contains(\"Vat or Tax ID\")").html(' . $idNumberNameJs . ');';
+                    $js .= '$("label:contains(\"Company or Individual Id\")").text(' . $idNumberNameJs . ');';
+                    $js .= '$("label:contains(\"Vat or Tax ID\")").text(' . $idNumberNameJs . ');';
                 }
             }
 
