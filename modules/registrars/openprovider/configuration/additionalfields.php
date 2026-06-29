@@ -1302,7 +1302,7 @@ $additionaldomainfields[".dk"][] = array(
     "Required" => false,
     "op_location" => "customerExtensionAdditionalData",
     "op_name" => "soleProprietorship",
-    "op_values" => [true, false]
+    "op_values" => ['true', 'false']
 );
 
 // .IN and all .IN SLDs
