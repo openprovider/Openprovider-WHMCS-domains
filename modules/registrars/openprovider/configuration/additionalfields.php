@@ -1296,6 +1296,16 @@ $additionaldomainfields[".dk"][] = array(
 );
 
 $additionaldomainfields[".dk"][] = array(
+    "Name" => "User Type",
+    "LangVar" => "dkUserType",
+    "Type" => "dropdown",
+    "Required" => true,
+    "Options" => "Please select User Type,1|Individual,2|Company",
+    "op_location" => "customerExtensionAdditionalData",
+    "op_name" => "userType"
+);
+
+$additionaldomainfields[".dk"][] = array(
     "Name" => "This registrant is a sole proprietorship (foreign company equivalent to a private individual under NIS2)",
     "LangVar" => "dkSoleProprietorship",
     "Type" => "tickbox",
