@@ -12,7 +12,8 @@ class ShoppingCartController
 {
     private static ?array $inSldExtensions = null;
     private const IN_NEXUS_DECLARATION_INDEX = 0;
-    private const DK_SOLE_PROPRIETORSHIP_INDEX = 1;
+    private const DK_USER_TYPE_INDEX = 1;
+    private const DK_SOLE_PROPRIETORSHIP_INDEX = 2;
 
     // .RU / .xn--p1ai field indices
     private const RU_CONTACT_TYPE_INDEX                    =  8;  // Contact Type            (display only)
@@ -163,9 +164,9 @@ class ShoppingCartController
     
     public function preCheckout($vars)
     {
-        $dkError = $this->validateDkSoleProprietorshipAtCheckout($vars);
-        if ($dkError !== null) {
-            return $dkError;
+        $dkError_1 = $this->validateDkSoleProprietorshipAtCheckout($vars);
+        if ($dkError_1 !== null) {
+            return $dkError_1;
         }
 
         $inNexusError = $this->validateInNexusAtCheckout($vars);
@@ -213,6 +214,7 @@ class ShoppingCartController
         }
     }
 
+
     private function validateDkSoleProprietorshipAtCheckout(array $vars): ?array
     {
         $domains = $vars['domains'] ?? $_SESSION['cart']['domains'] ?? [];
@@ -226,15 +228,19 @@ class ShoppingCartController
 
             $fields = array_values($domain['fields'] ?? []);
             $soleProprietorshipChecked = ($fields[self::DK_SOLE_PROPRIETORSHIP_INDEX] ?? '') === 'on';
+            $userType = (string)($fields[self::DK_USER_TYPE_INDEX] ?? '');
 
             if (!$soleProprietorshipChecked) {
                 continue;
             }
 
             $country = $this->getRegistrantCountryForCheckout($vars);
-            $company = $this->getRegistrantCompanyForCheckout($vars);
+            // $company = $this->getRegistrantCompanyForCheckout($vars);
 
-            if ($country !== 'DK' && $company !== '') {
+            // if ($country !== 'DK' && $company !== '') {
+            //     continue;
+            // }
+            if ($country !== 'DK' && $userType === '2') {
                 continue;
             }
 
@@ -247,7 +253,7 @@ class ShoppingCartController
         }
 
         return null;
-}
+    }
 
     private function validateRuContactTypeAtCheckout(array $vars): ?array
     {
@@ -558,12 +564,109 @@ class ShoppingCartController
         });
     }
 
-    $(document).ready(initRuFieldVisibility);
+    function initDkSoleProprietorshipVisibility() {
+        var dkUserTypeFields = [];
+
+        $('select[name^="domainfield["]').filter(function () {
+            var vals = $(this).find('option').map(function () {
+                return $(this).val();
+            }).get();
+
+            return vals.indexOf('1') !== -1 && vals.indexOf('2') !== -1;
+        }).each(function () {
+            var $userType = $(this);
+            var $form = $userType.closest('form');
+
+            var m = ($userType.attr('name') || '').match(/^domainfield\[(\d+)\]/);
+            if (!m) { return; }
+
+            var n = m[1];
+
+            var $rows = $form.find('.form-group.row').filter(function () {
+                return $(this).find('[name^="domainfield[' + n + ']["]').length > 0;
+            });
+
+            var $soleRow = $rows.filter(function () {
+                return $(this).text().toLowerCase().indexOf('sole proprietorship') !== -1;
+            }).first();
+
+            if (!$soleRow.length) { return; }
+
+            var $soleCheckbox = $soleRow.find('input[type="checkbox"]').first();
+
+            var $error = $userType.next('.dk-user-type-error');
+            if (!$error.length) {
+                $error = $('<div class="text-danger dk-user-type-error" style="margin-top:5px;">Please select User Type.</div>');
+                $error.hide();
+                $userType.after($error);
+            }
+
+            function isValidUserType() {
+                return $userType.val() === '1' || $userType.val() === '2';
+            }
+
+            function showUserTypeError() {
+                $error.show();
+                $userType.focus();
+            }
+
+            function hideUserTypeError() {
+                $error.hide();
+            }
+
+            function apply() {
+                if (isValidUserType()) {
+                    hideUserTypeError();
+                }
+
+                if ($userType.val() === '2') {
+                    $soleRow.show();
+                } else {
+                    $soleCheckbox.prop('checked', false);
+                    $soleRow.hide();
+                }
+            }
+
+            $userType.off('change.dkUserType').on('change.dkUserType', apply);
+            apply();
+
+            dkUserTypeFields.push({
+                field: $userType,
+                isValid: isValidUserType,
+                showError: showUserTypeError
+            });
+        });
+
+        $('#frmConfigureDomains')
+            .off('submit.dkUserType')
+            .on('submit.dkUserType', function (e) {
+                var hasError = false;
+
+                $.each(dkUserTypeFields, function (_, item) {
+                    if (!item.isValid()) {
+                        item.showError();
+                        hasError = true;
+                    }
+                });
+
+                if (hasError) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+            });
+    }
+
+    $(document).ready(function () {
+        initRuFieldVisibility();
+        initDkSoleProprietorshipVisibility();
+    });
 })(jQuery);
 JS;
 
         return '<script type="text/javascript">' . $js . '</script>';
     }
+
 
     public function hideIdnScriptForNonIdnDomains($vars)
     {
