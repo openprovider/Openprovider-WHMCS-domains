@@ -100,8 +100,25 @@ class Setup
         {
             foreach($this->migrationPaths as $path)
             {
-                if($action == 'run')
-                    $this->migrator->run($path);
+                if ($action == 'run') {
+                    $files = $this->migrator->getMigrationFiles($path);
+
+                    $ran = $this->migrator->getRepository()->getRan();
+
+                    if ($ran instanceof \Illuminate\Support\Collection) {
+                        $ran = $ran->toArray();
+                    }
+
+                    $pending = \Illuminate\Support\Collection::make($files)
+                        ->reject(function ($file) use ($ran) {
+                            return in_array($this->migrator->getMigrationName($file), $ran, true);
+                        })
+                        ->values()
+                        ->all();
+
+                    $this->migrator->requireFiles($pending);
+                    $this->migrator->runPending($pending, []);
+                }
                 elseif($action == 'reset')
                 {
                     $files = $this->migrator->getMigrationFiles($path);
