@@ -6,6 +6,7 @@ use OpenProvider\API\ApiHelper;
 use OpenProvider\API\ApiV1;
 use OpenProvider\API\Domain;
 use OpenProvider\API\DomainTransfer;
+use OpenProvider\API\DomainNameServer;
 use OpenProvider\WhmcsRegistrar\helpers\DbCacheHelper;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
 use OpenProvider\WhmcsRegistrar\src\Handle as RegistrarHandle;
@@ -134,7 +135,14 @@ class OpenproviderTransferClient
         $domainTransfer->autorenew = $payload['autorenew'] ?? 'default';
         $domainTransfer->isPrivateWhoisEnabled = $payload['is_private_whois_enabled'] ?? false;
         $domainTransfer->isDnssecEnabled = $payload['is_dnssec_enabled'] ?? false;
-        // $domainTransfer->nameServers = $payload['name_servers'] ?? null;
+        if(!empty($payload['name_servers']) && is_array($payload['name_servers'])) {
+            $domainTransfer->nameServers = array_map(function ($ns) {
+                return new DomainNameServer([
+                    'name' => $ns,
+                    'ip' => null
+                ]);
+            }, $payload['name_servers']);
+        }
         // $domainTransfer->additionalData = $payload['additional_data'] ?? null;
         // $domainTransfer->nsTemplateName = $payload['ns_template_name'] ?? null;
         // $domainTransfer->useDomicile = $payload['use_domicile'] ?? false;
