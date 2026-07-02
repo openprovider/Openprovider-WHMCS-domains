@@ -135,13 +135,15 @@ class OpenproviderTransferClient
         $domainTransfer->autorenew = $payload['autorenew'] ?? 'default';
         $domainTransfer->isPrivateWhoisEnabled = $payload['is_private_whois_enabled'] ?? false;
         $domainTransfer->isDnssecEnabled = $payload['is_dnssec_enabled'] ?? false;
-        if(!empty($payload['name_servers']) && is_array($payload['name_servers'])) {
+        if (!empty($payload['name_servers']) && is_array($payload['name_servers'])) {
             $domainTransfer->nameServers = array_map(function ($ns) {
                 return new DomainNameServer([
-                    'name' => $ns,
-                    'ip' => null
+                    'name' => trim((string) $ns),
+                    'ip' => null,
                 ]);
-            }, $payload['name_servers']);
+            }, array_filter($payload['name_servers'], function ($ns) {
+                return trim((string) $ns) !== '';
+            }));
         }
         // $domainTransfer->additionalData = $payload['additional_data'] ?? null;
         // $domainTransfer->nsTemplateName = $payload['ns_template_name'] ?? null;
