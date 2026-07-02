@@ -240,6 +240,10 @@ class BulkTransferProcessor
         $item->op_billing_handle = $handles['billing_handle'];
         $item->save();
 
+        $nameServers = $this->registrarModuleInvoker->getNameservers([
+            'domainid' => (int) $domainRecord->id,
+        ]);
+
         $this->updateItemStatus($item, BulkTransferItem::STATUS_TRANSFERRING);
         $transferResponse = $this->openproviderTransferClient->transferDomain([
             'domain' => [
@@ -255,6 +259,7 @@ class BulkTransferProcessor
             'is_private_whois_enabled' => false,
             'is_dnssec_enabled' => false,
             'import_nameservers_from_registry' => true,
+            'name_servers' => $nameServers,
         ]);
 
         $transferState = $this->openproviderTransferClient->normalizeTransferState($transferResponse);
