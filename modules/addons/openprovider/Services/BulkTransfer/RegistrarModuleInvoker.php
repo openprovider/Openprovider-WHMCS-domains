@@ -193,8 +193,9 @@ class RegistrarModuleInvoker
 
         $nameservers = [];
         foreach (['ns1', 'ns2', 'ns3', 'ns4', 'ns5'] as $key) {
-            if (!empty($response[$key])) {
-                $nameservers[] = trim((string) $response[$key]);
+            $ns = trim((string) ($response[$key] ?? ''));
+            if ($ns !== '') {
+                $nameservers[] = $ns;
             }
         }
 
