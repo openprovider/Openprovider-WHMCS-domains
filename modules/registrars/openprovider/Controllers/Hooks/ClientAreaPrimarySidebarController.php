@@ -52,6 +52,15 @@ class ClientAreaPrimarySidebarController
             return;
         }
 
+        $domain = Capsule::table('tbldomains')
+            ->where('id', $domainId)
+            ->select('registrar')
+            ->first();
+
+        if (!$domain || $domain->registrar !== 'openprovider') {
+            return;
+        }
+
         if ($url = DNS::getDnsUrlOrFail($domainId)) {
             // Update the URL.
             $dnsManagement->setUri($url);
