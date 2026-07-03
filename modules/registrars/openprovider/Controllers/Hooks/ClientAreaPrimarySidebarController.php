@@ -52,12 +52,11 @@ class ClientAreaPrimarySidebarController
             return;
         }
 
-        $domain = Capsule::table('tbldomains')
-            ->where('id', $domainId)
-            ->select('registrar')
-            ->first();
+        $registrar = Capsule::table('tbldomains')
+            ->where('id', (int) $domainId)
+            ->value('registrar');
 
-        if (!$domain || $domain->registrar !== 'openprovider') {
+        if ((string) $registrar !== 'openprovider') {
             return;
         }
 
