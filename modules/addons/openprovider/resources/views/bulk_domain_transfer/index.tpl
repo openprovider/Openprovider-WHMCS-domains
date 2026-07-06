@@ -9,6 +9,35 @@
 
         <form method="post" action="{get_route route='bulkDomainTransfers'}">
             {generate_csrf}
+            <div style="
+                background: #fff8e1;
+                border: 1px solid #ffe082;
+                border-left: 4px solid #f9a825;
+                border-radius: 4px;
+                padding: 14px 18px;
+                margin-bottom: 18px;
+                font-size: 13px;
+                color: #5d4037;
+                line-height: 1.6;
+            ">
+                <div style="font-weight: 600; margin-bottom: 8px; font-size: 13.5px;">
+                    &#9432;&nbsp; Before you submit — please note the following:
+                </div>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li style="margin-bottom: 6px;">
+                        <strong>Auto-renew:</strong> All transferred domains will have auto-renew turned <strong>ON</strong> after the transfer.
+                        Only submit domains that you are comfortable with being automatically renewed.
+                    </li>
+                    <li>
+                        <strong>ID Protection:</strong> ID protection will be <strong>OFF</strong> for all transferred domains after the transfer.
+                    </li>
+                </ul>
+                <div style="margin-top: 10px; font-size: 12px; color: #8d6e63;">
+                    To change auto-renew or ID protection for specific domains after the transfer, use the WHMCS admin area for domains or the Openprovider Reseller Control Panel.
+                    Per-domain and per-batch control during bulk transfer will be available in a future release.
+                </div>
+            </div>
+
             {if isset($bulkReference) && $bulkReference}
                 <div class="alert alert-success text-center" role="alert"
                     style="margin: 0 auto 15px; max-width: 600px;">
