@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.13.3
+
+###### Bugfixes
+- Fixed: DNS Management tab redirecting non-Openprovider domains to Openprovider's custom DNS Management interface.
+
 ## v5.13.2
 
 ###### Features and improvements
