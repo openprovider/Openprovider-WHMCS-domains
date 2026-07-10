@@ -1311,8 +1311,7 @@ $additionaldomainfields[".dk"][] = array(
     "Type" => "tickbox",
     "Required" => false,
     "op_location" => "customerExtensionAdditionalData",
-    "op_name" => "soleProprietorship",
-    "op_values" => ['true', 'false']
+    "op_name" => "soleProprietorship"
 );
 
 // .IN and all .IN SLDs
