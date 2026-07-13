@@ -235,11 +235,7 @@ class ShoppingCartController
             }
 
             $country = $this->getRegistrantCountryForCheckout($vars);
-            // $company = $this->getRegistrantCompanyForCheckout($vars);
-
-            // if ($country !== 'DK' && $company !== '') {
-            //     continue;
-            // }
+            
             if ($country !== 'DK' && $userType === '2') {
                 continue;
             }
