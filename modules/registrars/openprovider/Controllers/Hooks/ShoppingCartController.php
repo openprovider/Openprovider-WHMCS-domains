@@ -662,7 +662,6 @@ JS;
         return '<script type="text/javascript">' . $js . '</script>';
     }
 
-
     public function hideIdnScriptForNonIdnDomains($vars)
     {
         if (
