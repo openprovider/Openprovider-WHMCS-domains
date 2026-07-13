@@ -218,6 +218,7 @@ class ShoppingCartController
     private function validateDkSoleProprietorshipAtCheckout(array $vars): ?array
     {
         $domains = $vars['domains'] ?? $_SESSION['cart']['domains'] ?? [];
+        $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
 
         foreach ($domains as $domain) {
             $domainName = $domain['domain'] ?? '';
@@ -229,14 +230,13 @@ class ShoppingCartController
             $fields = array_values($domain['fields'] ?? []);
             $userType = (string) ($fields[self::DK_USER_TYPE_INDEX] ?? '');
 
-            if ($userType !== '1' && $userType !== '2') {
-                $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
-
-                return [
-                    'error' => 'Please select a valid .dk User Type (Individual or Company). '
-                        . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> to correct your selection.',
-                ];
-            }
+            if (!in_array($userType, ['1', '2'], true)) {
+            return [
+                'error' => 'Please select a valid .dk User Type (Individual or Company). '
+                    . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> '
+                    . 'to correct your selection.',
+            ];
+        }
 
             $soleProprietorshipChecked = ($fields[self::DK_SOLE_PROPRIETORSHIP_INDEX] ?? '') === 'on';
 
@@ -244,16 +244,14 @@ class ShoppingCartController
                 continue;
             }
 
-            $country = $this->getRegistrantCountryForCheckout($vars);
+            $country = strtoupper((string) $this->getRegistrantCountryForCheckout($vars));
 
             if ($country !== 'DK') {
                 continue;
             }
 
-            $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
-
             return [
-                'error' => 'You should not tick sole proprietorship unless the registrant is a non-DK foreign company. '
+                'error' => 'Sole Proprietorship can only be selected for a non-DK foreign company. '
                     . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> to correct your selection.',
             ];
         }
