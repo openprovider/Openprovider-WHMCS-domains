@@ -164,9 +164,9 @@ class ShoppingCartController
     
     public function preCheckout($vars)
     {
-        $dkError_1 = $this->validateDkSoleProprietorshipAtCheckout($vars);
-        if ($dkError_1 !== null) {
-            return $dkError_1;
+        $dkError = $this->validateDkSoleProprietorshipAtCheckout($vars);
+        if ($dkError !== null) {
+            return $dkError;
         }
 
         $inNexusError = $this->validateInNexusAtCheckout($vars);
