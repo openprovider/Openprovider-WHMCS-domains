@@ -228,15 +228,14 @@ class ShoppingCartController
 
             $fields = array_values($domain['fields'] ?? []);
             $soleProprietorshipChecked = ($fields[self::DK_SOLE_PROPRIETORSHIP_INDEX] ?? '') === 'on';
-            $userType = (string)($fields[self::DK_USER_TYPE_INDEX] ?? '');
 
             if (!$soleProprietorshipChecked) {
                 continue;
             }
 
             $country = $this->getRegistrantCountryForCheckout($vars);
-            
-            if ($country !== 'DK' && $userType === '2') {
+
+            if ($country !== 'DK') {
                 continue;
             }
 
