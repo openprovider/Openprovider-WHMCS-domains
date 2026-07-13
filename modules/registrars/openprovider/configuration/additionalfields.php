@@ -1306,7 +1306,7 @@ $additionaldomainfields[".dk"][] = array(
 );
 
 $additionaldomainfields[".dk"][] = array(
-    "Name" => "This registrant is a sole proprietorship (foreign company equivalent to a private individual under NIS2)",
+    "Name" => "Sole Proprietorship",
     "LangVar" => "dkSoleProprietorship",
     "Type" => "tickbox",
     "Required" => false,
