@@ -227,6 +227,17 @@ class ShoppingCartController
             }
 
             $fields = array_values($domain['fields'] ?? []);
+            $userType = (string) ($fields[self::DK_USER_TYPE_INDEX] ?? '');
+
+            if ($userType !== '1' && $userType !== '2') {
+                $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+
+                return [
+                    'error' => 'Please select a valid .dk User Type (Individual or Company). '
+                        . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> to correct your selection.',
+                ];
+            }
+
             $soleProprietorshipChecked = ($fields[self::DK_SOLE_PROPRIETORSHIP_INDEX] ?? '') === 'on';
 
             if (!$soleProprietorshipChecked) {
