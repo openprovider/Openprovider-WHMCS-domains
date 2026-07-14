@@ -183,6 +183,25 @@ class RegistrarModuleInvoker
         return html_entity_decode(trim((string) $response['eppcode']), ENT_QUOTES);
     }
 
+    public function getNameservers(array $params): array
+    {
+        $response = localAPI('DomainGetNameservers', [
+            'domainid' => (int) $params['domainid'],
+        ]);
+
+        $this->assertSuccessfulResponse($response, 'Failed to get domain nameservers.');
+
+        $nameservers = [];
+        foreach (['ns1', 'ns2', 'ns3', 'ns4', 'ns5'] as $key) {
+            $ns = trim((string) ($response[$key] ?? ''));
+            if ($ns !== '') {
+                $nameservers[] = $ns;
+            }
+        }
+
+        return $nameservers;
+    }
+
     protected function assertSuccessfulResponse($response, $fallbackMessage)
     {
         if (is_array($response) && !empty($response['error'])) {
