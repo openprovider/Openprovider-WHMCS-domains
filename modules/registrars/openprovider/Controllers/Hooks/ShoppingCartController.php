@@ -599,13 +599,13 @@ class ShoppingCartController
                 return $(this).find('[name^="domainfield[' + n + ']["]').length > 0;
             });
 
-            var $soleRow = $rows.filter(function () {
-                return $(this).text().toLowerCase().indexOf('sole proprietorship') !== -1;
-            }).first();
+            var $soleCheckbox = $form
+                .find('input[type="checkbox"][name="domainfield[' + n + '][6]"]')
+                .first();
 
-            if (!$soleRow.length) { return; }
+            if (!$soleCheckbox.length) { return; }
 
-            var $soleCheckbox = $soleRow.find('input[type="checkbox"]').first();
+            var $soleRow = $soleCheckbox.closest('.form-group.row');
 
             var $error = $userType.next('.dk-user-type-error');
             if (!$error.length) {
