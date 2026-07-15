@@ -244,6 +244,15 @@ class ShoppingCartController
                 continue;
             }
 
+            if ($userType !== '2') {
+                return [
+                    'error' => 'Sole Proprietorship can only be selected when the User Type is Company for '
+                        . $domainName . '. '
+                        . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> '
+                        . 'to correct your selection.',
+                ];
+            }
+
             $country = strtoupper((string) $this->getRegistrantCountryForCheckout($vars));
 
             if ($country !== 'DK') {
