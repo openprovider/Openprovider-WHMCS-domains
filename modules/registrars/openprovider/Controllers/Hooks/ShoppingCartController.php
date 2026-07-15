@@ -12,8 +12,8 @@ class ShoppingCartController
 {
     private static ?array $inSldExtensions = null;
     private const IN_NEXUS_DECLARATION_INDEX = 0;
-    private const DK_USER_TYPE_INDEX = 1;
-    private const DK_SOLE_PROPRIETORSHIP_INDEX = 2;
+    private const DK_USER_TYPE_INDEX = 5;
+    private const DK_SOLE_PROPRIETORSHIP_INDEX = 6;
 
     // .RU / .xn--p1ai field indices
     private const RU_CONTACT_TYPE_INDEX                    =  8;  // Contact Type            (display only)
@@ -227,16 +227,16 @@ class ShoppingCartController
                 continue;
             }
 
-            $fields = array_values($domain['fields'] ?? []);
+            $fields = $domain['fields'] ?? [];
             $userType = (string) ($fields[self::DK_USER_TYPE_INDEX] ?? '');
 
             if (!in_array($userType, ['1', '2'], true)) {
-            return [
-                'error' => 'Please select a valid .dk User Type (Individual or Company). '
-                    . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> '
-                    . 'to correct your selection.',
-            ];
-        }
+                return [
+                    'error' => 'Please select a valid .dk User Type (Individual or Company) for ' . $domainName . '. '
+                        . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> '
+                        . 'to correct your selection.',
+                ];
+            }
 
             $soleProprietorshipChecked = ($fields[self::DK_SOLE_PROPRIETORSHIP_INDEX] ?? '') === 'on';
 
@@ -251,7 +251,7 @@ class ShoppingCartController
             }
 
             return [
-                'error' => 'Sole Proprietorship can only be selected for a non-DK foreign company. '
+                'error' => 'Sole Proprietorship can only be selected for a non-DK foreign company for ' . $domainName . '. '
                     . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> to correct your selection.',
             ];
         }
