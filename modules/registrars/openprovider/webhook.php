@@ -17,7 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$expectedApiKey = 'test-webhook-api-key';
+$expectedApiKey = getenv('OPENPROVIDER_WEBHOOK_API_KEY');
+
+if (!is_string($expectedApiKey) || $expectedApiKey === '') {
+    http_response_code(500);
+    exit('Webhook API key is not configured.');
+}
 
 $headers = function_exists('getallheaders') ? getallheaders() : [];
 
@@ -65,7 +70,7 @@ if (!hash_equals($expectedApiKey, $providedApiKey)) {
 
 $rawBody = file_get_contents('php://input');
 
-if ($rawBody === false || $rawBody === '') {
+if ($rawBody === false || trim($rawBody) === '') {
     http_response_code(400);
 
     echo json_encode([
@@ -121,35 +126,56 @@ if (!is_array($payload['data'])) {
     exit;
 }
 
-if (empty($payload['data']['domain'])) {
-    http_response_code(400);
+$eventType = (string) $payload['eventType'];
+
+if ($eventType === 'testEvent') {
+    logModuleCall(
+        'openprovider webhooks',
+        'Webhook Connection Test Successful',
+        $rawBody,
+        [
+            'success' => true,
+            'message' => 'Webhook connection established successfully',
+        ],
+        [
+            'webhookId' => $payload['id'],
+            'schemaVersion' => $payload['schemaVersion'],
+            'eventType' => $eventType,
+            'timeStamp' => $payload['timeStamp'],
+        ],
+        [$expectedApiKey]
+    );
+
+    http_response_code(200);
 
     echo json_encode([
-        'success' => false,
-        'message' => 'Missing domain',
+        'success' => true,
+        'message' => 'Webhook connection established successfully',
+        'eventType' => $eventType,
     ]);
 
     exit;
 }
 
 $supportedEvents = [
-    'testEvent',
     'outgoingTransferCompleted',
     'deletionCompleted',
 ];
 
-$eventType = $payload['eventType'];
-
 if (!in_array($eventType, $supportedEvents, true)) {
     logModuleCall(
-        'openprovider',
+        'openprovider webhooks',
         'Unsupported Webhook Event',
         $rawBody,
         [
-            'eventType' => $eventType,
-            'domain' => $payload['data']['domain'],
+            'success' => true,
+            'message' => 'Webhook acknowledged, but event type is not supported',
         ],
-        [],
+        [
+            'webhookId' => $payload['id'],
+            'eventType' => $eventType,
+            'domain' => $payload['data']['domain'] ?? null,
+        ],
         [$expectedApiKey]
     );
 
@@ -164,46 +190,99 @@ if (!in_array($eventType, $supportedEvents, true)) {
     exit;
 }
 
-$domainName = strtolower(trim($payload['data']['domain']));
-
-$domain = Capsule::table('tbldomains')
-    ->whereRaw('LOWER(domain) = ?', [$domainName])
-    ->first();
-
-if ($domain === null) {
-    logModuleCall(
-        'openprovider',
-        'Webhook Domain Not Found',
-        $rawBody,
-        [
-            'eventType' => $eventType,
-            'domain' => $domainName,
-            'openproviderDomainId' => $payload['data']['domainId'] ?? null,
-        ],
-        [],
-        [$expectedApiKey]
-    );
-
-    http_response_code(200);
+if (
+    !isset($payload['data']['domain'])
+    || !is_string($payload['data']['domain'])
+    || trim($payload['data']['domain']) === ''
+) {
+    http_response_code(400);
 
     echo json_encode([
-        'success' => true,
-        'message' => 'Webhook acknowledged, but domain was not found in WHMCS',
-        'eventType' => $eventType,
-        'domain' => $domainName,
+        'success' => false,
+        'message' => 'Missing domain',
     ]);
 
     exit;
 }
 
-$statusMap = [
-    'outgoingTransferCompleted' => 'Transferred Away',
-    'deletionCompleted' => 'Cancelled',
-];
+$domainName = strtolower(trim($payload['data']['domain']));
 
-$newStatus = $statusMap[$eventType] ?? null;
+try {
+    $domain = Capsule::table('tbldomains')
+        ->whereRaw('LOWER(domain) = ?', [$domainName])
+        ->first();
 
-if ($newStatus !== null && $domain->status !== $newStatus) {
+    if ($domain === null) {
+        logModuleCall(
+            'openprovider webhooks',
+            'Webhook Domain Not Found',
+            $rawBody,
+            [
+                'success' => true,
+                'message' => 'Domain was not found in WHMCS',
+            ],
+            [
+                'webhookId' => $payload['id'],
+                'eventType' => $eventType,
+                'domain' => $domainName,
+                'openproviderDomainId' => $payload['data']['domainId'] ?? null,
+            ],
+            [$expectedApiKey]
+        );
+
+        http_response_code(200);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Webhook acknowledged, but domain was not found in WHMCS',
+            'eventType' => $eventType,
+            'domain' => $domainName,
+        ]);
+
+        exit;
+    }
+
+    $statusMap = [
+        'outgoingTransferCompleted' => 'Transferred Away',
+        'deletionCompleted' => 'Cancelled',
+    ];
+
+    $newStatus = $statusMap[$eventType];
+    $oldStatus = $domain->status;
+
+    if ($oldStatus === $newStatus) {
+        logModuleCall(
+            'openprovider webhooks',
+            'Webhook Domain Status Unchanged',
+            $rawBody,
+            [
+                'success' => true,
+                'message' => 'Domain already has the required status',
+            ],
+            [
+                'webhookId' => $payload['id'],
+                'eventType' => $eventType,
+                'domain' => $domainName,
+                'whmcsDomainId' => $domain->id,
+                'currentStatus' => $oldStatus,
+            ],
+            [$expectedApiKey]
+        );
+
+        http_response_code(200);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Webhook processed successfully; domain status was unchanged',
+            'eventType' => $eventType,
+            'domain' => $domainName,
+            'oldStatus' => $oldStatus,
+            'newStatus' => $newStatus,
+        ]);
+
+        exit;
+    }
+
     Capsule::table('tbldomains')
         ->where('id', $domain->id)
         ->update([
@@ -211,59 +290,57 @@ if ($newStatus !== null && $domain->status !== $newStatus) {
         ]);
 
     logModuleCall(
-        'openprovider',
+        'openprovider webhooks',
         'Webhook Domain Status Updated',
         $rawBody,
         [
+            'success' => true,
+            'message' => 'Domain status updated successfully',
+        ],
+        [
+            'webhookId' => $payload['id'],
             'eventType' => $eventType,
             'domain' => $domainName,
+            'openproviderDomainId' => $payload['data']['domainId'] ?? null,
             'whmcsDomainId' => $domain->id,
-            'oldStatus' => $domain->status,
+            'oldStatus' => $oldStatus,
             'newStatus' => $newStatus,
         ],
-        [],
         [$expectedApiKey]
     );
-}
 
-if ($newStatus === null || $domain->status === $newStatus) {
+    http_response_code(200);
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Webhook processed successfully',
+        'eventType' => $eventType,
+        'domain' => $domainName,
+        'oldStatus' => $oldStatus,
+        'newStatus' => $newStatus,
+    ]);
+} catch (Throwable $exception) {
     logModuleCall(
-        'openprovider',
-        'Webhook Domain Status Unchanged',
+        'openprovider webhooks',
+        'Webhook Processing Error',
         $rawBody,
         [
-            'eventType' => $eventType,
-            'domain' => $domainName,
-            'whmcsDomainId' => $domain->id,
-            'currentStatus' => $domain->status,
+            'success' => false,
+            'message' => $exception->getMessage(),
         ],
-        [],
+        [
+            'webhookId' => $payload['id'] ?? null,
+            'eventType' => $eventType,
+            'domain' => $domainName ?? null,
+            'exception' => get_class($exception),
+        ],
         [$expectedApiKey]
     );
+
+    http_response_code(500);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'An unexpected error occurred while processing the webhook',
+    ]);
 }
-
-// logModuleCall(
-//     'openprovider',
-//     'Webhook Domain Found',
-//     $rawBody,
-//     [
-//         'eventType' => $eventType,
-//         'domain' => $domainName,
-//         'openproviderDomainId' => $payload['data']['domainId'] ?? null,
-//         'whmcsDomainId' => $domain->id,
-//         'currentStatus' => $domain->status,
-//     ],
-//     [],
-//     [$expectedApiKey]
-// );
-
-http_response_code(200);
-
-echo json_encode([
-    'success' => true,
-    'message' => 'Webhook processed successfully',
-    'eventType' => $eventType,
-    'domain' => $domainName,
-    'oldStatus' => $domain->status,
-    'newStatus' => $newStatus ?? $domain->status,
-]);
