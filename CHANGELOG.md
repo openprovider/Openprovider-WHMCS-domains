@@ -1,5 +1,15 @@
 # Changelog
 
+## v5.13.4
+
+###### Features and improvements
+- Removed the reseller hash ID from the Cross-Sell dashboard widget's link and simplified the link parameters.
+
+## v5.13.3
+
+###### Bugfixes
+- Fixed: DNS Management tab redirecting non-Openprovider domains to Openprovider's custom DNS Management interface.
+
 ## v5.13.2
 
 ###### Features and improvements
