@@ -574,8 +574,11 @@ class BulkTransferProcessor
             throw new \RuntimeException('Openprovider did not return a renewal date for transfer finalization.');
         }
 
+        $formattedRenewalDate = $this->formatWhmcsDate($renewalDate);
+
         $domainRecord->registrar = 'openprovider';
-        $domainRecord->expirydate = $this->formatWhmcsDate($renewalDate);
+        $domainRecord->expirydate = $formattedRenewalDate;
+        $domainRecord->nextduedate = $formattedRenewalDate;
         $domainRecord->save();
     }
 
