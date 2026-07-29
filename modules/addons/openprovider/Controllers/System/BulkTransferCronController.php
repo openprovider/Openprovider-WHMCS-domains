@@ -7,8 +7,8 @@ use OpenProvider\WhmcsDomainAddon\Services\BulkTransfer\BulkTransferProcessor;
 
 class BulkTransferCronController extends BaseController
 {
-    private const DEFAULT_SUBMIT_LIMIT = 10;
-    private const DEFAULT_STATUS_LIMIT = 50;
+    private const DEFAULT_SUBMIT_LIMIT = 8;
+    private const DEFAULT_STATUS_LIMIT = 30;
 
     /**
      * @var BulkTransferProcessor
