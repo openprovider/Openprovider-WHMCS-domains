@@ -579,6 +579,7 @@ class BulkTransferProcessor
         $domainRecord->registrar = 'openprovider';
         $domainRecord->expirydate = $formattedRenewalDate;
         $domainRecord->nextduedate = $formattedRenewalDate;
+        $domainRecord->nextinvoicedate = $formattedRenewalDate;
         $domainRecord->save();
     }
 
