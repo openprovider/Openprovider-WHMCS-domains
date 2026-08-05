@@ -201,6 +201,29 @@ class BulkTransferProcessor
             return;
         }
 
+        $conflictingItem = Capsule::table('mod_op_bulk_transfer_items')
+            ->join('mod_op_bulk_transfer_batches', 'mod_op_bulk_transfer_items.batch_id', '=', 'mod_op_bulk_transfer_batches.id')
+            ->where('mod_op_bulk_transfer_items.domain', $item->domain)
+            ->where('mod_op_bulk_transfer_items.batch_id', '!=', (int) $item->batch_id)
+            ->whereNotIn('mod_op_bulk_transfer_items.transfer_status', [
+                BulkTransferItem::STATUS_SUCCESS,
+                BulkTransferItem::STATUS_VALIDATION_FAILED,
+                BulkTransferItem::STATUS_FAILED,
+            ])
+            ->select('mod_op_bulk_transfer_batches.bulk_reference')
+            ->first();
+
+        if ($conflictingItem) {
+            $this->markValidationFailed(
+                $item,
+                sprintf(
+                    'Domain is already in an active transfer batch (%s). Wait for it to complete or fail before resubmitting.',
+                    $conflictingItem->bulk_reference
+                )
+            );
+            return;
+        }
+
         $client = Capsule::table('tblclients')->where('id', (int) $domainRecord->userid)->first();
         if (!$client) {
             $this->markValidationFailed($item, 'WHMCS client record was not found.');
