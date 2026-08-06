@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.13.5
+
+###### Bugfixes
+- Fixed: Pending registrar and addon module migrations not executing correctly during activation and updates.
+
 ## v5.13.4
 
 ###### Features and improvements
