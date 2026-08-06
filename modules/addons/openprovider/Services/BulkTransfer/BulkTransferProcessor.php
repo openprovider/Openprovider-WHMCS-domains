@@ -205,11 +205,13 @@ class BulkTransferProcessor
             ->join('mod_op_bulk_transfer_batches', 'mod_op_bulk_transfer_items.batch_id', '=', 'mod_op_bulk_transfer_batches.id')
             ->where('mod_op_bulk_transfer_items.domain', $item->domain)
             ->where('mod_op_bulk_transfer_items.batch_id', '!=', (int) $item->batch_id)
+            ->where('mod_op_bulk_transfer_items.id', '<', (int) $item->id)
             ->whereNotIn('mod_op_bulk_transfer_items.transfer_status', [
                 BulkTransferItem::STATUS_SUCCESS,
                 BulkTransferItem::STATUS_VALIDATION_FAILED,
                 BulkTransferItem::STATUS_FAILED,
             ])
+            ->orderByDesc('mod_op_bulk_transfer_items.id')
             ->select('mod_op_bulk_transfer_batches.bulk_reference')
             ->first();
 
