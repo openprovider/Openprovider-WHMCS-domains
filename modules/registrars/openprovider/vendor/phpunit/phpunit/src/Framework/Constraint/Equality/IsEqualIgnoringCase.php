@@ -11,24 +11,21 @@ namespace PHPUnit\Framework\Constraint;
 
 use function is_string;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function trim;
 use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Util\Exporter;
 use SebastianBergmann\Comparator\ComparisonFailure;
 use SebastianBergmann\Comparator\Factory as ComparatorFactory;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
 final class IsEqualIgnoringCase extends Constraint
 {
-    /**
-     * @var mixed
-     */
-    private $value;
+    private readonly mixed $value;
 
-    public function __construct($value)
+    public function __construct(mixed $value)
     {
         $this->value = $value;
     }
@@ -45,7 +42,7 @@ final class IsEqualIgnoringCase extends Constraint
      *
      * @throws ExpectationFailedException
      */
-    public function evaluate($other, string $description = '', bool $returnResult = false): ?bool
+    public function evaluate(mixed $other, string $description = '', bool $returnResult = false): bool
     {
         // If $this->value and $other are identical, they are also equal.
         // This is the most common path and will allow us to skip
@@ -85,13 +82,11 @@ final class IsEqualIgnoringCase extends Constraint
 
     /**
      * Returns a string representation of the constraint.
-     *
-     * @throws InvalidArgumentException
      */
     public function toString(): string
     {
         if (is_string($this->value)) {
-            if (strpos($this->value, "\n") !== false) {
+            if (str_contains($this->value, "\n")) {
                 return 'is equal to <text>';
             }
 
@@ -103,7 +98,7 @@ final class IsEqualIgnoringCase extends Constraint
 
         return sprintf(
             'is equal to %s',
-            $this->exporter()->export($this->value),
+            Exporter::export($this->value),
         );
     }
 }

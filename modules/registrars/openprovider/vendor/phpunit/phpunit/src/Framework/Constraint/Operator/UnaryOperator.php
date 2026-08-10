@@ -10,22 +10,15 @@
 namespace PHPUnit\Framework\Constraint;
 
 use function count;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 /**
  * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
 abstract class UnaryOperator extends Operator
 {
-    /**
-     * @var Constraint
-     */
-    private $constraint;
+    private readonly Constraint $constraint;
 
-    /**
-     * @param Constraint|mixed $constraint
-     */
-    public function __construct($constraint)
+    public function __construct(mixed $constraint)
     {
         $this->constraint = $this->checkConstraint($constraint);
     }
@@ -77,12 +70,8 @@ abstract class UnaryOperator extends Operator
      *
      * The beginning of failure messages is "Failed asserting that" in most
      * cases. This method should return the second part of that sentence.
-     *
-     * @param mixed $other evaluated value or object
-     *
-     * @throws InvalidArgumentException
      */
-    protected function failureDescription($other): string
+    protected function failureDescription(mixed $other): string
     {
         $reduced = $this->reduce();
 
@@ -113,8 +102,6 @@ abstract class UnaryOperator extends Operator
      * The method may be overwritten in a subclass to apply default
      * transformation in case the operand constraint does not provide its own
      * custom strings via toStringInContext() or failureDescriptionInContext().
-     *
-     * @param string $string the string to be transformed
      */
     protected function transformString(string $string): string
     {
