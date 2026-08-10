@@ -1306,6 +1306,25 @@ $additionaldomainfields[".dk"][] = array(
     "op_name" => "dkAcceptance"
 );
 
+$additionaldomainfields[".dk"][] = array(
+    "Name" => "User Type",
+    "LangVar" => "dkUserType",
+    "Type" => "dropdown",
+    "Required" => true,
+    "Options" => "Please select User Type,1|Individual,2|Company",
+    "op_location" => "customerExtensionAdditionalData",
+    "op_name" => "userType"
+);
+
+$additionaldomainfields[".dk"][] = array(
+    "Name" => "Sole Proprietorship",
+    "LangVar" => "dkSoleProprietorship",
+    "Type" => "tickbox",
+    "Required" => false,
+    "op_location" => "customerExtensionAdditionalData",
+    "op_name" => "soleProprietorship"
+);
+
 // .IN and all .IN SLDs
 
 $inNexusFields = [

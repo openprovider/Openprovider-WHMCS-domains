@@ -12,6 +12,8 @@ class ShoppingCartController
 {
     private static ?array $inSldExtensions = null;
     private const IN_NEXUS_DECLARATION_INDEX = 0;
+    private const DK_USER_TYPE_INDEX = 5;
+    private const DK_SOLE_PROPRIETORSHIP_INDEX = 6;
 
     // .RU / .xn--p1ai field indices
     private const RU_CONTACT_TYPE_INDEX                    =  8;  // Contact Type            (display only)
@@ -162,6 +164,11 @@ class ShoppingCartController
     
     public function preCheckout($vars)
     {
+        $dkError = $this->validateDkSoleProprietorshipAtCheckout($vars);
+        if ($dkError !== null) {
+            return $dkError;
+        }
+
         $inNexusError = $this->validateInNexusAtCheckout($vars);
         if ($inNexusError !== null) {
             return $inNexusError;
@@ -205,6 +212,60 @@ class ShoppingCartController
                 }
             }
         }
+    }
+
+
+    private function validateDkSoleProprietorshipAtCheckout(array $vars): ?array
+    {
+        $domains = $vars['domains'] ?? $_SESSION['cart']['domains'] ?? [];
+        $cartUrl = rtrim(Setting::getValue('SystemURL'), '/') . '/cart.php?a=confdomains';
+
+        foreach ($domains as $domain) {
+            $domainName = $domain['domain'] ?? '';
+
+            if ($this->getFullTld($domainName) !== 'dk') {
+                continue;
+            }
+
+            $fields = $domain['fields'] ?? [];
+            $userType = (string) ($fields[self::DK_USER_TYPE_INDEX] ?? '');
+
+            if (!in_array($userType, ['1', '2'], true)) {
+                return [
+                    'error' => 'Please select a valid .dk User Type (Individual or Company) for ' . $domainName . '. '
+                        . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> '
+                        . 'to correct your selection.',
+                ];
+            }
+
+            $soleProprietorshipChecked = ($fields[self::DK_SOLE_PROPRIETORSHIP_INDEX] ?? '') === 'on';
+
+            if (!$soleProprietorshipChecked) {
+                continue;
+            }
+
+            if ($userType !== '2') {
+                return [
+                    'error' => 'Sole Proprietorship can only be selected when the User Type is Company for '
+                        . $domainName . '. '
+                        . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> '
+                        . 'to correct your selection.',
+                ];
+            }
+
+            $country = strtoupper((string) $this->getRegistrantCountryForCheckout($vars));
+
+            if ($country !== 'DK') {
+                continue;
+            }
+
+            return [
+                'error' => 'Sole Proprietorship can only be selected for a non-DK foreign company for ' . $domainName . '. '
+                    . '<a href="' . $cartUrl . '">Go back to the domain configuration step</a> to correct your selection.',
+            ];
+        }
+
+        return null;
     }
 
     private function validateRuContactTypeAtCheckout(array $vars): ?array
@@ -516,7 +577,103 @@ class ShoppingCartController
         });
     }
 
-    $(document).ready(initRuFieldVisibility);
+    function initDkSoleProprietorshipVisibility() {
+        var dkUserTypeFields = [];
+
+        $('select[name^="domainfield["]').filter(function () {
+            var vals = $(this).find('option').map(function () {
+                return $(this).val();
+            }).get();
+
+            return vals.indexOf('1') !== -1 && vals.indexOf('2') !== -1;
+        }).each(function () {
+            var $userType = $(this);
+            var $form = $userType.closest('form');
+
+            var m = ($userType.attr('name') || '').match(/^domainfield\[(\d+)\]/);
+            if (!m) { return; }
+
+            var n = m[1];
+
+            var $rows = $form.find('.form-group.row').filter(function () {
+                return $(this).find('[name^="domainfield[' + n + ']["]').length > 0;
+            });
+
+            var $soleCheckbox = $form
+                .find('input[type="checkbox"][name="domainfield[' + n + '][6]"]')
+                .first();
+
+            if (!$soleCheckbox.length) { return; }
+
+            var $soleRow = $soleCheckbox.closest('.form-group.row');
+
+            var $error = $userType.next('.dk-user-type-error');
+            if (!$error.length) {
+                $error = $('<div class="text-danger dk-user-type-error" style="margin-top:5px;">Please select User Type.</div>');
+                $error.hide();
+                $userType.after($error);
+            }
+
+            function isValidUserType() {
+                return $userType.val() === '1' || $userType.val() === '2';
+            }
+
+            function showUserTypeError() {
+                $error.show();
+                $userType.focus();
+            }
+
+            function hideUserTypeError() {
+                $error.hide();
+            }
+
+            function apply() {
+                if (isValidUserType()) {
+                    hideUserTypeError();
+                }
+
+                if ($userType.val() === '2') {
+                    $soleRow.show();
+                } else {
+                    $soleCheckbox.prop('checked', false);
+                    $soleRow.hide();
+                }
+            }
+
+            $userType.off('change.dkUserType').on('change.dkUserType', apply);
+            apply();
+
+            dkUserTypeFields.push({
+                field: $userType,
+                isValid: isValidUserType,
+                showError: showUserTypeError
+            });
+        });
+
+        $('#frmConfigureDomains')
+            .off('submit.dkUserType')
+            .on('submit.dkUserType', function (e) {
+                var hasError = false;
+
+                $.each(dkUserTypeFields, function (_, item) {
+                    if (!item.isValid()) {
+                        item.showError();
+                        hasError = true;
+                    }
+                });
+
+                if (hasError) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+            });
+    }
+
+    $(document).ready(function () {
+        initRuFieldVisibility();
+        initDkSoleProprietorshipVisibility();
+    });
 })(jQuery);
 JS;
 
