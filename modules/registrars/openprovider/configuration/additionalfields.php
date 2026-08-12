@@ -177,6 +177,23 @@ $additionaldomainfields['.it'][] = array(
     "op_name"  => "socialSecurityNumber"
 );
 
+// .IT - API-based Registro .it declaration confirmation.
+$additionaldomainfields['.it'][] = array(
+    "Name"        => "Registro .it declarations presented & accepted",
+    "LangVar"     => "itNexusDeclaration",
+    "Type"        => "tickbox",
+    "Required"    => false,
+    "Description" => '<span style="display:block;margin-top:6px;font-size:12px;line-height:1.45;color:#6b7280;max-width:100%;">'
+        . 'Tick to confirm the required Registro .it registration form and declarations have already been presented '
+        . 'to, and explicitly accepted by, the registrant before this request is submitted. Evidence of that '
+        . 'acceptance will be retained and provided to Openprovider without delay upon request. When confirmed and '
+        . 'this feature is enabled for your account, Openprovider skips the post-submission REQ declaration step.'
+        . '</span>',
+    "op_location" => "domainAdditionalData",
+    "op_name"     => "it_nexus_declaration",
+    "op_values"   => ['YES', 'NO'],
+);
+
 
 // .RU & .РФ (xn--p1ai)
 // WHMCS cannot determine contact type (Individual vs Company) from the additional fields page.
