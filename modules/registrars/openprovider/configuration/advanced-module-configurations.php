@@ -60,6 +60,14 @@ return [
     // enable advanced customer additional data management for .es, .pt, .se, .com.es, .nom.es, .edu.es, .org.es, .it and .fi domain registrations    
     'idnumbermod' => true,
 
+    // Default: false. This is a reseller-account-level switch, NOT a per-domain one - only turn it on
+    // once Openprovider has confirmed this reseller account is enabled for the feature. When true, and
+    // the "Registro .it declarations presented & accepted" additional field was ticked at checkout, the
+    // module reports it_nexus_declaration/it_reseller_declaration => YES on Register/Transfer so the
+    // domain skips the post-submission REQ declaration workflow. When false, the field is still shown
+    // and stored, but its value is stripped before the API call and the existing REQ workflow is used.
+    'itDeclarationApiConfirmationEnabled' => false,
+
     'renewalDateSync' =>true, //  Default: true, If true, Set 'OP renewal date' to WHMCS as expiration date. Else Set 'OP expiration date' to WHMCS as expiration date.
 
     // TLDs that are supported in Openprovider Sandbox account
