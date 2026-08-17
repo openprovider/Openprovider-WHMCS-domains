@@ -83,6 +83,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'iisse_acceptance' => 'string',
         'insurance_acceptance' => 'string',
         'intended_use' => 'string',
+        'it_nexus_declaration' => 'string',
+        'it_reseller_declaration' => 'string',
         'law_acceptance' => 'string',
         'legal_type' => 'string',
         'maintainer' => 'string',
@@ -136,6 +138,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'iisse_acceptance' => null,
         'insurance_acceptance' => null,
         'intended_use' => null,
+        'it_nexus_declaration' => null,
+        'it_reseller_declaration' => null,
         'law_acceptance' => null,
         'legal_type' => null,
         'maintainer' => null,
@@ -210,6 +214,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'iisse_acceptance' => 'iisse_acceptance',
         'insurance_acceptance' => 'insurance_acceptance',
         'intended_use' => 'intended_use',
+        'it_nexus_declaration' => 'it_nexus_declaration',
+        'it_reseller_declaration' => 'it_reseller_declaration',
         'law_acceptance' => 'law_acceptance',
         'legal_type' => 'legal_type',
         'maintainer' => 'maintainer',
@@ -263,6 +269,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'iisse_acceptance' => 'setIisseAcceptance',
         'insurance_acceptance' => 'setInsuranceAcceptance',
         'intended_use' => 'setIntendedUse',
+        'it_nexus_declaration' => 'setItNexusDeclaration',
+        'it_reseller_declaration' => 'setItResellerDeclaration',
         'law_acceptance' => 'setLawAcceptance',
         'legal_type' => 'setLegalType',
         'maintainer' => 'setMaintainer',
@@ -316,6 +324,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'iisse_acceptance' => 'getIisseAcceptance',
         'insurance_acceptance' => 'getInsuranceAcceptance',
         'intended_use' => 'getIntendedUse',
+        'it_nexus_declaration' => 'getItNexusDeclaration',
+        'it_reseller_declaration' => 'getItResellerDeclaration',
         'law_acceptance' => 'getLawAcceptance',
         'legal_type' => 'getLegalType',
         'maintainer' => 'getMaintainer',
@@ -427,6 +437,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         $this->container['iisse_acceptance'] = isset($data['iisse_acceptance']) ? $data['iisse_acceptance'] : null;
         $this->container['insurance_acceptance'] = isset($data['insurance_acceptance']) ? $data['insurance_acceptance'] : null;
         $this->container['intended_use'] = isset($data['intended_use']) ? $data['intended_use'] : null;
+        $this->container['it_nexus_declaration'] = isset($data['it_nexus_declaration']) ? $data['it_nexus_declaration'] : 'NO';
+        $this->container['it_reseller_declaration'] = isset($data['it_reseller_declaration']) ? $data['it_reseller_declaration'] : 'NO';
         $this->container['law_acceptance'] = isset($data['law_acceptance']) ? $data['law_acceptance'] : null;
         $this->container['legal_type'] = isset($data['legal_type']) ? $data['legal_type'] : null;
         $this->container['maintainer'] = isset($data['maintainer']) ? $data['maintainer'] : null;
@@ -1121,6 +1133,58 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
     public function setIntendedUse($intended_use)
     {
         $this->container['intended_use'] = $intended_use;
+
+        return $this;
+    }
+
+    /**
+     * Gets it_nexus_declaration
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getItNexusDeclaration()
+    {
+        return $this->container['it_nexus_declaration'];
+    }
+
+    /**
+     * Sets it_nexus_declaration
+     *
+     * @param string|null $it_nexus_declaration Declaration for .IT domains and SLDs Possible values: 'YES' or 'NO'.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setItNexusDeclaration($it_nexus_declaration)
+    {
+        $this->container['it_nexus_declaration'] = $it_nexus_declaration;
+
+        return $this;
+    }
+
+    /**
+     * Gets it_reseller_declaration
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getItResellerDeclaration()
+    {
+        return $this->container['it_reseller_declaration'];
+    }
+
+    /**
+     * Sets it_reseller_declaration
+     *
+     * @param string|null $it_reseller_declaration Declaration of Resellers for .IT domains and SLDs Possible values: 'YES' or 'NO'.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setItResellerDeclaration($it_reseller_declaration)
+    {
+        $this->container['it_reseller_declaration'] = $it_reseller_declaration;
 
         return $this;
     }
