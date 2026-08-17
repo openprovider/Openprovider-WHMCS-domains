@@ -523,7 +523,7 @@ JS;
         return '<script type="text/javascript">' . $js . '</script>';
     }
 
-    public function hideIdnScriptForNonIdnDomains($vars)
+    public function filterDomainConfigFields($vars)
     {
         if (
             ($vars['filename'] ?? '') !== 'cart' ||
@@ -532,13 +532,14 @@ JS;
         ) {
             return [];
         }
-        
+
         if (empty($vars['domains']) || !is_array($vars['domains'])) {
             return [];
         }
 
         $idn = new idna_convert();
         $updatedDomains = $vars['domains'];
+        $itDeclarationFlowEnabled = Configuration::get('itDeclarationFlowEnabled');
 
         foreach ($updatedDomains as $i => $domainData) {
     
@@ -546,12 +547,28 @@ JS;
                 continue;
             }
 
-            $domainName = $domainData['domain'];  
+            $domainName = $domainData['domain'];
 
-            // Detect IDN 
+            // Hide .IT declaration fields when the feature is disabled
+            if (
+                !$itDeclarationFlowEnabled &&
+                str_ends_with(strtolower($domainName), '.it')
+            ) {
+                foreach ($domainData['fields'] as $fieldName => $html) {
+                    if (
+                        $fieldName === '.IT Nexus Declaration' ||
+                        $fieldName === '.IT Reseller Declaration'
+                    ) {
+                        unset($updatedDomains[$i]['fields'][$fieldName]);
+                    }
+                }
+            }
+
+            // Detect IDN
             $encoded = $idn->encode($domainName);
 
-            $isNonIdn = ($domainName === $encoded) && (strpos($domainName, 'xn--') === false);
+            $isNonIdn = ($domainName === $encoded)
+                && (strpos($domainName, 'xn--') === false);
 
             if (!$isNonIdn) {
                 continue;
@@ -566,6 +583,7 @@ JS;
 
         return ['domains' => $updatedDomains];
     }
+
 
     private function getFullTld(string $domainName): string
     {
