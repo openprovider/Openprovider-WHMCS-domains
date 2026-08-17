@@ -177,22 +177,25 @@ $additionaldomainfields['.it'][] = array(
     "op_name"  => "socialSecurityNumber"
 );
 
-// .IT - API-based Registro .it declaration confirmation.
-$additionaldomainfields['.it'][] = array(
-    "Name"        => "Registro .it declarations presented & accepted",
-    "LangVar"     => "itNexusDeclaration",
-    "Type"        => "tickbox",
-    "Required"    => false,
-    "Description" => '<span style="display:block;margin-top:6px;font-size:12px;line-height:1.45;color:#6b7280;max-width:100%;">'
-        . 'Tick to confirm the required Registro .it registration form and declarations have already been presented '
-        . 'to, and explicitly accepted by, the registrant before this request is submitted. Evidence of that '
-        . 'acceptance will be retained and provided to Openprovider without delay upon request. When confirmed and '
-        . 'this feature is enabled for your account, Openprovider skips the post-submission REQ declaration step.'
-        . '</span>',
-    "op_location" => "domainAdditionalData",
-    "op_name"     => "it_nexus_declaration",
-    "op_values"   => ['YES', 'NO'],
-);
+$additionaldomainfields['.it'][] = [
+    'Name' => '.IT Nexus Declaration',
+    'Type' => 'tickbox',
+    'Required' => false,
+    'Description' => 'I confirm that I have reviewed and accepted the applicable Registro .it declarations, information notices, data accuracy obligations, Registry rules, dispute rules, eligibility requirements and related registration terms.',
+    'op_location' => 'domainAdditionalData',
+    'op_name' => 'itNexusDeclaration',
+    'op_values' => ['YES', 'NO'],
+];
+
+$additionaldomainfields['.it'][] = [
+    'Name' => '.IT Reseller Declaration',
+    'Type' => 'tickbox',
+    'Required' => false,
+    'Description' => 'I confirm that I have presented the applicable Registro .it declarations, information notices and terms to the Registrant and obtained the Registrant\'s explicit acceptance before submitting this request on the Registrant\'s behalf. I confirm that I will retain adequate evidence of the Registrant\'s acceptance and consent and will provide such evidence to Openprovider without delay upon request, including where required for a Registro .it verification.',
+    'op_location' => 'domainAdditionalData',
+    'op_name' => 'itResellerDeclaration',
+    'op_values' => ['YES', 'NO'],
+];
 
 
 // .RU & .РФ (xn--p1ai)
