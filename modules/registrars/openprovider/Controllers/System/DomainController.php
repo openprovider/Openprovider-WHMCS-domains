@@ -170,7 +170,6 @@ class DomainController extends BaseController
 
             if (isset($additionalFields['domainAdditionalData'])) {
                 $domainRegistration->additionalData = $additionalFields['domainAdditionalData']->jsonSerialize();
-                $this->applyItDeclarationConfirmation($domainRegistration->additionalData, $params);
             }
 
             // Check if premium is enabled. If so, set the received premium cost.
@@ -318,10 +317,8 @@ class DomainController extends BaseController
                 $domainTransfer->nsTemplateName = $params['dnsTemplate'];
             }
 
-            if (isset($additionalFields['domainAdditionalData'])) {
+            if (isset($additionalFields['domainAdditionalData']))
                 $domainTransfer->additionalData = $additionalFields['domainAdditionalData']->jsonSerialize();
-                $this->applyItDeclarationConfirmation($domainTransfer->additionalData, $params);
-            }
 
             if (isset($params['requestTrusteeService']) && !empty($params['requestTrusteeService'])) {
                 $trusteeServiceTds = array_map(function ($tld) {
@@ -342,27 +339,6 @@ class DomainController extends BaseController
             $values["error"] = $e->getMessage();
         }
         return $values;
-    }
-
-    /**
-     * Apply the API-based Registro .it declaration confirmation.
-     *
-     * @param object $additionalData Domain/transfer additionalData object (by reference)
-     * @param array $params
-     * @return void
-     */
-    private function applyItDeclarationConfirmation($additionalData, array $params): void
-    {
-        $confirmed = !empty($params['itDeclarationApiConfirmationEnabled'])
-            && ($additionalData->it_nexus_declaration ?? null) === 'YES';
-
-        if ($confirmed) {
-            $additionalData->it_nexus_declaration    = 'YES';
-            $additionalData->it_reseller_declaration = 'YES';
-        } else {
-            unset($additionalData->it_nexus_declaration);
-            unset($additionalData->it_reseller_declaration);
-        }
     }
 
     private function getTldMetaData(array $params, string $extension): array
