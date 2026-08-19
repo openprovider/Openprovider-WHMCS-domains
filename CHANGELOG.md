@@ -1,5 +1,12 @@
 # Changelog
 
+## v5.13.6
+
+###### Features and improvements
+- Added new domain additional data fields for `.it` registrant declaration confirmation for domain registration and transfer.
+- Added the `itDeclarationFlowEnabled` configuration option to control the `.it` declaration flow.
+- Upgraded `openprovider/rest-client-php` library to `v2.2.3-beta`.
+
 ## v5.13.5
 
 ###### Bugfixes
