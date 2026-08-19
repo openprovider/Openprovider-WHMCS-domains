@@ -177,6 +177,26 @@ $additionaldomainfields['.it'][] = array(
     "op_name"  => "socialSecurityNumber"
 );
 
+$additionaldomainfields['.it'][] = [
+    'Name' => '.IT Nexus Declaration',
+    'Type' => 'tickbox',
+    'Required' => false,
+    'Description' => 'I confirm that I have reviewed and accepted the applicable Registro .it declarations, information notices, data accuracy obligations, Registry rules, dispute rules, eligibility requirements and related registration terms.',
+    'op_location' => 'domainAdditionalData',
+    'op_name' => 'itNexusDeclaration',
+    'op_values' => ['YES', 'NO'],
+];
+
+$additionaldomainfields['.it'][] = [
+    'Name' => '.IT Reseller Declaration',
+    'Type' => 'tickbox',
+    'Required' => false,
+    'Description' => 'I confirm that I have presented the applicable Registro .it declarations, information notices and terms to the Registrant and obtained the Registrant\'s explicit acceptance before submitting this request on the Registrant\'s behalf. I confirm that I will retain adequate evidence of the Registrant\'s acceptance and consent and will provide such evidence to Openprovider without delay upon request, including where required for a Registro .it verification.',
+    'op_location' => 'domainAdditionalData',
+    'op_name' => 'itResellerDeclaration',
+    'op_values' => ['YES', 'NO'],
+];
+
 
 // .RU & .РФ (xn--p1ai)
 // WHMCS cannot determine contact type (Individual vs Company) from the additional fields page.

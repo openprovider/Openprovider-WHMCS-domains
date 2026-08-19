@@ -60,6 +60,9 @@ return [
     // enable advanced customer additional data management for .es, .pt, .se, .com.es, .nom.es, .edu.es, .org.es, .it and .fi domain registrations    
     'idnumbermod' => true,
 
+    // Enable API-based declaration confirmation flow for .IT domains
+    'itDeclarationFlowEnabled' => false,
+
     'renewalDateSync' =>true, //  Default: true, If true, Set 'OP renewal date' to WHMCS as expiration date. Else Set 'OP expiration date' to WHMCS as expiration date.
 
     // TLDs that are supported in Openprovider Sandbox account
