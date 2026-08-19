@@ -61,7 +61,7 @@ return [
     'idnumbermod' => true,
 
     // Enable API-based declaration confirmation flow for .IT domains
-    'itDeclarationFlowEnabled' => false,
+    'itDeclarationFlowEnabled' => true,
 
     'renewalDateSync' =>true, //  Default: true, If true, Set 'OP renewal date' to WHMCS as expiration date. Else Set 'OP expiration date' to WHMCS as expiration date.
 
