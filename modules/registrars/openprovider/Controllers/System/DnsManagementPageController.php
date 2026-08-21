@@ -19,6 +19,7 @@ class DnsManagementPageController extends BaseController
     const PAGE_TITLE = 'DNS Management';
     const PAGE_NAME  = 'DNS Management';
     const MODULE_NAME = 'dnsmanagement';
+    const CSRF_SESSION_KEY = 'opDnsManagementCsrfToken';
 
     /**
      * @var ApiHelper
@@ -79,10 +80,8 @@ class DnsManagementPageController extends BaseController
                 return;
             }
 
-            // WHMCS CSRF validation
-            try {
-                check_token('WHMCS.default', true); 
-            } catch (\Throwable $e) {
+            // CSRF validation
+            if (!$this->verifyCsrfToken()) {
                 http_response_code(403);
                 echo json_encode(['success' => false, 'error' => 'Invalid CSRF token']);
                 return;
@@ -156,10 +155,8 @@ class DnsManagementPageController extends BaseController
                 return;
             }
 
-            // CSRF
-            try {
-                check_token('WHMCS.default', true);
-            } catch (\Throwable $e) {
+            // CSRF validation
+            if (!$this->verifyCsrfToken()) {
                 http_response_code(403);
                 echo json_encode(['success' => false, 'error' => 'Invalid CSRF token']);
                 return;
@@ -286,8 +283,26 @@ class DnsManagementPageController extends BaseController
         }
 
         $ca->setTemplate($template);
-        $ca->assign('csrfToken', $_SESSION['token'] ?? \WHMCS\Session::get('token') ?? '');
+        // Deliberately NOT named 'csrfToken' — WHMCS's own ClientArea::output() appears to auto-populate/overwrite that variable name internally, which is what silently discarded our token.
+        $ca->assign('opDnsCsrfToken', $this->getCsrfToken());
         $ca->output();
+    }
+
+    private function getCsrfToken(): string
+    {
+        if (empty($_SESSION[self::CSRF_SESSION_KEY])) {
+            $_SESSION[self::CSRF_SESSION_KEY] = bin2hex(random_bytes(32));
+        }
+
+        return $_SESSION[self::CSRF_SESSION_KEY];
+    }
+
+    private function verifyCsrfToken(): bool
+    {
+        $submitted = (string) ($_POST['opDnsCsrfToken'] ?? '');
+
+        return !empty($_SESSION[self::CSRF_SESSION_KEY])
+            && hash_equals($_SESSION[self::CSRF_SESSION_KEY], $submitted);
     }
 
     private function buildDnsRecordsFromPost(): array
