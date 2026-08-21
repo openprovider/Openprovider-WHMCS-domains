@@ -15,7 +15,7 @@
         {else}
 
             <form id="opDnsForm" method="post" action="dnsmanagement.php?domainid={$domainId}">
-                <input type="hidden" name="token" value="{$csrfToken}" />
+                <input type="hidden" name="opDnsCsrfToken" value="{$opDnsCsrfToken}" />
                 <input type="hidden" name="sub" value="save" />
                 <input type="hidden" name="domainid" value="{$domainId}" />
 

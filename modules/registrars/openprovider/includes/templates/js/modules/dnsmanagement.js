@@ -36,9 +36,9 @@ document.addEventListener('click', async function (e) {
   payload.set('address', btn.dataset.address || '');
   payload.set('priority', btn.dataset.priority || '');
 
-  // CSRF token: read ONLY from our DNS form 
-  const token = document.querySelector('#opDnsForm input[name="token"]')?.value;
-  if (token) payload.set('token', token);
+  // CSRF token: read ONLY from our DNS form
+  const token = document.querySelector('#opDnsForm input[name="opDnsCsrfToken"]')?.value || '';
+  payload.set('opDnsCsrfToken', token);
 
   btn.disabled = true;
 
