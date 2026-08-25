@@ -14,8 +14,9 @@ class APITools
     public static function createNameserversArray($params, $apiHelper = null)
     {
         $nameServers = array();
+        $domainFqdn = strtolower($params['sld'] . '.' . $params['tld']);
 
-        //can be used to hard-code a nameserver overwrite when using the DNS management addon 
+        //can be used to hard-code a nameserver overwrite when using the DNS management addon
         // if($params['dnsmanagement'] == true)
         // {
         //     $params['ns1'] = 'ns1.openprovider.nl';
@@ -26,7 +27,7 @@ class APITools
         // }
 
         if ($params['test_mode'] == 'on' && $apiHelper != null) {
-            
+
             for ($i = 1; $i <= 5; $i++) {
                 $ns = $params["ns{$i}"];
                 if (!$ns) {
@@ -35,6 +36,15 @@ class APITools
                 $nsParts = explode('/', $ns);
                 $nsName = trim($nsParts[0]);
                 $nsIp = empty($nsParts[1]) ? null : trim($nsParts[1]);
+
+                // Glue records (NS is a child of the domain) require an IP.
+                // External nameservers must be accepted as-is without IP lookup.
+                $isGlue = str_ends_with(strtolower($nsName), '.' . $domainFqdn);
+
+                if (!$isGlue) {
+                    $nameServers[] = new \OpenProvider\API\DomainNameServer(['name' => $nsName]);
+                    continue;
+                }
 
                 //Try to get IP from searchNsRequest in REST API
                 if (empty($nsIp)) {
@@ -52,9 +62,12 @@ class APITools
                     $nsIp = gethostbyname($nsName);
                     if (!filter_var($nsIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
                         $nsIp = "";
-                        throw new \Exception("Invalid nameserver name: {$nsName}");
+                        throw new \Exception(
+                            "Could not resolve IP for glue record nameserver '{$nsName}'. "
+                                . "Please register it in OpenProvider before continuing."
+                        );
                     }
-                }                
+                }
 
                 if (!empty($nsIp) && !empty($nsName)) {
                     $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
@@ -65,13 +78,13 @@ class APITools
             }
 
             if (count($nameServers) < 2) {
-                throw new \Exception('You must enter minimum 2 nameservers');
+                throw new \Exception('You must provide at least 2 nameservers.');
             }
 
             return $nameServers;
         }
 
-        $invalidNameServer = false;
+        $invalidGlueNameServers = [];
         for ($i = 1; $i <= 5; $i++) {
             $ns = $params["ns{$i}"];
             if (!$ns) {
@@ -81,6 +94,15 @@ class APITools
             $nsParts = explode('/', $ns);
             $nsName = trim($nsParts[0]);
             $nsIp = empty($nsParts[1]) ? null : trim($nsParts[1]);
+
+            // Glue records (NS is a child of the domain) require an IP.
+            // External nameservers must be accepted as-is without IP lookup.
+            $isGlue = str_ends_with(strtolower($nsName), '.' . $domainFqdn);
+
+            if (!$isGlue) {
+                $nameServers[] = new \OpenProvider\API\DomainNameServer(['name' => $nsName]);
+                continue;
+            }
 
             if (empty($nsIp)) {
                 $api = new \OpenProvider\API\API();
@@ -99,8 +121,8 @@ class APITools
                 $nsIp = gethostbyname($nsName);
                 if (!filter_var($nsIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
                     $nsIp = "";
-                    $invalidNameServer = true;
-                    logModuleCall('openprovider', 'createNameserversArray', $nsName, "Invalid nameserver name: {$nsName}", null, null);
+                    $invalidGlueNameServers[] = $nsName;
+                    logModuleCall('openprovider', 'createNameserversArray', $nsName, "Could not resolve IP for glue record nameserver: {$nsName}", null, null);
                 }
             }
 
@@ -113,11 +135,14 @@ class APITools
         }
 
         if (count($nameServers) < 2) {
-            if($invalidNameServer) {
-                throw new \Exception('You must enter minimum 2 nameservers. Invalid nameserver found. Please check the module log.');
-            }else{
-                throw new \Exception('You must enter minimum 2 nameservers');
-            }            
+            if (!empty($invalidGlueNameServers)) {
+                $names = implode(', ', $invalidGlueNameServers);
+                throw new \Exception(
+                    "Could not resolve IP for glue record nameserver(s): {$names}. "
+                        . "Please register them in OpenProvider before continuing."
+                );
+            }
+            throw new \Exception('You must provide at least 2 nameservers.');
         }
 
         return $nameServers;
