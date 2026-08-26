@@ -91,6 +91,10 @@ function openprovider_bind_required_classes($launcher)
         $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter, $idn);
         $client->getConfiguration()->setHost($host);
 
+        if (empty($params['Username']) || empty($params['Password'])) {
+            return $client;
+        }
+
         $tokenResult = null;
 
         if (Capsule::schema()->hasTable('reseller_tokens')) {
