@@ -91,11 +91,7 @@ function openprovider_bind_required_classes($launcher)
         $client = new ApiV1($logger, $camelCaseToSnakeCaseNameConverter, $idn);
         $client->getConfiguration()->setHost($host);
 
-        $tokenResult = null;
-
-        if (Capsule::schema()->hasTable('reseller_tokens')) {
-            $tokenResult = Capsule::table('reseller_tokens')->where('username', $params['Username'])->orderBy('created_at', 'desc')->first();
-        } else {
+        if (!Capsule::schema()->hasTable('reseller_tokens')) {
             Capsule::schema()->create(
                 'reseller_tokens',
                 function ($table) {
@@ -108,6 +104,12 @@ function openprovider_bind_required_classes($launcher)
                 }
             );
         }
+
+        if (empty($params['Username']) || empty($params['Password'])) {
+            return $client;
+        }
+
+        $tokenResult = Capsule::table('reseller_tokens')->where('username', $params['Username'])->orderBy('created_at', 'desc')->first();
 
         $expireTime = $tokenResult ? new Carbon($tokenResult->expire_at) : false;
         $isAlive = $expireTime && Carbon::now()->diffInSeconds($expireTime, false) > 0;
