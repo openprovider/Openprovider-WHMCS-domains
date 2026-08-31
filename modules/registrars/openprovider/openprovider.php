@@ -405,3 +405,16 @@ function openprovider_registrar_launch_decorator(string $route, $params = [], $l
 
     return $launch->output($modifiedParams, $route);
 }
+
+function openprovider_AdditionalDomainFields(array $params)
+{
+    $additionalfields = openprovider_additional_fields();
+
+    if (isset($additionalfields[".{$params['tld']}"])) {
+        $values["fields"] = $additionalfields[".{$params['tld']}"];
+    } else {
+        $values["fields"] = [];
+    }
+
+    return $values;
+}
