@@ -2,6 +2,8 @@
 
 namespace OpenProvider\WhmcsRegistrar\Controllers\Hooks;
 
+use WHMCS\Database\Capsule;
+
 /**
  * Class AdminAreaFooterController
  * OpenProvider Registrar module
@@ -18,6 +20,57 @@ class AdminAreaFooterController
    */
   public function __construct()
   {
+  }
+
+  public function makeLocaleReadonly(array $vars): string
+  {
+    if (($vars['filename'] ?? '') !== 'clientsdomaincontacts') {
+      return '';
+    }
+
+    $domainId = (int) ($_GET['domainid'] ?? $_REQUEST['domainid'] ?? 0);
+    if (!$domainId) {
+      return '';
+    }
+
+    $registrar = Capsule::table('tbldomains')
+      ->where('id', $domainId)
+      ->value('registrar');
+
+    if ($registrar !== 'openprovider') {
+      return '';
+    }
+
+    return <<<'HTML'
+<script>
+(function () {
+    function lockLocaleFields() {
+        var inputs = document.querySelectorAll('input[name*="[locale]"]');
+        if (!inputs.length) return false;
+
+        inputs.forEach(function (input) {
+            input.setAttribute('readonly', 'readonly');
+            input.style.backgroundColor = '#f5f5f5';
+            input.style.cursor = 'not-allowed';
+            input.title = 'Locale is managed automatically and cannot be edited directly.';
+        });
+        return true;
+    }
+
+    jQuery(function () {
+        if (lockLocaleFields()) return;
+
+        var attempts = 0;
+        var timer = setInterval(function () {
+            attempts++;
+            if (lockLocaleFields() || attempts > 20) {
+                clearInterval(timer);
+            }
+        }, 150);
+    });
+}());
+</script>
+HTML;
   }
 
   public function output($vars)
