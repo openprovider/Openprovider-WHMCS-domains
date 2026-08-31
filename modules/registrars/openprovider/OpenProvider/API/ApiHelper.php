@@ -675,6 +675,7 @@ class ApiHelper
     {
         $args = [
             'withStatistics' => true,
+            'withSettings' => true,
         ];
 
         return $this->buildResponse($this->apiClient->call('retrieveResellerRequest', $args));
