@@ -73,6 +73,6 @@ return [
     // Openprovider to import the existing contact data from the registry
     // (sets import_contacts_from_registry on the transfer request).
     // Only enable this for TLDs where you have verified the behaviour in the Openprovider sandbox.
-    'importContactsFromRegistry' => ["nl"],
+    'importContactsFromRegistry' => [],
 
 ];
