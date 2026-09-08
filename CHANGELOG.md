@@ -1,5 +1,11 @@
 # Changelog
 
+## v5.13.7
+
+###### Bugfixes
+- Fixed: DNS Management save and delete operations failing in WHMCS 9.0.6 due to CSRF token conflicts.
+- Fixed: Sandbox API connection failures caused by the deprecated API endpoint.
+
 ## v5.13.6
 
 ###### Features and improvements
