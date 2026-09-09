@@ -10,6 +10,7 @@ use WeDevelopCoffee\wPower\Models\Domain as DomainModel;
 use OpenProvider\API\Domain as api_domain;
 use OpenProvider\WhmcsHelpers\Activity;
 use OpenProvider\WhmcsHelpers\General;
+use OpenProvider\WhmcsHelpers\DomainSync as helper_DomainSync;
 
 /**
  * Helper to synchronize the domain status and expiry date.
@@ -91,6 +92,20 @@ class DomainSync
 
         // Save the domains
         $this->domains = $domains;
+    }
+
+    /**
+     * Check whether there are domains that need to be processed
+     *
+     * @return bool
+     **/
+    public function has_domains_to_process()
+    {
+        if (empty($this->domains)) {
+            return false;
+        }
+
+        return count($this->domains) > 0;
     }
 
     /**
