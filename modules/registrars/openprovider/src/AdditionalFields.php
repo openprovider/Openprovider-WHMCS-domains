@@ -123,6 +123,10 @@ class AdditionalFields
 
             $this->ceAdditionalData->setTld($domain->extension);
 
+            $dkUserType = $domainExtension === '.dk'
+                ? ($params['additionalfields']['User Type'] ?? null)
+                : null;
+
             /**
              * op_name                  Fieldname with OP
              * op_explode               The explode delimiter.
@@ -163,7 +167,8 @@ class AdditionalFields
             {
                 // Do not run when the op_name is idnScript or when the field is a op_decision_master.
                 if($field['op_name'] == 'idnScript' && isset($ignoreIdnScript)
-                    || isset($field['op_decision_master']))
+                    || isset($field['op_decision_master'])
+                    || ($field['op_name'] == 'soleProprietorship' && $dkUserType !== null && $dkUserType !== '2'))
                     continue;
 
                 // Check if a op_dropdown_for_op_name field is defined.
