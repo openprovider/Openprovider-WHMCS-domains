@@ -595,10 +595,6 @@ class ShoppingCartController
 
             var n = m[1];
 
-            var $rows = $form.find('.form-group.row').filter(function () {
-                return $(this).find('[name^="domainfield[' + n + ']["]').length > 0;
-            });
-
             var $soleCheckbox = $form
                 .find('input[type="checkbox"][name="domainfield[' + n + '][6]"]')
                 .first();
