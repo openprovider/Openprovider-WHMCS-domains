@@ -95,7 +95,7 @@ class DomainSync
     }
 
     /**
-     * Check whether there are domains that need to get processed
+     * Check whether there are domains that need to be processed
      *
      * @return bool
      **/
