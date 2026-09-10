@@ -684,7 +684,7 @@ $additionaldomainfields[".se"][] = array(
 );
 
 $additionaldomainfields['.se'][] = array(
-    'Name' => 'Identification number',
+    'Name' => 'SE Identification number',
     "LangVar" => "seIdentificationNumber",
     "Type" => "text",
     "Size" => "30",
