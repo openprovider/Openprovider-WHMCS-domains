@@ -64,6 +64,7 @@ function openprovider_AdminCustomButtonArray()
     $buttonarray = array(
         "Auto-renew Sync" => "AutoRenewSync",
         "Sync" => "Sync",
+        "Manage DNS Zone" => "AdminManageDnsZone",
     );
 
     return $buttonarray;
@@ -340,6 +341,17 @@ function openprovider_ResendIRTPVerificationEmail(array $params)
 {
     // Perform API call to initiate resending of the IRTP Verification Email
     return openprovider_registrar_launch_decorator('resendIRTPVerificationEmail', $params);
+}
+
+/**
+ * Admin Manage Dns Zone
+ *
+ * @param array $params
+ * @return mixed
+ */
+function openprovider_AdminManageDnsZone($params)
+{
+    return openprovider_registrar_launch_decorator('adminManageDnsZone', $params);
 }
 
 

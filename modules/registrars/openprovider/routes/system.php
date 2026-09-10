@@ -32,6 +32,7 @@ return [
     // DNS
     'getDns'  => 'DnsController@get',
     'saveDns' => 'DnsController@save',
+    'adminManageDnsZone' => 'DnsController@redirectDnsManagementPage',
 
     // Contact
     'getContactDetails'  => 'ContactController@getDetails',

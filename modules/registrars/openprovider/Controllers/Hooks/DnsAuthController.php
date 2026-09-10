@@ -13,9 +13,21 @@ use OpenProvider\WhmcsRegistrar\src\Configuration;
  */
 
 class DnsAuthController {
+    /**
+     * @var DNS
+     */
+    private $dnsHelper;
+    /**
+     * ConfigController constructor.
+     */
+    public function __construct(DNS $dnsHelper)
+    {
+        $this->dnsHelper = $dnsHelper;
+    }
+
     public function redirectDnsManagementPage($params)
     {
-        if ($url = DNS::getDnsUrlOrFail($params['domainid'])) {
+        if($url = $this->dnsHelper->getDnsUrlOrFail($params['domainid'])) {
 
             // Fallback if referer is not set or is not same-origin
             $defaultPreviousUrl = 'clientarea.php?action=domains';
