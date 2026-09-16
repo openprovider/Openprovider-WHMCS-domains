@@ -12,10 +12,17 @@ use WeDevelopCoffee\wPower\Core\Path;
  */
 class Setup
 {
+    const CHECK_INTERVAL_SECONDS = 300; // Cache the migration check to avoid running database queries on every page load.
+
     /**
      * @var Migrator
      */
     private $migrator;
+
+    /**
+     * @var Path
+     */
+    private $path;
 
     /**
      * @var migration paths
@@ -88,6 +95,11 @@ class Setup
      */
     public function migrate ($action = 'run')
     {
+        // Skip the database migration check if it was recently completed with nothing pending.
+        if ($action === 'run' && $this->isMigrationCheckFresh()) {
+            return true;
+        }
+
         // Check if the repository exists.
         if(!$this->migrator->repositoryExists())
         {
@@ -128,7 +140,55 @@ class Setup
             }
         }
 
+        if ($action === 'run') {
+            $this->touchMigrationCheck();
+        }
+
         return true;
+    }
+
+    /**
+     * Check whether the previous migration check is still within the cache interval.
+     */
+    private function isMigrationCheckFresh(): bool
+    {
+        $marker = $this->getMigrationCheckMarkerPath();
+
+        if ($marker === null || !is_file($marker)) {
+            return false;
+        }
+
+        $checkedAt = (int) file_get_contents($marker);
+
+        return $checkedAt > 0 && (time() - $checkedAt) < self::CHECK_INTERVAL_SECONDS;
+    }
+
+    /**
+     * Record that there are no pending migrations.
+     */
+    private function touchMigrationCheck(): void
+    {
+        $marker = $this->getMigrationCheckMarkerPath();
+
+        if ($marker !== null) {
+            @file_put_contents($marker, (string) time());
+        }
+    }
+
+    /**
+     * Get the marker file path used to track the last migration check.
+     */
+    private function getMigrationCheckMarkerPath(): ?string
+    {
+        try {
+            $moduleMigrationPath = $this->path->getModuleMigrationPath();
+        } catch (\Throwable $e) {
+            return null;
+        }
+
+        $dir = rtrim($moduleMigrationPath, '/');
+
+        return is_dir($dir) && is_writable($dir) ? $dir . '/.last_checked' : null;
     }
 
     /**
