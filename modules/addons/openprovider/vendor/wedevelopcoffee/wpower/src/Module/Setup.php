@@ -13,9 +13,22 @@ use WeDevelopCoffee\wPower\Core\Path;
 class Setup
 {
     /**
+     * How long a "nothing pending" result may be trusted before we hit the
+     * database again to check for new migrations. hooks.php runs on every
+     * WHMCS admin and client page, so without this throttle migrate() was
+     * running its DB queries on every single page load.
+     */
+    const CHECK_INTERVAL_SECONDS = 300;
+
+    /**
      * @var Migrator
      */
     private $migrator;
+
+    /**
+     * @var Path
+     */
+    private $path;
 
     /**
      * @var migration paths
@@ -88,6 +101,14 @@ class Setup
      */
     public function migrate ($action = 'run')
     {
+        // migrate('run') is invoked from hooks.php on every single WHMCS
+        // page load (admin and client). Once we've confirmed there is
+        // nothing pending, skip the DB round trips for a while instead of
+        // re-checking on every request.
+        if ($action === 'run' && $this->isMigrationCheckFresh()) {
+            return true;
+        }
+
         // Check if the repository exists.
         if(!$this->migrator->repositoryExists())
         {
@@ -128,7 +149,57 @@ class Setup
             }
         }
 
+        if ($action === 'run') {
+            $this->touchMigrationCheck();
+        }
+
         return true;
+    }
+
+    /**
+     * Whether we verified "nothing pending" recently enough to trust that
+     * result without hitting the database again.
+     */
+    private function isMigrationCheckFresh(): bool
+    {
+        $marker = $this->getMigrationCheckMarkerPath();
+
+        if ($marker === null || !is_file($marker)) {
+            return false;
+        }
+
+        $checkedAt = (int) file_get_contents($marker);
+
+        return $checkedAt > 0 && (time() - $checkedAt) < self::CHECK_INTERVAL_SECONDS;
+    }
+
+    /**
+     * Record that we just confirmed there is nothing pending to migrate.
+     */
+    private function touchMigrationCheck(): void
+    {
+        $marker = $this->getMigrationCheckMarkerPath();
+
+        if ($marker !== null) {
+            @file_put_contents($marker, (string) time());
+        }
+    }
+
+    /**
+     * Marker file lives next to the module's own migrations directory, so
+     * the throttle is per module install and needs no new DB storage.
+     */
+    private function getMigrationCheckMarkerPath(): ?string
+    {
+        try {
+            $moduleMigrationPath = $this->path->getModuleMigrationPath();
+        } catch (\Throwable $e) {
+            return null;
+        }
+
+        $dir = rtrim($moduleMigrationPath, '/');
+
+        return is_dir($dir) && is_writable($dir) ? $dir . '/.last_checked' : null;
     }
 
     /**

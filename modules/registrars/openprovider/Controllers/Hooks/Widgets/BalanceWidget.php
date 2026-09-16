@@ -102,6 +102,12 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'User-Agent: MyPHPApp' // GitHub API requires a user agent
             ]);
+            // This runs synchronously on every admin dashboard load. Without a
+            // timeout, a slow/unreachable GitHub API blocks the whole page
+            // (and holds a PHP worker) for as long as the OS-level TCP defaults
+            // allow, which can be minutes.
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 5);
 
             $versionResult = "<span style=\"color:#999;\">Version check unavailable</span>";
 
