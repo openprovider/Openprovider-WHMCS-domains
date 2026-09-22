@@ -9,7 +9,7 @@ return array(
     'phpmock\\mockery\\' => array($vendorDir . '/php-mock/php-mock-mockery/classes'),
     'phpmock\\integration\\' => array($vendorDir . '/php-mock/php-mock-integration/classes'),
     'phpmock\\' => array($vendorDir . '/php-mock/php-mock/classes', $vendorDir . '/php-mock/php-mock/tests'),
-    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-common/src', $vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src'),
+    'phpDocumentor\\Reflection\\' => array($vendorDir . '/phpdocumentor/reflection-docblock/src', $vendorDir . '/phpdocumentor/type-resolver/src', $vendorDir . '/phpdocumentor/reflection-common/src'),
     'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
     'WeDevelopCoffee\\wPower\\' => array($vendorDir . '/wedevelopcoffee/wpower/src'),
     'VIISON\\AddressSplitter\\' => array($vendorDir . '/viison/address-splitter/src'),
