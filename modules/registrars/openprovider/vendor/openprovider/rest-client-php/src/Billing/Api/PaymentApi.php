@@ -117,6 +117,284 @@ class PaymentApi
     }
 
     /**
+     * Operation getSuggestedTopUpAmount
+     *
+     * Get suggested top up amount
+     *
+     *
+     * @throws \Openprovider\Api\Rest\Client\Billing\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Openprovider\Api\Rest\Client\Billing\Model\PaymentGetSuggestedTopUpAmountResponse|\Openprovider\Api\Rest\Client\Billing\Model\ErrorError
+     */
+    public function getSuggestedTopUpAmount()
+    {
+        list($response) = $this->getSuggestedTopUpAmountWithHttpInfo();
+        return $response;
+    }
+
+    /**
+     * Operation getSuggestedTopUpAmountWithHttpInfo
+     *
+     * Get suggested top up amount
+     *
+     *
+     * @throws Openprovider\Api\Rest\Client\Base\ApiException; on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Openprovider\Api\Rest\Client\Billing\Model\PaymentGetSuggestedTopUpAmountResponse|\Openprovider\Api\Rest\Client\Billing\Model\ErrorError, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function getSuggestedTopUpAmountWithHttpInfo()
+    {
+        $request = $this->getSuggestedTopUpAmountRequest();
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('\Openprovider\Api\Rest\Client\Billing\Model\PaymentGetSuggestedTopUpAmountResponse' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Openprovider\Api\Rest\Client\Billing\Model\PaymentGetSuggestedTopUpAmountResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                default:
+                    if ('\Openprovider\Api\Rest\Client\Billing\Model\ErrorError' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Openprovider\Api\Rest\Client\Billing\Model\ErrorError', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Openprovider\Api\Rest\Client\Billing\Model\PaymentGetSuggestedTopUpAmountResponse';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = $responseBody->getContents();
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Openprovider\Api\Rest\Client\Billing\Model\PaymentGetSuggestedTopUpAmountResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Openprovider\Api\Rest\Client\Billing\Model\ErrorError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation getSuggestedTopUpAmountAsync
+     *
+     * Get suggested top up amount
+     *
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Promise\PromiseInterface
+     */
+    public function getSuggestedTopUpAmountAsync()
+    {
+        return $this->getSuggestedTopUpAmountAsyncWithHttpInfo()
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation getSuggestedTopUpAmountAsyncWithHttpInfo
+     *
+     * Get suggested top up amount
+     *
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Promise\PromiseInterface
+     */
+    public function getSuggestedTopUpAmountAsyncWithHttpInfo()
+    {
+        $returnType = '\Openprovider\Api\Rest\Client\Billing\Model\PaymentGetSuggestedTopUpAmountResponse';
+        $request = $this->getSuggestedTopUpAmountRequest();
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getSuggestedTopUpAmount'
+     *
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Psr7\Request
+     */
+    protected function getSuggestedTopUpAmountRequest()
+    {
+
+        $resourcePath = '/v1beta/payments/suggested-top-up-amount';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // body params
+        $_tempBody = null;
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/json'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = Query::build($formParams);
+            }
+        }
+
+        // this endpoint requires API key authentication
+        $apiKey = $this->config->getApiKeyWithPrefix('Authorization');
+        if ($apiKey !== null) {
+            $headers['Authorization'] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = Query::build($queryParams);
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation listPayments
      *
      * List payments

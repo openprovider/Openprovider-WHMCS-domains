@@ -62,6 +62,7 @@ class StatisticsGetStatisticsResponseData implements ModelInterface, ArrayAccess
         'customer' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsCustomerStatistics',
         'dns' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsDnsStatistics',
         'domain' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsDomainStatistics',
+        'email_service' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsEmailServiceStatistics',
         'license' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsLicenseStatistics',
         'spam_experts' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsSpamExpertsStatistics',
         'ssl' => '\Openprovider\Api\Rest\Client\Person\Model\StatisticsSslStatistics'
@@ -77,6 +78,7 @@ class StatisticsGetStatisticsResponseData implements ModelInterface, ArrayAccess
         'customer' => null,
         'dns' => null,
         'domain' => null,
+        'email_service' => null,
         'license' => null,
         'spam_experts' => null,
         'ssl' => null
@@ -113,6 +115,7 @@ class StatisticsGetStatisticsResponseData implements ModelInterface, ArrayAccess
         'customer' => 'customer',
         'dns' => 'dns',
         'domain' => 'domain',
+        'email_service' => 'email_service',
         'license' => 'license',
         'spam_experts' => 'spam_experts',
         'ssl' => 'ssl'
@@ -128,6 +131,7 @@ class StatisticsGetStatisticsResponseData implements ModelInterface, ArrayAccess
         'customer' => 'setCustomer',
         'dns' => 'setDns',
         'domain' => 'setDomain',
+        'email_service' => 'setEmailService',
         'license' => 'setLicense',
         'spam_experts' => 'setSpamExperts',
         'ssl' => 'setSsl'
@@ -143,6 +147,7 @@ class StatisticsGetStatisticsResponseData implements ModelInterface, ArrayAccess
         'customer' => 'getCustomer',
         'dns' => 'getDns',
         'domain' => 'getDomain',
+        'email_service' => 'getEmailService',
         'license' => 'getLicense',
         'spam_experts' => 'getSpamExperts',
         'ssl' => 'getSsl'
@@ -216,6 +221,7 @@ class StatisticsGetStatisticsResponseData implements ModelInterface, ArrayAccess
         $this->container['customer'] = isset($data['customer']) ? $data['customer'] : null;
         $this->container['dns'] = isset($data['dns']) ? $data['dns'] : null;
         $this->container['domain'] = isset($data['domain']) ? $data['domain'] : null;
+        $this->container['email_service'] = isset($data['email_service']) ? $data['email_service'] : null;
         $this->container['license'] = isset($data['license']) ? $data['license'] : null;
         $this->container['spam_experts'] = isset($data['spam_experts']) ? $data['spam_experts'] : null;
         $this->container['ssl'] = isset($data['ssl']) ? $data['ssl'] : null;
@@ -347,6 +353,32 @@ class StatisticsGetStatisticsResponseData implements ModelInterface, ArrayAccess
     public function setDomain($domain)
     {
         $this->container['domain'] = $domain;
+
+        return $this;
+    }
+
+    /**
+     * Gets email_service
+     *
+     * @return \Openprovider\Api\Rest\Client\Person\Model\StatisticsEmailServiceStatistics|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getEmailService()
+    {
+        return $this->container['email_service'];
+    }
+
+    /**
+     * Sets email_service
+     *
+     * @param \Openprovider\Api\Rest\Client\Person\Model\StatisticsEmailServiceStatistics|null $email_service email_service
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setEmailService($email_service)
+    {
+        $this->container['email_service'] = $email_service;
 
         return $this;
     }

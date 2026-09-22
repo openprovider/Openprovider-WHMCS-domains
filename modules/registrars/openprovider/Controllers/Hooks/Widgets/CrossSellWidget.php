@@ -73,7 +73,7 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
 
     /**
      * Tracking redirect base URL on your server.
-     * Query params appended: ?reseller_hash_id=X&product=email|pdns&source=WHMCSCrossSellWidget
+     * Query params appended: ?product=email|pdns&source=WHMCSCrossSellWidget
      */
     const TRACKING_URL = 'https://assets.openprovider.com/crosssell/track.php';
 
@@ -142,8 +142,7 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
                 * $config['margin_per_unit'];
 
             // Build tracked CTA URL
-            $resellerHashId = $this->getResellerHashId();
-            $ctaUrl = $this->buildCtaUrl($resellerHashId, $selectedProduct, $config['setup_guide_url']);
+            $ctaUrl = $this->buildCtaUrl($selectedProduct, $config['setup_guide_url']);
 
             $result = [
                 'hidden'            => false,
@@ -156,7 +155,6 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
                 'estimated_revenue' => number_format($estimatedRevenue, 0, ',', ','),
                 'cta_url'           => $ctaUrl,
                 'dismiss_url'       => 'index.php?op_crosssell_action=dismiss&crosssell_product=' . $selectedProduct . '&token=' . generate_token('link'),
-                'reseller_hash_id'       => $resellerHashId,
             ];
 
             return $result;
@@ -547,38 +545,17 @@ class CrossSellWidget extends \WHMCS\Module\AbstractWidget
     }
 
     /**
-     * Get a unique reseller identifier using the WHMCS license key.
-     * Hashed so we don't transmit the actual license key.
-     *
-     * @return string
-     */
-    private function getResellerHashId()
-    {
-        try {
-            $license = Capsule::table('tblconfiguration')
-                ->where('setting', 'License')
-                ->value('value');
-
-            return $license ? substr(hash('sha256', $license . 'op_crosssell'), 0, 16) : 'unknown';
-        } catch (\Exception $e) {
-            return 'unknown';
-        }
-    }
-
-    /**
      * Build the CTA URL with tracking parameters.
      *
-     * @param string $resellerHashId
      * @param string $product 'email' or 'pdns'
      * @param string $fallbackUrl Direct setup guide URL
      * @return string
      */
-    private function buildCtaUrl($resellerHashId, $product, $fallbackUrl)
+    private function buildCtaUrl($product, $fallbackUrl)
     {
         $baseUrl = self::USE_TRACKING_URL ? self::TRACKING_URL : $fallbackUrl;
 
         $params = http_build_query([
-            'reseller_hash_id' => $resellerHashId,
             'product'     => $product,
             'source'      => 'WHMCSCrossSellWidget',
         ]);

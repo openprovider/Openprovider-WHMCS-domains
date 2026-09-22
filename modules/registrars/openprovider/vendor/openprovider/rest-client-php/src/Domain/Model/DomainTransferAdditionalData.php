@@ -70,10 +70,13 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'gay_rights_protection_acceptance' => 'string',
         'idn_script' => 'string',
         'intended_use' => 'string',
+        'it_nexus_declaration' => 'string',
+        'it_reseller_declaration' => 'string',
         'legal_type' => 'string',
         'maintainer' => 'string',
         'membership_id' => 'string',
         'mobile_phone_number_verification' => 'string',
+        'nz_privacy_option' => 'string',
         'passport_number' => 'string',
         'self_service' => 'string',
         'trademark' => 'string',
@@ -99,10 +102,13 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'gay_rights_protection_acceptance' => null,
         'idn_script' => null,
         'intended_use' => null,
+        'it_nexus_declaration' => null,
+        'it_reseller_declaration' => null,
         'legal_type' => null,
         'maintainer' => null,
         'membership_id' => null,
         'mobile_phone_number_verification' => null,
+        'nz_privacy_option' => null,
         'passport_number' => null,
         'self_service' => null,
         'trademark' => null,
@@ -149,10 +155,13 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'gay_rights_protection_acceptance' => 'gay_rights_protection_acceptance',
         'idn_script' => 'idn_script',
         'intended_use' => 'intended_use',
+        'it_nexus_declaration' => 'it_nexus_declaration',
+        'it_reseller_declaration' => 'it_reseller_declaration',
         'legal_type' => 'legal_type',
         'maintainer' => 'maintainer',
         'membership_id' => 'membership_id',
         'mobile_phone_number_verification' => 'mobile_phone_number_verification',
+        'nz_privacy_option' => 'nz_privacy_option',
         'passport_number' => 'passport_number',
         'self_service' => 'self_service',
         'trademark' => 'trademark',
@@ -178,10 +187,13 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'gay_rights_protection_acceptance' => 'setGayRightsProtectionAcceptance',
         'idn_script' => 'setIdnScript',
         'intended_use' => 'setIntendedUse',
+        'it_nexus_declaration' => 'setItNexusDeclaration',
+        'it_reseller_declaration' => 'setItResellerDeclaration',
         'legal_type' => 'setLegalType',
         'maintainer' => 'setMaintainer',
         'membership_id' => 'setMembershipId',
         'mobile_phone_number_verification' => 'setMobilePhoneNumberVerification',
+        'nz_privacy_option' => 'setNzPrivacyOption',
         'passport_number' => 'setPassportNumber',
         'self_service' => 'setSelfService',
         'trademark' => 'setTrademark',
@@ -207,10 +219,13 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         'gay_rights_protection_acceptance' => 'getGayRightsProtectionAcceptance',
         'idn_script' => 'getIdnScript',
         'intended_use' => 'getIntendedUse',
+        'it_nexus_declaration' => 'getItNexusDeclaration',
+        'it_reseller_declaration' => 'getItResellerDeclaration',
         'legal_type' => 'getLegalType',
         'maintainer' => 'getMaintainer',
         'membership_id' => 'getMembershipId',
         'mobile_phone_number_verification' => 'getMobilePhoneNumberVerification',
+        'nz_privacy_option' => 'getNzPrivacyOption',
         'passport_number' => 'getPassportNumber',
         'self_service' => 'getSelfService',
         'trademark' => 'getTrademark',
@@ -294,10 +309,13 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
         $this->container['gay_rights_protection_acceptance'] = isset($data['gay_rights_protection_acceptance']) ? $data['gay_rights_protection_acceptance'] : null;
         $this->container['idn_script'] = isset($data['idn_script']) ? $data['idn_script'] : null;
         $this->container['intended_use'] = isset($data['intended_use']) ? $data['intended_use'] : null;
+        $this->container['it_nexus_declaration'] = isset($data['it_nexus_declaration']) ? $data['it_nexus_declaration'] : 'NO';
+        $this->container['it_reseller_declaration'] = isset($data['it_reseller_declaration']) ? $data['it_reseller_declaration'] : 'NO';
         $this->container['legal_type'] = isset($data['legal_type']) ? $data['legal_type'] : null;
         $this->container['maintainer'] = isset($data['maintainer']) ? $data['maintainer'] : null;
         $this->container['membership_id'] = isset($data['membership_id']) ? $data['membership_id'] : null;
         $this->container['mobile_phone_number_verification'] = isset($data['mobile_phone_number_verification']) ? $data['mobile_phone_number_verification'] : null;
+        $this->container['nz_privacy_option'] = isset($data['nz_privacy_option']) ? $data['nz_privacy_option'] : 'public';
         $this->container['passport_number'] = isset($data['passport_number']) ? $data['passport_number'] : null;
         $this->container['self_service'] = isset($data['self_service']) ? $data['self_service'] : null;
         $this->container['trademark'] = isset($data['trademark']) ? $data['trademark'] : null;
@@ -644,6 +662,58 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets it_nexus_declaration
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getItNexusDeclaration()
+    {
+        return $this->container['it_nexus_declaration'];
+    }
+
+    /**
+     * Sets it_nexus_declaration
+     *
+     * @param string|null $it_nexus_declaration Declaration for .IT domains and SLDs Possible values: 'YES' or 'NO'.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setItNexusDeclaration($it_nexus_declaration)
+    {
+        $this->container['it_nexus_declaration'] = $it_nexus_declaration;
+
+        return $this;
+    }
+
+    /**
+     * Gets it_reseller_declaration
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getItResellerDeclaration()
+    {
+        return $this->container['it_reseller_declaration'];
+    }
+
+    /**
+     * Sets it_reseller_declaration
+     *
+     * @param string|null $it_reseller_declaration Declaration of Resellers for .IT domains and SLDs Possible values: 'YES' or 'NO'.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setItResellerDeclaration($it_reseller_declaration)
+    {
+        $this->container['it_reseller_declaration'] = $it_reseller_declaration;
+
+        return $this;
+    }
+
+    /**
      * Gets legal_type
      *
      * @return string|null
@@ -743,6 +813,32 @@ class DomainTransferAdditionalData implements ModelInterface, ArrayAccess
     public function setMobilePhoneNumberVerification($mobile_phone_number_verification)
     {
         $this->container['mobile_phone_number_verification'] = $mobile_phone_number_verification;
+
+        return $this;
+    }
+
+    /**
+     * Gets nz_privacy_option
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getNzPrivacyOption()
+    {
+        return $this->container['nz_privacy_option'];
+    }
+
+    /**
+     * Sets nz_privacy_option
+     *
+     * @param string|null $nz_privacy_option nz_privacy_option
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setNzPrivacyOption($nz_privacy_option)
+    {
+        $this->container['nz_privacy_option'] = $nz_privacy_option;
 
         return $this;
     }

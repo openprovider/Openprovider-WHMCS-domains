@@ -14,7 +14,6 @@ use WeDevelopCoffee\wPower\Core\Core;
 use WHMCS\Database\Capsule;
 
 use OpenProvider\WhmcsRegistrar\helpers\Dictionary;
-use OpenProvider\WhmcsRegistrar\helpers\DbCacheHelper;
 
 /**
  * Class ContactControllerView
@@ -34,8 +33,6 @@ class ContactController extends BaseController
      * @var ApiHelper
      */
     private $apiHelper;
-
-    private const TLD_METADATA_CACHE_TTL = 60 * 60 * 24; // 24 hours (in seconds)
 
     /**
      * ConfigController constructor.
@@ -235,14 +232,7 @@ class ContactController extends BaseController
             return [];
         }
 
-        $mode = ($params['test_mode'] ?? false) === 'on' ? 'test' : 'live';
-
-        $tldMetaData = DbCacheHelper::remember(
-            'tld_meta_' . $this->domain->extension,
-            $mode,
-            self::TLD_METADATA_CACHE_TTL,
-            fn() => $this->apiHelper->getTldMeta($this->domain->extension)
-        );
+        $tldMetaData = $this->apiHelper->getTldMeta($this->domain->extension);
 
         $handlesToFetch = [];
         foreach (APIConfig::$handlesNames as $key => $name) {

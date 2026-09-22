@@ -255,7 +255,7 @@ class DomainSuggestNameDomainRequest implements ModelInterface, ArrayAccess
     /**
      * Sets language
      *
-     * @param string|null $language language
+     * @param string|null $language The three-letter country code for the language in which responses should be generated (ISO 639-2/B format). Allowed languages: English (eng), Dutch (dut), French (fre), German (ger), Hindi (hin), Indonesian (ind), Italian (ita), Japanese (jpn), Korean (kor), Chinese (Mandarin) (chi), Portuguese (por), Spanish (spa), Turkish (tur), Vietnamese (vie).
      *
      * @return $this
      */

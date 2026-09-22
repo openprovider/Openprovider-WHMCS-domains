@@ -67,6 +67,8 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'customer_uin_doc_type' => '\Openprovider\Api\Rest\Client\Domain\Model\DomainUINDocumentType',
         'domain_name_variants' => 'string[]',
         'intended_use' => 'string',
+        'it_nexus_declaration' => 'string',
+        'it_reseller_declaration' => 'string',
         'law_acceptance' => 'string',
         'legal_type' => 'string',
         'maintainer' => 'string',
@@ -74,6 +76,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'string',
         'ngo_ong_eligibility_acceptance' => 'string',
         'ngo_ong_policy_acceptance' => 'string',
+        'nz_privacy_option' => 'string',
         'passport_number' => 'string',
         'vat' => 'string',
         'verification_code' => 'string'
@@ -94,6 +97,8 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'customer_uin_doc_type' => null,
         'domain_name_variants' => null,
         'intended_use' => null,
+        'it_nexus_declaration' => null,
+        'it_reseller_declaration' => null,
         'law_acceptance' => null,
         'legal_type' => null,
         'maintainer' => null,
@@ -101,6 +106,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => null,
         'ngo_ong_eligibility_acceptance' => null,
         'ngo_ong_policy_acceptance' => null,
+        'nz_privacy_option' => null,
         'passport_number' => null,
         'vat' => null,
         'verification_code' => null
@@ -142,6 +148,8 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'customer_uin_doc_type' => 'customer_uin_doc_type',
         'domain_name_variants' => 'domain_name_variants',
         'intended_use' => 'intended_use',
+        'it_nexus_declaration' => 'it_nexus_declaration',
+        'it_reseller_declaration' => 'it_reseller_declaration',
         'law_acceptance' => 'law_acceptance',
         'legal_type' => 'legal_type',
         'maintainer' => 'maintainer',
@@ -149,6 +157,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'mobile_phone_number_verification',
         'ngo_ong_eligibility_acceptance' => 'ngo_ong_eligibility_acceptance',
         'ngo_ong_policy_acceptance' => 'ngo_ong_policy_acceptance',
+        'nz_privacy_option' => 'nz_privacy_option',
         'passport_number' => 'passport_number',
         'vat' => 'vat',
         'verification_code' => 'verification_code'
@@ -169,6 +178,8 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'customer_uin_doc_type' => 'setCustomerUinDocType',
         'domain_name_variants' => 'setDomainNameVariants',
         'intended_use' => 'setIntendedUse',
+        'it_nexus_declaration' => 'setItNexusDeclaration',
+        'it_reseller_declaration' => 'setItResellerDeclaration',
         'law_acceptance' => 'setLawAcceptance',
         'legal_type' => 'setLegalType',
         'maintainer' => 'setMaintainer',
@@ -176,6 +187,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'setMobilePhoneNumberVerification',
         'ngo_ong_eligibility_acceptance' => 'setNgoOngEligibilityAcceptance',
         'ngo_ong_policy_acceptance' => 'setNgoOngPolicyAcceptance',
+        'nz_privacy_option' => 'setNzPrivacyOption',
         'passport_number' => 'setPassportNumber',
         'vat' => 'setVat',
         'verification_code' => 'setVerificationCode'
@@ -196,6 +208,8 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'customer_uin_doc_type' => 'getCustomerUinDocType',
         'domain_name_variants' => 'getDomainNameVariants',
         'intended_use' => 'getIntendedUse',
+        'it_nexus_declaration' => 'getItNexusDeclaration',
+        'it_reseller_declaration' => 'getItResellerDeclaration',
         'law_acceptance' => 'getLawAcceptance',
         'legal_type' => 'getLegalType',
         'maintainer' => 'getMaintainer',
@@ -203,6 +217,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'getMobilePhoneNumberVerification',
         'ngo_ong_eligibility_acceptance' => 'getNgoOngEligibilityAcceptance',
         'ngo_ong_policy_acceptance' => 'getNgoOngPolicyAcceptance',
+        'nz_privacy_option' => 'getNzPrivacyOption',
         'passport_number' => 'getPassportNumber',
         'vat' => 'getVat',
         'verification_code' => 'getVerificationCode'
@@ -281,6 +296,8 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         $this->container['customer_uin_doc_type'] = isset($data['customer_uin_doc_type']) ? $data['customer_uin_doc_type'] : null;
         $this->container['domain_name_variants'] = isset($data['domain_name_variants']) ? $data['domain_name_variants'] : null;
         $this->container['intended_use'] = isset($data['intended_use']) ? $data['intended_use'] : null;
+        $this->container['it_nexus_declaration'] = isset($data['it_nexus_declaration']) ? $data['it_nexus_declaration'] : 'NO';
+        $this->container['it_reseller_declaration'] = isset($data['it_reseller_declaration']) ? $data['it_reseller_declaration'] : 'NO';
         $this->container['law_acceptance'] = isset($data['law_acceptance']) ? $data['law_acceptance'] : null;
         $this->container['legal_type'] = isset($data['legal_type']) ? $data['legal_type'] : null;
         $this->container['maintainer'] = isset($data['maintainer']) ? $data['maintainer'] : null;
@@ -288,6 +305,7 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
         $this->container['mobile_phone_number_verification'] = isset($data['mobile_phone_number_verification']) ? $data['mobile_phone_number_verification'] : null;
         $this->container['ngo_ong_eligibility_acceptance'] = isset($data['ngo_ong_eligibility_acceptance']) ? $data['ngo_ong_eligibility_acceptance'] : null;
         $this->container['ngo_ong_policy_acceptance'] = isset($data['ngo_ong_policy_acceptance']) ? $data['ngo_ong_policy_acceptance'] : null;
+        $this->container['nz_privacy_option'] = isset($data['nz_privacy_option']) ? $data['nz_privacy_option'] : 'public';
         $this->container['passport_number'] = isset($data['passport_number']) ? $data['passport_number'] : null;
         $this->container['vat'] = isset($data['vat']) ? $data['vat'] : null;
         $this->container['verification_code'] = isset($data['verification_code']) ? $data['verification_code'] : null;
@@ -554,6 +572,58 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets it_nexus_declaration
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getItNexusDeclaration()
+    {
+        return $this->container['it_nexus_declaration'];
+    }
+
+    /**
+     * Sets it_nexus_declaration
+     *
+     * @param string|null $it_nexus_declaration Declaration for .IT domains and SLDs Possible values: 'YES' or 'NO'.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setItNexusDeclaration($it_nexus_declaration)
+    {
+        $this->container['it_nexus_declaration'] = $it_nexus_declaration;
+
+        return $this;
+    }
+
+    /**
+     * Gets it_reseller_declaration
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getItResellerDeclaration()
+    {
+        return $this->container['it_reseller_declaration'];
+    }
+
+    /**
+     * Sets it_reseller_declaration
+     *
+     * @param string|null $it_reseller_declaration Declaration of Resellers for .IT domains and SLDs Possible values: 'YES' or 'NO'.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setItResellerDeclaration($it_reseller_declaration)
+    {
+        $this->container['it_reseller_declaration'] = $it_reseller_declaration;
+
+        return $this;
+    }
+
+    /**
      * Gets law_acceptance
      *
      * @return string|null
@@ -731,6 +801,32 @@ class DomainUpdateAdditionalData implements ModelInterface, ArrayAccess
     public function setNgoOngPolicyAcceptance($ngo_ong_policy_acceptance)
     {
         $this->container['ngo_ong_policy_acceptance'] = $ngo_ong_policy_acceptance;
+
+        return $this;
+    }
+
+    /**
+     * Gets nz_privacy_option
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getNzPrivacyOption()
+    {
+        return $this->container['nz_privacy_option'];
+    }
+
+    /**
+     * Sets nz_privacy_option
+     *
+     * @param string|null $nz_privacy_option nz_privacy_option
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setNzPrivacyOption($nz_privacy_option)
+    {
+        $this->container['nz_privacy_option'] = $nz_privacy_option;
 
         return $this;
     }

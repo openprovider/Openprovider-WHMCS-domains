@@ -83,6 +83,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'iisse_acceptance' => 'string',
         'insurance_acceptance' => 'string',
         'intended_use' => 'string',
+        'it_nexus_declaration' => 'string',
+        'it_reseller_declaration' => 'string',
         'law_acceptance' => 'string',
         'legal_type' => 'string',
         'maintainer' => 'string',
@@ -90,6 +92,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'string',
         'ngo_ong_eligibility_acceptance' => 'string',
         'ngo_ong_policy_acceptance' => 'string',
+        'nz_privacy_option' => 'string',
         'passport_number' => 'string',
         'rurf_blocked_domains' => 'string',
         'self_service' => 'string',
@@ -97,6 +100,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'trademark' => 'string',
         'trademark_id' => 'string',
         'travel_acceptance' => 'string',
+        'ua_license' => 'string',
         'vat' => 'string',
         'verification_code' => 'string',
         'vote_acceptance' => 'string',
@@ -134,6 +138,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'iisse_acceptance' => null,
         'insurance_acceptance' => null,
         'intended_use' => null,
+        'it_nexus_declaration' => null,
+        'it_reseller_declaration' => null,
         'law_acceptance' => null,
         'legal_type' => null,
         'maintainer' => null,
@@ -141,6 +147,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => null,
         'ngo_ong_eligibility_acceptance' => null,
         'ngo_ong_policy_acceptance' => null,
+        'nz_privacy_option' => null,
         'passport_number' => null,
         'rurf_blocked_domains' => null,
         'self_service' => null,
@@ -148,6 +155,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'trademark' => null,
         'trademark_id' => null,
         'travel_acceptance' => null,
+        'ua_license' => null,
         'vat' => null,
         'verification_code' => null,
         'vote_acceptance' => null,
@@ -206,6 +214,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'iisse_acceptance' => 'iisse_acceptance',
         'insurance_acceptance' => 'insurance_acceptance',
         'intended_use' => 'intended_use',
+        'it_nexus_declaration' => 'it_nexus_declaration',
+        'it_reseller_declaration' => 'it_reseller_declaration',
         'law_acceptance' => 'law_acceptance',
         'legal_type' => 'legal_type',
         'maintainer' => 'maintainer',
@@ -213,6 +223,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'mobile_phone_number_verification',
         'ngo_ong_eligibility_acceptance' => 'ngo_ong_eligibility_acceptance',
         'ngo_ong_policy_acceptance' => 'ngo_ong_policy_acceptance',
+        'nz_privacy_option' => 'nz_privacy_option',
         'passport_number' => 'passport_number',
         'rurf_blocked_domains' => 'rurf_blocked_domains',
         'self_service' => 'self_service',
@@ -220,6 +231,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'trademark' => 'trademark',
         'trademark_id' => 'trademark_id',
         'travel_acceptance' => 'travel_acceptance',
+        'ua_license' => 'ua_license',
         'vat' => 'vat',
         'verification_code' => 'verification_code',
         'vote_acceptance' => 'vote_acceptance',
@@ -257,6 +269,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'iisse_acceptance' => 'setIisseAcceptance',
         'insurance_acceptance' => 'setInsuranceAcceptance',
         'intended_use' => 'setIntendedUse',
+        'it_nexus_declaration' => 'setItNexusDeclaration',
+        'it_reseller_declaration' => 'setItResellerDeclaration',
         'law_acceptance' => 'setLawAcceptance',
         'legal_type' => 'setLegalType',
         'maintainer' => 'setMaintainer',
@@ -264,6 +278,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'setMobilePhoneNumberVerification',
         'ngo_ong_eligibility_acceptance' => 'setNgoOngEligibilityAcceptance',
         'ngo_ong_policy_acceptance' => 'setNgoOngPolicyAcceptance',
+        'nz_privacy_option' => 'setNzPrivacyOption',
         'passport_number' => 'setPassportNumber',
         'rurf_blocked_domains' => 'setRurfBlockedDomains',
         'self_service' => 'setSelfService',
@@ -271,6 +286,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'trademark' => 'setTrademark',
         'trademark_id' => 'setTrademarkId',
         'travel_acceptance' => 'setTravelAcceptance',
+        'ua_license' => 'setUaLicense',
         'vat' => 'setVat',
         'verification_code' => 'setVerificationCode',
         'vote_acceptance' => 'setVoteAcceptance',
@@ -308,6 +324,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'iisse_acceptance' => 'getIisseAcceptance',
         'insurance_acceptance' => 'getInsuranceAcceptance',
         'intended_use' => 'getIntendedUse',
+        'it_nexus_declaration' => 'getItNexusDeclaration',
+        'it_reseller_declaration' => 'getItResellerDeclaration',
         'law_acceptance' => 'getLawAcceptance',
         'legal_type' => 'getLegalType',
         'maintainer' => 'getMaintainer',
@@ -315,6 +333,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'mobile_phone_number_verification' => 'getMobilePhoneNumberVerification',
         'ngo_ong_eligibility_acceptance' => 'getNgoOngEligibilityAcceptance',
         'ngo_ong_policy_acceptance' => 'getNgoOngPolicyAcceptance',
+        'nz_privacy_option' => 'getNzPrivacyOption',
         'passport_number' => 'getPassportNumber',
         'rurf_blocked_domains' => 'getRurfBlockedDomains',
         'self_service' => 'getSelfService',
@@ -322,6 +341,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         'trademark' => 'getTrademark',
         'trademark_id' => 'getTrademarkId',
         'travel_acceptance' => 'getTravelAcceptance',
+        'ua_license' => 'getUaLicense',
         'vat' => 'getVat',
         'verification_code' => 'getVerificationCode',
         'vote_acceptance' => 'getVoteAcceptance',
@@ -417,6 +437,8 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         $this->container['iisse_acceptance'] = isset($data['iisse_acceptance']) ? $data['iisse_acceptance'] : null;
         $this->container['insurance_acceptance'] = isset($data['insurance_acceptance']) ? $data['insurance_acceptance'] : null;
         $this->container['intended_use'] = isset($data['intended_use']) ? $data['intended_use'] : null;
+        $this->container['it_nexus_declaration'] = isset($data['it_nexus_declaration']) ? $data['it_nexus_declaration'] : 'NO';
+        $this->container['it_reseller_declaration'] = isset($data['it_reseller_declaration']) ? $data['it_reseller_declaration'] : 'NO';
         $this->container['law_acceptance'] = isset($data['law_acceptance']) ? $data['law_acceptance'] : null;
         $this->container['legal_type'] = isset($data['legal_type']) ? $data['legal_type'] : null;
         $this->container['maintainer'] = isset($data['maintainer']) ? $data['maintainer'] : null;
@@ -424,6 +446,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         $this->container['mobile_phone_number_verification'] = isset($data['mobile_phone_number_verification']) ? $data['mobile_phone_number_verification'] : null;
         $this->container['ngo_ong_eligibility_acceptance'] = isset($data['ngo_ong_eligibility_acceptance']) ? $data['ngo_ong_eligibility_acceptance'] : null;
         $this->container['ngo_ong_policy_acceptance'] = isset($data['ngo_ong_policy_acceptance']) ? $data['ngo_ong_policy_acceptance'] : null;
+        $this->container['nz_privacy_option'] = isset($data['nz_privacy_option']) ? $data['nz_privacy_option'] : 'public';
         $this->container['passport_number'] = isset($data['passport_number']) ? $data['passport_number'] : null;
         $this->container['rurf_blocked_domains'] = isset($data['rurf_blocked_domains']) ? $data['rurf_blocked_domains'] : null;
         $this->container['self_service'] = isset($data['self_service']) ? $data['self_service'] : null;
@@ -431,6 +454,7 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
         $this->container['trademark'] = isset($data['trademark']) ? $data['trademark'] : null;
         $this->container['trademark_id'] = isset($data['trademark_id']) ? $data['trademark_id'] : null;
         $this->container['travel_acceptance'] = isset($data['travel_acceptance']) ? $data['travel_acceptance'] : null;
+        $this->container['ua_license'] = isset($data['ua_license']) ? $data['ua_license'] : null;
         $this->container['vat'] = isset($data['vat']) ? $data['vat'] : null;
         $this->container['verification_code'] = isset($data['verification_code']) ? $data['verification_code'] : null;
         $this->container['vote_acceptance'] = isset($data['vote_acceptance']) ? $data['vote_acceptance'] : null;
@@ -1114,6 +1138,58 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets it_nexus_declaration
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getItNexusDeclaration()
+    {
+        return $this->container['it_nexus_declaration'];
+    }
+
+    /**
+     * Sets it_nexus_declaration
+     *
+     * @param string|null $it_nexus_declaration Declaration for .IT domains and SLDs Possible values: 'YES' or 'NO'.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setItNexusDeclaration($it_nexus_declaration)
+    {
+        $this->container['it_nexus_declaration'] = $it_nexus_declaration;
+
+        return $this;
+    }
+
+    /**
+     * Gets it_reseller_declaration
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getItResellerDeclaration()
+    {
+        return $this->container['it_reseller_declaration'];
+    }
+
+    /**
+     * Sets it_reseller_declaration
+     *
+     * @param string|null $it_reseller_declaration Declaration of Resellers for .IT domains and SLDs Possible values: 'YES' or 'NO'.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setItResellerDeclaration($it_reseller_declaration)
+    {
+        $this->container['it_reseller_declaration'] = $it_reseller_declaration;
+
+        return $this;
+    }
+
+    /**
      * Gets law_acceptance
      *
      * @return string|null
@@ -1296,6 +1372,32 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
     }
 
     /**
+     * Gets nz_privacy_option
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getNzPrivacyOption()
+    {
+        return $this->container['nz_privacy_option'];
+    }
+
+    /**
+     * Sets nz_privacy_option
+     *
+     * @param string|null $nz_privacy_option nz_privacy_option
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setNzPrivacyOption($nz_privacy_option)
+    {
+        $this->container['nz_privacy_option'] = $nz_privacy_option;
+
+        return $this;
+    }
+
+    /**
      * Gets passport_number
      *
      * @return string|null
@@ -1473,6 +1575,32 @@ class DomainAdditionalData implements ModelInterface, ArrayAccess
     public function setTravelAcceptance($travel_acceptance)
     {
         $this->container['travel_acceptance'] = $travel_acceptance;
+
+        return $this;
+    }
+
+    /**
+     * Gets ua_license
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getUaLicense()
+    {
+        return $this->container['ua_license'];
+    }
+
+    /**
+     * Sets ua_license
+     *
+     * @param string|null $ua_license ua_license
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setUaLicense($ua_license)
+    {
+        $this->container['ua_license'] = $ua_license;
 
         return $this;
     }

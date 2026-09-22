@@ -1012,6 +1012,284 @@ class ContactServiceApi
     }
 
     /**
+     * Operation getContactNotificationSetting
+     *
+     * Get contact notification setting
+     *
+     *
+     * @throws \Openprovider\Api\Rest\Client\Person\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Openprovider\Api\Rest\Client\Person\Model\ContactGetContactNotificationSettingResponse|\Openprovider\Api\Rest\Client\Person\Model\ErrorError
+     */
+    public function getContactNotificationSetting()
+    {
+        list($response) = $this->getContactNotificationSettingWithHttpInfo();
+        return $response;
+    }
+
+    /**
+     * Operation getContactNotificationSettingWithHttpInfo
+     *
+     * Get contact notification setting
+     *
+     *
+     * @throws Openprovider\Api\Rest\Client\Base\ApiException; on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Openprovider\Api\Rest\Client\Person\Model\ContactGetContactNotificationSettingResponse|\Openprovider\Api\Rest\Client\Person\Model\ErrorError, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function getContactNotificationSettingWithHttpInfo()
+    {
+        $request = $this->getContactNotificationSettingRequest();
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('\Openprovider\Api\Rest\Client\Person\Model\ContactGetContactNotificationSettingResponse' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Openprovider\Api\Rest\Client\Person\Model\ContactGetContactNotificationSettingResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                default:
+                    if ('\Openprovider\Api\Rest\Client\Person\Model\ErrorError' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Openprovider\Api\Rest\Client\Person\Model\ErrorError', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Openprovider\Api\Rest\Client\Person\Model\ContactGetContactNotificationSettingResponse';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = $responseBody->getContents();
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Openprovider\Api\Rest\Client\Person\Model\ContactGetContactNotificationSettingResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Openprovider\Api\Rest\Client\Person\Model\ErrorError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation getContactNotificationSettingAsync
+     *
+     * Get contact notification setting
+     *
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Promise\PromiseInterface
+     */
+    public function getContactNotificationSettingAsync()
+    {
+        return $this->getContactNotificationSettingAsyncWithHttpInfo()
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation getContactNotificationSettingAsyncWithHttpInfo
+     *
+     * Get contact notification setting
+     *
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Promise\PromiseInterface
+     */
+    public function getContactNotificationSettingAsyncWithHttpInfo()
+    {
+        $returnType = '\Openprovider\Api\Rest\Client\Person\Model\ContactGetContactNotificationSettingResponse';
+        $request = $this->getContactNotificationSettingRequest();
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getContactNotificationSetting'
+     *
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Psr7\Request
+     */
+    protected function getContactNotificationSettingRequest()
+    {
+
+        $resourcePath = '/v1beta/contact/notification-setting';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // body params
+        $_tempBody = null;
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/json'],
+                []
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = Query::build($formParams);
+            }
+        }
+
+        // this endpoint requires API key authentication
+        $apiKey = $this->config->getApiKeyWithPrefix('Authorization');
+        if ($apiKey !== null) {
+            $headers['Authorization'] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = Query::build($queryParams);
+        return new Request(
+            'GET',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
      * Operation listContacts
      *
      * List contacts
@@ -1684,6 +1962,298 @@ class ContactServiceApi
         $query = Query::build($queryParams);
         return new Request(
             'PUT',
+            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation updateContactNotificationSetting
+     *
+     * Update contact notification setting
+     *
+     * @param  \Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingRequest $body body (required)
+     *
+     * @throws \Openprovider\Api\Rest\Client\Person\ApiException on non-2xx response or if the response body is not in the expected format
+     * @throws \InvalidArgumentException
+     * @return \Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingResponse|\Openprovider\Api\Rest\Client\Person\Model\ErrorError
+     */
+    public function updateContactNotificationSetting($body)
+    {
+        list($response) = $this->updateContactNotificationSettingWithHttpInfo($body);
+        return $response;
+    }
+
+    /**
+     * Operation updateContactNotificationSettingWithHttpInfo
+     *
+     * Update contact notification setting
+     *
+     * @param  \Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingRequest $body (required)
+     *
+     * @throws Openprovider\Api\Rest\Client\Base\ApiException; on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingResponse|\Openprovider\Api\Rest\Client\Person\Model\ErrorError, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function updateContactNotificationSettingWithHttpInfo($body)
+    {
+        $request = $this->updateContactNotificationSettingRequest($body);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? $e->getResponse()->getBody()->getContents() : null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    $response->getBody()
+                );
+            }
+
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('\Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingResponse' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                default:
+                    if ('\Openprovider\Api\Rest\Client\Person\Model\ErrorError' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Openprovider\Api\Rest\Client\Person\Model\ErrorError', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingResponse';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = $responseBody->getContents();
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Openprovider\Api\Rest\Client\Person\Model\ErrorError',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation updateContactNotificationSettingAsync
+     *
+     * Update contact notification setting
+     *
+     * @param  \Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingRequest $body (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Promise\PromiseInterface
+     */
+    public function updateContactNotificationSettingAsync($body)
+    {
+        return $this->updateContactNotificationSettingAsyncWithHttpInfo($body)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation updateContactNotificationSettingAsyncWithHttpInfo
+     *
+     * Update contact notification setting
+     *
+     * @param  \Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingRequest $body (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Promise\PromiseInterface
+     */
+    public function updateContactNotificationSettingAsyncWithHttpInfo($body)
+    {
+        $returnType = '\Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingResponse';
+        $request = $this->updateContactNotificationSettingRequest($body);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = $responseBody->getContents();
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'updateContactNotificationSetting'
+     *
+     * @param  \Openprovider\Api\Rest\Client\Person\Model\ContactUpdateContactNotificationSettingRequest $body (required)
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp6\Psr7\Request
+     */
+    protected function updateContactNotificationSettingRequest($body)
+    {
+        // verify the required parameter 'body' is set
+        if ($body === null || (is_array($body) && count($body) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $body when calling updateContactNotificationSetting'
+            );
+        }
+
+        $resourcePath = '/v1beta/contact/notification-setting';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // body params
+        $_tempBody = null;
+        if (isset($body)) {
+            $_tempBody = $body;
+        }
+
+        if ($multipart) {
+            $headers = $this->headerSelector->selectHeadersForMultipart(
+                ['application/json']
+            );
+        } else {
+            $headers = $this->headerSelector->selectHeaders(
+                ['application/json'],
+                ['application/json']
+            );
+        }
+
+        // for model (json/xml)
+        if (isset($_tempBody)) {
+            // $_tempBody is the method argument, if present
+            if ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp6\json_encode(ObjectSerializer::sanitizeForSerialization($_tempBody));
+            } else {
+                $httpBody = $_tempBody;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $multipartContents[] = [
+                        'name' => $formParamName,
+                        'contents' => $formParamValue
+                    ];
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif ($headers['Content-Type'] === 'application/json') {
+                $httpBody = \GuzzleHttp6\json_encode($formParams);
+
+            } else {
+                // for HTTP post (form)
+                $httpBody = Query::build($formParams);
+            }
+        }
+
+        // this endpoint requires API key authentication
+        $apiKey = $this->config->getApiKeyWithPrefix('Authorization');
+        if ($apiKey !== null) {
+            $headers['Authorization'] = $apiKey;
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $query = Query::build($queryParams);
+        return new Request(
+            'POST',
             $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
             $headers,
             $httpBody

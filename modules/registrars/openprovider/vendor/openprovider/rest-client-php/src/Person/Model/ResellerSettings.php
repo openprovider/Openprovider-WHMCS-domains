@@ -88,6 +88,7 @@ class ResellerSettings implements ModelInterface, ArrayAccess
         'maximum_western_union_payment' => 'float',
         'minimum_payment' => 'float',
         'minimum_western_union_payment' => 'float',
+        'notifications_settings' => '\Openprovider\Api\Rest\Client\Person\Model\ResellerNotificationsSettings',
         'pay_methods' => 'string[]',
         'payment_methods' => '\Openprovider\Api\Rest\Client\Person\Model\SettingsPaymentMethods[]',
         'preregistered_domain_priorities' => 'string',
@@ -136,6 +137,7 @@ class ResellerSettings implements ModelInterface, ArrayAccess
         'maximum_western_union_payment' => 'double',
         'minimum_payment' => 'double',
         'minimum_western_union_payment' => 'double',
+        'notifications_settings' => null,
         'pay_methods' => null,
         'payment_methods' => null,
         'preregistered_domain_priorities' => null,
@@ -205,6 +207,7 @@ class ResellerSettings implements ModelInterface, ArrayAccess
         'maximum_western_union_payment' => 'maximum_western_union_payment',
         'minimum_payment' => 'minimum_payment',
         'minimum_western_union_payment' => 'minimum_western_union_payment',
+        'notifications_settings' => 'notifications_settings',
         'pay_methods' => 'pay_methods',
         'payment_methods' => 'payment_methods',
         'preregistered_domain_priorities' => 'preregistered_domain_priorities',
@@ -253,6 +256,7 @@ class ResellerSettings implements ModelInterface, ArrayAccess
         'maximum_western_union_payment' => 'setMaximumWesternUnionPayment',
         'minimum_payment' => 'setMinimumPayment',
         'minimum_western_union_payment' => 'setMinimumWesternUnionPayment',
+        'notifications_settings' => 'setNotificationsSettings',
         'pay_methods' => 'setPayMethods',
         'payment_methods' => 'setPaymentMethods',
         'preregistered_domain_priorities' => 'setPreregisteredDomainPriorities',
@@ -301,6 +305,7 @@ class ResellerSettings implements ModelInterface, ArrayAccess
         'maximum_western_union_payment' => 'getMaximumWesternUnionPayment',
         'minimum_payment' => 'getMinimumPayment',
         'minimum_western_union_payment' => 'getMinimumWesternUnionPayment',
+        'notifications_settings' => 'getNotificationsSettings',
         'pay_methods' => 'getPayMethods',
         'payment_methods' => 'getPaymentMethods',
         'preregistered_domain_priorities' => 'getPreregisteredDomainPriorities',
@@ -407,6 +412,7 @@ class ResellerSettings implements ModelInterface, ArrayAccess
         $this->container['maximum_western_union_payment'] = isset($data['maximum_western_union_payment']) ? $data['maximum_western_union_payment'] : null;
         $this->container['minimum_payment'] = isset($data['minimum_payment']) ? $data['minimum_payment'] : null;
         $this->container['minimum_western_union_payment'] = isset($data['minimum_western_union_payment']) ? $data['minimum_western_union_payment'] : null;
+        $this->container['notifications_settings'] = isset($data['notifications_settings']) ? $data['notifications_settings'] : null;
         $this->container['pay_methods'] = isset($data['pay_methods']) ? $data['pay_methods'] : null;
         $this->container['payment_methods'] = isset($data['payment_methods']) ? $data['payment_methods'] : null;
         $this->container['preregistered_domain_priorities'] = isset($data['preregistered_domain_priorities']) ? $data['preregistered_domain_priorities'] : null;
@@ -1221,6 +1227,32 @@ class ResellerSettings implements ModelInterface, ArrayAccess
     public function setMinimumWesternUnionPayment($minimum_western_union_payment)
     {
         $this->container['minimum_western_union_payment'] = $minimum_western_union_payment;
+
+        return $this;
+    }
+
+    /**
+     * Gets notifications_settings
+     *
+     * @return \Openprovider\Api\Rest\Client\Person\Model\ResellerNotificationsSettings|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getNotificationsSettings()
+    {
+        return $this->container['notifications_settings'];
+    }
+
+    /**
+     * Sets notifications_settings
+     *
+     * @param \Openprovider\Api\Rest\Client\Person\Model\ResellerNotificationsSettings|null $notifications_settings notifications_settings
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setNotificationsSettings($notifications_settings)
+    {
+        $this->container['notifications_settings'] = $notifications_settings;
 
         return $this;
     }

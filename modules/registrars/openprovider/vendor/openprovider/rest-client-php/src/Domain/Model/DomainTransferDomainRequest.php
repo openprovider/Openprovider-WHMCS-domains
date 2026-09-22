@@ -59,6 +59,7 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
       */
     protected static $openAPITypes = [
         'accept_premium_fee' => 'float',
+        'accept_quarantine_fee' => 'bool',
         'additional_data' => '\Openprovider\Api\Rest\Client\Domain\Model\DomainTransferAdditionalData',
         'admin_handle' => 'string',
         'at' => 'string',
@@ -93,6 +94,7 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
       */
     protected static $openAPIFormats = [
         'accept_premium_fee' => 'double',
+        'accept_quarantine_fee' => 'boolean',
         'additional_data' => null,
         'admin_handle' => null,
         'at' => null,
@@ -148,6 +150,7 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
      */
     protected static $attributeMap = [
         'accept_premium_fee' => 'accept_premium_fee',
+        'accept_quarantine_fee' => 'accept_quarantine_fee',
         'additional_data' => 'additional_data',
         'admin_handle' => 'admin_handle',
         'at' => 'at',
@@ -182,6 +185,7 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
      */
     protected static $setters = [
         'accept_premium_fee' => 'setAcceptPremiumFee',
+        'accept_quarantine_fee' => 'setAcceptQuarantineFee',
         'additional_data' => 'setAdditionalData',
         'admin_handle' => 'setAdminHandle',
         'at' => 'setAt',
@@ -216,6 +220,7 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
      */
     protected static $getters = [
         'accept_premium_fee' => 'getAcceptPremiumFee',
+        'accept_quarantine_fee' => 'getAcceptQuarantineFee',
         'additional_data' => 'getAdditionalData',
         'admin_handle' => 'getAdminHandle',
         'at' => 'getAt',
@@ -308,6 +313,7 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
     public function __construct(array $data = null)
     {
         $this->container['accept_premium_fee'] = isset($data['accept_premium_fee']) ? $data['accept_premium_fee'] : null;
+        $this->container['accept_quarantine_fee'] = isset($data['accept_quarantine_fee']) ? $data['accept_quarantine_fee'] : false;
         $this->container['additional_data'] = isset($data['additional_data']) ? $data['additional_data'] : null;
         $this->container['admin_handle'] = isset($data['admin_handle']) ? $data['admin_handle'] : null;
         $this->container['at'] = isset($data['at']) ? $data['at'] : null;
@@ -383,6 +389,32 @@ class DomainTransferDomainRequest implements ModelInterface, ArrayAccess
     public function setAcceptPremiumFee($accept_premium_fee)
     {
         $this->container['accept_premium_fee'] = $accept_premium_fee;
+
+        return $this;
+    }
+
+    /**
+     * Gets accept_quarantine_fee
+     *
+     * @return bool|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getAcceptQuarantineFee()
+    {
+        return $this->container['accept_quarantine_fee'];
+    }
+
+    /**
+     * Sets accept_quarantine_fee
+     *
+     * @param bool|null $accept_quarantine_fee Required in case when domain is in quarantine status under another registrar. Using this field to consent to process only quarantine domain with special prices.
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setAcceptQuarantineFee($accept_quarantine_fee)
+    {
+        $this->container['accept_quarantine_fee'] = $accept_quarantine_fee;
 
         return $this;
     }

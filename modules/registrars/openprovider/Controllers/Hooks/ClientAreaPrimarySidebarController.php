@@ -31,6 +31,19 @@ class ClientAreaPrimarySidebarController
 
     public function show($primarySidebar)
     {
+        $domainId = $_REQUEST['domainid'] ?? $_REQUEST['id'] ?? null;
+        if (!$domainId) {
+            return;
+        }
+
+        $registrar = Capsule::table('tbldomains')
+            ->where('id', (int) $domainId)
+            ->value('registrar');
+
+        if ((string) $registrar !== 'openprovider') {
+            return;
+        }
+
         $this->ensureDnsManagementPageExists();
 
         $this->replaceDnsMenuItem($primarySidebar);
