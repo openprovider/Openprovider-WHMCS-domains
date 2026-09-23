@@ -35,3 +35,4 @@ $_LANG['ptIdentificationNumber'] = 'Steueridentifikationsnummer';
 $_LANG['ptIdentificationVat'] = "NIPC (Unternehmen)";
 $_LANG['ptIdentificationSocialSecurityNumber'] = "NIF (Privatperson)";
 $_LANG['ptIdentificationCORI'] = 'Steuernummer (Umsatzsteuer-/Steuer-ID)';
+$_LANG['consentForPublishingDescription'] = 'Ihre Daten werden zum Schutz Ihrer Privatsphäre standardmäßig geschwärzt. Wenn Sie der Veröffentlichung zustimmen, werden die Kontaktdaten als öffentliche und nicht personenbezogene Daten behandelt.';

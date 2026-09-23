@@ -7,6 +7,42 @@
  * @copyright Copyright (c) Openprovider 2018
  */
 
+if (!function_exists('op_consentDescription')) {
+    /**
+     * Description of the consent field, translatable like its Name.
+     *
+     * "LangVar" only covers the Name, so the description is looked up under the
+     * "consentForPublishingDescription" language key. Installations without that
+     * key keep the English text below, unchanged.
+     */
+    function op_consentDescription(): string
+    {
+        $key  = 'consentForPublishingDescription';
+        $text = 'Your data is redacted by default to protect your privacy. '
+              . 'If you allow publication, the contact information will be treated as public and non-personal data.';
+
+        $translated = null;
+        if (class_exists('\Lang')) {
+            try {
+                $translated = \Lang::trans($key);
+            } catch (\Throwable $e) {
+                $translated = null; // no language loaded yet: keep the default text
+            }
+        }
+        if ((!is_string($translated) || $translated === '' || $translated === $key)
+            && isset($GLOBALS['_LANG'][$key])) {
+            $translated = $GLOBALS['_LANG'][$key];
+        }
+        if (is_string($translated) && $translated !== '' && $translated !== $key) {
+            $text = $translated;
+        }
+
+        return '<span style="display:block;margin-top:6px;font-size:12px;line-height:1.45;color:#6b7280;max-width:100%;">'
+             . htmlspecialchars($text, ENT_QUOTES, 'UTF-8')
+             . '</span>';
+    }
+}
+
 if (!function_exists('op_addConsentField')) {
     function op_addConsentField(array &$additionaldomainfields, string $tld, bool $required = false): void
     {
@@ -14,10 +50,7 @@ if (!function_exists('op_addConsentField')) {
             "Name"        => "Consent to Publish Domain Information",
             "LangVar"     => "consentForPublishing",
             "Type"        => "tickbox",
-            "Description" => '<span style="display:block;margin-top:6px;font-size:12px;line-height:1.45;color:#6b7280;max-width:100%;">'
-                           . 'Your data is redacted by default to protect your privacy. '
-                           . 'If you allow publication, the contact information will be treated as public and non-personal data.'
-                           . '</span>',
+            "Description" => op_consentDescription(),
             "Required"    => $required,
             "op_location" => "domainAdditionalData",
             "op_name"     => "consentForPublishing",
