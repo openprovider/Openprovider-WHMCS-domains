@@ -5,6 +5,7 @@ namespace WeDevelopCoffee\wPower\Module;
 use Illuminate\Database\Migrations\Migrator;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Core\Path;
+use WHMCS\Database\Capsule;
 
 /**
  * Class Setup
@@ -148,19 +149,23 @@ class Setup
     }
 
     /**
-     * Check whether the previous migration check is still within the cache interval.
+     * Check if the previous migration check is still cached in WHMCS's shared transient data table.
      */
     private function isMigrationCheckFresh(): bool
     {
-        $marker = $this->getMigrationCheckMarkerPath();
+        $cacheKey = $this->getMigrationCheckCacheKey();
 
-        if ($marker === null || !is_file($marker)) {
+        if ($cacheKey === null) {
             return false;
         }
 
-        $checkedAt = (int) file_get_contents($marker);
+        try {
+            $row = Capsule::table('tbltransientdata')->where('name', $cacheKey)->first();
+        } catch (\Throwable $e) {
+            return false;
+        }
 
-        return $checkedAt > 0 && (time() - $checkedAt) < self::CHECK_INTERVAL_SECONDS;
+        return $row !== null && (int) $row->expires > time();
     }
 
     /**
@@ -168,17 +173,26 @@ class Setup
      */
     private function touchMigrationCheck(): void
     {
-        $marker = $this->getMigrationCheckMarkerPath();
+        $cacheKey = $this->getMigrationCheckCacheKey();
 
-        if ($marker !== null) {
-            @file_put_contents($marker, (string) time());
+        if ($cacheKey === null) {
+            return;
+        }
+
+        try {
+            Capsule::table('tbltransientdata')->updateOrInsert(
+                ['name' => $cacheKey],
+                ['data' => '1', 'expires' => time() + self::CHECK_INTERVAL_SECONDS]
+            );
+        } catch (\Throwable $e) {
+            // Best effort - if this fails, migrate() just runs its full check again next time.
         }
     }
 
     /**
-     * Get the marker file path used to track the last migration check.
+     * Generate a stable, module-specific cache key based on its migration path.
      */
-    private function getMigrationCheckMarkerPath(): ?string
+    private function getMigrationCheckCacheKey(): ?string
     {
         try {
             $moduleMigrationPath = $this->path->getModuleMigrationPath();
@@ -186,9 +200,7 @@ class Setup
             return null;
         }
 
-        $dir = rtrim($moduleMigrationPath, '/');
-
-        return is_dir($dir) && is_writable($dir) ? $dir . '/.last_checked' : null;
+        return 'openprovider.migrationCheck.' . md5($moduleMigrationPath);
     }
 
     /**
