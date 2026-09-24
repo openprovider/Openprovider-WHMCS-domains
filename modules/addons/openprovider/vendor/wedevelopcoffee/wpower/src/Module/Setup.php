@@ -149,7 +149,7 @@ class Setup
     }
 
     /**
-     * Check if the previous migration check is still cached in WHMCS's shared transient data table. 
+     * Check if the migration cache is still valid and migration files remain unchanged.
      */
     private function isMigrationCheckFresh(): bool
     {
@@ -165,11 +165,15 @@ class Setup
             return false;
         }
 
-        return $row !== null && (int) $row->expires > time();
+        if ($row === null || (int) $row->expires <= time()) {
+            return false;
+        }
+
+        return $row->data === $this->getMigrationFilesFingerprint();
     }
 
     /**
-     * Record that there are no pending migrations.
+     * Cache the no-pending-migrations state with a fingerprint to detect migration file changes.
      */
     private function touchMigrationCheck(): void
     {
@@ -182,7 +186,7 @@ class Setup
         try {
             Capsule::table('tbltransientdata')->updateOrInsert(
                 ['name' => $cacheKey],
-                ['data' => '1', 'expires' => time() + self::CHECK_INTERVAL_SECONDS]
+                ['data' => $this->getMigrationFilesFingerprint(), 'expires' => time() + self::CHECK_INTERVAL_SECONDS]
             );
         } catch (\Throwable $e) {
         }
@@ -200,6 +204,32 @@ class Setup
         }
 
         return 'openprovider.migrationCheck.' . md5($moduleMigrationPath);
+    }
+
+    /**
+     * Generate a fingerprint of all migration files to invalidate the cache when migrations change.
+     */
+    private function getMigrationFilesFingerprint(): string
+    {
+        if (empty($this->migrationPaths)) {
+            return 'none';
+        }
+
+        $entries = [];
+
+        foreach ($this->migrationPaths as $path) {
+            if (!is_dir($path)) {
+                continue;
+            }
+
+            foreach (glob(rtrim($path, '/') . '/*.php') ?: [] as $file) {
+                $entries[] = basename($file) . ':' . filemtime($file);
+            }
+        }
+
+        sort($entries);
+
+        return md5(implode('|', $entries));
     }
 
     /**
