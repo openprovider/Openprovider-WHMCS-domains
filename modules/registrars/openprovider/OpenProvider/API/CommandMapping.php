@@ -15,6 +15,7 @@ use Openprovider\Api\Rest\Client\Person\Api\PromoMessageServiceApi;
 use Openprovider\Api\Rest\Client\Person\Api\ResellerServiceApi;
 use Openprovider\Api\Rest\Client\Tld\Api\TldServiceApi;
 use Openprovider\Api\Rest\Client\Domain\Api\AuthCodeApi;
+use Openprovider\Api\Rest\Client\Dns\Api\DomainTokenApi;
 
 class CommandMapping
 {
@@ -133,6 +134,10 @@ class CommandMapping
         'deleteZoneDnsRequest' => [
             self::COMMAND_MAP_METHOD => 'createZone',
             self::COMMAND_MAP_CLASS => ZoneServiceApi::class,
+        ],
+        'createDomainTokenRequest' => [
+            self::COMMAND_MAP_METHOD => 'createToken',
+            self::COMMAND_MAP_CLASS => DomainTokenApi::class
         ],
 
         // Nameservers
