@@ -5,6 +5,7 @@ namespace WeDevelopCoffee\wPower\Module;
 use Illuminate\Database\Migrations\Migrator;
 use WeDevelopCoffee\wPower\Core\Core;
 use WeDevelopCoffee\wPower\Core\Path;
+use WHMCS\Database\Capsule;
 
 /**
  * Class Setup
@@ -12,10 +13,17 @@ use WeDevelopCoffee\wPower\Core\Path;
  */
 class Setup
 {
+    const CHECK_INTERVAL_SECONDS = 300; // Cache the migration check to avoid running database queries on every page load.
+
     /**
      * @var Migrator
      */
     private $migrator;
+
+    /**
+     * @var Path
+     */
+    private $path;
 
     /**
      * @var migration paths
@@ -88,6 +96,11 @@ class Setup
      */
     public function migrate ($action = 'run')
     {
+        // Skip the database migration check if it was recently completed with nothing pending.
+        if ($action === 'run' && $this->isMigrationCheckFresh()) {
+            return true;
+        }
+
         // Check if the repository exists.
         if(!$this->migrator->repositoryExists())
         {
@@ -128,7 +141,95 @@ class Setup
             }
         }
 
+        if ($action === 'run') {
+            $this->touchMigrationCheck();
+        }
+
         return true;
+    }
+
+    /**
+     * Check if the migration cache is still valid and migration files remain unchanged.
+     */
+    private function isMigrationCheckFresh(): bool
+    {
+        $cacheKey = $this->getMigrationCheckCacheKey();
+
+        if ($cacheKey === null) {
+            return false;
+        }
+
+        try {
+            $row = Capsule::table('tbltransientdata')->where('name', $cacheKey)->first();
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        if ($row === null || (int) $row->expires <= time()) {
+            return false;
+        }
+
+        return $row->data === $this->getMigrationFilesFingerprint();
+    }
+
+    /**
+     * Cache the no-pending-migrations state with a fingerprint to detect migration file changes.
+     */
+    private function touchMigrationCheck(): void
+    {
+        $cacheKey = $this->getMigrationCheckCacheKey();
+
+        if ($cacheKey === null) {
+            return;
+        }
+
+        try {
+            Capsule::table('tbltransientdata')->updateOrInsert(
+                ['name' => $cacheKey],
+                ['data' => $this->getMigrationFilesFingerprint(), 'expires' => time() + self::CHECK_INTERVAL_SECONDS]
+            );
+        } catch (\Throwable $e) {
+        }
+    }
+
+    /**
+     * Generate a stable, module-specific cache key based on its migration path.
+     */
+    private function getMigrationCheckCacheKey(): ?string
+    {
+        try {
+            $moduleMigrationPath = $this->path->getModuleMigrationPath();
+        } catch (\Throwable $e) {
+            return null;
+        }
+
+        return 'openprovider.migrationCheck.' . md5($moduleMigrationPath);
+    }
+
+    /**
+     * Generate a fingerprint of all migration files to invalidate the cache when migrations change.
+     */
+    private function getMigrationFilesFingerprint(): string
+    {
+        if (empty($this->migrationPaths)) {
+            return 'none';
+        }
+
+        $entries = [];
+
+        foreach ($this->migrationPaths as $path) {
+            if (!is_dir($path)) {
+                continue;
+            }
+
+            foreach (glob(rtrim($path, '/') . '/*.php') ?: [] as $file) {
+                $entries[] = basename($file) . ':' . filemtime($file);
+            }
+        }
+
+        sort($entries);
+
+        return md5(implode('|', $entries));
     }
 
     /**
