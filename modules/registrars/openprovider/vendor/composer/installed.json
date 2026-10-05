@@ -777,17 +777,17 @@
         },
         {
             "name": "openprovider/rest-client-php",
-            "version": "v2.2.1-beta",
-            "version_normalized": "2.2.1.0-beta",
+            "version": "v2.2.3-beta",
+            "version_normalized": "2.2.3.0-beta",
             "source": {
                 "type": "git",
                 "url": "https://github.com/openprovider/rest-client-php.git",
-                "reference": "aacd391672e8a1e2d724c6f0cbcc221e06e7b2a8"
+                "reference": "963982f5c334f9fdd7ca841b1f7fd2120a8cfafb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/aacd391672e8a1e2d724c6f0cbcc221e06e7b2a8",
-                "reference": "aacd391672e8a1e2d724c6f0cbcc221e06e7b2a8",
+                "url": "https://api.github.com/repos/openprovider/rest-client-php/zipball/963982f5c334f9fdd7ca841b1f7fd2120a8cfafb",
+                "reference": "963982f5c334f9fdd7ca841b1f7fd2120a8cfafb",
                 "shasum": ""
             },
             "require": {
@@ -797,9 +797,9 @@
                 "guzzlehttp/guzzle": "^7.4",
                 "php": ">=7.1"
             },
-            "time": "2026-06-01T09:08:04+00:00",
+            "time": "2026-08-17T12:27:46+00:00",
             "type": "library",
-            "installation-source": "dist",
+            "installation-source": "source",
             "autoload": {
                 "psr-4": {
                     "Openprovider\\Api\\Rest\\Client\\": "src/",
@@ -824,7 +824,7 @@
             ],
             "description": "HTTP client for Openprovider API",
             "support": {
-                "source": "https://github.com/openprovider/rest-client-php/tree/v2.2.1-beta",
+                "source": "https://github.com/openprovider/rest-client-php/tree/v2.2.3-beta",
                 "issues": "https://github.com/openprovider/rest-client-php/issues"
             },
             "install-path": "../openprovider/rest-client-php"

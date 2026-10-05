@@ -165,7 +165,7 @@ return [
     [
         'hookPoint' => 'ClientAreaPageCart',
         'priority'  => 1,
-        'controller'=> 'ShoppingCartController@hideIdnScriptForNonIdnDomains',
+        'controller'=> 'ShoppingCartController@filterDomainConfigFields',
     ],
     [
         'hookPoint' => 'ClientAreaFooterOutput',

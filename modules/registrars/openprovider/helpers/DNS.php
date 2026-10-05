@@ -2,41 +2,69 @@
 
 namespace OpenProvider\WhmcsRegistrar\helpers;
 
+use OpenProvider\API\ApiHelper;
 use OpenProvider\WhmcsRegistrar\src\Configuration;
-use OpenProvider\WhmcsRegistrar\src\OpenProvider;
+use OpenProvider\WhmcsRegistrar\helpers\DomainFullNameToDomainObject;
 use WHMCS\Database\Capsule;
 
 class DNS
 {
     /**
+     * @var ApiHelper
+     */
+    private $apiHelper;
+    
+    /**
+     * ConfigController constructor.
+     */
+    public function __construct(ApiHelper $apiHelper)
+    {
+        $this->apiHelper = $apiHelper;
+    }
+
+    /**
      * Get the DNS URL
      *
-     * @return bool|void
+     * @param int $domain_id
+     * @param bool $skipConfigCheck  Whether to ignore useNewDnsManagerFeature flag
+     * @return string|bool
      */
-    public static function getDnsUrlOrFail($domain_id)
+    public function getDnsUrlOrFail($domain_id, bool $skipConfigCheck = false)
     {
         // Get the domain details
         $domain = Capsule::table('tbldomains')
             ->where('id', $domain_id)
             ->first();
+        
+        if (!$domain) {
+            return false;
+        }
 
         // Check if OpenProvider is the provider
         if($domain->registrar != 'openprovider' || $domain->status != 'Active')
             return false;
 
-        // Check if we are allowed to make a redirect.
-        $newDnsStatus = Configuration::getOrDefault('useNewDnsManagerFeature', false);
+        // Client-side feature toggle (unless skipped)
+        if (!$skipConfigCheck) {
 
+            // Check if we are allowed to make a redirect
+            $newDnsStatus = Configuration::getOrDefault('useNewDnsManagerFeature', false);
 
-        if($newDnsStatus != true)
-            return false;
+            if ($newDnsStatus !== true) {
+                return false;
+            }
+        }
+
+        $op_domain_obj = DomainFullNameToDomainObject::convert($domain->domain);
 
         // Let's get the URL.
         try {
-            $OpenProvider       = new OpenProvider();
-            return $OpenProvider->api->getDnsSingleDomainTokenUrl($domain->domain)['url'];
+            $domainOp = $this->apiHelper->getDomain($op_domain_obj);
+            $zoneProvider = !empty($domainOp['isSectigoDnsEnabled']) ? 'sectigo' : 'openprovider';
+            $response = $this->apiHelper->getDnsDomainToken($domain->domain, $zoneProvider);
+            return $response['url'] ?? false;
         } catch (\Exception $e) {
-            \logModuleCall('OpenProvider', 'Fetching generateSingleDomainTokenRequest', $domain->domain, @$response, $e->getMessage(), [htmlentities($params['Password']), $params['Password']]);
+            logModuleCall('OpenProvider','getDnsDomainToken',$domain->domain,$e->getMessage(),'', '');
             return false;
         }
     }

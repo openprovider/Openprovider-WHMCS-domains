@@ -75,7 +75,8 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'phone' => '\Openprovider\Api\Rest\Client\Person\Model\ContactPhone',
         'referral_source' => '\Openprovider\Api\Rest\Client\Person\Model\AttributesReferralSource',
         'vat' => 'string',
-        'website_url' => 'string'
+        'website_url' => 'string',
+        'whatsapp_consent' => 'bool'
     ];
 
     /**
@@ -101,7 +102,8 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'phone' => null,
         'referral_source' => null,
         'vat' => null,
-        'website_url' => null
+        'website_url' => null,
+        'whatsapp_consent' => 'boolean'
     ];
 
     /**
@@ -148,7 +150,8 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'phone' => 'phone',
         'referral_source' => 'referral_source',
         'vat' => 'vat',
-        'website_url' => 'website_url'
+        'website_url' => 'website_url',
+        'whatsapp_consent' => 'whatsapp_consent'
     ];
 
     /**
@@ -174,7 +177,8 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'phone' => 'setPhone',
         'referral_source' => 'setReferralSource',
         'vat' => 'setVat',
-        'website_url' => 'setWebsiteUrl'
+        'website_url' => 'setWebsiteUrl',
+        'whatsapp_consent' => 'setWhatsappConsent'
     ];
 
     /**
@@ -200,7 +204,8 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         'phone' => 'getPhone',
         'referral_source' => 'getReferralSource',
         'vat' => 'getVat',
-        'website_url' => 'getWebsiteUrl'
+        'website_url' => 'getWebsiteUrl',
+        'whatsapp_consent' => 'getWhatsappConsent'
     ];
 
     /**
@@ -285,6 +290,7 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
         $this->container['referral_source'] = isset($data['referral_source']) ? $data['referral_source'] : null;
         $this->container['vat'] = isset($data['vat']) ? $data['vat'] : null;
         $this->container['website_url'] = isset($data['website_url']) ? $data['website_url'] : null;
+        $this->container['whatsapp_consent'] = isset($data['whatsapp_consent']) ? $data['whatsapp_consent'] : null;
     }
 
     /**
@@ -777,6 +783,32 @@ class ResellerUpdateResellerRequest implements ModelInterface, ArrayAccess
     public function setWebsiteUrl($website_url)
     {
         $this->container['website_url'] = $website_url;
+
+        return $this;
+    }
+
+    /**
+     * Gets whatsapp_consent
+     *
+     * @return bool|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getWhatsappConsent()
+    {
+        return $this->container['whatsapp_consent'];
+    }
+
+    /**
+     * Sets whatsapp_consent
+     *
+     * @param bool|null $whatsapp_consent whatsapp_consent
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setWhatsappConsent($whatsapp_consent)
+    {
+        $this->container['whatsapp_consent'] = $whatsapp_consent;
 
         return $this;
     }
