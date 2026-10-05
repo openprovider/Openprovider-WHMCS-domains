@@ -23,14 +23,34 @@ class ClientAreaPrimarySidebarController
      * @var ApiHelper
      */
     private $apiHelper;
-
-    public function __construct(ApiHelper $apiHelper)
+    /**
+     * @var DNS
+     */
+    private $dnsHelper;
+    /**
+     * ConfigController constructor.
+     */
+    public function __construct(ApiHelper $apiHelper, DNS $dnsHelper)
     {
         $this->apiHelper = $apiHelper;
+        $this->dnsHelper = $dnsHelper;
     }
 
     public function show($primarySidebar)
     {
+        $domainId = $_REQUEST['domainid'] ?? $_REQUEST['id'] ?? null;
+        if (!$domainId) {
+            return;
+        }
+
+        $registrar = Capsule::table('tbldomains')
+            ->where('id', (int) $domainId)
+            ->value('registrar');
+
+        if ((string) $registrar !== 'openprovider') {
+            return;
+        }
+
         $this->ensureDnsManagementPageExists();
 
         $this->replaceDnsMenuItem($primarySidebar);
@@ -52,7 +72,7 @@ class ClientAreaPrimarySidebarController
             return;
         }
 
-        if ($url = DNS::getDnsUrlOrFail($domainId)) {
+        if ($url = $this->dnsHelper->getDnsUrlOrFail($domainId)) {
             // Update the URL.
             $dnsManagement->setUri($url);
 

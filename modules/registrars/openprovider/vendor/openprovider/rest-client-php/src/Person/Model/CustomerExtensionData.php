@@ -110,6 +110,7 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'postal_address_region' => 'string',
         'postal_address_street' => 'string',
         'social_security_number' => 'string',
+        'sole_proprietorship' => 'string',
         'tax_payer_number' => 'string',
         'uin' => 'string',
         'user_type' => 'string',
@@ -176,6 +177,7 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'postal_address_region' => null,
         'postal_address_street' => null,
         'social_security_number' => null,
+        'sole_proprietorship' => null,
         'tax_payer_number' => null,
         'uin' => null,
         'user_type' => null,
@@ -263,6 +265,7 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'postal_address_region' => 'postal_address_region',
         'postal_address_street' => 'postal_address_street',
         'social_security_number' => 'social_security_number',
+        'sole_proprietorship' => 'sole_proprietorship',
         'tax_payer_number' => 'tax_payer_number',
         'uin' => 'uin',
         'user_type' => 'user_type',
@@ -329,6 +332,7 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'postal_address_region' => 'setPostalAddressRegion',
         'postal_address_street' => 'setPostalAddressStreet',
         'social_security_number' => 'setSocialSecurityNumber',
+        'sole_proprietorship' => 'setSoleProprietorship',
         'tax_payer_number' => 'setTaxPayerNumber',
         'uin' => 'setUin',
         'user_type' => 'setUserType',
@@ -395,6 +399,7 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         'postal_address_region' => 'getPostalAddressRegion',
         'postal_address_street' => 'getPostalAddressStreet',
         'social_security_number' => 'getSocialSecurityNumber',
+        'sole_proprietorship' => 'getSoleProprietorship',
         'tax_payer_number' => 'getTaxPayerNumber',
         'uin' => 'getUin',
         'user_type' => 'getUserType',
@@ -519,6 +524,7 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
         $this->container['postal_address_region'] = isset($data['postal_address_region']) ? $data['postal_address_region'] : null;
         $this->container['postal_address_street'] = isset($data['postal_address_street']) ? $data['postal_address_street'] : null;
         $this->container['social_security_number'] = isset($data['social_security_number']) ? $data['social_security_number'] : null;
+        $this->container['sole_proprietorship'] = isset($data['sole_proprietorship']) ? $data['sole_proprietorship'] : null;
         $this->container['tax_payer_number'] = isset($data['tax_payer_number']) ? $data['tax_payer_number'] : null;
         $this->container['uin'] = isset($data['uin']) ? $data['uin'] : null;
         $this->container['user_type'] = isset($data['user_type']) ? $data['user_type'] : null;
@@ -1901,6 +1907,32 @@ class CustomerExtensionData implements ModelInterface, ArrayAccess
     public function setSocialSecurityNumber($social_security_number)
     {
         $this->container['social_security_number'] = $social_security_number;
+
+        return $this;
+    }
+
+    /**
+     * Gets sole_proprietorship
+     *
+     * @return string|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getSoleProprietorship()
+    {
+        return $this->container['sole_proprietorship'];
+    }
+
+    /**
+     * Sets sole_proprietorship
+     *
+     * @param string|null $sole_proprietorship sole_proprietorship
+     *
+     * @return $this
+     */
+    #[\ReturnTypeWillChange]
+    public function setSoleProprietorship($sole_proprietorship)
+    {
+        $this->container['sole_proprietorship'] = $sole_proprietorship;
 
         return $this;
     }
