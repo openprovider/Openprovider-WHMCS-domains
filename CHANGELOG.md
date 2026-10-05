@@ -1,5 +1,33 @@
 # Changelog
 
+## v5.13.8
+
+###### Features and improvements
+- Added support for managing DNS records directly from the WHMCS admin domain management page.
+
+###### Bugfixes
+- Fixed: DNS zone duplication when managing records for domains using Sectigo DNS.
+- Fixed: DNS Management tab disappearing when navigating to the DNSSEC management page for domains using Sectigo DNS.
+- Fixed: Unnecessary additional domain fields appearing in the WHMCS domain registration form.
+
+## v5.13.7
+
+###### Bugfixes
+- Fixed: DNS Management save and delete operations failing in WHMCS 9.0.6 due to CSRF token conflicts.
+- Fixed: Sandbox API connection failures caused by the deprecated API endpoint.
+
+## v5.13.6
+
+###### Features and improvements
+- Added new domain additional data fields for `.it` registrant declaration confirmation for domain registration and transfer.
+- Added the `itDeclarationFlowEnabled` configuration option to control the `.it` declaration flow.
+- Upgraded `openprovider/rest-client-php` library to `v2.2.3-beta`.
+
+## v5.13.5
+
+###### Bugfixes
+- Fixed: Pending registrar and addon module migrations not executing correctly during activation and updates.
+
 ## v5.13.4
 
 ###### Features and improvements

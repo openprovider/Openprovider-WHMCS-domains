@@ -16,7 +16,7 @@ if ($__op_premium_setting !== null) {
 return [
     //Openprovider Production and CTE API endpoints
     'api_url'                           => 'https://api.openprovider.eu',
-    'restapi_url_sandbox'               => 'http://api.sandbox.openprovider.nl:8480',
+    'restapi_url_sandbox'               => 'https://api.sandbox.openprovider.nl',
     'xmlapi_url_sandbox'                => 'https://api.sandbox.openprovider.nl/',
 
     // OpenproviderPremium (READ-ONLY):
@@ -59,6 +59,9 @@ return [
 
     // enable advanced customer additional data management for .es, .pt, .se, .com.es, .nom.es, .edu.es, .org.es, .it and .fi domain registrations    
     'idnumbermod' => true,
+
+    // Enable API-based declaration confirmation flow for .IT domains
+    'itDeclarationFlowEnabled' => false,
 
     'renewalDateSync' =>true, //  Default: true, If true, Set 'OP renewal date' to WHMCS as expiration date. Else Set 'OP expiration date' to WHMCS as expiration date.
 
