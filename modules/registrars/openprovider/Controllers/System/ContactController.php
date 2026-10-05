@@ -102,6 +102,18 @@ class ContactController extends BaseController
         $params['sld'] = $params['original']['domainObj']->getSecondLevel();
         $params['tld'] = $params['original']['domainObj']->getTopLevel();
 
+        // WHMCS submits no contact roles when the contact form rendered empty
+        $contactRoles = ['Owner', 'Admin', 'Tech', 'Billing'];
+        if (
+            empty($params['contactdetails'])
+            || !is_array($params['contactdetails'])
+            || empty(array_intersect_key($params['contactdetails'], array_flip($contactRoles)))
+        ) {
+            return [
+                'error' => 'No contact details were received. Please reload the page and try again.'
+            ];
+        }
+
         $userTag = '';
         try {
             if (DBHelper::checkTableExist(DatabaseTable::ClientTags)) {
@@ -132,6 +144,7 @@ class ContactController extends BaseController
 
             $params = $this->addLanguageToContactDetails($params);
 
+            $customers = [];
             if (isset($params['contactdetails']['Owner']))
                 $customers['ownerHandle']   = $handle->updateOrCreate($params, 'registrant');
             if (isset($params['contactdetails']['Admin']))
@@ -159,7 +172,7 @@ class ContactController extends BaseController
 
             return ['success' => true];
         }
-        catch (\Exception $e)
+        catch (\Throwable $e)
         {
             $values["error"] = $e->getMessage();
         }
@@ -232,7 +245,7 @@ class ContactController extends BaseController
             return [];
         }
 
-        $tldMetaData = $this->apiHelper->getTldMeta($this->domain->extension);
+        $tldMetaData = $this->getTldMetaData($this->domain->extension);
 
         $handlesToFetch = [];
         foreach (APIConfig::$handlesNames as $key => $name) {
@@ -258,5 +271,27 @@ class ContactController extends BaseController
         unset($contacts['reseller']);
 
         return $contacts;
+    }
+
+    /**
+     * Fall back to all supported handles when TLD metadata is missing owner handle support.
+     *
+     * @param string $extension
+     * @return array
+     */
+    private function getTldMetaData(string $extension): array
+    {
+        $tldMetaData = $this->apiHelper->getTldMeta($extension);
+
+        if (empty($tldMetaData['ownerHandleSupported'])) {
+            return array_merge($tldMetaData, [
+                'ownerHandleSupported'   => true,
+                'adminHandleSupported'   => true,
+                'techHandleSupported'    => true,
+                'billingHandleSupported' => true,
+            ]);
+        }
+
+        return $tldMetaData;
     }
 }
