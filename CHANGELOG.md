@@ -1,5 +1,14 @@
 # Changelog
 
+## v5.13.9
+
+###### Bugfixes
+- Fixed: Locale value not being preserved when updating WHOIS contact details.
+- Fixed: Company or Individual ID fields appearing and being required for TLDs that do not require identification details.
+- Fixed: Balance widget displaying a hardcoded EUR symbol instead of the reseller account currency.
+- Fixed: Deprecated DomainSync cronjob failing when executed.
+- Fixed: Reauthentication failing after Openprovider credentials are changed due to stale authentication cache.
+
 ## v5.13.8
 
 ###### Features and improvements
