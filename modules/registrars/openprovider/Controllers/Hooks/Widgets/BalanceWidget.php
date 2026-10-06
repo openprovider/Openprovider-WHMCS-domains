@@ -54,6 +54,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
                     $resellerResponse = $apiHelper->getReseller();
                     $balance = $resellerResponse['balance'];
                     $reservedBalance = $resellerResponse['reservedBalance'];
+                    $currency = $resellerResponse['settings']['currency'] ?? 'EUR';
                 } catch (\Exception $e) {
                     return ['error' => 'The Openprovider module could not be loaded, please check that an API connection can be established and that the login details are correct.'];
                 }
@@ -82,6 +83,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
                 return [
                     'balance' => $balance,
                     'reservedBalance' => $reservedBalance,
+                    'currency' => $currency,
                     'domainsTotal' => $domainsTotal,
                     'html' => $html,
                     'versionResult' => $versionResult
@@ -161,6 +163,19 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
     }
 
 
+    // Symbols for the currencies Openprovider reseller accounts can be billed in.
+    private const CURRENCY_SYMBOLS = [
+        'EUR' => '€',
+        'USD' => '$',
+        'GBP' => '£',
+        'INR' => '₹',
+    ];
+
+    private function getCurrencySymbol(string $currency): string
+    {
+        return self::CURRENCY_SYMBOLS[strtoupper($currency)] ?? strtoupper($currency) . ' ';
+    }
+
     public function generateOutput($data)
     {
         if (isset($data['error'])) {
@@ -172,6 +187,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
                 </div>
             EOF;
         }
+        $currencySymbol = $this->getCurrencySymbol($data['currency'] ?? 'EUR');
         $availableBalance = $data['balance'] - $data['reservedBalance'];
         $balance = number_format((float) $data['balance'], 2);
 
@@ -193,7 +209,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
                         <div class="row">
                             <div class="col-sm-6 bordered-right">
                                 <div class="item">
-                                    <div class="data $balance_css" style="display:inline-block;">€$balance</div> <div class="data $reservedBalance_css"  style="display:inline-block;"><small>(€$availableBalance available)</small></div>
+                                    <div class="data $balance_css" style="display:inline-block;">$currencySymbol$balance</div> <div class="data $reservedBalance_css"  style="display:inline-block;"><small>($currencySymbol$availableBalance available)</small></div>
                                     <div class="note">Balance</div>
                                 </div>
                             </div>
