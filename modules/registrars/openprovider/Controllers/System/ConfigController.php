@@ -66,6 +66,7 @@ class ConfigController extends BaseController
             $params['test_mode'] != $oldParams['test_mode']
         ) {
             Capsule::table('reseller_tokens')->where('username', $oldParams['Username'])->delete();
+            Cache::delete('op_auth_generate');
         }
         // If we have some login data, let's try to login.
         $areCredentialsExist = isset($params['Password']) &&
