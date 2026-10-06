@@ -153,6 +153,11 @@ return [
         'controller' => 'AdminAreaFooterController@output',
     ],
     [
+        'hookPoint' => 'AdminAreaFooterOutput',
+        'priority'  => 2,
+        'controller' => 'AdminAreaFooterController@makeLocaleReadonly',
+    ],
+    [
         'hookPoint' => 'AdminClientDomainsTabFieldsSave',
         'priority'  => 1,
         'controller' => 'AdminClientDomainsTabController@save',
