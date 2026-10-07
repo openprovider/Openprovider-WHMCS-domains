@@ -11,11 +11,33 @@ namespace OpenProvider\API;
 
 class APITools
 {
+    /**
+     * Build a list of DomainNameServer objects from the WHMCS-supplied
+     * ns1..ns5 params for register / transfer / save flows.
+     *
+     * Nameserver IPs are only required for *in-bailiwick* glue records
+     * (NS that are the apex domain itself or a subdomain of the domain
+     * being registered/transferred). For all other (out-of-bailiwick)
+     * nameservers, Openprovider does not require an IP and the module
+     * must not gate inclusion on DNS resolution — doing so silently
+     * dropped customer-supplied external NS, and the registry then
+     * substituted reseller defaults at the moment of transfer, causing
+     * silent DNS outages (see issue #525).
+     *
+     * @param array $params      WHMCS module params; must contain sld, tld,
+     *                           and ns1..ns5 (each ns may be in "name" or
+     *                           "name/ip" form).
+     * @param mixed $apiHelper   Optional ApiHelper for resolving
+     *                           glue-record IPs from the registry.
+     * @return DomainNameServer[]
+     * @throws \Exception When fewer than 2 nameservers are supplied, or a
+     *                    glue record lacks an IP that cannot be resolved.
+     */
     public static function createNameserversArray($params, $apiHelper = null)
     {
         $nameServers = array();
 
-        //can be used to hard-code a nameserver overwrite when using the DNS management addon 
+        //can be used to hard-code a nameserver overwrite when using the DNS management addon
         // if($params['dnsmanagement'] == true)
         // {
         //     $params['ns1'] = 'ns1.openprovider.nl';
@@ -25,102 +47,115 @@ class APITools
         //     $params['ns5'] = null;
         // }
 
-        if ($params['test_mode'] == 'on' && $apiHelper != null) {
-            
-            for ($i = 1; $i <= 5; $i++) {
-                $ns = $params["ns{$i}"];
-                if (!$ns) {
-                    continue;
-                }
-                $nsParts = explode('/', $ns);
-                $nsName = trim($nsParts[0]);
-                $nsIp = empty($nsParts[1]) ? null : trim($nsParts[1]);
+        $domainFqdn = strtolower(
+            ($params['sld'] ?? '') . (isset($params['tld']) ? '.' . $params['tld'] : '')
+        );
+        $domainFqdn = trim($domainFqdn, '.');
 
-                //Try to get IP from searchNsRequest in REST API
-                if (empty($nsIp)) {
-                    $myNameServerList = $apiHelper->getNameserverList($nsName);
-                    foreach ($myNameServerList as $myNameServer) {
-                        if ($myNameServer->name == $nsName) {
-                            $nsIp = $myNameServer->ip;
-                            break;
-                        }
-                    }
-                }
-
-                // Try to get IP from gethostbyName
-                if (empty($nsIp)) {
-                    $nsIp = gethostbyname($nsName);
-                    if (!filter_var($nsIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-                        $nsIp = "";
-                        throw new \Exception("Invalid nameserver name: {$nsName}");
-                    }
-                }                
-
-                if (!empty($nsIp) && !empty($nsName)) {
-                    $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
-                        'name'  =>  $nsName,
-                        'ip'    =>  $nsIp
-                    ));
-                }
-            }
-
-            if (count($nameServers) < 2) {
-                throw new \Exception('You must enter minimum 2 nameservers');
-            }
-
-            return $nameServers;
-        }
-
-        $invalidNameServer = false;
         for ($i = 1; $i <= 5; $i++) {
-            $ns = $params["ns{$i}"];
+            $ns = $params["ns{$i}"] ?? null;
             if (!$ns) {
                 continue;
             }
 
             $nsParts = explode('/', $ns);
-            $nsName = trim($nsParts[0]);
-            $nsIp = empty($nsParts[1]) ? null : trim($nsParts[1]);
+            $nsName  = strtolower(trim($nsParts[0]));
+            $nsIp    = empty($nsParts[1]) ? null : trim($nsParts[1]);
 
-            if (empty($nsIp)) {
-                $api = new \OpenProvider\API\API();
-                $api->setParams($params);
-                $searchResult = $api->sendRequest('searchNsRequest', array(
-                    'pattern' => $nsName,
-                ));
+            if ($nsName === '') {
+                continue;
+            }
 
-                if ($searchResult['total'] > 0) {
-                    $nsIp = $searchResult['results'][0]['ip'];
+            if (self::isGlueRecord($nsName, $domainFqdn) && empty($nsIp)) {
+                // In-bailiwick NS — IP is mandatory at the registry. Try
+                // the Openprovider registry first, then DNS resolution as
+                // a fallback. Throw if neither produces a valid IPv4 so the
+                // user sees the problem instead of silent reseller defaults.
+                $nsIp = self::resolveGlueIp($nsName, $params, $apiHelper);
+
+                if (empty($nsIp)) {
+                    throw new \Exception(
+                        "Nameserver {$nsName} is in-bailiwick (a glue record) "
+                        . "but no IP could be resolved. Please supply it "
+                        . "explicitly in the form 'name/ip'."
+                    );
                 }
             }
 
-            //Try to get IP from gethostbyName
-            if (empty($nsIp)) {
-                $nsIp = gethostbyname($nsName);
-                if (!filter_var($nsIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-                    $nsIp = "";
-                    $invalidNameServer = true;
-                    logModuleCall('openprovider', 'createNameserversArray', $nsName, "Invalid nameserver name: {$nsName}", null, null);
-                }
+            $attrs = ['name' => $nsName];
+            if (!empty($nsIp)) {
+                $attrs['ip'] = $nsIp;
             }
 
-            if (!empty($nsIp) && !empty($nsName)) {
-                $nameServers[] = new \OpenProvider\API\DomainNameServer(array(
-                    'name'  =>  $nsName,
-                    'ip'    =>  $nsIp
-                ));
-            }
+            $nameServers[] = new \OpenProvider\API\DomainNameServer($attrs);
         }
 
         if (count($nameServers) < 2) {
-            if($invalidNameServer) {
-                throw new \Exception('You must enter minimum 2 nameservers. Invalid nameserver found. Please check the module log.');
-            }else{
-                throw new \Exception('You must enter minimum 2 nameservers');
-            }            
+            throw new \Exception('You must enter minimum 2 nameservers');
         }
 
         return $nameServers;
+    }
+
+    /**
+     * A nameserver is a glue record if it is the apex domain itself or a
+     * subdomain of the domain being registered/transferred.
+     */
+    private static function isGlueRecord(string $nsName, string $domainFqdn): bool
+    {
+        if ($domainFqdn === '' || $nsName === '') {
+            return false;
+        }
+
+        return $nsName === $domainFqdn
+            || str_ends_with($nsName, '.' . $domainFqdn);
+    }
+
+    /**
+     * Resolve a glue-record IPv4. First tries the Openprovider registry
+     * (REST via $apiHelper, otherwise the legacy XML API), then falls back
+     * to gethostbyname(). Returns null when no valid IPv4 could be found.
+     */
+    private static function resolveGlueIp(string $nsName, array $params, $apiHelper = null): ?string
+    {
+        // Prefer the REST helper when available.
+        if ($apiHelper !== null && method_exists($apiHelper, 'getNameserverList')) {
+            try {
+                $list = $apiHelper->getNameserverList($nsName);
+                foreach ((array) $list as $entry) {
+                    if (isset($entry->name) && $entry->name === $nsName && !empty($entry->ip)) {
+                        return $entry->ip;
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Fall through.
+            }
+        }
+
+        // Legacy XML API path (still used by some flows).
+        try {
+            $api = new \OpenProvider\API\API();
+            $api->setParams($params);
+            $searchResult = $api->sendRequest('searchNsRequest', [
+                'pattern' => $nsName,
+            ]);
+            if (!empty($searchResult['total']) && !empty($searchResult['results'][0]['ip'])) {
+                return $searchResult['results'][0]['ip'];
+            }
+        } catch (\Throwable $e) {
+            // Fall through.
+        }
+
+        // DNS resolution fallback.
+        $resolved = @gethostbyname($nsName);
+        if ($resolved !== false
+            && $resolved !== $nsName
+            && filter_var($resolved, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)
+        ) {
+            return $resolved;
+        }
+
+        return null;
     }
 
     /*
