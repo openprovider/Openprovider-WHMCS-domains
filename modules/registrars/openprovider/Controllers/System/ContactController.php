@@ -257,6 +257,166 @@ class ContactController extends BaseController
         unset($contacts['Reseller']);
         unset($contacts['reseller']);
 
+        $this->syncHandlesWithWhmcs($params, $handlesToFetch, $contacts);
+
         return $contacts;
+    }
+
+    /**
+     * Sync wHandles and wDomain_handle for the fetched OP contact handles.
+     *
+     * wHandles.type rules:
+     *   - Owner is always type='all' (matches DomainController's findOrCreate default).
+     *   - Any OP handle shared by more than one role is also type='all', so findExisting
+     *     can locate it for any role search.
+     *   - A handle serving exactly one non-Owner role gets that role's specific type.
+     *
+     * wDomain_handle always uses the specific role type (registrant/admin/tech/billing).
+     * wHandles.data is never overwritten — existing rows may carry extensionAdditionalData.
+     */
+    private function syncHandlesWithWhmcs(array $params, array $handlesToFetch, array $contacts): void
+    {
+        try {
+            $domainName  = ($params['sld'] ?? '') . '.' . ($params['tld'] ?? '');
+            $whmcsDomain = Capsule::table('tbldomains')
+                ->where('domain', $domainName)
+                ->first(['id', 'userid']);
+
+            if (!$whmcsDomain) {
+                return;
+            }
+
+            $domainId = (int) $whmcsDomain->id;
+            $userId   = (int) $whmcsDomain->userid;
+
+            $roleToType = [
+                'Owner'   => 'registrant',
+                'Admin'   => 'admin',
+                'Tech'    => 'tech',
+                'Billing' => 'billing',
+            ];
+
+            // Keep only roles that have both a handle ID and contact data.
+            $validRoles = array_filter($handlesToFetch, function ($handleId, $roleName) use ($contacts) {
+                return !empty($handleId) && !empty($contacts[$roleName]);
+            }, ARRAY_FILTER_USE_BOTH);
+
+            if (empty($validRoles)) {
+                return;
+            }
+
+            // How many roles each OP handle ID serves — used to decide wHandles.type.
+            $handleRoleCounts = array_count_values(array_values($validRoles));
+
+            $handleDbIds = [];
+            foreach ($validRoles as $roleName => $handleId) {
+                $pivotType = $roleToType[$roleName] ?? strtolower($roleName);
+
+                // Owner is always type='all' (matches DomainController's findOrCreate($params)
+                // default). Any handle shared by more than one role is also type='all' so
+                // findExisting can locate it regardless of which role type is searched.
+                $wHandleType = ($roleName === 'Owner' || $handleRoleCounts[$handleId] > 1)
+                    ? 'all'
+                    : $pivotType;
+
+                if (!isset($handleDbIds[$handleId])) {
+                    $handleDbIds[$handleId] = $this->ensureWHandleRow(
+                        $handleId, $userId, $wHandleType, $roleName, $contacts[$roleName]
+                    );
+                }
+
+                $this->syncDomainHandleLink($domainId, $handleDbIds[$handleId], $pivotType);
+            }
+        } catch (\Exception $e) {
+            logModuleCall('Openprovider NL', 'syncHandlesWithWhmcs', $params, $e->getMessage());
+        }
+    }
+
+    /**
+     * Return the wHandles.id for the given OP handle, creating the row if absent.
+     * If the row exists with a different type, the type is corrected so findExisting
+     * can locate it for the right role. The data column is never overwritten — it may
+     * carry extensionAdditionalData set during register/transfer.
+     */
+    private function ensureWHandleRow(string $handleId, int $userId, string $type, string $roleName, array $contact): int
+    {
+        if ($type === 'all') {
+            // Prefer an existing 'all' row — if one already exists (e.g. created by
+            // findOrCreate during registration) use it directly. Only fall back to a
+            // specific-type row when no 'all' row exists, so we can upgrade it rather
+            // than creating a second row and leaving the first orphaned.
+            $row = Capsule::table('wHandles')
+                ->where('handle', $handleId)
+                ->where('user_id', $userId)
+                ->where('registrar', 'openprovider')
+                ->orderByRaw("CASE WHEN type = 'all' THEN 0 ELSE 1 END")
+                ->first();
+        } else {
+            // Same pattern as findExisting: match exact type OR 'all' in one query.
+            $row = Capsule::table('wHandles')
+                ->where('handle', $handleId)
+                ->where('user_id', $userId)
+                ->where('registrar', 'openprovider')
+                ->where(function ($q) use ($type) {
+                    $q->where('type', $type)->orWhere('type', 'all');
+                })
+                ->first();
+        }
+
+        if ($row) {
+            // Only upgrade to 'all' — never downgrade from 'all' to a specific type,
+            // and never change between specific types. Downgrading breaks findExisting
+            // for other roles that relied on the broader type.
+            if ($row->type !== 'all' && $type === 'all') {
+                Capsule::table('wHandles')
+                    ->where('id', $row->id)
+                    ->update(['type' => 'all', 'updated_at' => date('Y-m-d H:i:s')]);
+            }
+            return (int) $row->id;
+        }
+
+        $customerObj = new \OpenProvider\API\Customer(
+            ['contactdetails' => [ucfirst($roleName) => $contact]],
+            strtolower($roleName)
+        );
+        $now = date('Y-m-d H:i:s');
+
+        return (int) Capsule::table('wHandles')->insertGetId([
+            'handle'     => $handleId,
+            'user_id'    => $userId,
+            'registrar'  => 'openprovider',
+            'type'       => $type,
+            'data'       => serialize($customerObj),
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+    }
+
+    /**
+     * Ensure a wDomain_handle row exists for the given domain/type pointing to $handleDbId.
+     * Creates when missing; updates when it points to a different handle.
+     */
+    private function syncDomainHandleLink(int $domainId, int $handleDbId, string $type): void
+    {
+        $link = Capsule::table('wDomain_handle')
+            ->where('domain_id', $domainId)
+            ->where('type', $type)
+            ->first();
+
+        if (!$link) {
+            $now = date('Y-m-d H:i:s');
+            Capsule::table('wDomain_handle')->insert([
+                'domain_id'  => $domainId,
+                'handle_id'  => $handleDbId,
+                'type'       => $type,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        } elseif ((int) $link->handle_id !== $handleDbId) {
+            Capsule::table('wDomain_handle')
+                ->where('domain_id', $domainId)
+                ->where('type', $type)
+                ->update(['handle_id' => $handleDbId, 'updated_at' => date('Y-m-d H:i:s')]);
+        }
     }
 }
