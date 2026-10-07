@@ -11,4 +11,12 @@ namespace OpenProvider\API;
 class DomainTransfer extends \OpenProvider\API\DomainRegistration
 {
     public $authCode;
+
+    /**
+     * Ask Openprovider to import contact data from the registry
+     * (maps to import_contacts_from_registry on the transfer request).
+     *
+     * @var bool|null
+     */
+    public $importContactsFromRegistry = null;
 }
