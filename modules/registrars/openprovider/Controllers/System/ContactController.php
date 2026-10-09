@@ -174,6 +174,14 @@ class ContactController extends BaseController
         }
         catch (\Throwable $e)
         {
+            logModuleCall(
+                'openprovider nl',
+                'Save contact details',
+                $params['domainname'] ?? '',
+                $e->getMessage(),
+                null,
+                null
+            );
             $values["error"] = $e->getMessage();
         }
         return $values;
