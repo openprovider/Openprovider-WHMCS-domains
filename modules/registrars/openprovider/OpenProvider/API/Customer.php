@@ -101,6 +101,7 @@ class Customer
             $prefix = 'owner';
 
         $getFromContactDetails = false;
+        $topLevelLanguage = $params['language'] ?? null;
         if (isset($params['contactdetails']))
         {
             $getFromContactDetails = true;
@@ -123,7 +124,8 @@ class Customer
                 'phone country code' => 'phone country code',
                 'email' => 'email address',
                 'companyname' => 'company name',
-                'language' => 'language'
+                'language' => 'language',
+                'locale' => 'locale'
             );
 
             if(!isset($params["contactdetails"][$prefix]['fullstate']))
@@ -230,7 +232,20 @@ class Customer
         $this->email        =   $params[$indexes['email']];
         $this->companyName  =   $params[$indexes['companyname']];
         $this->tags         =   $tags->getTags();
-        $this->locale       =   $this->getLocaleByLanguage($params[$indexes['language']] ?? null);
+        $language = $params[$indexes['language']] ?? null;
+        $locale   = !empty($params[$indexes['locale']] ?? null)
+            ? trim(str_replace('-', '_', (string) $params[$indexes['locale']]))
+            : null;
+
+        if ($locale) {
+            $this->locale = $locale;
+        } elseif ($language) {
+            $this->locale = $this->getLocaleByLanguage($language);
+        } elseif ($topLevelLanguage) {
+            $this->locale = $this->getLocaleByLanguage($topLevelLanguage);
+        } else {
+            $this->locale = $this->getLocaleByLanguage(null);
+        }
 
         $this->additionalData = new CustomerAdditionalData();
 

@@ -16,7 +16,7 @@ if ($__op_premium_setting !== null) {
 return [
     //Openprovider Production and CTE API endpoints
     'api_url'                           => 'https://api.openprovider.eu',
-    'restapi_url_sandbox'               => 'http://api.sandbox.openprovider.nl:8480',
+    'restapi_url_sandbox'               => 'https://api.sandbox.openprovider.nl',
     'xmlapi_url_sandbox'                => 'https://api.sandbox.openprovider.nl/',
 
     // OpenproviderPremium (READ-ONLY):

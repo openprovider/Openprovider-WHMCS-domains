@@ -1,5 +1,30 @@
 # Changelog
 
+## v5.13.9
+
+###### Bugfixes
+- Fixed: Locale value not being preserved when updating WHOIS contact details.
+- Fixed: Company or Individual ID fields appearing and being required for TLDs that do not require identification details.
+- Fixed: Balance widget displaying a hardcoded EUR symbol instead of the reseller account currency.
+- Fixed: Deprecated DomainSync cronjob failing when executed.
+- Fixed: Reauthentication failing after Openprovider credentials are changed due to stale authentication cache.
+
+## v5.13.8
+
+###### Features and improvements
+- Added support for managing DNS records directly from the WHMCS admin domain management page.
+
+###### Bugfixes
+- Fixed: DNS zone duplication when managing records for domains using Sectigo DNS.
+- Fixed: DNS Management tab disappearing when navigating to the DNSSEC management page for domains using Sectigo DNS.
+- Fixed: Unnecessary additional domain fields appearing in the WHMCS domain registration form.
+
+## v5.13.7
+
+###### Bugfixes
+- Fixed: DNS Management save and delete operations failing in WHMCS 9.0.6 due to CSRF token conflicts.
+- Fixed: Sandbox API connection failures caused by the deprecated API endpoint.
+
 ## v5.13.6
 
 ###### Features and improvements

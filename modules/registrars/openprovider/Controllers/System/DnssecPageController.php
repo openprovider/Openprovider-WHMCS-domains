@@ -77,6 +77,10 @@ class DnssecPageController extends BaseController
                 }
                 $openproviderNameserversCount++;
             }
+
+            $isSectigoDns = ($domainOp['hasActiveSectigoZone'] ?? false) === true
+                || ($domainOp['isSectigoDnsEnabled'] ?? false) === true
+                || str_contains(strtolower((string) ($domainOp['nsGroup'] ?? '')), 'sectigo');
         } catch (\Exception $e) {
             $this->redirectUserAway();
             return;
@@ -132,7 +136,7 @@ class DnssecPageController extends BaseController
             ->setUri("clientarea.php?action=domaincontacts&domainid={$domainId}")
             ->setOrder(40);
 
-        if ($openproviderNameserversCount > 1 && $domain->dnsmanagement) {
+        if (($openproviderNameserversCount > 1 || $isSectigoDns) && $domain->dnsmanagement) {
             $primarySidebar->getChild('Domain Details Management')
                 ->addChild('DNS Management')
                 ->setLabel(\Lang::trans('domaindnsmanagement'))
