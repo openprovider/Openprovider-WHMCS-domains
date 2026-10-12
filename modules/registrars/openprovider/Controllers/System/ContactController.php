@@ -70,6 +70,13 @@ class ContactController extends BaseController
             ];
         }
 
+        // when no contacts are returned
+        if (empty($values)) {
+            return [
+                'error' => 'No contact details were found for this domain at Openprovider.'
+            ];
+        }
+
         $domainTld = new Tld($params['tld']);
         array_walk($values, function (&$contact) use ($domainTld) {
             if (!$domainTld->isNeededShortState())
