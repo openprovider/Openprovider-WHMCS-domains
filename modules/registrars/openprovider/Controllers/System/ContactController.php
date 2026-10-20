@@ -129,6 +129,7 @@ class ContactController extends BaseController
 
             $handle = $this->handle;
             $handle->setApiHelper($this->apiHelper);
+            $handle->resetChangeTracking();
 
             $params = $this->addLanguageToContactDetails($params);
 

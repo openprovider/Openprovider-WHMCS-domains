@@ -65,6 +65,21 @@ class Handle
     protected $customerAdditionalData;
 
     /**
+     * Customer data as it was in Openprovider before the current save,
+     * indexed by handle.
+     *
+     * @var array
+     */
+    protected $originalCustomers = [];
+
+    /**
+     * Handles modified during the current save.
+     *
+     * @var array
+     */
+    protected $updatedHandles = [];
+
+    /**
      * Constructor
      *
      * @return void
@@ -344,11 +359,41 @@ class Handle
      */
     protected function findChanges ($params)
     {
-        $opCustomer = $this->apiHelper->getCustomer($this->model->handle, true);
+        $handle = $this->model->handle;
+
+        // Compare against the data from before this save. When owner, admin and tech
+        // share one handle, an earlier role may already have modified it; comparing
+        // the later (unedited) roles with the live data would revert that change.
+        if (!array_key_exists($handle, $this->originalCustomers)) {
+            $this->originalCustomers[$handle] = $this->apiHelper->getCustomer($handle, true);
+        }
+
+        $opCustomer = $this->originalCustomers[$handle];
         if (empty($opCustomer)) {
             return 'create';
         }
 
+        $action = $this->compareWithCustomer($opCustomer);
+
+        if ($action === false || !in_array($handle, $this->updatedHandles, true)) {
+            return $action;
+        }
+
+        // This role was edited, but another role already modified the shared handle
+        // in this save. Reuse it if the data is identical, otherwise use a new handle.
+        $currentCustomer = $this->apiHelper->getCustomer($handle, true);
+
+        return $this->compareWithCustomer($currentCustomer) === false ? false : 'create';
+    }
+
+    /**
+     * Compare the prepared customer with the given Openprovider customer data.
+     *
+     * @param array $opCustomer
+     * @return false|string
+     */
+    protected function compareWithCustomer (array $opCustomer)
+    {
         $addressParts = array_filter(
             [
                 trim($this->customer->address->street ?? ''),
@@ -415,6 +460,21 @@ class Handle
         $result                 = $this->apiHelper->updateCustomer($this->customer->handle, $this->customer);
         $this->model->data      = $this->customer;
         $this->model->save(['overrideUniqueCheck' => true]);
+
+        $this->updatedHandles[] = $this->model->handle;
+
+        return $this;
+    }
+
+    /**
+     * Clear the data tracked during a previous save.
+     *
+     * @return $this
+     */
+    public function resetChangeTracking (): Handle
+    {
+        $this->originalCustomers = [];
+        $this->updatedHandles    = [];
 
         return $this;
     }
