@@ -172,4 +172,14 @@ return [
         'priority'  => 2,
         'controller' => 'ShoppingCartController@injectDomainConfigFieldFilters',
     ],
+    [
+        'hookPoint' => 'ClientAreaFooterOutput',
+        'priority'  => 1,
+        'controller' => 'ContactChangePendingController@clientArea',
+    ],
+    [
+        'hookPoint' => 'AdminAreaFooterOutput',
+        'priority'  => 1,
+        'controller' => 'ContactChangePendingController@adminArea',
+    ],
 ];

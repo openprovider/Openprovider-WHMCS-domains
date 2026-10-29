@@ -6,6 +6,7 @@ use OpenProvider\API\APIConfig;
 use OpenProvider\API\ApiHelper;
 use OpenProvider\API\Domain;
 use OpenProvider\WhmcsRegistrar\enums\DatabaseTable;
+use OpenProvider\WhmcsRegistrar\helpers\ContactChangePending;
 use OpenProvider\WhmcsRegistrar\helpers\DB as DBHelper;
 use OpenProvider\WhmcsRegistrar\Models\Tld;
 use OpenProvider\WhmcsRegistrar\src\Handle;
@@ -155,7 +156,20 @@ class ContactController extends BaseController
 
             if(!empty($finalCustomers)) {
                 $domainOp = $this->apiHelper->getDomain($this->domain);
-                $this->apiHelper->updateDomain($domainOp['id'], $finalCustomers);
+                $result = $this->apiHelper->updateDomain($domainOp['id'], $finalCustomers);
+
+                // REQ: accepted by Openprovider, but the registry applies the handle
+                // change later (e.g. .es), so the page keeps showing the old handle
+                // until then. Remember which roles are waiting for a new handle.
+                if (($result['status'] ?? '') === 'REQ') {
+                    $changedHandles = array_filter($finalCustomers, function ($handle, $key) use ($domainOp) {
+                        return ($domainOp[$key] ?? null) !== $handle;
+                    }, ARRAY_FILTER_USE_BOTH);
+
+                    ContactChangePending::set((int) $params['domainid'], $changedHandles);
+                } else {
+                    ContactChangePending::clear((int) $params['domainid']);
+                }
             }
 
             return ['success' => true];
@@ -232,6 +246,9 @@ class ContactController extends BaseController
         if (empty($domainOp)) {
             return [];
         }
+
+        // Forget pending contact changes the registry has applied in the meantime.
+        ContactChangePending::refresh((int) $params['domainid'], $domainOp);
 
         $tldMetaData = $this->apiHelper->getTldMeta($this->domain->extension);
 
