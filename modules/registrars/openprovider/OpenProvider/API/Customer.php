@@ -291,16 +291,30 @@ class Customer
             }
         }
 
-        if (isset($_SESSION['contactsession']) && Capsule::schema()->hasTable('mod_contactsAdditional')) {
+        // Only load the contact's id data if the contact belongs to the domain owner (IDOR guard).
+        $ownerUserId = $params['userid'] ?? null;
+        if (
+            $ownerUserId
+            && isset($_SESSION['contactsession'])
+            && Capsule::schema()->hasTable('mod_contactsAdditional')
+        ) {
             $contactsNew = json_decode($_SESSION['contactsession'], true);
-            if ($contactsNew[$prefix] != null && $contactsNew[$prefix][0] == 'c') {
+            if (
+                isset($contactsNew[$prefix])
+                && $contactsNew[$prefix] != null
+                && $contactsNew[$prefix][0] == 'c'
+                && ctype_digit((string) substr($contactsNew[$prefix], 1))
+            ) {
                 $contactid = substr($contactsNew[$prefix], 1);
                 $idn = Capsule::table('mod_contactsAdditional')
-                    ->where("contact_id", "=", $contactid)
+                    ->join('tblcontacts', 'tblcontacts.id', '=', 'mod_contactsAdditional.contact_id')
+                    ->where('mod_contactsAdditional.contact_id', '=', $contactid)
+                    ->where('tblcontacts.userid', '=', $ownerUserId)
+                    ->select('mod_contactsAdditional.identification_type', 'mod_contactsAdditional.identification_number')
                     ->first();
-                $idn_id_type = $idn->identification_type;
-                $idn_id = $idn->identification_number;
-                $this->additionalData->set($idn_id_type, $idn_id);
+                if ($idn) {
+                    $this->additionalData->set($idn->identification_type, $idn->identification_number);
+                }
             }
         }
 
