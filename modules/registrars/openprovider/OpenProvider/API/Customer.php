@@ -100,6 +100,9 @@ class Customer
         if($prefix == 'registrant')
             $prefix = 'owner';
 
+        // Capture the owner id before $params is reassigned to a contact sub-array below.
+        $ownerUserId = $params['userid'] ?? null;
+
         $getFromContactDetails = false;
         $topLevelLanguage = $params['language'] ?? null;
         if (isset($params['contactdetails']))
@@ -292,7 +295,6 @@ class Customer
         }
 
         // Only load the contact's id data if the contact belongs to the domain owner (IDOR guard).
-        $ownerUserId = $params['userid'] ?? null;
         if (
             $ownerUserId
             && isset($_SESSION['contactsession'])
