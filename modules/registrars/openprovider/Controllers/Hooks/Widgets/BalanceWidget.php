@@ -117,7 +117,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
                     'cURL error while retrieving Openprovider version',
                     $curlError,
                     null,
-                    null
+                    []
                 );
                 return $versionResult;
             }
@@ -137,7 +137,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
 
             // Check if both versions are valid
             if (empty($installedVersion) || empty($availableVersion)) {
-                logModuleCall('OpenProvider NL', 'module version retrieval', "Failed to retrieve openprovider version", null, null, null);
+                logModuleCall('OpenProvider NL', 'module version retrieval', "Failed to retrieve openprovider version", null, null, []);
                 return $versionResult;
             }
 
@@ -155,7 +155,7 @@ class BalanceWidget extends \WHMCS\Module\AbstractWidget
                 'Failed to retrieve Openprovider version',
                 $e->getMessage(),
                 null,
-                null
+                []
             );
 
             return "<span style=\"color:#999;\">Version check unavailable</span>";
