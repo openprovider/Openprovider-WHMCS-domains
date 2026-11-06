@@ -433,7 +433,7 @@ class DomainSyncAutoRenew
         }
         else
         {
-            logModuleCall('openprovider', 'update_domain_status', '', $this->op_domain, 'OpenProvider domain status: '.$this->op_domain['status'], null);
+            logModuleCall('openprovider', 'update_domain_status', '', $this->op_domain, 'OpenProvider domain status: '.$this->op_domain['status'], []);
         }
     }
 

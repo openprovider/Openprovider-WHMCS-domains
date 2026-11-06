@@ -37,7 +37,7 @@ class AdminWidgetController
                 null,
                 'Removed legacy BalanceWidget file to prevent duplicate widgets.',
                 null,
-                null
+                []
             );
         }
     }
