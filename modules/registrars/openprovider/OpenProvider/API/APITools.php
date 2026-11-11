@@ -100,7 +100,7 @@ class APITools
                 if (!filter_var($nsIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
                     $nsIp = "";
                     $invalidNameServer = true;
-                    logModuleCall('openprovider', 'createNameserversArray', $nsName, "Invalid nameserver name: {$nsName}", null, null);
+                    logModuleCall('openprovider', 'createNameserversArray', $nsName, "Invalid nameserver name: {$nsName}", null, []);
                 }
             }
 

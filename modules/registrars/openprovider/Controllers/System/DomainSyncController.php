@@ -100,9 +100,9 @@ class DomainSyncController extends BaseController
                 'expirydate' => $expiry_date,
             );
             $results = localAPI($command, $postData);
-            logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':$status, 'expirydate' => $expiry_date}", $results, null, null);
+            logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':$status, 'expirydate' => $expiry_date}", $results, null, []);
         } catch (\Exception $e) {
-            logModuleCall('WHMCS internal', $command, null, "Failed to update domain. id: " . $domainId . ", msg: " . $e->getMessage(), null, null);
+            logModuleCall('WHMCS internal', $command, null, "Failed to update domain. id: " . $domainId . ", msg: " . $e->getMessage(), null, []);
         }
     }
     /**
