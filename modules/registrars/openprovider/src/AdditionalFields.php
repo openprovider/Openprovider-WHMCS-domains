@@ -129,6 +129,7 @@ class AdditionalFields
              * op_location              Location where the data exists (customerExtensionAdditionalData, customerAdditionalData, domainAdditionalData or customer)
              * op_skip                  Do not send the parameter when the value is the same as op_skip.
              * op_dropdown_for_op_name  The value provided by the customer is used to define the op_name fieldname.
+             * op_array_separator       Split a text value on this delimiter and send it as an array; omitted when empty.
              */
 
             $dropdown_op_name_fields = [];
@@ -187,6 +188,13 @@ class AdditionalFields
                     $checkedValue   = $field['op_values'][0] ?? '1';
                     $uncheckedValue = $field['op_values'][1] ?? '0';
                     $value = ($value == 'on') ? $checkedValue : $uncheckedValue;
+                }
+                elseif(isset($field['op_array_separator'])) {
+                    // The API expects an array of strings; omit the field entirely when empty.
+                    $value = is_array($value) ? $value : explode($field['op_array_separator'], (string) $value);
+                    $value = array_values(array_filter(array_map('trim', $value), 'strlen'));
+                    if(empty($value))
+                        continue;
                 }
 
                 if($field['op_location'] == 'customerExtensionAdditionalData' && isset($params['additionalfields'][$field['Name']]))
