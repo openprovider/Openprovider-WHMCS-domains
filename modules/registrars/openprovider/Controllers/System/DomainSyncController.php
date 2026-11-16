@@ -96,20 +96,24 @@ class DomainSyncController extends BaseController
         try {
             $postData = array(
                 'domainid' => $domainId,
-                'status' => $status,
                 'expirydate' => $expiry_date,
             );
+            // null = keep existing status
+            if ($status !== null) {
+                $postData['status'] = $status;
+            }
             $results = localAPI($command, $postData);
-            logModuleCall('WHMCS internal', $command, "{'domainid':$domainId,'status':$status, 'expirydate' => $expiry_date}", $results, null, null);
+            logModuleCall('openprovider', $command, $postData, $results, null, null);
         } catch (\Exception $e) {
-            logModuleCall('WHMCS internal', $command, null, "Failed to update domain. id: " . $domainId . ", msg: " . $e->getMessage(), null, null);
+            logModuleCall('openprovider', $command, null, "Failed to update domain. id: " . $domainId . ", msg: " . $e->getMessage(), null, null);
         }
     }
     /**
      * Map OpenProvider status to WHMCS status.
+     * Returns null for unmapped statuses so the existing status is kept.
      *
      * @param string $opStatus
-     * @return string
+     * @return string|null
      */
     private function mapDomainStatus($opStatus)
     {
@@ -119,8 +123,10 @@ class DomainSyncController extends BaseController
             return 'Cancelled';
         } elseif ($opStatus === 'TRAN') {
             return 'Transferred Away';
-        } else {
-            return 'Inactive';
+        } elseif ($opStatus === 'RGP') {
+            return 'Redemption';
         }
+
+        return null;
     }
 }
