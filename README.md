@@ -46,7 +46,7 @@ curl -s https://raw.githubusercontent.com/openprovider/Openprovider-WHMCS-domain
 if (function_exists('openprovider_additional_fields'))
     $additionaldomainfields = openprovider_additional_fields();
 ```
-- [Optional] Upload `<Module directory>/modules/addons/openprovider` to `<WHMCS directory>/modules/addons`
+- [Optional] Upload `/modules/addons/openprovider` to `<WHMCS directory>/modules/addons`
 ## Basic Configurations
 
 - Navigate to **Configuration >> System Settings >> Domain Registrars** and activate Openprovider module.
