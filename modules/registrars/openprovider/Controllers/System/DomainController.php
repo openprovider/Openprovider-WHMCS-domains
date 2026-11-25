@@ -331,6 +331,18 @@ class DomainController extends BaseController
                     $domainTransfer->useDomicile = true;
             }
 
+            if (isset($params['importContactsFromRegistry']) && !empty($params['importContactsFromRegistry'])) {
+                $importContactsTlds = array_map(function ($tld) {
+                    if (!empty($tld) && $tld[0] == '.')
+                        return mb_strcut($tld, 1);
+                    return $tld;
+                }, $params['importContactsFromRegistry']);
+
+                if (in_array($domainTransfer->domain->extension, $importContactsTlds))
+                    $domainTransfer->importContactsFromRegistry = true;
+            }
+
+
             // Sleep for 2 seconds. Some registrars accept a new contact but do not process this immediately.
             sleep(2);
 
