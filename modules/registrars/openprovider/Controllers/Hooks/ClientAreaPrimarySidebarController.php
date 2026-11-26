@@ -103,7 +103,7 @@ jQuery( document ).ready(function() {
             $destination_location = $GLOBALS['whmcsAppConfig']->getRootDir() . self::DNSSEC_PAGE_NAME;
             // Attempt to copy dnssec.php file into the root file
             if (!copy($source_location, $destination_location)) {
-                logModuleCall('openprovider', 'copydnssecfile', null, "DNSSEC page error! Failed to add dnssec.php to root directory. Please manually upload the contents of '<Module directory>/registrars/openprovider/custom-pages' to the top level of your WHMCS folder i.e. '<your WHMCS directory>/'" , null, null);
+                logModuleCall('openprovider', 'copydnssecfile', null, "DNSSEC page error! Failed to add dnssec.php to root directory. Please manually upload the contents of '<Module directory>/registrars/openprovider/custom-pages' to the top level of your WHMCS folder i.e. '<your WHMCS directory>/'" , null, []);
             }
         }
         
@@ -139,7 +139,7 @@ jQuery( document ).ready(function() {
             }
 
             if (empty($tld)) {
-                logModuleCall('openprovider', 'supportsDnssec', ['domain' => $isDomainEnabled->domain], null, 'Could not derive TLD', null);
+                logModuleCall('openprovider', 'supportsDnssec', ['domain' => $isDomainEnabled->domain], null, 'Could not derive TLD', []);
                 return;
             }
 
@@ -185,7 +185,7 @@ jQuery( document ).ready(function() {
                 ['source' => $source, 'destination' => $destination],
                 "Source dnsmanagement.php not found. Please upload it manually.",
                 null,
-                null
+                []
             );
             return;
         }
@@ -198,7 +198,7 @@ jQuery( document ).ready(function() {
                 ['source' => $source, 'destination' => $destination],
                 "Failed to copy dnsmanagement.php to WHMCS root directory. Please upload it manually.",
                 null,
-                null
+                []
             );
         }
     }

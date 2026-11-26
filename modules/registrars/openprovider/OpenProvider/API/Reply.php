@@ -34,7 +34,7 @@ class Reply
 
         if (!$result)
         {
-            logModuleCall('openprovider', 'connecting_with_openprovider_error', null, $str, $result, null);
+            logModuleCall('openprovider', 'connecting_with_openprovider_error', null, $str, $result, []);
             throw new \Exception('Cannot parse XML');
         }
         $arr = \OpenProvider\API\APITools::convertXmlToPhpArray($str);

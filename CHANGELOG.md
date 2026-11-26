@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.13.11
+
+###### Bugfixes
+- Fixed: Module logging causing a fatal `TypeError` in WHMCS 9.1, which caused module features to fail, including domain Sync.
+
 ## v5.13.10
 
 ###### Bugfixes

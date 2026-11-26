@@ -64,7 +64,7 @@ class DNS
             $response = $this->apiHelper->getDnsDomainToken($domain->domain, $zoneProvider);
             return $response['url'] ?? false;
         } catch (\Exception $e) {
-            logModuleCall('OpenProvider','getDnsDomainToken',$domain->domain,$e->getMessage(),'', '');
+            logModuleCall('OpenProvider','getDnsDomainToken',$domain->domain,$e->getMessage(),'', []);
             return false;
         }
     }
