@@ -254,8 +254,11 @@ class DomainController extends BaseController
                 $handle->setExtensionAdditionalData($extensionCustomerAdditionalData);
             }
 
+            if (isset($additionalFields['customerAdditionalData']))
+                $handle->setCustomerAdditionalData($additionalFields['customerAdditionalData']);
+
             if (isset($additionalFields['customer']))
-                $handle->setCustomerAdditionalData($additionalFields['customer']);
+                $handle->setCustomerData($additionalFields['customer']);
 
             $tldMetaData = $this->getTldMetaData($params, $domain->extension);
 
