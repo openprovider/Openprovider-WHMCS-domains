@@ -862,7 +862,8 @@ $additionaldomainfields[".scot"][] = array(
     "LangVar" => "scotDomainNameVariants",
     "Type" => "text",
     "op_location" => "domainAdditionalData",
-    "op_name" => "domainNameVariants"
+    "op_name" => "domainNameVariants",
+    "op_array_separator" => ","
 );
 
 // .EUS

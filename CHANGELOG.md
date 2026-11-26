@@ -1,5 +1,12 @@
 # Changelog
 
+## v5.13.10
+
+###### Bugfixes
+- Fixed: Registration failing for `.scot` and related TLDs when 'Domain Name Variants' is empty.
+- Fixed: Contact details page showing no contacts in sandbox mode, causing a fatal error on save.
+- Fixed: `DomainGetWhoisInfo` and `DomainUpdateWhoisInfo` API calls returning HTTP 500 in sandbox mode.
+
 ## v5.13.9
 
 ###### Bugfixes
